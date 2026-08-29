@@ -1,0 +1,62 @@
+[
+  {
+    "id": "police",
+    "name": "Cambodia National Police",
+    "nameKh": "នគរបាលជាតិកម្ពុជា",
+    "number": "117",
+    "description": "National 24/7 emergency police dispatch line for crime, theft, and urgent security situations.",
+    "descriptionKh": "ខ្សែទូរស័ព្ទបន្ទាន់នគរបាលជាតិ ២៤ ម៉ោង សម្រាប់បទល្មើស ចោរកម្ម និងសន្តិសុខបន្ទាន់។",
+    "icon": "shield",
+    "priority": 1
+  },
+  {
+    "id": "fire",
+    "name": "Fire & Rescue Department",
+    "nameKh": "កងកម្លាំងពន្លត់អគ្គីភ័យ និងសង្គ្រោះ",
+    "number": "118",
+    "description": "Firefighting, disaster rescue, and hazardous emergency response hotline.",
+    "descriptionKh": "សេវាបន្ទាន់ពន្លត់អគ្គីភ័យ សង្គ្រោះគ្រោះមហន្តរាយ និងឧបទ្ទវហេតុគ្រោះថ្នាក់។",
+    "icon": "flame",
+    "priority": 2
+  },
+  {
+    "id": "ambulance",
+    "name": "Medical Emergency Ambulance (SAMU)",
+    "nameKh": "សង្គ្រោះបន្ទាន់វេជ្ជសាស្ត្រ (SAMU 119)",
+    "number": "119",
+    "description": "Public national emergency medical response and hospital ambulance dispatch.",
+    "descriptionKh": "សេវារថយន្តសង្គ្រោះបន្ទាន់វេជ្ជសាស្ត្រថ្នាក់ជាតិ និងការបញ្ជូនអ្នកជំងឺសង្គ្រោះបន្ទាន់។",
+    "icon": "ambulance",
+    "priority": 3
+  },
+  {
+    "id": "tourist-police-hotline",
+    "name": "Tourist Police Emergency Hotline",
+    "nameKh": "នគរបាលទេសចរណ៍ (ជំនួយបន្ទាន់)",
+    "number": "1288",
+    "description": "Multilingual assistance hotline for foreign visitors and tourists across Cambodia.",
+    "descriptionKh": "ខ្សែទូរស័ព្ទជំនួយពហុភាសាសម្រាប់ភ្ញៀវទេសចរបរទេសទូទាំងប្រទេសកម្ពុជា។",
+    "icon": "user-check",
+    "priority": 4
+  },
+  {
+    "id": "child-protection-hotline",
+    "name": "Child Protection & Abuse Helpline (ChildSafe)",
+    "nameKh": "ខ្សែទូរស័ព្ទការពារកុមារ (ChildSafe)",
+    "number": "1280",
+    "description": "24-hour hotline for reporting child abuse, trafficking, exploitation, and neglected minors.",
+    "descriptionKh": "ខ្សែទូរស័ព្ទ ២៤ ម៉ោង រាយការណ៍ការរំលោភបំពាន ការជួញដូរ និងការពារកុមារងាយរងគ្រោះ។",
+    "icon": "heart",
+    "priority": 5
+  },
+  {
+    "id": "road-traffic-assistance",
+    "name": "Road Traffic Accident & Expressway Rescue",
+    "nameKh": "ជំនួយគ្រោះថ្នាក់ចរាចរណ៍ និងផ្លូវល្បឿនលឿន",
+    "number": "1200",
+    "description": "Emergency roadside towing, highway crash assistance, and traffic obstruction rescue.",
+    "descriptionKh": "សេវាសង្គ្រោះគ្រោះថ្នាក់ចរាចរណ៍ អូសរថយន្ត និងជំនួយសង្គ្រោះលើផ្លូវល្បឿនលឿន។",
+    "icon": "car",
+    "priority": 6
+  }
+]

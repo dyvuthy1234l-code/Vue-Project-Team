@@ -1,0 +1,536 @@
+[
+  {
+    "id": "national-id-card",
+    "title": "National ID Card (Khmer Identity Card)",
+    "titleKh": "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ",
+    "category": "ID Card",
+    "description": "Apply for or renew your Cambodian National Identification Card. Required for all Cambodian citizens aged 15 and above for official identification, banking, property transactions, and voting.",
+    "descriptionKh": "ដាក់ពាក្យសុំ ឬបន្តអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ។ តម្រូវសម្រាប់ពលរដ្ឋកម្ពុជាទាំងអស់ដែលមានអាយុ ១៥ ឆ្នាំឡើង សម្រាប់ការសម្គាល់ខ្លួន ធនាគារ ទិញលក់អចលនទ្រព្យ និងការបោះឆ្នោត។",
+    "requirements": [
+      "Original Birth Certificate or extract (Khmer language)",
+      "Family Book (Kor.Bou.4) or Residence Book (Kor.Bou.2)",
+      "Current ID card (if applying for renewal or damaged replacement)",
+      "Police report document (if lost)",
+      "Physical presence for biometric fingerprint scan and live photograph"
+    ],
+    "requirementsKh": [
+      "សំបុត្រកំណើតច្បាប់ដើម ឬសេចក្តីចម្លងសំបុត្រកំណើត",
+      "សៀវភៅគ្រួសារ (ក.ប.៤) ឬសៀវភៅស្នាក់នៅ (ក.ប.២)",
+      "អត្តសញ្ញាណប័ណ្ណចាស់ (ករណីផុតកំណត់ ឬខូច)",
+      "ពាក្យបណ្តឹងបាត់បង់ពីប៉ុស្តិ៍នគរបាល (ករណីបាត់)",
+      "ការបង្ហាញខ្លួនផ្ទាល់ដើម្បីស្កេនក្រយៅដៃ និងថតរូបផ្ទាល់"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Gather Supporting Documents",
+        "titleKh": "ប្រមូលឯកសារពាក់ព័ន្ធ",
+        "description": "Prepare your original birth certificate, family book or residence book, and confirm all spelling matches.",
+        "descriptionKh": "រៀបចំសំបុត្រកំណើតច្បាប់ដើម សៀវភៅគ្រួសារ ឬសៀវភៅស្នាក់នៅ និងផ្ទៀងផ្ទាត់ឈ្មោះឱ្យត្រឹមត្រូវ។"
+      },
+      {
+        "step": 2,
+        "title": "Visit Sangkat / Khan Identification Unit",
+        "titleKh": "ទៅកាន់ការិយាល័យអត្តសញ្ញាណប័ណ្ណសង្កាត់/ខណ្ឌ",
+        "description": "Submit documents to the identification officer at your local commune/Sangkat or the General Department of Identification centers.",
+        "descriptionKh": "ដាក់ឯកសារជូនមន្ត្រីអត្តសញ្ញាណកម្មនៅសង្កាត់/ខណ្ឌ ឬអគ្គនាយកដ្ឋានអត្តសញ្ញាណកម្ម។"
+      },
+      {
+        "step": 3,
+        "title": "Biometric Data Collection",
+        "titleKh": "ការផ្តល់ទិន្នន័យជីវមាត្រ",
+        "description": "Capture 10 fingerprints, digital iris scan, height measurement, and official portrait photo.",
+        "descriptionKh": "ស្កេនស្នាមម្រាមដៃទាំង ១០ ស្កេនភ្នែក វាស់កម្ពស់ និងថតរូបផ្លូវការ។"
+      },
+      {
+        "step": 4,
+        "title": "Receive Stub & Collect ID Card",
+        "titleKh": "ទទួលប័ណ្ណណាត់ និងទទួលយកអត្តសញ្ញាណប័ណ្ណ",
+        "description": "Keep the collection receipt stub and pick up the laminated Smart ID card when notified.",
+        "descriptionKh": "រក្សាទុកប័ណ្ណទទួល និងទៅបើកយកអត្តសញ្ញាណប័ណ្ណនៅពេលកំណត់។"
+      }
+    ],
+    "location": "Local Commune/Sangkat Administration Offices, Khan Police Inspectorates, or General Department of Identification (AEON Mall Sen Sok / Nirouth)",
+    "locationKh": "សាលាសង្កាត់/ឃុំ អធិការដ្ឋាននគរបាលខណ្ឌ ឬអគ្គនាយកដ្ឋានអត្តសញ្ញាណកម្ម (ផ្សារទំនើបអ៊ីអន២ / និរោធ)",
+    "processingTime": "15 to 30 business days (Standard)",
+    "processingTimeKh": "១៥ ដល់ ៣០ ថ្ងៃធ្វើការ (ស្តង់ដារ)",
+    "fee": "Free for first issuance & regular renewal (Official government policy)",
+    "feeKh": "ឥតគិតថ្លៃសម្រាប់ការធ្វើលើកដំបូង និងការប្តូរធម្មតា",
+    "validity": "10 Years",
+    "validityKh": "១០ ឆ្នាំ",
+    "ageRequirements": "15 Years Old and Above",
+    "ageRequirementsKh": "អាយុចាប់ពី ១៥ ឆ្នាំឡើងទៅ",
+    "faq": [
+      {
+        "question": "Can I apply for an ID card if my birth certificate has a slight typo?",
+        "questionKh": "តើអាចធ្វើអត្តសញ្ញាណប័ណ្ណបានទេបើឈ្មោះលើសំបុត្រកំណើតខុសតួអក្សរបន្តិចបន្តួច?",
+        "answer": "All documents must have identical name spelling and date of birth. If there is a typo, request a civil status correction at your district hall before applying.",
+        "answerKh": "ឯកសារទាំងអស់ត្រូវតែមានឈ្មោះ និងថ្ងៃខែឆ្នាំកំណើតដូចគ្នា។ ប្រសិនបើមានកំហុស ត្រូវស្នើសុំកែតម្រូវអត្រានុកូលដ្ឋាននៅសាលាស្រុក/ខណ្ឌសិន។"
+      },
+      {
+        "question": "Where can I renew my expired ID card quickly?",
+        "questionKh": "តើខ្ញុំអាចប្តូរអត្តសញ្ញាណប័ណ្ណផុតកំណត់នៅឯណាបានលឿន?",
+        "answer": "You can visit the Passport & ID Service Center located inside AEON Mall Sen Sok City (2nd Floor) or AEON Mall Mean Chey.",
+        "answerKh": "អ្នកអាចទៅកាន់មជ្ឈមណ្ឌលផ្តល់សេវាអត្តសញ្ញាណប័ណ្ណនៅផ្សារទំនើបអ៊ីអន សែនសុខ (ជាន់ទី២) ឬផ្សារទំនើបអ៊ីអន មានជ័យ។"
+      }
+    ]
+  },
+  {
+    "id": "passport",
+    "title": "Cambodian Passport Issuance",
+    "titleKh": "ការធ្វើលិខិតឆ្លងដែនកម្ពុជា",
+    "category": "Passport",
+    "description": "Apply for standard 10-year biometric international travel passport for Cambodian citizens through the General Department of Identification.",
+    "descriptionKh": "ដាក់ពាក្យស្នើសុំលិខិតឆ្លងដែនអន្តរជាតិជីវមាត្រសុពលភាព ១០ ឆ្នាំ សម្រាប់ពលរដ្ឋកម្ពុជា តាមរយៈអគ្គនាយកដ្ឋានអត្តសញ្ញាណកម្ម។",
+    "requirements": [
+      "Original valid Cambodian National ID Card",
+      "Original Family Book or Residence Book",
+      "Birth certificate copy (required for minors under 18)",
+      "Letter of consent from parents/guardians (for applicants under 18)",
+      "Previous passport (if renewing)"
+    ],
+    "requirementsKh": [
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរច្បាប់ដើមមានសុពលភាព",
+      "សៀវភៅគ្រួសារ ឬសៀវភៅស្នាក់នៅច្បាប់ដើម",
+      "សំបុត្រកំណើត (សម្រាប់កុមារអាយុក្រោម ១៨ ឆ្នាំ)",
+      "លិខិតយល់ព្រមពីឪពុកម្តាយ ឬអាណាព្យាបាល (សម្រាប់អាយុក្រោម ១៨ ឆ្នាំ)",
+      "លិខិតឆ្លងដែនចាស់ (ករណីបន្តសុពលភាព)"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Document Verification",
+        "titleKh": "ត្រួតពិនិត្យឯកសារ",
+        "description": "Present original National ID card and family book to the front desk verification counter.",
+        "descriptionKh": "បង្ហាញអត្តសញ្ញាណប័ណ្ណច្បាប់ដើម និងសៀវភៅគ្រួសារនៅបញ្ជរពិនិត្យឯកសារ។"
+      },
+      {
+        "step": 2,
+        "title": "Biometric & Photography",
+        "titleKh": "ថតរូប និងស្កេនជីវមាត្រ",
+        "description": "Live digital photograph, fingerprint scans, and digital signature capture.",
+        "descriptionKh": "ថតរូបឌីជីថល ស្កេនស្នាមម្រាមដៃ និងចុះហត្ថលេខាអេឡិចត្រូនិច។"
+      },
+      {
+        "step": 3,
+        "title": "Fee Payment & Service Tier Selection",
+        "titleKh": "បង់ប្រាក់ថ្លៃសេវា និងជ្រើសរើសប្រភេទសេវា",
+        "description": "Pay standard, urgent, or express service fees at the designated treasury window.",
+        "descriptionKh": "បង់ថ្លៃសេវាធម្មតា ឬសេវារហ័សនៅបញ្ជរបេឡា។"
+      },
+      {
+        "step": 4,
+        "title": "Passport Collection",
+        "titleKh": "ទទួលយកលិខិតឆ្លងដែន",
+        "description": "Collect passport on designated collection date with invoice receipt.",
+        "descriptionKh": "មកទទួលលិខិតឆ្លងដែនតាមកាលបរិច្ឆេទកំណត់ដោយភ្ជាប់បង្កាន់ដៃបង់ប្រាក់។"
+      }
+    ],
+    "location": "Passport Office Nirouth (Chbar Ampov), AEON Mall Sen Sok, or Provincial Passport branches (Battambang, Siem Reap, Banteay Meanchey, Koh Kong)",
+    "locationKh": "ការិយាល័យលិខិតឆ្លងដែននិរោធ (ច្បារអំពៅ) ផ្សារទំនើបអ៊ីអនសែនសុខ ឬសាខាតាមបណ្តាខេត្ត (បាត់ដំបង សៀមរាប បន្ទាយមានជ័យ កោះកុង)",
+    "processingTime": "Normal: 20 business days | Urgent: 10 days | Express: 1-3 days",
+    "processingTimeKh": "ធម្មតា៖ ២០ ថ្ងៃធ្វើការ | ប្រញាប់៖ ១០ ថ្ងៃ | បន្ទាន់៖ ១-៣ ថ្ងៃ",
+    "fee": "$115 (Normal) | $135 (Urgent 10 days) | $200 (Express 1-3 days)",
+    "feeKh": "១១៥ ដុល្លារ (ធម្មតា) | ១៣៥ ដុល្លារ (១០ ថ្ងៃ) | ២០០ ដុល្លារ (១-៣ ថ្ងៃ)",
+    "validity": "10 Years (Adults) / 5 Years (Children under 6)",
+    "validityKh": "១០ ឆ្នាំ (មនុស្សពេញវ័យ) / ៥ ឆ្នាំ (កុមារក្រោម ៦ ឆ្នាំ)",
+    "ageRequirements": "All Ages (Minors require parental accompaniment)",
+    "ageRequirementsKh": "គ្រប់វ័យ (អនីតិជនត្រូវមានឪពុកម្តាយទៅជាមួយ)",
+    "faq": [
+      {
+        "question": "Can I wear eyeglasses or contact lenses during the photo?",
+        "questionKh": "តើអាចពាក់វ៉ែនតា ឬកែវភ្នែកពេលថតរូបបានទេ?",
+        "answer": "No, colored contact lenses and eyeglasses must be removed for biometric facial identification compliance.",
+        "answerKh": "ទេ មិនអនុញ្ញាតឱ្យពាក់វ៉ែនតា ឬកែវភ្នែកពណ៌ឡើយ ដើម្បីធានាស្តង់ដារជីវមាត្រសម្គាល់ផ្ទៃមុខ។"
+      }
+    ]
+  },
+  {
+    "id": "drivers-license",
+    "title": "Driver's License (Type A & B)",
+    "titleKh": "ប័ណ្ណបើកបរយានយន្ត (ប្រភេទ ក និង ខ)",
+    "category": "Driver's License",
+    "description": "Application, theoretical and practical examination, and renewal of Cambodian motorcycle and light passenger motor vehicle driving licenses.",
+    "descriptionKh": "ការដាក់ពាក្យ ប្រឡងទ្រឹស្តី និងការបើកបរជាក់ស្តែង ព្រមទាំងការបន្តសុពលភាពប័ណ្ណបើកបរទោចក្រយានយន្ត និងរថយន្តទេសចរណ៍។",
+    "requirements": [
+      "Original Cambodian ID Card",
+      "Medical fitness health certificate (issued within 3 months)",
+      "Three 4x6 passport photographs (white background)",
+      "Driving school graduation certificate (for first-time applicants)"
+    ],
+    "requirementsKh": [
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរច្បាប់ដើម",
+      "លិខិតបញ្ជាក់កាយសម្បទា (សុពលភាពមិនលើស ៣ ខែ)",
+      "រូបថត ៤x៦ ចំនួន ៣ សន្លឹក (ផ្ទៃខាងក្រោយពណ៌ស)",
+      "វិញ្ញាបនបត្របញ្ជាក់ការសិក្សាពីសាលាបង្រៀនបើកបរ (សម្រាប់អ្នកប្រឡងលើកដំបូង)"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Medical Examination",
+        "titleKh": "ពិនិត្យសុខភាពកាយសម្បទា",
+        "description": "Undergo physical and eyesight examination at authorized clinic or on-site center.",
+        "descriptionKh": "ពិនិត្យភ្នែក និងកាយសម្បទានៅគ្លីនិកទទួលស្គាល់ ឬនៅមជ្ឈមណ្ឌលផ្ទាល់។"
+      },
+      {
+        "step": 2,
+        "title": "Computerized Theory Exam",
+        "titleKh": "ប្រឡងទ្រឹស្តីលើកុំព្យូទ័រ",
+        "description": "Complete 40 multiple-choice questions on road traffic laws and road signs.",
+        "descriptionKh": "ឆ្លើយសំណួរពហុជ្រើសរើសចំនួន ៤០ អំពីច្បាប់ចរាចរណ៍ និងផ្លាកសញ្ញា។"
+      },
+      {
+        "step": 3,
+        "title": "Practical Driving Test",
+        "titleKh": "ប្រឡងបើកបរជាក់ស្តែង",
+        "description": "Perform obstacle maneuvering, parallel parking, and hill-start course.",
+        "descriptionKh": "បើកបរបញ្ចៀសឧបសគ្គ ចតរថយន្ត និងឡើងចំណោតនៅលើទីលានជាក់ស្តែង។"
+      },
+      {
+        "step": 4,
+        "title": "Card Issuance",
+        "titleKh": "បោះពុម្ពប័ណ្ណបើកបរ",
+        "description": "Receive printed smart driving license on the spot upon passing all tests.",
+        "descriptionKh": "ទទួលប័ណ្ណបើកបរបន្ទាប់ពីប្រឡងជាប់ជាស្ថាពរ។"
+      }
+    ],
+    "location": "Ministry of Public Works and Transport Driver Testing Centers, AEON Mall 1 & AEON Mall 2 Service Centers",
+    "locationKh": "មជ្ឈមណ្ឌលប្រឡងប័ណ្ណបើកបរក្រសួងសាធារណការ និងដឹកជញ្ជូន ផ្សារទំនើបអ៊ីអន១ និងអ៊ីអន២",
+    "processingTime": "Same Day (Testing takes ~3 hours)",
+    "processingTimeKh": "ក្នុងថ្ងៃតែមួយ (ការប្រឡងចំណាយពេលប្រហែល ៣ ម៉ោង)",
+    "fee": "Type A (Motorcycle): ~30,000 KHR | Type B (Car): ~90,000 KHR",
+    "feeKh": "ប្រភេទ ក (ម៉ូតូ)៖ ~៣០,០០០ រៀល | ប្រភេទ ខ (ឡាន)៖ ~៩០,០០០ រៀល",
+    "validity": "10 Years (Type B Khmer citizens) / Lifetime (Type A under 125cc)",
+    "validityKh": "១០ ឆ្នាំ (ប្រភេទ ខ ពលរដ្ឋខ្មែរ) / គ្មានកាលកំណត់ (ប្រភេទ ក ក្រោម ១២៥សេសេ)",
+    "ageRequirements": "18 Years and Above",
+    "ageRequirementsKh": "អាយុចាប់ពី ១៨ ឆ្នាំឡើងទៅ",
+    "faq": [
+      {
+        "question": "Do I need a license for a motorbike under 125cc?",
+        "questionKh": "តើត្រូវមានប័ណ្ណបើកបរសម្រាប់ម៉ូតូកម្លាំងក្រោម ១២៥សេសេ ដែរឬទេ?",
+        "answer": "Under current Cambodian traffic regulations, motorcycles with engine displacement equal to or under 125cc do not require a driving license for Cambodian nationals.",
+        "answerKh": "យោងតាមច្បាប់ចរាចរណ៍បច្ចុប្បន្ន ទោចក្រយានយន្តកម្លាំងក្រោម ឬស្មើ ១២៥សេសេ មិនតម្រូវឱ្យមានប័ណ្ណបើកបរសម្រាប់ពលរដ្ឋខ្មែរឡើយ។"
+      }
+    ]
+  },
+  {
+    "id": "birth-certificate",
+    "title": "Official Birth Certificate Registration",
+    "titleKh": "ការចុះសំបុត្រកំណើត (អត្រានុកូលដ្ឋាន)",
+    "category": "Birth Certificate",
+    "description": "Registration of newborn childbirth or delayed birth certificate declaration with Commune/Sangkat civil registrars.",
+    "descriptionKh": "ការចុះបញ្ជីកំណើតទារកកើតថ្មី ឬការស្នើសុំសំបុត្រកំណើតយឺតពេលនៅសាលាឃុំ/សង្កាត់។",
+    "requirements": [
+      "Hospital or maternity clinic birth confirmation notice",
+      "Parents' Family Book or Residence Book",
+      "Parents' National ID Cards",
+      "Parents' Marriage Certificate (if applicable)"
+    ],
+    "requirementsKh": [
+      "លិខិតបញ្ជាក់កំណើតពីមន្ទីរពេទ្យ ឬមណ្ឌលសម្ភព",
+      "សៀវភៅគ្រួសារ ឬសៀវភៅស្នាក់នៅរបស់ឪពុកម្តាយ",
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែររបស់ឪពុកម្តាយ",
+      "សំបុត្រអាពាហ៍ពិពាហ៍របស់ឪពុកម្តាយ (ប្រសិនបើមាន)"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Obtain Hospital Certificate",
+        "titleKh": "ទទួលលិខិតបញ្ជាក់កំណើតពីពេទ្យ",
+        "description": "Obtain the official delivery report signed and stamped by hospital doctor.",
+        "descriptionKh": "ទទួលយកលិខិតបញ្ជាក់កំណើតដែលមានហត្ថលេខា និងត្រាពីមន្ទីរពេទ្យ។"
+      },
+      {
+        "step": 2,
+        "title": "Submit Declaration at Sangkat",
+        "titleKh": "ដាក់ពាក្យប្រកាសនៅសាលាសង្កាត់",
+        "description": "Parent or guardian brings documents to the local Sangkat civil registry within 30 days of birth.",
+        "descriptionKh": "ឪពុកម្តាយ ឬអាណាព្យាបាលយកឯកសារទៅសាលាសង្កាត់ក្នុងរយៈពេល ៣០ ថ្ងៃបន្ទាប់ពីសម្រាល។"
+      },
+      {
+        "step": 3,
+        "title": "Registrar Verification & Book Entry",
+        "titleKh": "ការត្រួតពិនិត្យ និងចុះសៀវភៅអត្រានុកូលដ្ឋាន",
+        "description": "Civil officer registers child details in official log and prepares standard certificate.",
+        "descriptionKh": "មន្ត្រីអត្រានុកូលដ្ឋានចុះឈ្មោះក្នុងបញ្ជី និងរៀបចំសំបុត្រកំណើតផ្លូវការ។"
+      }
+    ],
+    "location": "Local Commune / Sangkat Administrative Hall of Mother's Permanent Residence",
+    "locationKh": "សាលាឃុំ / សង្កាត់ នៃលំនៅដ្ឋានអចិន្ត្រៃយ៍របស់ម្តាយ",
+    "processingTime": "3 to 5 business days",
+    "processingTimeKh": "៣ ដល់ ៥ ថ្ងៃធ្វើការ",
+    "fee": "Free of charge within 30 days of birth",
+    "feeKh": "ឥតគិតថ្លៃ ប្រសិនបើចុះក្នុងរយៈពេល ៣០ ថ្ងៃក្រោយសម្រាល",
+    "validity": "Permanent Lifetime Document",
+    "validityKh": "អចិន្ត្រៃយ៍ គ្មានកាលកំណត់",
+    "ageRequirements": "Within 30 days of birth for standard free registration",
+    "ageRequirementsKh": "ក្នុងរយៈពេល ៣០ ថ្ងៃនៃកំណើតសម្រាប់ការចុះធម្មតា",
+    "faq": [
+      {
+        "question": "What if birth registration exceeds the 30-day deadline?",
+        "questionKh": "ចុះបើហួសកំណត់ ៣០ ថ្ងៃ តើត្រូវធ្វើដូចម្តេច?",
+        "answer": "Late declarations require verification witnesses and might incur a nominal administrative penalty under civil law.",
+        "answerKh": "ការចុះយឺតពេលតម្រូវឱ្យមានសាក្សីបញ្ជាក់ និងអាចមានការពិន័យរដ្ឋបាលស្រាលស្របតាមច្បាប់។"
+      }
+    ]
+  },
+  {
+    "id": "family-book",
+    "title": "Family Book (Kor.Bou.4) Issuance",
+    "titleKh": "ការធ្វើសៀវភៅគ្រួសារ (ក.ប.៤)",
+    "category": "Family Book",
+    "description": "Official household family registry document designating household head and familial relationship records.",
+    "descriptionKh": "ឯកសារបញ្ជីគ្រួសារផ្លូវការ ដែលបញ្ជាក់អំពីមេគ្រួសារ និងទំនាក់ទំនងសមាជិកគ្រួសារ។",
+    "requirements": [
+      "Application declaration form signed by Village Chief",
+      "Birth certificates of all family members",
+      "Parents' Marriage Certificate",
+      "National ID cards of adult members",
+      "Proof of residential address"
+    ],
+    "requirementsKh": [
+      "ពាក្យស្នើសុំមានការបញ្ជាក់ពីមេភូមិ",
+      "សំបុត្រកំណើតរបស់សមាជិកគ្រួសារទាំងអស់",
+      "សំបុត្រអាពាហ៍ពិពាហ៍របស់ឪពុកម្តាយ",
+      "អត្តសញ្ញាណប័ណ្ណរបស់សមាជិកពេញវ័យ",
+      "ឯកសារបញ្ជាក់ទីលំនៅ"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Village Chief Sign-off",
+        "titleKh": "ការបញ្ជាក់ពីមេភូមិ",
+        "description": "Submit list of family members to Village Chief for local residence confirmation.",
+        "descriptionKh": "ដាក់បញ្ជីសមាជិកគ្រួសារជូនមេភូមិដើម្បីបញ្ជាក់ទីលំនៅ។"
+      },
+      {
+        "step": 2,
+        "title": "Commune Police Post Review",
+        "titleKh": "ការត្រួតពិនិត្យនៅប៉ុស្តិ៍នគរបាលរដ្ឋបាលឃុំ/សង្កាត់",
+        "description": "Commune police chief reviews and approves household roster.",
+        "descriptionKh": "នាយប៉ុស្តិ៍នគរបាលរដ្ឋបាលពិនិត្យ និងយល់ព្រមលើបញ្ជីឈ្មោះ។"
+      },
+      {
+        "step": 3,
+        "title": "Khan / District Police Inspectorate Stamping",
+        "titleKh": "ការចុះហត្ថលេខានិងបោះត្រានៅអធិការដ្ឋាន",
+        "description": "Final book issuance and official registration seal by District Police Inspector.",
+        "descriptionKh": "ការបោះពុម្ពសៀវភៅ និងបោះត្រាជាផ្លូវការដោយអធិការនគរបាលខណ្ឌ/ស្រុក។"
+      }
+    ],
+    "location": "Commune Administrative Police Station & District Police Inspectorate",
+    "locationKh": "ប៉ុស្តិ៍នគរបាលរដ្ឋបាលឃុំ/សង្កាត់ និងអធិការដ្ឋាននគរបាលស្រុក/ខណ្ឌ",
+    "processingTime": "7 to 14 business days",
+    "processingTimeKh": "៧ ដល់ ១៤ ថ្ងៃធ្វើការ",
+    "fee": "Free / standard administrative paperwork cost",
+    "feeKh": "ឥតគិតថ្លៃ / ថ្លៃរដ្ឋបាលតិចតួច",
+    "validity": "Permanent until family status or residential relocation changes",
+    "validityKh": "អចិន្ត្រៃយ៍រហូតដល់មានការផ្លាស់ប្តូរទីលំនៅ ឬស្ថានភាពគ្រួសារ",
+    "ageRequirements": "Household heads must be 18 or legally married",
+    "ageRequirementsKh": "មេគ្រួសារត្រូវមានអាយុ ១៨ ឆ្នាំឡើង ឬរៀបការស្របច្បាប់",
+    "faq": [
+      {
+        "question": "Can I add a newborn baby to an existing Family Book?",
+        "questionKh": "តើអាចបន្ថែមទារកទើបកើតចូលសៀវភៅគ្រួសារដែលមានស្រាប់បានទេ?",
+        "answer": "Yes, present the baby's original birth certificate to the commune police post to update and record the child into the book.",
+        "answerKh": "បាទ/ចាស បាន ដោយគ្រាន់តែយកសំបុត្រកំណើតទារកទៅប៉ុស្តិ៍នគរបាលរដ្ឋបាលដើម្បីចុះបន្ថែម។"
+      }
+    ]
+  },
+  {
+    "id": "marriage-certificate",
+    "title": "Legal Marriage Registration Certificate",
+    "titleKh": "ការចុះសំបុត្រអាពាហ៍ពិពាហ៍ស្របច្បាប់",
+    "category": "Marriage Certificate",
+    "description": "Civil status legal union certification for Cambodian couples under the Law on Civil Status and Marriage.",
+    "descriptionKh": "ការចុះបញ្ជីអាពាហ៍ពិពាហ៍ស្របច្បាប់សម្រាប់គូស្វាមីភរិយាកម្ពុជា ស្របតាមច្បាប់ស្តីពីអាពាហ៍ពិពាហ៍និងគ្រួសារ។",
+    "requirements": [
+      "National ID cards and Family Books of both partners",
+      "Birth certificates of bride and groom",
+      "Single / Celibacy status certificate from Sangkat",
+      "Medical health certificates certifying absence of contagious diseases",
+      "Two witnesses aged 18 or above with valid IDs"
+    ],
+    "requirementsKh": [
+      "អត្តសញ្ញាណប័ណ្ណ និងសៀវភៅគ្រួសាររបស់ភាគីទាំងសងខាង",
+      "សំបុត្រកំណើតកូនកម្លោះ និងកូនក្រមុំ",
+      "លិខិតបញ្ជាក់ភាពនៅលីវពីសង្កាត់",
+      "លិខិតពិនិត្យសុខភាពគ្មានជំងឺឆ្លង",
+      "សាក្សី ២ នាក់មានអាយុ ១៨ ឆ្នាំឡើងមានអត្តសញ្ញាណប័ណ្ណ"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Single Status Certification",
+        "titleKh": "ស្នើសុំលិខិតបញ្ជាក់ភាពនៅលីវ",
+        "description": "Each party obtains certificate of single status from their respective Sangkats.",
+        "descriptionKh": "ភាគីនីមួយៗស្នើសុំលិខិតបញ្ជាក់ភាពនៅលីវពីសង្កាត់រៀងៗខ្លួន។"
+      },
+      {
+        "step": 2,
+        "title": "Public Marriage Notice (10 Days)",
+        "titleKh": "ការបិទប្រកាសអាពាហ៍ពិពាហ៍ (១០ ថ្ងៃ)",
+        "description": "Commune registrar posts public marriage bann notice at Sangkat bulletin board.",
+        "descriptionKh": "មន្ត្រីអត្រានុកូលដ្ឋានបិទប្រកាសជាសាធារណៈនៅសាលាសង្កាត់រយៈពេល ១០ ថ្ងៃ។"
+      },
+      {
+        "step": 3,
+        "title": "Official Marriage Signing Ceremony",
+        "titleKh": "ពិធីចុះហត្ថលេខាអាពាហ៍ពិពាហ៍ផ្លូវការ",
+        "description": "Bride, groom, and 2 witnesses sign the official marriage registry before the Commune Chief.",
+        "descriptionKh": "កូនកម្លោះ កូនក្រមុំ និងសាក្សី ២ នាក់ចុះហត្ថលេខាចំពោះមុខមេឃុំ/ចៅសង្កាត់។"
+      }
+    ],
+    "location": "Local Commune / Sangkat Administrative Hall of Bride or Groom",
+    "locationKh": "សាលាឃុំ/សង្កាត់ ខាងកូនក្រមុំ ឬខាងកូនកម្លោះ",
+    "processingTime": "10 to 15 business days (including 10-day public notice)",
+    "processingTimeKh": "១០ ដល់ ១៥ ថ្ងៃ (រាប់បញ្ចូលទាំងរយៈពេលបិទប្រកាស ១០ ថ្ងៃ)",
+    "fee": "Free of charge standard administrative fee",
+    "feeKh": "ឥតគិតថ្លៃ ថ្លៃរដ្ឋបាលស្តង់ដារ",
+    "validity": "Permanent Legal Status",
+    "validityKh": "អចិន្ត្រៃយ៍ ស្របច្បាប់",
+    "ageRequirements": "Men: 20+ years, Women: 18+ years (or with parental consent)",
+    "ageRequirementsKh": "បុរស៖ ២០ ឆ្នាំឡើង, នារី៖ ១៨ ឆ្នាំឡើង (ឬមានការយល់ព្រមពីអាណាព្យាបាល)",
+    "faq": [
+      {
+        "question": "Can foreigners marry Cambodian citizens under this process?",
+        "questionKh": "តើជនបរទេសអាចរៀបការជាមួយពលរដ្ឋខ្មែរតាមវិធីនេះបានទេ?",
+        "answer": "Marriages involving foreign nationals require special authorization from the Ministry of Foreign Affairs and Ministry of Interior prior to commune registration.",
+        "answerKh": "អាពាហ៍ពិពាហ៍ជាមួយជនបរទេសតម្រូវឱ្យមានការអនុញ្ញាតពិសេសពីក្រសួងការបរទេស និងក្រសួងមហាផ្ទៃជាមុនសិន។"
+      }
+    ]
+  },
+  {
+    "id": "business-registration",
+    "title": "Online Business Registration (CamDX Single Portal)",
+    "titleKh": "ការចុះបញ្ជីពាណិជ្ជកម្មតាមប្រព័ន្ធអនឡាញ (CamDX)",
+    "category": "Business Registration",
+    "description": "Unified online business registration across Ministry of Commerce, General Department of Taxation, and Ministry of Labour & Vocational Training.",
+    "descriptionKh": "ការចុះបញ្ជីពាណិជ្ជកម្មរួមគ្នាតាមប្រព័ន្ធអនឡាញ តាមរយៈក្រសួងពាណិជ្ជកម្ម អគ្គនាយកដ្ឋានពន្ធដារ និងក្រសួងការងារ។",
+    "requirements": [
+      "National ID card or Passport of shareholders & directors",
+      "Proposed company name in Khmer and English",
+      "Proof of registered office location (lease agreement or title deed)",
+      "Articles of Incorporation / Memorandum of Association",
+      "Initial minimum capital declaration"
+    ],
+    "requirementsKh": [
+      "អត្តសញ្ញាណប័ណ្ណ ឬលិខិតឆ្លងដែនរបស់ម្ចាស់ភាគហ៊ុន និងអភិបាល",
+      "ឈ្មោះក្រុមហ៊ុនស្នើសុំជាភាសាខ្មែរ និងអង់គ្លេស",
+      "កិច្ចសន្យាជួលទីតាំង ឬប័ណ្ណកម្មសិទ្ធិទីស្នាក់ការ",
+      "លក្ខន្តិកៈក្រុមហ៊ុន",
+      "ការប្រកាសដើមទុនចុះបញ្ជីអប្បបរមា"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Create CamDX Account",
+        "titleKh": "បង្កើតគណនី CamDX",
+        "description": "Register company profile on registration.business.gov.kh using digital ID.",
+        "descriptionKh": "ចុះឈ្មោះបង្កើតគណនីនៅលើគេហទំព័រ registration.business.gov.kh។"
+      },
+      {
+        "step": 2,
+        "title": "Submit Digital Dossier",
+        "titleKh": "ដាក់ពាក្យស្នើសុំជាឌីជីថល",
+        "description": "Fill unified form, upload statutes, and pay official fees via ABA PAY or Wing.",
+        "descriptionKh": "បំពេញទម្រង់រួម ភ្ជាប់លក្ខន្តិកៈ និងបង់ប្រាក់តាម ABA PAY ឬ Wing។"
+      },
+      {
+        "step": 3,
+        "title": "Receive Digital Certificate & Tax QR",
+        "titleKh": "ទទួលវិញ្ញាបនបត្រឌីជីថល និងប័ណ្ណពន្ធ QR",
+        "description": "Download e-certificate from Ministry of Commerce and Tax Patent certificate online.",
+        "descriptionKh": "ទាញយកវិញ្ញាបនបត្រពាណិជ្ជកម្មអេឡិចត្រូនិក និងប័ណ្ណប៉ាតង់ពន្ធដារ។"
+      }
+    ],
+    "location": "Online via registration.business.gov.kh or Ministry of Commerce Headquarters, St 169, Phnom Penh",
+    "locationKh": "តាមអនឡាញ registration.business.gov.kh ឬទីស្តីការក្រសួងពាណិជ្ជកម្ម ផ្លូវ ១៦៩ ភ្នំពេញ",
+    "processingTime": "8 business days across all 3 ministries",
+    "processingTimeKh": "៨ ថ្ងៃធ្វើការសម្រាប់ក្រសួងទាំង៣",
+    "fee": "~$500 - $700 depending on company enterprise scale and patent tier",
+    "feeKh": "~៥០០ - ៧០០ ដុល្លារ អាស្រ័យលើទំហំសហគ្រាស និងប្រភេទប៉ាតង់",
+    "validity": "Annual patent renewal / Permanent corporate entity",
+    "validityKh": "បន្តប៉ាតង់ប្រចាំឆ្នាំ / នីតិបុគ្គលអចិន្ត្រៃយ៍",
+    "ageRequirements": "18 Years and Above",
+    "ageRequirementsKh": "អាយុចាប់ពី ១៨ ឆ្នាំឡើងទៅ",
+    "faq": [
+      {
+        "question": "Can I register a Sole Proprietorship as an individual?",
+        "questionKh": "តើអាចចុះបញ្ជីសហគ្រាសឯកបុគ្គលជាលក្ខណៈបុគ្គលបានទេ?",
+        "answer": "Yes, sole proprietorships can be registered online through CamDX with a lower fee structure and simplified documentation.",
+        "answerKh": "បាទ/ចាស បាន សហគ្រាសឯកបុគ្គលអាចចុះបញ្ជីបានតាម CamDX ដោយចំណាយថ្លៃសេវាទាបជាង និងឯកសារសាមញ្ញជាង។"
+      }
+    ]
+  },
+  {
+    "id": "land-title",
+    "title": "Hard Title Land Transfer & Registration",
+    "titleKh": "ការផ្ទេរសិទ្ធិកាន់កាប់អចលនទ្រព្យ (ប្លង់រឹង)",
+    "category": "Land Title",
+    "description": "Cadastral transfer of hard title land and real estate ownership through the Ministry of Land Management, Urban Planning and Construction.",
+    "descriptionKh": "ការផ្ទេរសិទ្ធិកម្មសិទ្ធិដីធ្លី និងអចលនទ្រព្យ (ប្លង់រឹង) តាមរយៈក្រសួងរៀបចំដែនដី នគរូបនីយកម្ម និងសំណង់។",
+    "requirements": [
+      "Original Certificate of Title (Hard Title)",
+      "Official Sale-Purchase Contract recognized by local authorities",
+      "Buyer and Seller National ID Cards and Family Books",
+      "Proof of 4% Transfer Tax Payment from General Department of Taxation",
+      "Single/Spousal consent certificates from both parties"
+    ],
+    "requirementsKh": [
+      "វិញ្ញាបនបត្រសម្គាល់ម្ចាស់អចលនវត្ថុច្បាប់ដើម (ប្លង់រឹង)",
+      "កិច្ចសន្យាទិញលក់ផ្លូវការទទួលស្គាល់ដោយអាជ្ញាធរ",
+      "អត្តសញ្ញាណប័ណ្ណ និងសៀវភៅគ្រួសាររបស់អ្នកទិញនិងអ្នកលក់",
+      "បង្កាន់ដៃបង់ពន្ធប្រថាប់ត្រា ៤% ពីអគ្គនាយកដ្ឋានពន្ធដារ",
+      "លិខិតបញ្ជាក់ភាពនៅលីវ ឬលិខិតយល់ព្រមពីសហព័ទ្ធ"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Cadastral Verification",
+        "titleKh": "ផ្ទៀងផ្ទាត់ប្លង់សុរិយោដី",
+        "description": "Verify boundary lines, title authenticity, and non-encumbrance status at District Cadastral Office.",
+        "descriptionKh": "ផ្ទៀងផ្ទាត់ព្រំដី ភាពត្រឹមត្រូវនៃប្លង់ និងបញ្ជាក់គ្មានជាប់បន្ទុកនៅការិយាល័យសុរិយោដីស្រុក/ខណ្ឌ។"
+      },
+      {
+        "step": 2,
+        "title": "Fingerprinting and Transfer Application",
+        "titleKh": "ផ្តិតមេដៃ និងដាក់ពាក្យផ្ទេរសិទ្ធិ",
+        "description": "Buyer and seller apply and place thumbprints before cadastral officers.",
+        "descriptionKh": "អ្នកទិញ និងអ្នកលក់ផ្តិតមេដៃលើឯកសារផ្ទេរសិទ្ធិចំពោះមុខមន្ត្រីសុរិយោដី។"
+      },
+      {
+        "step": 3,
+        "title": "Tax Assessment & 4% Transfer Tax Payment",
+        "titleKh": "វាយតម្លៃនិងបង់ពន្ធប្រថាប់ត្រា ៤%",
+        "description": "Pay 4% stamp transfer tax at tax branch based on cadastral valuation.",
+        "descriptionKh": "បង់ពន្ធប្រថាប់ត្រា ៤% នៅសាខាពន្ធដារផ្អែកតាមការវាយតម្លៃរបស់សុរិយោដី។"
+      },
+      {
+        "step": 4,
+        "title": "Hard Title Delivery",
+        "titleKh": "ទទួលយកប័ណ្ណកម្មសិទ្ធិថ្មី",
+        "description": "Receive new hard title registered under buyer's name from Cadastral Department.",
+        "descriptionKh": "ទទួលប្លង់រឹងថ្មីដែលមានឈ្មោះអ្នកទិញពីមន្ទីរសុរិយោដី។"
+      }
+    ],
+    "location": "Municipal/District Cadastral Offices & General Department of Cadastre, Ministry of Land Management",
+    "locationKh": "ការិយាល័យសុរិយោដីខណ្ឌ/ស្រុក និងមន្ទីររៀបចំដែនដី នគរូបនីយកម្ម សំណង់ និងសុរិយោដី",
+    "processingTime": "30 to 45 business days",
+    "processingTimeKh": "៣០ ដល់ ៤៥ ថ្ងៃធ្វើការ",
+    "fee": "4% Stamp Transfer Tax + Cadastral administrative service charges",
+    "feeKh": "ពន្ធប្រថាប់ត្រា ៤% + ថ្លៃសេវារដ្ឋបាលសុរិយោដី",
+    "validity": "Permanent Indefeasible Ownership Title",
+    "validityKh": "អចិន្ត្រៃយ៍ កម្មសិទ្ធិស្របច្បាប់រឹងមាំ",
+    "ageRequirements": "18 Years Old and Above (Khmer National for freehold title)",
+    "ageRequirementsKh": "អាយុចាប់ពី ១៨ ឆ្នាំឡើង (សញ្ជាតិខ្មែរសម្រាប់ដីធ្លី)",
+    "faq": [
+      {
+        "question": "What is the difference between soft title and hard title?",
+        "questionKh": "តើប្លង់ទន់ និងប្លង់រឹង ខុសគ្នាយ៉ាងដូចម្តេច?",
+        "answer": "Soft title is certified at Sangkat/Khan level only, while Hard Title is certified at the national Ministry level (MLMUPC) with registered GPS coordinates and strongest legal backing.",
+        "answerKh": "ប្លង់ទន់ទទួលស្គាល់ត្រឹមកម្រិតសង្កាត់/ខណ្ឌ រីឯប្លង់រឹងចុះបញ្ជីនៅក្រសួងរៀបចំដែនដីថ្នាក់ជាតិ មានកូអរដោនេ GPS ច្បាស់លាស់ និងមានសុពលភាពច្បាប់រឹងមាំបំផុត។"
+      }
+    ]
+  }
+]

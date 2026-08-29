@@ -1,0 +1,368 @@
+[
+  {
+    "id": "frontend-dev-wing",
+    "title": "Senior Frontend Developer (Vue.js / TypeScript)",
+    "company": "Wing Bank (Cambodia) Plc",
+    "location": "Phnom Penh",
+    "salary": "$1,200 - $2,200/month",
+    "salaryMin": 1200,
+    "salaryMax": 2200,
+    "type": "Full-time",
+    "category": "IT",
+    "postedDate": "2025-08-20",
+    "description": "Wing Bank is seeking an experienced Senior Frontend Developer to engineer next-generation digital banking web interfaces and merchant dashboards using Vue 3, Pinia, and Tailwind CSS.",
+    "requirements": [
+      "3+ years building responsive Vue.js / TypeScript web applications",
+      "Proficient in REST APIs, State Management, and Tailwind CSS",
+      "Experience with automated testing and CI/CD pipelines",
+      "Good command of English and collaborative mindset"
+    ],
+    "benefits": [
+      "Competitive salary & 13th-month bonus",
+      "Comprehensive medical & life insurance for staff and family",
+      "Annual performance bonus and provident fund",
+      "Learning allowance and certification sponsorships"
+    ],
+    "applyUrl": "https://www.wingbank.com.kh/careers"
+  },
+  {
+    "id": "backend-dev-aba",
+    "title": "Backend Software Engineer (Golang / Microservices)",
+    "company": "ABA Bank Cambodia",
+    "location": "Phnom Penh",
+    "salary": "$1,500 - $2,800/month",
+    "salaryMin": 1500,
+    "salaryMax": 2800,
+    "type": "Full-time",
+    "category": "IT",
+    "postedDate": "2025-08-22",
+    "description": "Join ABA Bank's Core Digital Engineering department to architect ultra-high-throughput payment processing APIs, QR payment engines, and cloud microservices.",
+    "requirements": [
+      "4+ years backend software development in Go, Java, or Node.js",
+      "Strong understanding of PostgreSQL, Redis, Kafka, and Docker",
+      "Experience with high-concurrency fintech transaction systems",
+      "Bachelor's or Master's degree in Computer Science or related field"
+    ],
+    "benefits": [
+      "Industry-leading bonus schemes",
+      "Health insurance including dental and vision",
+      "Subsidized gym memberships and modern tech campus",
+      "Continuous career advancement paths"
+    ],
+    "applyUrl": "https://www.ababank.com/careers"
+  },
+  {
+    "id": "nurse-calmette",
+    "title": "Registered Intensive Care Nurse (ICU)",
+    "company": "Calmette Hospital",
+    "location": "Phnom Penh",
+    "salary": "$500 - $900/month",
+    "salaryMin": 500,
+    "salaryMax": 900,
+    "type": "Full-time",
+    "category": "Healthcare",
+    "postedDate": "2025-08-18",
+    "description": "Calmette Hospital is recruiting certified registered nurses for our expanding modern Intensive Care Unit (ICU) and cardiology wards.",
+    "requirements": [
+      "Associate or Bachelor Degree in Nursing from accredited institute",
+      "Registered member of the Cambodian Council of Nurses",
+      "At least 1 year clinical ICU or emergency ward experience",
+      "Ability to work rotational shifts including nights and holidays"
+    ],
+    "benefits": [
+      "Shift allowance and hazard pay bonuses",
+      "National Social Security Fund (NSSF) healthcare coverage",
+      "Continuing nursing education and specialized trauma workshops"
+    ],
+    "applyUrl": "https://calmette.gov.kh/careers"
+  },
+  {
+    "id": "pharmacist-ucare",
+    "title": "Branch Head Pharmacist",
+    "company": "Ucare Pharmacy",
+    "location": "Siem Reap",
+    "salary": "$600 - $1,000/month",
+    "salaryMin": 600,
+    "salaryMax": 1000,
+    "type": "Full-time",
+    "category": "Healthcare",
+    "postedDate": "2025-08-25",
+    "description": "Oversee pharmacy store operations, dispense doctor prescriptions, provide safe consultation to international travelers and local residents.",
+    "requirements": [
+      "Bachelor's Degree in Pharmacy from recognized university",
+      "Valid Cambodian Pharmacist Council License",
+      "Good conversational English for international clientele",
+      "High ethical standards and customer-focused approach"
+    ],
+    "benefits": [
+      "Monthly sales performance incentive",
+      "Staff discount on healthcare and personal care products",
+      "Career progression to regional pharmacy manager"
+    ],
+    "applyUrl": "https://ucarepharmacy.com/jobs"
+  },
+  {
+    "id": "english-teacher-ace",
+    "title": "ESL English Language Instructor",
+    "company": "Australian Centre for Education (ACE)",
+    "location": "Phnom Penh",
+    "salary": "$1,000 - $1,800/month",
+    "salaryMin": 1000,
+    "salaryMax": 1800,
+    "type": "Part-time",
+    "category": "Education",
+    "postedDate": "2025-08-15",
+    "description": "Deliver high-quality General English and IELTS preparation classes to motivated adolescent and adult learners across ACE campuses in Phnom Penh.",
+    "requirements": [
+      "CELTA, DELTA, or internationally recognized TESOL/TEFL certification",
+      "Bachelor's degree in Education, English, or related discipline",
+      "Passionate about interactive, learner-centered teaching methodologies"
+    ],
+    "benefits": [
+      "Flexible hourly teaching rates and schedule options",
+      "Access to comprehensive IDP Education digital resources",
+      "Regular Cambridge professional development workshops"
+    ],
+    "applyUrl": "https://acecambodia.org/careers"
+  },
+  {
+    "id": "credit-officer-acleda",
+    "title": "SME Credit Relationship Officer",
+    "company": "ACLEDA Bank Plc",
+    "location": "Battambang",
+    "salary": "$450 - $850/month",
+    "salaryMin": 450,
+    "salaryMax": 850,
+    "type": "Full-time",
+    "category": "Finance",
+    "postedDate": "2025-08-21",
+    "description": "Build client relationships with small and medium enterprises in Battambang province, evaluate loan proposals, and manage credit portfolios.",
+    "requirements": [
+      "Bachelor Degree in Finance, Banking, Economics, or Business Administration",
+      "Strong analytical, communication, and negotiation capabilities",
+      "Valid motorcycle driving license and familiarity with local geography"
+    ],
+    "benefits": [
+      "Quarterly incentive bonus based on portfolio performance",
+      "Motorcycle fuel allowance and maintenance stipend",
+      "13th-month bonus & annual staff retreat"
+    ],
+    "applyUrl": "https://www.acledabank.com.kh/careers"
+  },
+  {
+    "id": "hotel-guest-relations",
+    "title": "Front Office Guest Relations Officer",
+    "company": "Phnom Penh Hotel",
+    "location": "Phnom Penh",
+    "salary": "$350 - $600/month",
+    "salaryMin": 350,
+    "salaryMax": 600,
+    "type": "Full-time",
+    "category": "Hospitality",
+    "postedDate": "2025-08-19",
+    "description": "Welcome international business and leisure guests, assist with check-ins, concierges, and deliver unforgettable Khmer hospitality experiences.",
+    "requirements": [
+      "Degree or diploma in Tourism & Hospitality Management",
+      "Fluent in spoken English; Mandarin Chinese is a strong advantage",
+      "Warm personality with great problem-solving skills"
+    ],
+    "benefits": [
+      "Duty meals provided in staff restaurant",
+      "Uniform and laundry service",
+      "Service charge distribution pool"
+    ],
+    "applyUrl": "https://phnompenhhotel.com/careers"
+  },
+  {
+    "id": "digital-marketer-smart",
+    "title": "Digital Marketing Specialist",
+    "company": "Smart Axiata",
+    "location": "Phnom Penh",
+    "salary": "$700 - $1,300/month",
+    "salaryMin": 700,
+    "salaryMax": 1300,
+    "type": "Full-time",
+    "category": "Marketing",
+    "postedDate": "2025-08-24",
+    "description": "Lead social media campaigns, influencer partnerships, and user acquisition strategies across TikTok, Facebook, Telegram, and YouTube for digital entertainment services.",
+    "requirements": [
+      "2+ years experience in digital growth marketing or agency campaign management",
+      "Proficient in Meta Ads Manager, Google Analytics, and content creation",
+      "Creative storytelling and fluency in both Khmer and English"
+    ],
+    "benefits": [
+      "Free unlimited Smart 5G data plan and top-tier smartphones",
+      "Hybrid flexible work arrangements (2 days remote/week)",
+      "Vibrant modern office culture with recreational lounge"
+    ],
+    "applyUrl": "https://www.smart.com.kh/careers"
+  },
+  {
+    "id": "intern-graphic-designer",
+    "title": "Graphic Design & Content Creation Intern",
+    "company": "Cellcard (CamGSM)",
+    "location": "Phnom Penh",
+    "salary": "$200 - $350/month",
+    "salaryMin": 200,
+    "salaryMax": 350,
+    "type": "Internship",
+    "category": "Marketing",
+    "postedDate": "2025-08-26",
+    "description": "Exciting 6-month paid internship opportunity for university students or fresh graduates to design social media banners, brand artwork, and motion graphics.",
+    "requirements": [
+      "Enrolled in or recent graduate of Graphic Design, Multimedia, or related arts",
+      "Hands-on skills with Adobe Photoshop, Illustrator, and Canva / Figma",
+      "Curious mindset and enthusiasm to learn brand design standards"
+    ],
+    "benefits": [
+      "Monthly transport & living stipend",
+      "Direct mentorship from senior creative art directors",
+      "Opportunity for permanent full-time conversion upon graduation"
+    ],
+    "applyUrl": "https://www.cellcard.com.kh/careers"
+  },
+  {
+    "id": "civil-engineer-chip-mong",
+    "title": "Site Civil Engineer (High-Rise Construction)",
+    "company": "Chip Mong Group",
+    "location": "Phnom Penh",
+    "salary": "$900 - $1,600/month",
+    "salaryMin": 900,
+    "salaryMax": 1600,
+    "type": "Full-time",
+    "category": "Engineering",
+    "postedDate": "2025-08-16",
+    "description": "Supervise commercial building structural works, ensure strict quality compliance, manage subcontractors, and monitor safety execution on site.",
+    "requirements": [
+      "Bachelor's Degree in Civil Engineering from recognized institute (ITC, etc.)",
+      "3+ years on-site structural concrete and steel inspection experience",
+      "Proficient in AutoCAD, ETABS, and construction QA/QC standards"
+    ],
+    "benefits": [
+      "On-site accommodation and meals provided",
+      "Accident & health insurance policy",
+      "Project completion bonus"
+    ],
+    "applyUrl": "https://chipmong.com/careers"
+  },
+  {
+    "id": "freelance-translator",
+    "title": "English - Khmer Technical Document Translator",
+    "company": "Cambodian Translation & Localization Bureau",
+    "location": "Phnom Penh",
+    "salary": "$500 - $1,200/month",
+    "salaryMin": 500,
+    "salaryMax": 1200,
+    "type": "Freelance",
+    "category": "Other",
+    "postedDate": "2025-08-23",
+    "description": "Translate legal contracts, technical manuals, and corporate reports between English and Khmer with flawless precision and terminology consistency.",
+    "requirements": [
+      "Proven portfolio of technical English-Khmer translation",
+      "Excellent Khmer grammar and deep legal/technical vocabulary",
+      "Reliable punctuality and adherence to tight turnaround deadlines"
+    ],
+    "benefits": [
+      "100% remote flexible working hours",
+      "Paid per project / per word basis with prompt bank transfers",
+      "Ongoing steady pipeline of corporate client requests"
+    ],
+    "applyUrl": "https://camtranslation.org/join"
+  },
+  {
+    "id": "store-manager-aeon",
+    "title": "Retail Section Supervisor",
+    "company": "AEON Cambodia Co., Ltd.",
+    "location": "Phnom Penh",
+    "salary": "$400 - $700/month",
+    "salaryMin": 400,
+    "salaryMax": 700,
+    "type": "Full-time",
+    "category": "Hospitality",
+    "postedDate": "2025-08-17",
+    "description": "Manage department store grocery or merchandise section, maintain visual merchandising standards, lead sales assistants, and oversee daily inventory.",
+    "requirements": [
+      "High school diploma or Associate Degree",
+      "2+ years experience in modern supermarket or retail store operations",
+      "Customer-centric attitude with strong team leadership skills"
+    ],
+    "benefits": [
+      "Japanese corporate training & management development",
+      "Overtime pay & annual bonuses",
+      "Employee purchase discounts"
+    ],
+    "applyUrl": "https://aeoncambodia.com.kh/careers"
+  },
+  {
+    "id": "freelance-photographer-sr",
+    "title": "Commercial & Event Photographer",
+    "company": "Angkor Visuals Creative Studio",
+    "location": "Siem Reap",
+    "salary": "$600 - $1,400/month",
+    "salaryMin": 600,
+    "salaryMax": 1400,
+    "type": "Freelance",
+    "category": "Marketing",
+    "postedDate": "2025-08-22",
+    "description": "Shoot boutique hotel interiors, corporate conferences, cultural events, and culinary menus for international hospitality clients in Siem Reap.",
+    "requirements": [
+      "Own professional full-frame camera gear and lighting equipment",
+      "Mastery of Adobe Lightroom and Photoshop post-processing",
+      "Strong portfolio showcasing commercial interior and portrait photography"
+    ],
+    "benefits": [
+      "High per-day shoot fees and editing bonuses",
+      "Collaborate with leading luxury resort brands",
+      "Complete creative freedom and flexible scheduling"
+    ],
+    "applyUrl": "https://angkorvisuals.com/careers"
+  },
+  {
+    "id": "tour-guide-siem-reap",
+    "title": "Licensed English & French Tour Guide",
+    "company": "Cambodia Discovery Expeditions",
+    "location": "Siem Reap",
+    "salary": "$600 - $1,100/month",
+    "salaryMin": 600,
+    "salaryMax": 1100,
+    "type": "Part-time",
+    "category": "Hospitality",
+    "postedDate": "2025-08-25",
+    "description": "Lead guided historical and cultural tours through Angkor Archaeological Park, Kulen Mountain, and Tonle Sap floating villages for discerning travelers.",
+    "requirements": [
+      "Valid Ministry of Tourism Tour Guide License for Siem Reap Angkor zone",
+      "Fluent spoken English or French (additional European language a plus)",
+      "Deep passion and knowledge of Khmer history and temple architecture"
+    ],
+    "benefits": [
+      "Guaranteed daily tour allowances plus gratuities",
+      "All park admission and transport covered during tours",
+      "Flexible booking calendar based on personal availability"
+    ],
+    "applyUrl": "https://cambodiadiscovery.com/guides"
+  },
+  {
+    "id": "network-engineer-sihanouk",
+    "title": "Field Network Telecom Technician",
+    "company": "Ezecom Cambodia",
+    "location": "Sihanoukville",
+    "salary": "$500 - $900/month",
+    "salaryMin": 500,
+    "salaryMax": 900,
+    "type": "Full-time",
+    "category": "IT",
+    "postedDate": "2025-08-24",
+    "description": "Install, configure, and troubleshoot enterprise fiber-optic connections, routers, and corporate switches across Sihanoukville coastal businesses.",
+    "requirements": [
+      "Vocational certificate or Bachelor's in Telecommunications or Computer Networks",
+      "CCNA certification or equivalent knowledge of IP routing & switching",
+      "Willingness to conduct on-site field visits and troubleshooting"
+    ],
+    "benefits": [
+      "Company field vehicle and fuel allowance provided",
+      "Health & accident insurance coverage",
+      "Annual performance bonus and telecom equipment allowances"
+    ],
+    "applyUrl": "https://www.ezecom.com.kh/careers"
+  }
+]

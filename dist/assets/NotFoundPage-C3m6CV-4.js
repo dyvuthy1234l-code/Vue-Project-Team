@@ -1,0 +1,1 @@
+import{_ as e}from"./NotFoundState.vue_vue_type_script_setup_true_lang-E-qF6RQ3.js";import{d as o,a,e as t,o as s}from"./index-sNzRW9nC.js";const n={class:"max-w-4xl mx-auto px-4 py-8"},d=o({__name:"NotFoundPage",setup(_){return(c,r)=>(s(),a("div",n,[t(e)]))}});export{d as default};
