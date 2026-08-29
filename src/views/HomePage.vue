@@ -14,9 +14,6 @@ import {
   ShieldCheck,
   Users,
   Sparkles,
-  Clock3,
-  Search,
-  ChevronRight,
   CheckCircle2,
 } from 'lucide-vue-next'
 
@@ -595,7 +592,7 @@ function searchTag(tag: string) {
         >
 
           <div
-            v-for="(benefit, index) in valueBenefits"
+            v-for="benefit in valueBenefits"
             :key="benefit.title"
             class="
               group
