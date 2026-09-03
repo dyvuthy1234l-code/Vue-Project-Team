@@ -1,144 +1,196 @@
 <script setup lang="ts">
-import { MapPin, Mail, Phone, Heart } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import {
+  Phone,
+  Mail,
+  MapPin,
+  ShieldCheck,
+  Send
+} from 'lucide-vue-next'
 
-const { t } = useLanguage()
+const { t, currentLanguage } = useLanguage()
+const currentYear = new Date().getFullYear()
 </script>
 
 <template>
-  <footer class="bg-camlife-navy text-slate-300 pt-16 pb-12 border-t border-slate-800">
+  <footer class="bg-[#0A2540] text-slate-300 pt-16 pb-10 border-t border-slate-800 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-        <!-- Col 1: Brand & Identity -->
-        <div class="space-y-4">
-          <div class="flex items-center space-x-2.5">
-            <div class="w-10 h-10 rounded-xl bg-camlife-action flex items-center justify-center text-white text-xl font-bold">
-              🇰🇭
-            </div>
-            <div>
-              <span class="text-2xl font-black tracking-tight text-white">CamLife</span>
-              <p class="text-xs text-camlife-gold font-semibold -mt-1">{{ t('nav.tagline') }}</p>
-            </div>
-          </div>
-          <p class="text-sm text-slate-400 leading-relaxed">
-            {{ t('footer.description') }}
+
+      <!-- Top Section: Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-12 border-b border-slate-800/80">
+
+        <!-- Column 1: Brand & Mission -->
+        <div class="lg:col-span-2 space-y-4">
+          <router-link to="/" class="inline-flex items-center gap-3 group focus:outline-none">
+            <img
+              src="/logo.png"
+              alt="CamLife Cambodia"
+              class="h-12 w-auto object-contain rounded-xl bg-white/95 p-1 transition-transform duration-200 group-hover:scale-105"
+            />
+          </router-link>
+
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm">
+            {{ currentLanguage === 'kh'
+              ? 'វេទិកាផ្ដល់ព័ត៌មាន និងសេវាកម្មប្រចាំថ្ងៃសម្រាប់ប្រជាជនកម្ពុជា រួមមានសុខាភិបាល រដ្ឋបាល ការងារ និងការសង្គ្រោះបន្ទាន់។'
+              : 'The modern Cambodian life-service platform providing verified public information, emergency helplines, healthcare directories, civic guides, and career opportunities.'
+            }}
           </p>
-          <div class="pt-2 flex items-center space-x-3 text-xs text-slate-400">
-            <span class="px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-medium">
-              Frontend Civic Tech Platform
+
+          <div class="pt-2 flex items-center gap-3 text-slate-400 text-xs">
+            <span class="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+              <ShieldCheck class="w-4 h-4" />
+              <span>Verified Public Information</span>
             </span>
           </div>
         </div>
 
-        <!-- Col 2: Quick Links -->
-        <div>
-          <h4 class="text-white font-bold text-base mb-4 tracking-wide uppercase text-xs text-camlife-action">
-            {{ t('footer.quickLinks') }}
-          </h4>
-          <ul class="space-y-2.5 text-sm">
+        <!-- Column 2: Quick Links -->
+        <div class="space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-white">
+            {{ currentLanguage === 'kh' ? 'តំណភ្ជាប់រហ័ស' : 'Quick Links' }}
+          </h3>
+          <ul class="space-y-2.5 text-xs text-slate-400">
             <li>
-              <router-link to="/" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
+              <router-link to="/" class="hover:text-white transition-colors">
                 {{ t('nav.home') }}
               </router-link>
             </li>
             <li>
-              <router-link to="/health" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
+              <router-link to="/health" class="hover:text-white transition-colors">
                 {{ t('nav.health') }}
               </router-link>
             </li>
             <li>
-              <router-link to="/news" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
-                {{ t('nav.news') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/locations" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
-                {{ t('nav.locations') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/about" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
-                {{ t('nav.about') }}
-              </router-link>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Col 3: Essential Services -->
-        <div>
-          <h4 class="text-white font-bold text-base mb-4 tracking-wide uppercase text-xs text-camlife-action">
-            {{ t('footer.serviceLinks') }}
-          </h4>
-          <ul class="space-y-2.5 text-sm">
-            <li>
-              <router-link to="/health" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
-                {{ t('nav.health') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/government" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
+              <router-link to="/government" class="hover:text-white transition-colors">
                 {{ t('nav.government') }}
               </router-link>
             </li>
             <li>
-              <router-link to="/jobs" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
+              <router-link to="/jobs" class="hover:text-white transition-colors">
                 {{ t('nav.jobs') }}
               </router-link>
             </li>
             <li>
-              <router-link to="/home-services" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
-                {{ t('nav.homeServices') }}
+              <router-link to="/news" class="hover:text-white transition-colors">
+                {{ t('nav.news') }}
               </router-link>
             </li>
             <li>
-              <router-link to="/transport" class="hover:text-white hover:translate-x-1 inline-block transition-all text-slate-400">
-                {{ t('nav.transport') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/emergency" class="text-red-400 hover:text-red-300 hover:translate-x-1 inline-block transition-all font-semibold">
-                {{ t('nav.emergency') }} (117/119)
+              <router-link to="/saved-jobs" class="hover:text-white transition-colors">
+                {{ t('nav.savedJobs') }}
               </router-link>
             </li>
           </ul>
         </div>
 
-        <!-- Col 4: Contact & Information -->
-        <div>
-          <h4 class="text-white font-bold text-base mb-4 tracking-wide uppercase text-xs text-camlife-action">
-            {{ t('footer.contactTitle') }}
-          </h4>
-          <ul class="space-y-3 text-sm text-slate-400">
-            <li class="flex items-start space-x-2.5">
-              <MapPin class="w-4 h-4 text-camlife-action mt-0.5 flex-shrink-0" />
-              <span>Phnom Penh, Kingdom of Cambodia</span>
+        <!-- Column 3: Popular Services -->
+        <div class="space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-white">
+            {{ currentLanguage === 'kh' ? 'សេវាកម្មពេញនិយម' : 'Popular Services' }}
+          </h3>
+          <ul class="space-y-2.5 text-xs text-slate-400">
+            <li>
+              <router-link to="/emergency" class="text-red-400 hover:text-red-300 font-semibold transition-colors flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
+                <span>{{ t('nav.emergency') }} (117 / 119)</span>
+              </router-link>
             </li>
-            <li class="flex items-center space-x-2.5">
-              <Mail class="w-4 h-4 text-camlife-action flex-shrink-0" />
-              <a href="mailto:info@camlife.gov.kh" class="hover:text-white transition-colors">contact@camlife.kh</a>
+            <li>
+              <router-link to="/government" class="hover:text-white transition-colors">
+                Driving License
+              </router-link>
             </li>
-            <li class="flex items-center space-x-2.5">
-              <Phone class="w-4 h-4 text-camlife-action flex-shrink-0" />
-              <a href="tel:117" class="hover:text-white transition-colors">+855 23 999 117</a>
+            <li>
+              <router-link to="/government" class="hover:text-white transition-colors">
+                Cambodian Passport
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/transport" class="hover:text-white transition-colors">
+                Public Bus & Transit
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/home-services" class="hover:text-white transition-colors">
+                Home Repair & Utilities
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/locations" class="hover:text-white transition-colors">
+                {{ t('nav.locations') }}
+              </router-link>
             </li>
           </ul>
         </div>
+
+        <!-- Column 4: Contact & Support -->
+        <div class="space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-white">
+            {{ currentLanguage === 'kh' ? 'ទំនាក់ទំនង' : 'Contact & Support' }}
+          </h3>
+          <ul class="space-y-2.5 text-xs text-slate-400">
+            <li class="flex items-start gap-2">
+              <MapPin class="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+              <span>Phnom Penh, Cambodia</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <Mail class="w-4 h-4 text-blue-400 shrink-0" />
+              <a href="mailto:support@camlife.kh" class="hover:text-white transition-colors">support@camlife.kh</a>
+            </li>
+            <li class="flex items-center gap-2">
+              <Phone class="w-4 h-4 text-emerald-400 shrink-0" />
+              <a href="tel:+85523888999" class="hover:text-white transition-colors">+855 23 888 999</a>
+            </li>
+            <li class="pt-2">
+              <router-link to="/contact" class="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 font-semibold">
+                <span>{{ t('nav.contact') }}</span>
+                <span>→</span>
+              </router-link>
+            </li>
+          </ul>
+
+          <!-- Social Links -->
+          <div class="pt-2 flex items-center gap-2.5">
+            <!-- Telegram -->
+            <a
+              href="https://t.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-8 h-8 rounded-lg bg-white/10 hover:bg-blue-600 text-white flex items-center justify-center transition-colors"
+              aria-label="Telegram"
+            >
+              <Send class="w-3.5 h-3.5" />
+            </a>
+            <!-- Facebook -->
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-8 h-8 rounded-lg bg-white/10 hover:bg-blue-600 text-white flex items-center justify-center transition-colors font-bold text-xs"
+              aria-label="Facebook"
+            >
+              f
+            </a>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Bottom Bar -->
-      <div class="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
-        <p class="text-center sm:text-left flex items-center gap-1">
-          <span>{{ t('footer.rightsReserved') }}</span>
-          <span class="inline-flex items-center text-red-500">
-            <Heart class="w-3 h-3 fill-current mx-1 inline" /> Cambodia
-          </span>
+      <!-- Bottom Bar: Copyright & Attribution -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <p>
+          © {{ currentYear }} CamLife. All rights reserved. Built for Cambodia.
         </p>
-        <div class="flex space-x-6">
-          <router-link to="/about" class="hover:text-slate-300 transition-colors">Privacy Policy</router-link>
-          <router-link to="/about" class="hover:text-slate-300 transition-colors">Terms of Service</router-link>
-          <router-link to="/emergency" class="hover:text-slate-300 transition-colors">Helpline Support</router-link>
+
+        <div class="flex items-center gap-4">
+          <router-link to="/about" class="hover:text-slate-300 transition-colors">About Us</router-link>
+          <span>·</span>
+          <router-link to="/contact" class="hover:text-slate-300 transition-colors">Privacy & Terms</router-link>
+          <span>·</span>
+          <a href="#app" class="hover:text-slate-300 transition-colors">Back to Top ↑</a>
         </div>
       </div>
+
     </div>
   </footer>
 </template>

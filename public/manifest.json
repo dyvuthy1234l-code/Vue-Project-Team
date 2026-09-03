@@ -1,0 +1,17 @@
+{
+  "name": "CamLife — For a Better Cambodia",
+  "short_name": "CamLife",
+  "description": "Essential services, useful information, and opportunities for Cambodian citizens.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#1677C8",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

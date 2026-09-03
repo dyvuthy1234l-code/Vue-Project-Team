@@ -11,14 +11,16 @@ export const kh = {
     health: 'សុខភាព',
     government: 'រដ្ឋាភិបាល',
     jobs: 'ការងារ',
+    savedJobs: 'ការងាររក្សាទុក',
     homeServices: 'សេវាកម្មផ្ទះ',
     transport: 'ដឹកជញ្ជូន',
     emergency: 'បន្ទាន់',
     news: 'ព័ត៌មាន',
     locations: 'ផែនទី',
-    about: 'អំពី',
+    contact: 'ទំនាក់ទំនង',
+    about: 'អំពីយើង',
     search: 'តើអ្នកត្រូវការអ្វីនៅថ្ងៃនេះ?',
-    tagline: 'ដើម្បីកម្ពុជាកាន់តែប្រសើរ',
+    tagline: 'ជួយជីវិត សម្រាប់អ្នក',
     exploreBtn: 'រុករកសេវាកម្ម'
   },
   home: {

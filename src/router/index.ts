@@ -39,6 +39,11 @@ const router = createRouter({
       component: () => import('@/views/JobDetailPage.vue')
     },
     {
+      path: '/saved-jobs',
+      name: 'saved-jobs',
+      component: () => import('@/views/SavedJobsPage.vue')
+    },
+    {
       path: '/home-services',
       name: 'home-services',
       component: () => import('@/views/HomeServicesPage.vue')
@@ -59,9 +64,19 @@ const router = createRouter({
       component: () => import('@/views/NewsPage.vue')
     },
     {
+      path: '/news/:id',
+      name: 'news-detail',
+      component: () => import('@/views/NewsDetailPage.vue')
+    },
+    {
       path: '/locations',
       name: 'locations',
       component: () => import('@/views/LocationsPage.vue')
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: () => import('@/views/ContactPage.vue')
     },
     {
       path: '/about',

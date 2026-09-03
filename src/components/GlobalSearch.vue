@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, X, CornerDownLeft } from 'lucide-vue-next'
+import {
+  Search,
+  X,
+  CornerDownLeft,
+  HeartPulse,
+  Building2,
+  Briefcase,
+  Wrench,
+  Bus,
+  Newspaper,
+  MapPin
+} from 'lucide-vue-next'
 import { globalSearch } from '@/services/dataService'
 import type { SearchResult } from '@/types'
 
@@ -31,24 +42,14 @@ function closeSearch() {
   query.value = ''
 }
 
-const typeLabels: Record<string, string> = {
-  hospital: 'Healthcare',
-  government: 'Government Service',
-  job: 'Job Opportunity',
-  'home-service': 'Home Service',
-  transport: 'Transport & Travel',
-  news: 'News & Advisory',
-  location: 'Important Location'
-}
-
-const typeColors: Record<string, string> = {
-  hospital: 'bg-red-50 text-red-700 border-red-200',
-  government: 'bg-blue-50 text-blue-700 border-blue-200',
-  job: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  'home-service': 'bg-amber-50 text-amber-700 border-amber-200',
-  transport: 'bg-purple-50 text-purple-700 border-purple-200',
-  news: 'bg-pink-50 text-pink-700 border-pink-200',
-  location: 'bg-indigo-50 text-indigo-700 border-indigo-200'
+const typeConfig: Record<string, { label: string; icon: any; badgeClass: string }> = {
+  hospital: { label: 'Healthcare', icon: HeartPulse, badgeClass: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200' },
+  government: { label: 'Government', icon: Building2, badgeClass: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border-blue-200' },
+  job: { label: 'Job Opportunity', icon: Briefcase, badgeClass: 'bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border-purple-200' },
+  'home-service': { label: 'Home Service', icon: Wrench, badgeClass: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-300 border-cyan-200' },
+  transport: { label: 'Transport', icon: Bus, badgeClass: 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200' },
+  news: { label: 'News & Advisory', icon: Newspaper, badgeClass: 'bg-pink-50 text-pink-700 dark:bg-pink-950/40 dark:text-pink-300 border-pink-200' },
+  location: { label: 'Important Location', icon: MapPin, badgeClass: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 border-indigo-200' }
 }
 
 const groupedResults = computed(() => {
@@ -69,17 +70,17 @@ defineProps<{
 <template>
   <div class="relative w-full z-40">
     <div class="relative group">
-      <div class="absolute left-4.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 group-focus-within:text-camlife-action transition-colors">
-        <Search :class="large ? 'w-6 h-6' : 'w-5 h-5'" />
+      <div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#0D47A1] dark:group-focus-within:text-blue-400 transition-colors">
+        <Search :class="large ? 'w-5 h-5' : 'w-4 h-4'" />
       </div>
 
       <input
         v-model="query"
         type="text"
-        :placeholder="placeholder || 'What do you need today?'"
+        :placeholder="placeholder || 'What service or guide do you need today?'"
         :class="[
-          'w-full pl-13 pr-12 border bg-white/95 text-camlife-navy placeholder:text-slate-400 rounded-2xl shadow-dropdown focus:outline-none focus:ring-4 focus:ring-camlife-action/20 focus:border-camlife-action transition-all duration-200',
-          large ? 'py-4 text-base sm:text-lg font-medium border-slate-200/90' : 'py-3 text-sm border-slate-200'
+          'w-full pl-11 pr-10 border bg-white dark:bg-slate-800 text-[#0F172A] dark:text-white placeholder:text-slate-400 rounded-2xl shadow-xs focus:outline-none focus:ring-3 focus:ring-blue-500/20 focus:border-[#0D47A1] dark:focus:border-blue-400 transition-all duration-150',
+          large ? 'py-3.5 text-base sm:text-lg border-slate-200/90 dark:border-slate-700' : 'py-2.5 text-sm border-slate-200 dark:border-slate-700'
         ]"
         @focus="isOpen = query.length >= 2"
       />
@@ -87,53 +88,59 @@ defineProps<{
       <button
         v-if="query"
         @click="closeSearch"
-        class="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+        class="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         aria-label="Clear search"
         type="button"
       >
-        <X class="w-5 h-5" />
+        <X class="w-4 h-4" />
       </button>
     </div>
 
     <!-- Results Dropdown -->
     <div
       v-if="isOpen && query.length >= 2"
-      class="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-dropdown border border-slate-200/90 max-h-100 overflow-y-auto z-50 divide-y divide-slate-100 animate-fadeIn"
+      class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1E293B] rounded-2xl shadow-dropdown border border-slate-200/90 dark:border-slate-700 max-h-96 overflow-y-auto z-50 divide-y divide-slate-100 dark:divide-slate-700/60 animate-fadeIn"
     >
+      <!-- No Results -->
       <div v-if="results.length === 0" class="p-8 text-center">
-        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400">
+        <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-3 text-slate-400">
           <Search class="w-6 h-6" />
         </div>
-        <p class="text-camlife-navy font-semibold text-sm mb-1">No matches found for "{{ query }}"</p>
-        <p class="text-xs text-camlife-muted">Try searching with different keywords such as "Hospital", "Passport", or "Electrician".</p>
+        <p class="text-slate-800 dark:text-white font-bold text-sm mb-1">
+          No matches found for "{{ query }}"
+        </p>
+        <p class="text-xs text-slate-400 max-w-xs mx-auto">
+          Try keywords like "Hospital", "Passport", "Driving", or "Electrician".
+        </p>
       </div>
 
+      <!-- Grouped Results -->
       <div v-else>
         <div v-for="(items, type) in groupedResults" :key="type" class="p-2">
-          <div class="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-            {{ typeLabels[type] || type }}
+          <div class="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <component :is="typeConfig[type]?.icon || Search" class="w-3.5 h-3.5" />
+            <span>{{ typeConfig[type]?.label || type }}</span>
           </div>
 
           <button
             v-for="result in items.slice(0, 4)"
             :key="result.id"
             @click="navigateToResult(result)"
-            class="w-full text-left px-3.5 py-3 hover:bg-camlife-light/60 rounded-xl transition-all flex items-center justify-between group/item"
+            class="w-full text-left px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/60 rounded-xl transition-colors flex items-center justify-between group"
+            type="button"
           >
             <div class="flex-1 min-w-0 pr-3">
-              <div class="flex items-center space-x-2">
-                <span class="text-sm font-bold text-camlife-navy group-hover/item:text-camlife-action transition-colors truncate">
-                  {{ result.title }}
-                </span>
-              </div>
-              <p class="text-xs text-slate-500 truncate mt-0.5">{{ result.description }}</p>
+              <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors block truncate">
+                {{ result.title }}
+              </span>
+              <p class="text-xs text-slate-400 truncate mt-0.5">{{ result.description }}</p>
             </div>
 
-            <div class="flex items-center space-x-2">
-              <span :class="['text-[11px] px-2.5 py-0.5 rounded-full border font-semibold whitespace-nowrap', typeColors[type] || 'bg-slate-100 text-slate-700 border-slate-200']">
+            <div class="flex items-center gap-2">
+              <span :class="['text-[10px] px-2 py-0.5 rounded-md border font-bold whitespace-nowrap', typeConfig[type]?.badgeClass || 'bg-slate-100 text-slate-600']">
                 {{ result.category }}
               </span>
-              <CornerDownLeft class="w-3.5 h-3.5 text-slate-300 group-hover/item:text-camlife-action transition-colors hidden sm:inline-block" />
+              <CornerDownLeft class="w-3.5 h-3.5 text-slate-300 dark:text-slate-500 group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors hidden sm:inline-block" />
             </div>
           </button>
         </div>
@@ -143,7 +150,7 @@ defineProps<{
     <!-- Backdrop overlay -->
     <div
       v-if="isOpen"
-      class="fixed inset-0 bg-slate-900/10 backdrop-blur-xs z-30"
+      class="fixed inset-0 bg-transparent z-30"
       @click="closeSearch"
     />
   </div>

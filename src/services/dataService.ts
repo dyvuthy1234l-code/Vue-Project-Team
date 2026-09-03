@@ -78,9 +78,13 @@ export function globalSearch(query: string): SearchResult[] {
   hospitals.forEach(h => {
     if (
       h.name.toLowerCase().includes(q) ||
+      (h.nameKh && h.nameKh.toLowerCase().includes(q)) ||
       h.description.toLowerCase().includes(q) ||
+      (h.descriptionKh && h.descriptionKh.toLowerCase().includes(q)) ||
       h.category.toLowerCase().includes(q) ||
       h.location.toLowerCase().includes(q) ||
+      (h.address && h.address.toLowerCase().includes(q)) ||
+      (h.addressKh && h.addressKh.toLowerCase().includes(q)) ||
       h.services.some(s => s.toLowerCase().includes(q))
     ) {
       results.push({
@@ -98,7 +102,9 @@ export function globalSearch(query: string): SearchResult[] {
   governmentServices.forEach(s => {
     if (
       s.title.toLowerCase().includes(q) ||
+      (s.titleKh && s.titleKh.toLowerCase().includes(q)) ||
       s.description.toLowerCase().includes(q) ||
+      (s.descriptionKh && s.descriptionKh.toLowerCase().includes(q)) ||
       s.category.toLowerCase().includes(q)
     ) {
       results.push({
@@ -136,8 +142,10 @@ export function globalSearch(query: string): SearchResult[] {
   homeServices.forEach(s => {
     if (
       s.serviceName.toLowerCase().includes(q) ||
+      (s.serviceNameKh && s.serviceNameKh.toLowerCase().includes(q)) ||
       s.provider.toLowerCase().includes(q) ||
       s.description.toLowerCase().includes(q) ||
+      (s.descriptionKh && s.descriptionKh.toLowerCase().includes(q)) ||
       s.category.toLowerCase().includes(q) ||
       s.location.toLowerCase().includes(q)
     ) {
@@ -156,7 +164,9 @@ export function globalSearch(query: string): SearchResult[] {
   transport.forEach(t => {
     if (
       t.name.toLowerCase().includes(q) ||
+      (t.nameKh && t.nameKh.toLowerCase().includes(q)) ||
       t.description.toLowerCase().includes(q) ||
+      (t.descriptionKh && t.descriptionKh.toLowerCase().includes(q)) ||
       t.type.toLowerCase().includes(q) ||
       t.route.toLowerCase().includes(q)
     ) {
@@ -175,7 +185,9 @@ export function globalSearch(query: string): SearchResult[] {
   news.forEach(n => {
     if (
       n.title.toLowerCase().includes(q) ||
+      (n.titleKh && n.titleKh.toLowerCase().includes(q)) ||
       n.description.toLowerCase().includes(q) ||
+      (n.descriptionKh && n.descriptionKh.toLowerCase().includes(q)) ||
       n.category.toLowerCase().includes(q)
     ) {
       results.push({
@@ -193,9 +205,12 @@ export function globalSearch(query: string): SearchResult[] {
   locations.forEach(l => {
     if (
       l.name.toLowerCase().includes(q) ||
+      (l.nameKh && l.nameKh.toLowerCase().includes(q)) ||
       l.description.toLowerCase().includes(q) ||
+      (l.descriptionKh && l.descriptionKh.toLowerCase().includes(q)) ||
       l.category.toLowerCase().includes(q) ||
-      l.address.toLowerCase().includes(q)
+      l.address.toLowerCase().includes(q) ||
+      (l.addressKh && l.addressKh.toLowerCase().includes(q))
     ) {
       results.push({
         id: l.id,

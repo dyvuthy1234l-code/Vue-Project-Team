@@ -1,14 +1,31 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { RotateCcw } from 'lucide-vue-next'
+import {
+  RotateCcw,
+  ChevronRight,
+  MapPin,
+  Briefcase,
+  Layers,
+  Bookmark
+} from 'lucide-vue-next'
 import SectionHeader from '@/components/SectionHeader.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import JobCard from '@/components/JobCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import PaginationBar from '@/components/PaginationBar.vue'
 import { useLanguage } from '@/composables/useLanguage'
+import { useSavedJobs } from '@/composables/useSavedJobs'
 import { getJobs } from '@/services/dataService'
+import { usePagination } from '@/composables/usePagination'
+import { usePageMeta } from '@/composables/usePageMeta'
 
 const { t } = useLanguage()
+const { savedJobIds } = useSavedJobs()
+
+usePageMeta({
+  title: 'Jobs & Careers in Cambodia — CamLife',
+  description: 'Explore full-time, part-time, and internship positions from top Cambodian employers.'
+})
 
 const allJobs = getJobs()
 const searchQuery = ref('')
@@ -53,6 +70,18 @@ const filteredJobs = computed(() => {
   return result
 })
 
+const {
+  currentPage,
+  totalPages,
+  paginatedItems: paginatedJobs,
+  showingFrom,
+  showingTo,
+  totalItems,
+  goToPage,
+  nextPage,
+  prevPage
+} = usePagination(filteredJobs, 6)
+
 function resetFilters() {
   searchQuery.value = ''
   activeLocation.value = 'All'
@@ -62,7 +91,16 @@ function resetFilters() {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-semibold text-slate-400" aria-label="Breadcrumb">
+      <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
+        {{ t('nav.home') }}
+      </router-link>
+      <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
+      <span class="text-slate-700 dark:text-slate-200">{{ t('nav.jobs') }}</span>
+    </nav>
+
     <!-- Header -->
     <SectionHeader
       :title="t('jobs.title')"
@@ -71,70 +109,111 @@ function resetFilters() {
     />
 
     <!-- Filter Control Panel -->
-    <div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-subtle space-y-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-4 sm:p-5 shadow-sm space-y-4">
       <SearchBar v-model="searchQuery" :placeholder="t('jobs.searchPlaceholder')" large />
 
-      <!-- Filter Controls -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
-        <!-- Location -->
+      <!-- Multi-select Filter Controls Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+        <!-- Location Dropdown -->
         <div class="relative">
           <select
             v-model="activeLocation"
-            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-camlife-navy focus:outline-none focus:ring-2 focus:ring-camlife-action/30 focus:border-camlife-action appearance-none transition-all"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-200/90 dark:border-slate-600 rounded-xl text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#0D47A1] appearance-none transition-all cursor-pointer"
           >
-            <option v-for="loc in locations" :key="loc" :value="loc">
-              📍 {{ loc === 'All' ? t('jobs.filters.allLocations') : loc }}
+            <option value="All">All Locations (ទូទាំងប្រទេស)</option>
+            <option v-for="loc in locations.slice(1)" :key="loc" :value="loc">
+              📍 {{ loc }}
             </option>
           </select>
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <MapPin class="w-4 h-4" />
+          </div>
         </div>
 
-        <!-- Category -->
+        <!-- Category Dropdown -->
         <div class="relative">
           <select
             v-model="activeCategory"
-            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-camlife-navy focus:outline-none focus:ring-2 focus:ring-camlife-action/30 focus:border-camlife-action appearance-none transition-all"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-200/90 dark:border-slate-600 rounded-xl text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#0D47A1] appearance-none transition-all cursor-pointer"
           >
-            <option v-for="cat in categories" :key="cat" :value="cat">
-              💼 {{ cat === 'All' ? t('jobs.filters.allCategories') : cat }}
+            <option value="All">All Job Categories</option>
+            <option v-for="cat in categories.slice(1)" :key="cat" :value="cat">
+              💼 {{ cat }}
             </option>
           </select>
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <Layers class="w-4 h-4" />
+          </div>
         </div>
 
-        <!-- Job Type -->
+        <!-- Type Dropdown -->
         <div class="relative">
           <select
             v-model="activeType"
-            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-camlife-navy focus:outline-none focus:ring-2 focus:ring-camlife-action/30 focus:border-camlife-action appearance-none transition-all"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-200/90 dark:border-slate-600 rounded-xl text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#0D47A1] appearance-none transition-all cursor-pointer"
           >
-            <option v-for="type in types" :key="type" :value="type">
-              ⏳ {{ type === 'All' ? t('jobs.filters.allTypes') : type }}
+            <option value="All">All Employment Types</option>
+            <option v-for="typ in types.slice(1)" :key="typ" :value="typ">
+              ⏱️ {{ typ }}
             </option>
           </select>
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <Briefcase class="w-4 h-4" />
+          </div>
         </div>
       </div>
 
-      <div v-if="searchQuery || activeLocation !== 'All' || activeCategory !== 'All' || activeType !== 'All'" class="flex justify-end pt-2">
+      <!-- Reset Filter button row -->
+      <div v-if="searchQuery || activeLocation !== 'All' || activeCategory !== 'All' || activeType !== 'All'" class="pt-2 flex justify-end">
         <button
           @click="resetFilters"
-          class="inline-flex items-center space-x-1 text-xs font-bold text-slate-500 hover:text-camlife-action transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-100"
+          class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
           type="button"
         >
           <RotateCcw class="w-3.5 h-3.5" />
-          <span>Reset Job Filters</span>
+          <span>Reset Filters</span>
         </button>
       </div>
     </div>
 
-    <!-- Results Count -->
-    <div class="flex justify-between items-center text-xs font-bold text-slate-500 px-1">
-      <p>Showing <span class="text-camlife-navy font-black">{{ filteredJobs.length }}</span> job openings</p>
+    <!-- Result Count & Saved Jobs Quick Access -->
+    <div class="flex items-center justify-between">
+      <p class="text-xs font-bold text-slate-500 dark:text-slate-400">
+        Found <span class="text-[#0A2540] dark:text-white font-black">{{ filteredJobs.length }}</span> job opportunities
+      </p>
+
+      <router-link
+        to="/saved-jobs"
+        class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0D47A1] dark:text-blue-400 hover:underline"
+      >
+        <Bookmark class="w-3.5 h-3.5" />
+        <span>Saved Jobs ({{ savedJobIds.length }})</span>
+      </router-link>
     </div>
 
-    <!-- Jobs Grid/List -->
-    <div v-if="filteredJobs.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <JobCard v-for="job in filteredJobs" :key="job.id" :job="job" />
+    <!-- Job Cards Grid -->
+    <div v-if="paginatedJobs.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <JobCard v-for="job in paginatedJobs" :key="job.id" :job="job" />
     </div>
 
-    <EmptyState v-else :message="t('jobs.noResults')" @reset="resetFilters" />
+    <!-- Empty State -->
+    <EmptyState
+      v-else
+      message="No job openings matched your criteria"
+      subtitle="Try searching with other titles or clearing your location and employment type filters."
+      @reset="resetFilters"
+    />
+
+    <!-- Pagination -->
+    <PaginationBar
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      :showing-from="showingFrom"
+      :showing-to="showingTo"
+      :total-items="totalItems"
+      @go-to-page="goToPage"
+      @next-page="nextPage"
+      @prev-page="prevPage"
+    />
   </div>
 </template>

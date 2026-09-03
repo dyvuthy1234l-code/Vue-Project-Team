@@ -1,760 +1,713 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   Menu,
   X,
-  ArrowRight,
-  ShieldAlert,
-  ChevronDown
+  Search,
+  ChevronDown,
+  ChevronRight,
+  Sun,
+  Moon,
+  LogOut,
+  Bookmark,
+  HeartPulse,
+  Building2,
+  Briefcase,
+  Wrench,
+  Bus,
+  Siren,
+  Newspaper,
+  Check
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import { useDarkMode } from '@/composables/useDarkMode'
+import { useAuth } from '@/composables/useAuth'
+import { useSavedJobs } from '@/composables/useSavedJobs'
+import AuthModal from '@/components/AuthModal.vue'
+import SearchModal from '@/components/SearchModal.vue'
 
 const route = useRoute()
 const router = useRouter()
-
 const { t, currentLanguage, setLanguage } = useLanguage()
+const { isDark, toggleDarkMode } = useDarkMode()
+const { currentUser, openLogin, logout } = useAuth()
+const { savedJobIds } = useSavedJobs()
 
-const isMobileMenuOpen = ref(false)
+const isMobileDrawerOpen = ref(false)
 const isServicesOpen = ref(false)
+const isMobileServicesExpanded = ref(false)
+const isProfileOpen = ref(false)
+const isLangMenuOpen = ref(false)
+const isSearchModalOpen = ref(false)
 
-const mainNavLinks = computed(() => [
-  {
-    path: '/',
-    label: t('nav.home')
-  },
-  {
-    path: '/health',
-    label: t('nav.health')
-  },
-  {
-    path: '/government',
-    label: t('nav.government')
-  },
-  {
-    path: '/jobs',
-    label: t('nav.jobs')
-  },
-  {
-    path: '/home-services',
-    label: t('nav.homeServices')
-  },
-  {
-    path: '/transport',
-    label: t('nav.transport')
-  },
-  {
-    path: '/news',
-    label: t('nav.news')
-  },
-  {
-    path: '/locations',
-    label: t('nav.locations')
-  },
-  {
-    path: '/about',
-    label: t('nav.about')
-  }
-])
-
-const serviceLinks = computed(() => [
-  {
-    path: '/health',
-    label: t('nav.health')
-  },
-  {
-    path: '/government',
-    label: t('nav.government')
-  },
-  {
-    path: '/jobs',
-    label: t('nav.jobs')
-  },
-  {
-    path: '/home-services',
-    label: t('nav.homeServices')
-  },
-  {
-    path: '/transport',
-    label: t('nav.transport')
-  }
-])
+const serviceLinks = [
+  { path: '/emergency', label: 'Emergency Services', labelKh: 'សេវាសង្គ្រោះបន្ទាន់', icon: Siren, color: 'text-[#E53935]', bg: 'bg-red-50 dark:bg-red-950/40' },
+  { path: '/health', label: 'Health & Medical', labelKh: 'សុខាភិបាល និងពេទ្យ', icon: HeartPulse, color: 'text-[#16A34A]', bg: 'bg-emerald-50 dark:bg-emerald-950/40' },
+  { path: '/government', label: 'Government Guides', labelKh: 'សេវារដ្ឋបាលសាធារណៈ', icon: Building2, color: 'text-[#0D47A1]', bg: 'bg-blue-50 dark:bg-blue-950/40' },
+  { path: '/jobs', label: 'Jobs & Careers', labelKh: 'ឱកាសការងារ', icon: Briefcase, color: 'text-[#7E57C2]', bg: 'bg-purple-50 dark:bg-purple-950/40' },
+  { path: '/transport', label: 'Transport & Transit', labelKh: 'ការធ្វើដំណើរ និងដឹកជញ្ជូន', icon: Bus, color: 'text-[#F59E0B]', bg: 'bg-amber-50 dark:bg-amber-950/40' },
+  { path: '/home-services', label: 'Home & Daily Services', labelKh: 'សេវាកម្មគេហដ្ឋាន', icon: Wrench, color: 'text-[#0891B2]', bg: 'bg-cyan-50 dark:bg-cyan-950/40' },
+  { path: '/news', label: 'Public Bulletins & News', labelKh: 'ព័ត៌មាន និងសេចក្តីប្រកាស', icon: Newspaper, color: 'text-[#EC4899]', bg: 'bg-pink-50 dark:bg-pink-950/40' }
+]
 
 function isActive(path: string): boolean {
   if (path === '/') return route.path === '/'
-
   return route.path.startsWith(path)
+}
+
+function isServicesActive(): boolean {
+  return [
+    '/health',
+    '/government',
+    '/home-services',
+    '/transport',
+    '/emergency',
+    '/locations'
+  ].some(p => route.path.startsWith(p))
 }
 
 function navigateTo(path: string) {
   router.push(path)
+  closeAll()
+}
 
-  isMobileMenuOpen.value = false
+function closeAll() {
+  isMobileDrawerOpen.value = false
   isServicesOpen.value = false
+  isProfileOpen.value = false
+  isLangMenuOpen.value = false
 }
 
-function toggleMobileMenu() {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value
+function handleAuthClick() {
+  closeAll()
+  openLogin()
 }
 
-function closeMenus() {
-  isMobileMenuOpen.value = false
-  isServicesOpen.value = false
+function handleLogout() {
+  logout()
+  isProfileOpen.value = false
 }
+
+function handleGlobalKeydown(e: KeyboardEvent) {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault()
+    isSearchModalOpen.value = !isSearchModalOpen.value
+  }
+}
+
+function onWindowClick(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (!target.closest('.user-menu-container')) {
+    isProfileOpen.value = false
+  }
+  if (!target.closest('.lang-menu-container')) {
+    isLangMenuOpen.value = false
+  }
+  if (!target.closest('.services-menu-container')) {
+    isServicesOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('click', onWindowClick)
+  window.addEventListener('keydown', handleGlobalKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('click', onWindowClick)
+  window.removeEventListener('keydown', handleGlobalKeydown)
+})
 </script>
 
 <template>
-  <header class="sticky top-0 z-50">
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-[#0B1727]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-18 flex items-center justify-between gap-3 sm:gap-4">
 
-    <!-- NAVBAR -->
-    <nav
-      class="
-        border-b border-slate-200/70
-        bg-white/90
-        backdrop-blur-xl
-        supports-[backdrop-filter]:bg-white/75
-      "
-    >
+        <!-- ============================================================
+             LEFT: BRAND LOGO (Official CamLife Logo)
+        ============================================================= -->
+        <router-link
+          to="/"
+          class="flex items-center gap-2 group focus:outline-none shrink-0"
+          aria-label="CamLife Home"
+        >
+          <img
+            src="/logo.png"
+            alt="CamLife Cambodia"
+            class="h-10 sm:h-12 w-auto object-contain rounded-xl dark:bg-white/95 dark:p-1 transition-transform duration-200 group-hover:scale-105"
+          />
+        </router-link>
 
-      <div
-        class="
-          max-w-7xl
-          mx-auto
-          px-4
-          sm:px-6
-          lg:px-8
-        "
-      >
-
-        <div class="h-[76px] flex items-center justify-between gap-6">
-
-          <!-- =========================================
-               LOGO
-          ========================================== -->
-
+        <!-- ============================================================
+             CENTER: DESKTOP NAVIGATION LINKS
+             Home, Services ▾, Jobs, News, About Us, Contact
+        ============================================================= -->
+        <nav class="hidden lg:flex items-center gap-1 xl:gap-2 h-full">
+          <!-- Home -->
           <router-link
             to="/"
-            @click="closeMenus"
-            class="
-              group
-              flex
-              items-center
-              gap-3
-              shrink-0
-              focus:outline-none
-            "
+            :class="[
+              'px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150',
+              isActive('/')
+                ? 'bg-blue-50/80 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400 font-bold'
+                : 'text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+            ]"
           >
-
-            <!-- Logo Icon -->
-            <div
-              class="
-                relative
-                w-10
-                h-10
-                rounded-xl
-                bg-gradient-to-br
-                from-[#123B6D]
-                to-[#1677C8]
-                flex
-                items-center
-                justify-center
-                shadow-[0_6px_18px_rgba(22,119,200,0.20)]
-                transition-all
-                duration-300
-                group-hover:scale-105
-                group-hover:shadow-[0_8px_24px_rgba(22,119,200,0.28)]
-              "
-            >
-              <span class="text-lg leading-none">
-                🇰🇭
-              </span>
-            </div>
-
-            <!-- Brand -->
-            <div class="flex flex-col leading-none">
-
-              <span
-                class="
-                  text-[19px]
-                  font-black
-                  tracking-[-0.02em]
-                  text-[#0F2747]
-                  transition-colors
-                  group-hover:text-[#1677C8]
-                "
-              >
-                CamLife
-              </span>
-
-              <span
-                class="
-                  mt-1
-                  text-[9px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.16em]
-                  text-slate-400
-                "
-              >
-                {{ t('nav.tagline') }}
-              </span>
-
-            </div>
-
+            {{ t('nav.home') }}
           </router-link>
 
-
-          <!-- =========================================
-               DESKTOP NAVIGATION
-          ========================================== -->
-
-          <div
-            class="
-              hidden
-              xl:flex
-              items-center
-              gap-1
-              flex-1
-              justify-center
-            "
-          >
-
-            <!-- Home -->
+          <!-- Services Dropdown -->
+          <div class="relative services-menu-container h-full flex items-center">
             <button
-              @click="navigateTo('/')"
+              @click="isServicesOpen = !isServicesOpen"
               :class="[
-                'relative px-3 py-2 rounded-lg text-[13px] font-semibold transition-all duration-200 whitespace-nowrap',
-                isActive('/')
-                  ? 'text-[#1677C8]'
-                  : 'text-slate-500 hover:text-[#0F2747] hover:bg-slate-50'
+                'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150',
+                isServicesActive() || isServicesOpen
+                  ? 'bg-blue-50/80 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400 font-bold'
+                  : 'text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
               ]"
+              type="button"
+              aria-haspopup="true"
+              :aria-expanded="isServicesOpen"
             >
-              {{ t('nav.home') }}
-
-              <span
-                v-if="isActive('/')"
-                class="
-                  absolute
-                  left-1/2
-                  -translate-x-1/2
-                  bottom-0
-                  w-4
-                  h-0.5
-                  rounded-full
-                  bg-[#1677C8]
-                "
+              <span>{{ t('nav.services') }}</span>
+              <ChevronDown
+                class="w-3.5 h-3.5 transition-transform duration-200 text-slate-500"
+                :class="isServicesOpen ? 'rotate-180 text-[#0D47A1]' : ''"
               />
             </button>
 
-
-            <!-- Services Dropdown -->
-            <div
-              class="relative"
-              @mouseenter="isServicesOpen = true"
-              @mouseleave="isServicesOpen = false"
+            <!-- Dropdown Menu -->
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 translate-y-2 scale-95"
+              enter-to-class="opacity-100 translate-y-0 scale-100"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 translate-y-0 scale-100"
+              leave-to-class="opacity-0 translate-y-2 scale-95"
             >
-
-              <button
-                class="
-                  flex
-                  items-center
-                  gap-1
-                  px-3
-                  py-2
-                  rounded-lg
-                  text-[13px]
-                  font-semibold
-                  text-slate-500
-                  hover:text-[#0F2747]
-                  hover:bg-slate-50
-                  transition-all
-                "
+              <div
+                v-if="isServicesOpen"
+                class="absolute top-full left-0 mt-1 w-80 bg-white dark:bg-[#1E293B] rounded-2xl shadow-dropdown border border-slate-200/90 dark:border-slate-700 p-2 z-50 animate-fadeIn"
               >
-                Services
+                <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700 mb-1">
+                  {{ currentLanguage === 'kh' ? 'សេវាកម្មទាំងអស់' : 'All Life Services' }}
+                </div>
+                <div class="space-y-1">
+                  <button
+                    v-for="service in serviceLinks"
+                    :key="service.path"
+                    @click="navigateTo(service.path)"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors group"
+                    type="button"
+                  >
+                    <div :class="['w-8 h-8 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform', service.bg]">
+                      <component :is="service.icon" :class="['w-4 h-4', service.color]" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-xs font-bold text-slate-800 dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors truncate">
+                        {{ currentLanguage === 'kh' ? service.labelKh : service.label }}
+                      </p>
+                      <p class="text-[11px] text-slate-400 dark:text-slate-400 truncate">
+                        {{ currentLanguage === 'kh' ? service.label : service.labelKh }}
+                      </p>
+                    </div>
+                    <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-500 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            </Transition>
+          </div>
 
-                <ChevronDown
-                  class="
-                    w-3.5
-                    h-3.5
-                    transition-transform
-                  "
-                  :class="isServicesOpen ? 'rotate-180' : ''"
-                />
+          <!-- Jobs -->
+          <router-link
+            to="/jobs"
+            :class="[
+              'px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150',
+              isActive('/jobs')
+                ? 'bg-blue-50/80 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400 font-bold'
+                : 'text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+            ]"
+          >
+            {{ t('nav.jobs') }}
+          </router-link>
+
+          <!-- News -->
+          <router-link
+            to="/news"
+            :class="[
+              'px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150',
+              isActive('/news')
+                ? 'bg-blue-50/80 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400 font-bold'
+                : 'text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+            ]"
+          >
+            {{ t('nav.news') }}
+          </router-link>
+
+          <!-- About Us -->
+          <router-link
+            to="/about"
+            :class="[
+              'px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150',
+              isActive('/about')
+                ? 'bg-blue-50/80 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400 font-bold'
+                : 'text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+            ]"
+          >
+            {{ t('nav.about') }}
+          </router-link>
+
+          <!-- Contact -->
+          <router-link
+            to="/contact"
+            :class="[
+              'px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150',
+              isActive('/contact')
+                ? 'bg-blue-50/80 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400 font-bold'
+                : 'text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+            ]"
+          >
+            {{ t('nav.contact') }}
+          </router-link>
+        </nav>
+
+        <!-- ============================================================
+             RIGHT: SEARCH, LANGUAGE, DARK MODE, AUTH / PROFILE
+        ============================================================= -->
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+
+          <!-- Search Trigger (Desktop & Mobile) -->
+          <button
+            @click="isSearchModalOpen = true"
+            class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 transition-colors"
+            type="button"
+            aria-label="Open search dialog"
+          >
+            <Search class="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <span class="hidden sm:inline">Search...</span>
+            <kbd class="hidden md:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600">
+              ⌘K
+            </kbd>
+          </button>
+
+          <!-- Language Selector -->
+          <div class="relative lang-menu-container">
+            <button
+              @click="isLangMenuOpen = !isLangMenuOpen"
+              class="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              type="button"
+              aria-label="Select language"
+            >
+              <span class="text-sm leading-none">{{ currentLanguage === 'kh' ? '🇰🇭' : '🇬🇧' }}</span>
+              <span class="uppercase tracking-wider font-bold">{{ currentLanguage }}</span>
+              <ChevronDown class="w-3 h-3 text-slate-400" />
+            </button>
+
+            <!-- Language Dropdown -->
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 translate-y-2 scale-95"
+              enter-to-class="opacity-100 translate-y-0 scale-100"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 translate-y-0 scale-100"
+              leave-to-class="opacity-0 translate-y-2 scale-95"
+            >
+              <div
+                v-if="isLangMenuOpen"
+                class="absolute right-0 mt-1 w-36 bg-white dark:bg-[#1E293B] rounded-xl shadow-dropdown border border-slate-200/90 dark:border-slate-700 p-1.5 z-50 animate-fadeIn"
+              >
+                <button
+                  @click="setLanguage('en'); isLangMenuOpen = false"
+                  :class="[
+                    'w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors',
+                    currentLanguage === 'en'
+                      ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400 font-bold'
+                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  ]"
+                  type="button"
+                >
+                  <span class="flex items-center gap-2">
+                    <span>🇬🇧</span>
+                    <span>English</span>
+                  </span>
+                  <Check v-if="currentLanguage === 'en'" class="w-3.5 h-3.5 text-[#0D47A1] dark:text-blue-400" />
+                </button>
+
+                <button
+                  @click="setLanguage('kh'); isLangMenuOpen = false"
+                  :class="[
+                    'w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold font-khmer transition-colors',
+                    currentLanguage === 'kh'
+                      ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400 font-bold'
+                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  ]"
+                  type="button"
+                >
+                  <span class="flex items-center gap-2">
+                    <span>🇰🇭</span>
+                    <span>ភាសាខ្មែរ</span>
+                  </span>
+                  <Check v-if="currentLanguage === 'kh'" class="w-3.5 h-3.5 text-[#0D47A1] dark:text-blue-400" />
+                </button>
+              </div>
+            </Transition>
+          </div>
+
+          <!-- Dark Mode Toggle -->
+          <button
+            @click="toggleDarkMode"
+            class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 transition-colors"
+            :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+            type="button"
+          >
+            <Sun v-if="isDark" class="w-4 h-4 text-amber-400" />
+            <Moon v-else class="w-4 h-4 text-slate-600" />
+          </button>
+
+          <!-- Desktop User Menu or Sign In Button -->
+          <div class="hidden sm:flex items-center">
+            <!-- If logged in: User Profile Menu -->
+            <div v-if="currentUser" class="relative user-menu-container">
+              <button
+                @click="isProfileOpen = !isProfileOpen"
+                class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                type="button"
+              >
+                <div class="w-7 h-7 rounded-lg bg-[#0D47A1] text-white flex items-center justify-center text-xs font-bold">
+                  {{ currentUser.name.charAt(0).toUpperCase() }}
+                </div>
+                <span class="text-xs font-bold text-slate-800 dark:text-white max-w-[90px] truncate">
+                  {{ currentUser.name }}
+                </span>
+                <ChevronDown class="w-3 h-3 text-slate-400" />
               </button>
 
-
-              <!-- Dropdown -->
               <Transition
                 enter-active-class="transition duration-150 ease-out"
-                enter-from-class="opacity-0 translate-y-1"
-                enter-to-class="opacity-100 translate-y-0"
+                enter-from-class="opacity-0 translate-y-2 scale-95"
+                enter-to-class="opacity-100 translate-y-0 scale-100"
                 leave-active-class="transition duration-100 ease-in"
-                leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 translate-y-1"
+                leave-from-class="opacity-100 translate-y-0 scale-100"
+                leave-to-class="opacity-0 translate-y-2 scale-95"
               >
-
                 <div
-                  v-if="isServicesOpen"
-                  class="
-                    absolute
-                    top-full
-                    left-1/2
-                    -translate-x-1/2
-                    pt-3
-                    w-64
-                  "
+                  v-if="isProfileOpen"
+                  class="absolute right-0 mt-1 w-56 bg-white dark:bg-[#1E293B] rounded-2xl shadow-dropdown border border-slate-200/90 dark:border-slate-700 p-2 z-50 animate-fadeIn"
                 >
-
-                  <div
-                    class="
-                      rounded-2xl
-                      border
-                      border-slate-200
-                      bg-white
-                      p-2
-                      shadow-[0_20px_50px_rgba(15,23,42,0.12)]
-                    "
-                  >
-
-                    <button
-                      v-for="service in serviceLinks"
-                      :key="service.path"
-                      @click="navigateTo(service.path)"
-                      class="
-                        w-full
-                        flex
-                        items-center
-                        justify-between
-                        px-3
-                        py-2.5
-                        rounded-xl
-                        text-left
-                        text-sm
-                        font-medium
-                        text-slate-600
-                        hover:bg-blue-50
-                        hover:text-[#1677C8]
-                        transition-colors
-                      "
-                    >
-
-                      <span>
-                        {{ service.label }}
-                      </span>
-
-                      <ArrowRight class="w-3.5 h-3.5" />
-
-                    </button>
-
+                  <div class="p-2 border-b border-slate-100 dark:border-slate-700 mb-1">
+                    <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name }}</p>
+                    <p class="text-[11px] text-slate-400 truncate">{{ currentUser.email }}</p>
+                    <span class="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 dark:bg-blue-900/40 text-[#0D47A1] dark:text-blue-300">
+                      {{ currentUser.role || 'Member' }}
+                    </span>
                   </div>
 
+                  <router-link
+                    to="/saved-jobs"
+                    @click="isProfileOpen = false"
+                    class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <span class="flex items-center gap-2">
+                      <Bookmark class="w-4 h-4 text-[#0D47A1] dark:text-blue-400" />
+                      <span>Saved Jobs</span>
+                    </span>
+                    <span v-if="savedJobIds.length > 0" class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-blue-100 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300">
+                      {{ savedJobIds.length }}
+                    </span>
+                  </router-link>
+
+                  <button
+                    @click="handleLogout"
+                    class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors mt-1"
+                    type="button"
+                  >
+                    <LogOut class="w-4 h-4" />
+                    <span>Sign Out</span>
+                  </button>
                 </div>
-
               </Transition>
-
             </div>
 
-
-            <!-- Other Navigation -->
+            <!-- If guest: Sign In Button -->
             <button
-              v-for="link in mainNavLinks.filter(
-                link =>
-                  link.path !== '/' &&
-                  link.path !== '/health' &&
-                  link.path !== '/government' &&
-                  link.path !== '/jobs' &&
-                  link.path !== '/home-services' &&
-                  link.path !== '/transport'
-              )"
-              :key="link.path"
-              @click="navigateTo(link.path)"
-              :class="[
-                'relative px-3 py-2 rounded-lg text-[13px] font-semibold transition-all duration-200 whitespace-nowrap',
-                isActive(link.path)
-                  ? 'text-[#1677C8]'
-                  : 'text-slate-500 hover:text-[#0F2747] hover:bg-slate-50'
-              ]"
+              v-else
+              @click="handleAuthClick"
+              class="px-4 py-2 bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-bold rounded-xl shadow-sm transition-all duration-150 active:scale-95"
+              type="button"
             >
-
-              {{ link.label }}
-
-              <span
-                v-if="isActive(link.path)"
-                class="
-                  absolute
-                  left-1/2
-                  -translate-x-1/2
-                  bottom-0
-                  w-4
-                  h-0.5
-                  rounded-full
-                  bg-[#1677C8]
-                "
-              />
-
+              Sign In
             </button>
-
           </div>
 
-
-          <!-- =========================================
-               RIGHT ACTIONS
-          ========================================== -->
-
-          <div
-            class="
-              flex
-              items-center
-              gap-2
-              sm:gap-3
-              shrink-0
-            "
+          <!-- Mobile Hamburger Toggle Button -->
+          <button
+            @click="isMobileDrawerOpen = true"
+            class="lg:hidden p-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+            aria-label="Open navigation menu"
+            type="button"
           >
-
-            <!-- Emergency -->
-            <router-link
-              to="/emergency"
-              class="
-                hidden
-                lg:flex
-                items-center
-                gap-2
-                rounded-xl
-                border
-                border-red-200
-                bg-red-50
-                px-3
-                py-2
-                text-[11px]
-                font-bold
-                text-red-600
-                transition-all
-                hover:border-red-300
-                hover:bg-red-100
-                hover:-translate-y-0.5
-              "
-            >
-
-              <div
-                class="
-                  w-5
-                  h-5
-                  rounded-md
-                  bg-red-100
-                  flex
-                  items-center
-                  justify-center
-                "
-              >
-                <ShieldAlert
-                  class="w-3.5 h-3.5 text-red-600"
-                />
-              </div>
-
-              <span>
-                117 / 119
-              </span>
-
-            </router-link>
-
-
-            <!-- Language -->
-            <div
-              class="
-                hidden
-                sm:flex
-                items-center
-                gap-0.5
-                rounded-xl
-                border
-                border-slate-200
-                bg-slate-50
-                p-1
-              "
-            >
-
-              <button
-                @click="setLanguage('en')"
-                :class="[
-                  'px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all',
-                  currentLanguage === 'en'
-                    ? 'bg-white text-[#123B6D] shadow-sm'
-                    : 'text-slate-400 hover:text-slate-700'
-                ]"
-              >
-                EN
-              </button>
-
-              <button
-                @click="setLanguage('kh')"
-                :class="[
-                  'px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all',
-                  currentLanguage === 'kh'
-                    ? 'bg-white text-[#123B6D] shadow-sm font-khmer'
-                    : 'text-slate-400 hover:text-slate-700'
-                ]"
-              >
-                KH
-              </button>
-
-            </div>
-
-
-            <!-- Explore -->
-            <button
-              @click="navigateTo('/health')"
-              class="
-                hidden
-                lg:flex
-                items-center
-                gap-2
-                rounded-xl
-                bg-[#1677C8]
-                px-4
-                py-2.5
-                text-[12px]
-                font-bold
-                text-white
-                shadow-[0_5px_15px_rgba(22,119,200,0.18)]
-                transition-all
-                hover:bg-[#126DB8]
-                hover:-translate-y-0.5
-                hover:shadow-[0_8px_20px_rgba(22,119,200,0.25)]
-              "
-            >
-
-              <span>
-                {{ t('nav.exploreBtn') }}
-              </span>
-
-              <ArrowRight class="w-3.5 h-3.5" />
-
-            </button>
-
-
-            <!-- Mobile Menu -->
-            <button
-              @click="toggleMobileMenu"
-              class="
-                xl:hidden
-                w-10
-                h-10
-                rounded-xl
-                border
-                border-slate-200
-                bg-white
-                flex
-                items-center
-                justify-center
-                text-slate-700
-                transition-all
-                hover:bg-slate-50
-                active:scale-95
-              "
-              :aria-label="
-                isMobileMenuOpen
-                  ? 'Close navigation'
-                  : 'Open navigation'
-              "
-            >
-
-              <X
-                v-if="isMobileMenuOpen"
-                class="w-5 h-5 text-[#0F2747]"
-              />
-
-              <Menu
-                v-else
-                class="w-5 h-5 text-[#0F2747]"
-              />
-
-            </button>
-
-          </div>
-
+            <Menu class="w-5 h-5" />
+          </button>
         </div>
 
       </div>
+    </div>
 
+    <!-- ============================================================
+         MOBILE SIDE DRAWER OVERLAY
+         Structure:
+         Logo + Close Button
+         Navigation Links (Home, Services, Jobs, News, About, Contact)
+         Divider
+         Language Selector
+         Dark Mode
+         Sign In / User Profile Card
+    ============================================================= -->
+    <Transition
+      enter-active-class="transition-opacity duration-200 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity duration-150 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isMobileDrawerOpen"
+        class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 lg:hidden"
+        @click="isMobileDrawerOpen = false"
+      />
+    </Transition>
 
-      <!-- =========================================
-           MOBILE MENU
-      ========================================== -->
-
-      <Transition
-        enter-active-class="transition duration-200 ease-out"
-        enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition duration-150 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 -translate-y-2"
+    <Transition
+      enter-active-class="transition duration-250 ease-out"
+      enter-from-class="translate-x-full"
+      enter-to-class="translate-x-0"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="translate-x-0"
+      leave-to-class="translate-x-full"
+    >
+      <aside
+        v-if="isMobileDrawerOpen"
+        class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-50 flex flex-col justify-between overflow-y-auto lg:hidden"
       >
+        <!-- Drawer Header -->
+        <div class="p-5 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
+          <router-link to="/" @click="isMobileDrawerOpen = false" class="flex items-center gap-2">
+            <img
+              src="/logo.png"
+              alt="CamLife Cambodia"
+              class="h-9 w-auto object-contain rounded-lg dark:bg-white/95 dark:p-0.5"
+            />
+          </router-link>
 
-        <div
-          v-if="isMobileMenuOpen"
-          class="
-            xl:hidden
-            border-t
-            border-slate-200
-            bg-white
-            shadow-[0_15px_30px_rgba(15,23,42,0.08)]
-          "
-        >
-
-          <div
-            class="
-              max-w-7xl
-              mx-auto
-              px-4
-              sm:px-6
-              py-5
-            "
+          <button
+            @click="isMobileDrawerOpen = false"
+            class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            aria-label="Close menu"
+            type="button"
           >
-
-            <!-- Mobile navigation -->
-            <div class="space-y-1">
-
-              <button
-                v-for="link in mainNavLinks"
-                :key="link.path"
-                @click="navigateTo(link.path)"
-                :class="[
-                  'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all',
-                  isActive(link.path)
-                    ? 'bg-blue-50 text-[#1677C8]'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-[#0F2747]'
-                ]"
-              >
-
-                <span>
-                  {{ link.label }}
-                </span>
-
-                <ArrowRight
-                  v-if="isActive(link.path)"
-                  class="w-4 h-4 text-[#1677C8]"
-                />
-
-              </button>
-
-            </div>
-
-
-            <!-- Mobile actions -->
-            <div
-              class="
-                mt-4
-                pt-4
-                border-t
-                border-slate-100
-                space-y-2
-              "
-            >
-
-              <!-- Emergency -->
-              <router-link
-                to="/emergency"
-                @click="closeMenus"
-                class="
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
-                  w-full
-                  rounded-xl
-                  border
-                  border-red-200
-                  bg-red-50
-                  px-4
-                  py-3
-                  text-sm
-                  font-bold
-                  text-red-600
-                "
-              >
-
-                <ShieldAlert class="w-4 h-4" />
-
-                <span>
-                  {{ t('nav.emergency') }}
-                  · 117 / 118 / 119
-                </span>
-
-              </router-link>
-
-
-              <!-- Explore -->
-              <button
-                @click="navigateTo('/health')"
-                class="
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
-                  w-full
-                  rounded-xl
-                  bg-[#1677C8]
-                  px-4
-                  py-3
-                  text-sm
-                  font-bold
-                  text-white
-                "
-              >
-
-                {{ t('nav.exploreBtn') }}
-
-                <ArrowRight class="w-4 h-4" />
-
-              </button>
-
-
-              <!-- Language -->
-              <div
-                class="
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
-                  pt-2
-                "
-              >
-
-                <button
-                  @click="setLanguage('en')"
-                  :class="[
-                    'px-4 py-2 rounded-lg text-xs font-bold transition-all',
-                    currentLanguage === 'en'
-                      ? 'bg-[#123B6D] text-white'
-                      : 'bg-slate-100 text-slate-500'
-                  ]"
-                >
-                  English
-                </button>
-
-                <button
-                  @click="setLanguage('kh')"
-                  :class="[
-                    'px-4 py-2 rounded-lg text-xs font-bold transition-all',
-                    currentLanguage === 'kh'
-                      ? 'bg-[#123B6D] text-white font-khmer'
-                      : 'bg-slate-100 text-slate-500'
-                  ]"
-                >
-                  ខ្មែរ
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
+            <X class="w-5 h-5" />
+          </button>
         </div>
 
-      </Transition>
+        <!-- Drawer Body Navigation Links -->
+        <div class="p-4 flex-1 space-y-1 overflow-y-auto">
+          <!-- Home -->
+          <button
+            @click="navigateTo('/')"
+            :class="[
+              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              isActive('/')
+                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+            ]"
+            type="button"
+          >
+            <span>{{ t('nav.home') }}</span>
+          </button>
 
-    </nav>
+          <!-- Services Accordion -->
+          <div class="space-y-1">
+            <button
+              @click="isMobileServicesExpanded = !isMobileServicesExpanded"
+              :class="[
+                'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+                isServicesActive()
+                  ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                  : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+              ]"
+              type="button"
+            >
+              <span>{{ t('nav.services') }}</span>
+              <ChevronDown
+                class="w-4 h-4 transition-transform text-slate-400"
+                :class="isMobileServicesExpanded ? 'rotate-180' : ''"
+              />
+            </button>
 
+            <!-- Submenu -->
+            <div v-if="isMobileServicesExpanded" class="pl-4 pr-1 py-1 space-y-1 border-l-2 border-slate-100 dark:border-slate-700 ml-4 my-1">
+              <button
+                v-for="service in serviceLinks"
+                :key="service.path"
+                @click="navigateTo(service.path)"
+                class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-[#0D47A1] dark:hover:text-blue-400 text-left transition-colors"
+                type="button"
+              >
+                <component :is="service.icon" :class="['w-4 h-4', service.color]" />
+                <span>{{ currentLanguage === 'kh' ? service.labelKh : service.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Jobs -->
+          <button
+            @click="navigateTo('/jobs')"
+            :class="[
+              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              isActive('/jobs')
+                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+            ]"
+            type="button"
+          >
+            <span>{{ t('nav.jobs') }}</span>
+          </button>
+
+          <!-- News -->
+          <button
+            @click="navigateTo('/news')"
+            :class="[
+              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              isActive('/news')
+                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+            ]"
+            type="button"
+          >
+            <span>{{ t('nav.news') }}</span>
+          </button>
+
+          <!-- About Us -->
+          <button
+            @click="navigateTo('/about')"
+            :class="[
+              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              isActive('/about')
+                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+            ]"
+            type="button"
+          >
+            <span>{{ t('nav.about') }}</span>
+          </button>
+
+          <!-- Contact -->
+          <button
+            @click="navigateTo('/contact')"
+            :class="[
+              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              isActive('/contact')
+                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+            ]"
+            type="button"
+          >
+            <span>{{ t('nav.contact') }}</span>
+          </button>
+
+          <!-- Saved Jobs -->
+          <button
+            @click="navigateTo('/saved-jobs')"
+            :class="[
+              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              isActive('/saved-jobs')
+                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+            ]"
+            type="button"
+          >
+            <span class="flex items-center gap-2">
+              <Bookmark class="w-4 h-4 text-[#0D47A1]" />
+              <span>Saved Jobs</span>
+            </span>
+            <span v-if="savedJobIds.length > 0" class="px-2 py-0.5 text-xs font-bold rounded-full bg-blue-100 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300">
+              {{ savedJobIds.length }}
+            </span>
+          </button>
+        </div>
+
+        <!-- Drawer Footer: Divider, Settings & Auth -->
+        <div class="p-4 border-t border-slate-100 dark:border-slate-700/80 space-y-3 bg-slate-50/50 dark:bg-slate-900/40">
+          <!-- Language & Theme Row -->
+          <div class="flex items-center justify-between gap-2">
+            <!-- Language Pills -->
+            <div class="flex items-center bg-white dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700 w-full">
+              <button
+                @click="setLanguage('en')"
+                :class="[
+                  'flex-1 py-1.5 rounded-lg text-xs font-bold transition-colors text-center',
+                  currentLanguage === 'en'
+                    ? 'bg-[#0D47A1] text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-[#0D47A1]'
+                ]"
+                type="button"
+              >
+                🇬🇧 English
+              </button>
+              <button
+                @click="setLanguage('kh')"
+                :class="[
+                  'flex-1 py-1.5 rounded-lg text-xs font-bold font-khmer transition-colors text-center',
+                  currentLanguage === 'kh'
+                    ? 'bg-[#0D47A1] text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-[#0D47A1]'
+                ]"
+                type="button"
+              >
+                🇰🇭 ខ្មែរ
+              </button>
+            </div>
+          </div>
+
+          <!-- User Card or Sign In Button -->
+          <div v-if="currentUser" class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-lg bg-[#0D47A1] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                {{ currentUser.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name }}</p>
+                <p class="text-[10px] text-slate-400 truncate">{{ currentUser.email }}</p>
+              </div>
+            </div>
+            <button
+              @click="handleLogout"
+              class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
+              title="Sign Out"
+              type="button"
+            >
+              <LogOut class="w-4 h-4" />
+            </button>
+          </div>
+
+          <button
+            v-else
+            @click="handleAuthClick"
+            class="w-full py-2.5 bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-bold rounded-xl shadow-sm text-center transition-colors"
+            type="button"
+          >
+            Sign In / Register
+          </button>
+        </div>
+      </aside>
+    </Transition>
+
+    <!-- Global Modals -->
+    <AuthModal />
+    <SearchModal :is-open="isSearchModalOpen" @close="isSearchModalOpen = false" />
   </header>
 </template>

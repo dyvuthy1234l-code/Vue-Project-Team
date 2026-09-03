@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Calendar, Newspaper, ArrowRight } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import LazyImage from '@/components/LazyImage.vue'
 import type { NewsItem } from '@/types'
 
 const { t, localized } = useLanguage()
@@ -12,57 +13,74 @@ defineProps<{
 </script>
 
 <template>
-  <div :class="[
-    'group bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-subtle hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between',
-    featured ? 'md:col-span-2 md:flex-row' : ''
-  ]">
-    <!-- Header Banner / Image Cover -->
-    <div :class="[
-      'relative bg-gradient-to-br from-camlife-deep via-slate-800 to-camlife-navy p-5 flex flex-col justify-between overflow-hidden',
-      featured ? 'md:w-1/2 h-56 md:h-auto' : 'h-44'
-    ]">
-      <div class="flex justify-between items-start z-10">
-        <span class="px-3 py-1 bg-white/90 backdrop-blur-md text-camlife-deep text-[11px] font-bold rounded-full uppercase tracking-wider shadow-sm">
-          {{ news.category }}
-        </span>
-        <span class="text-[11px] px-2.5 py-1 bg-slate-900/60 backdrop-blur-md text-slate-200 rounded-full font-medium">
-          {{ news.source }}
-        </span>
+  <article
+    :class="[
+      'group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between',
+      featured ? 'md:col-span-2 md:flex-row' : ''
+    ]"
+  >
+    <!-- Cover Image -->
+    <div
+      :class="[
+        'relative overflow-hidden bg-slate-100 dark:bg-slate-700',
+        featured ? 'md:w-1/2 aspect-[16/10] md:aspect-auto min-h-[14rem]' : 'aspect-[16/10]'
+      ]"
+    >
+      <LazyImage
+        v-if="news.image"
+        :src="news.image"
+        :alt="localized(news.title, news.titleKh)"
+        img-class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        class="w-full h-full"
+      />
+      <div v-else class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 dark:bg-slate-800">
+        <Newspaper class="w-10 h-10 opacity-40" />
       </div>
 
-      <div class="z-10 mt-auto">
-        <div class="flex items-center space-x-1.5 text-xs text-slate-300 font-medium">
-          <Calendar class="w-3.5 h-3.5" />
-          <span>{{ news.date }}</span>
-        </div>
-      </div>
-
-      <div class="absolute -right-6 -bottom-6 text-white/5 font-black text-8xl pointer-events-none select-none">
-        NEWS
-      </div>
+      <!-- Category Pill Overlay -->
+      <span class="absolute top-3 left-3 px-2.5 py-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-[#0D47A1] dark:text-blue-400 text-[11px] font-bold rounded-lg uppercase tracking-wider shadow-xs">
+        {{ news.category }}
+      </span>
     </div>
 
     <!-- Content -->
     <div :class="['p-5 flex-1 flex flex-col justify-between', featured ? 'md:w-1/2' : '']">
-      <div>
-        <h3 class="font-extrabold text-camlife-navy text-base group-hover:text-camlife-action transition-colors leading-snug mb-2 line-clamp-2">
-          {{ localized(news.title, news.titleKh) }}
+      <div class="space-y-2">
+        <div class="flex items-center gap-3 text-xs text-slate-400">
+          <span class="flex items-center gap-1">
+            <Calendar class="w-3.5 h-3.5 text-slate-400" />
+            <span>{{ news.date }}</span>
+          </span>
+          <span>·</span>
+          <span>{{ news.source }}</span>
+        </div>
+
+        <h3 class="font-bold text-base text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-2">
+          <router-link :to="'/news/' + news.id">
+            {{ localized(news.title, news.titleKh) }}
+          </router-link>
         </h3>
-        <p class="text-xs text-slate-600 leading-relaxed line-clamp-3 mb-4">
+
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">
           {{ localized(news.description, news.descriptionKh) }}
         </p>
       </div>
 
-      <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-        <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
-          <Newspaper class="w-3.5 h-3.5 text-camlife-action" />
+      <!-- Action Row -->
+      <div class="pt-4 mt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+        <span class="text-[11px] text-slate-400 flex items-center gap-1 font-medium">
+          <Newspaper class="w-3.5 h-3.5 text-slate-400" />
           <span>{{ news.source }}</span>
         </span>
-        <span class="inline-flex items-center space-x-1 text-xs font-bold text-camlife-action group-hover:translate-x-1 transition-transform">
+
+        <router-link
+          :to="'/news/' + news.id"
+          class="inline-flex items-center gap-1 text-xs font-bold text-[#0D47A1] dark:text-blue-400 group-hover:translate-x-0.5 transition-transform"
+        >
           <span>{{ t('news.readMore') }}</span>
           <ArrowRight class="w-3.5 h-3.5" />
-        </span>
+        </router-link>
       </div>
     </div>
-  </div>
+  </article>
 </template>

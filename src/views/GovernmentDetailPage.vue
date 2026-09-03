@@ -2,12 +2,22 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import {
-  Clock, DollarSign, Calendar, UserCheck, MapPin, HelpCircle,
-  ShieldCheck, ArrowLeft, Download
+  Clock,
+  DollarSign,
+  Calendar,
+  UserCheck,
+  MapPin,
+  ShieldCheck,
+  ArrowLeft,
+  ChevronRight,
+  CheckCircle2,
+  ChevronDown
 } from 'lucide-vue-next'
 import NotFoundState from '@/components/NotFoundState.vue'
+import ShareButtons from '@/components/ShareButtons.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { getGovernmentServiceById } from '@/services/dataService'
+import { usePageMeta } from '@/composables/usePageMeta'
 
 const route = useRoute()
 const { t, localized, currentLanguage } = useLanguage()
@@ -17,15 +27,11 @@ const service = computed(() => {
   return getGovernmentServiceById(id)
 })
 
-const activeTab = ref('overview')
+usePageMeta({
+  title: computed(() => service.value ? localized(service.value.title, service.value.titleKh) + ' — Government CamLife' : 'Government Service'),
+  description: computed(() => service.value ? localized(service.value.description, service.value.descriptionKh) : '')
+})
 
-const tabs = computed(() => [
-  { key: 'overview', label: t('government.tabs.overview') },
-  { key: 'requirements', label: t('government.tabs.requirements') },
-  { key: 'process', label: t('government.tabs.process') },
-  { key: 'locations', label: t('government.tabs.locations') },
-  { key: 'faq', label: t('government.tabs.faq') },
-])
 
 const requirementsList = computed(() => {
   if (!service.value) return []
@@ -40,222 +46,220 @@ function toggleFaq(index: number) {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-    <div v-if="service" class="space-y-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
+    <div v-if="service" class="space-y-10">
       <!-- Breadcrumb -->
-      <router-link
-        to="/government"
-        class="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-camlife-action transition-colors group"
-      >
-        <ArrowLeft class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        <span>Back to {{ t('nav.government') }}</span>
-      </router-link>
+      <nav class="flex items-center gap-2 text-xs font-semibold text-slate-400" aria-label="Breadcrumb">
+        <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
+          {{ t('nav.home') }}
+        </router-link>
+        <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
+        <router-link to="/government" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
+          {{ t('nav.government') }}
+        </router-link>
+        <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
+        <span class="text-slate-700 dark:text-slate-200 truncate max-w-[200px] sm:max-w-xs">
+          {{ localized(service.title, service.titleKh) }}
+        </span>
+      </nav>
 
-      <!-- Hero Header -->
-      <div class="bg-gradient-to-br from-camlife-deep via-slate-800 to-camlife-navy text-white rounded-3xl p-6 sm:p-10 shadow-card-hover relative overflow-hidden">
-        <div class="absolute -right-20 -top-20 w-80 h-80 bg-camlife-action/20 rounded-full blur-3xl pointer-events-none"></div>
+      <!-- Back Link -->
+      <div>
+        <router-link
+          to="/government"
+          class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors group"
+        >
+          <ArrowLeft class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span>Back to Government Services</span>
+        </router-link>
+      </div>
 
-        <div class="relative z-10 space-y-3">
+      <!-- Hero Header Card -->
+      <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-10 shadow-card space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-3 py-1 bg-white/15 backdrop-blur-md text-white text-xs font-bold rounded-full">
+            <span class="px-3 py-1 bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 text-xs font-bold rounded-full border border-blue-200/80 dark:border-blue-900">
               {{ service.category }}
             </span>
-            <span class="px-3 py-1 bg-emerald-500/20 backdrop-blur-md text-emerald-300 text-xs font-bold rounded-full flex items-center gap-1 border border-emerald-500/30">
+            <span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-full border border-emerald-200/80 dark:border-emerald-800">
               <ShieldCheck class="w-3.5 h-3.5" />
-              <span>Official Kingdom Procedure</span>
+              <span>Official Procedure</span>
             </span>
           </div>
 
-          <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+          <ShareButtons :title="localized(service.title, service.titleKh)" />
+        </div>
+
+        <div>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-[#0A2540] dark:text-white tracking-tight leading-tight">
             {{ localized(service.title, service.titleKh) }}
           </h1>
-
-          <p class="text-sm text-slate-200 leading-relaxed max-w-2xl">
-            {{ localized(service.description, service.descriptionKh) }}
+          <p v-if="service.titleKh" class="text-base sm:text-lg font-khmer text-slate-500 dark:text-slate-400 mt-1">
+            {{ service.titleKh }}
           </p>
+        </div>
+
+        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
+          {{ localized(service.description, service.descriptionKh) }}
+        </p>
+
+        <!-- Quick Facts Pill Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200/70 dark:border-slate-600/60">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{{ t('government.processingTime') }}</span>
+            <div class="flex items-center gap-1.5 mt-1 font-bold text-slate-800 dark:text-white text-xs sm:text-sm">
+              <Clock class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
+              <span class="truncate">{{ localized(service.processingTime, service.processingTimeKh) }}</span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200/70 dark:border-slate-600/60">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{{ t('government.fee') }}</span>
+            <div class="flex items-center gap-1.5 mt-1 font-bold text-slate-800 dark:text-white text-xs sm:text-sm">
+              <DollarSign class="w-4 h-4 text-emerald-600 shrink-0" />
+              <span class="truncate">{{ localized(service.fee, service.feeKh) }}</span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200/70 dark:border-slate-600/60">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{{ t('government.validity') }}</span>
+            <div class="flex items-center gap-1.5 mt-1 font-bold text-slate-800 dark:text-white text-xs sm:text-sm">
+              <Calendar class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
+              <span class="truncate">{{ localized(service.validity, service.validityKh) }}</span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200/70 dark:border-slate-600/60">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{{ t('government.ageRequirements') }}</span>
+            <div class="flex items-center gap-1.5 mt-1 font-bold text-slate-800 dark:text-white text-xs sm:text-sm">
+              <UserCheck class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
+              <span class="truncate">{{ localized(service.ageRequirements, service.ageRequirementsKh) }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- PROCESS STEPPER INDICATOR -->
-      <div v-if="service.process.length > 0" class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-subtle space-y-4">
-        <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Application Journey</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <!-- Application Steps Timeline -->
+      <section class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-10 shadow-sm space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-[#0A2540] dark:text-white">
+            {{ t('government.tabs.process') }}
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Follow this chronological procedure to complete your application smoothly.
+          </p>
+        </div>
+
+        <div class="space-y-4">
           <div
             v-for="step in service.process"
             :key="step.step"
-            class="flex items-center space-x-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200/60"
+            class="flex items-start gap-4 p-5 rounded-2xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200/60 dark:border-slate-600/60"
           >
-            <div class="w-8 h-8 rounded-xl bg-camlife-action text-white font-black text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
+            <!-- Step Badge -->
+            <div class="w-10 h-10 rounded-xl bg-[#0D47A1] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs">
               0{{ step.step }}
             </div>
-            <div class="min-w-0">
-              <p class="text-xs font-bold text-camlife-navy truncate">{{ localized(step.title, step.titleKh) }}</p>
+
+            <div class="space-y-1">
+              <h3 class="font-bold text-base text-[#0A2540] dark:text-white">
+                {{ localized(step.title, step.titleKh) }}
+              </h3>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                {{ localized(step.description, step.descriptionKh) }}
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- TABS CONTROL & CONTENT -->
-      <div class="bg-white rounded-3xl border border-slate-200/90 shadow-subtle overflow-hidden">
-        <!-- Tabs Header -->
-        <div class="border-b border-slate-200 bg-slate-50/70 px-4 pt-3">
-          <div class="flex space-x-2 overflow-x-auto scrollbar-none">
-            <button
-              v-for="tab in tabs"
-              :key="tab.key"
-              @click="activeTab = tab.key"
-              :class="[
-                'px-5 py-3 text-xs font-bold transition-all border-b-2 whitespace-nowrap rounded-t-xl focus:outline-none',
-                activeTab === tab.key
-                  ? 'border-camlife-action text-camlife-action bg-white shadow-subtle'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
-              ]"
-            >
-              {{ tab.label }}
-            </button>
-          </div>
+      <!-- Requirements Checklist -->
+      <section class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-10 shadow-sm space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-[#0A2540] dark:text-white">
+            {{ t('government.tabs.requirements') }}
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Documents and items required to bring to the application desk.
+          </p>
         </div>
 
-        <!-- Tab Panels -->
-        <div class="p-6 sm:p-8">
-          <!-- Overview Tab -->
-          <div v-if="activeTab === 'overview'" class="space-y-6">
-            <h2 class="text-lg font-extrabold text-camlife-navy">Service Overview</h2>
-            <p class="text-sm text-slate-600 leading-relaxed">
-              {{ localized(service.description, service.descriptionKh) }}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div
+            v-for="(req, idx) in requirementsList"
+            :key="idx"
+            class="flex items-start gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200/60 dark:border-slate-600/60"
+          >
+            <CheckCircle2 class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+            <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-snug">
+              {{ req }}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Location of Application -->
+      <section class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-10 shadow-sm space-y-4">
+        <h2 class="text-xl font-bold text-[#0A2540] dark:text-white">
+          {{ t('government.tabs.locations') }}
+        </h2>
+        <div class="flex items-start gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200/60 dark:border-slate-600/60">
+          <MapPin class="w-5 h-5 text-[#0D47A1] dark:text-blue-400 mt-0.5 shrink-0" />
+          <div>
+            <p class="text-xs sm:text-sm font-bold text-[#0A2540] dark:text-white">
+              {{ localized(service.location, service.locationKh) }}
             </p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="flex items-start space-x-3.5 p-4 bg-slate-50 rounded-2xl border border-slate-200/60">
-                <Clock class="w-5 h-5 text-camlife-action mt-0.5 flex-shrink-0" />
-                <div>
-                  <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ t('government.processingTime') }}</p>
-                  <p class="text-sm font-bold text-camlife-navy mt-0.5">{{ localized(service.processingTime, service.processingTimeKh) }}</p>
-                </div>
-              </div>
-
-              <div class="flex items-start space-x-3.5 p-4 bg-slate-50 rounded-2xl border border-slate-200/60">
-                <DollarSign class="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ t('government.fee') }}</p>
-                  <p class="text-sm font-bold text-camlife-navy mt-0.5">{{ localized(service.fee, service.feeKh) }}</p>
-                </div>
-              </div>
-
-              <div class="flex items-start space-x-3.5 p-4 bg-slate-50 rounded-2xl border border-slate-200/60">
-                <Calendar class="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ t('government.validity') }}</p>
-                  <p class="text-sm font-bold text-camlife-navy mt-0.5">{{ localized(service.validity, service.validityKh) }}</p>
-                </div>
-              </div>
-
-              <div class="flex items-start space-x-3.5 p-4 bg-slate-50 rounded-2xl border border-slate-200/60">
-                <UserCheck class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ t('government.ageRequirements') }}</p>
-                  <p class="text-sm font-bold text-camlife-navy mt-0.5">{{ localized(service.ageRequirements, service.ageRequirementsKh) }}</p>
-                </div>
-              </div>
-            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Ministry / Department Headquarters, Phnom Penh & Provincial One Window Service Offices.
+            </p>
           </div>
+        </div>
+      </section>
 
-          <!-- Requirements Tab -->
-          <div v-if="activeTab === 'requirements'" class="space-y-6">
-            <div class="flex items-center justify-between">
-              <h2 class="text-lg font-extrabold text-camlife-navy">{{ t('government.requiredDocuments') }}</h2>
-              <span class="text-xs text-camlife-muted font-semibold">{{ requirementsList.length }} items required</span>
-            </div>
+      <!-- FAQ Section -->
+      <section v-if="service.faq.length > 0" class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-10 shadow-sm space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-[#0A2540] dark:text-white">
+            Frequently Asked Questions (FAQ)
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Common questions regarding eligibility, timelines, and lost documents.
+          </p>
+        </div>
 
-            <ul class="space-y-3">
-              <li
-                v-for="(req, index) in requirementsList"
-                :key="index"
-                class="flex items-start space-x-3 p-4 bg-slate-50 rounded-2xl border border-slate-200/60"
-              >
-                <div class="w-6 h-6 rounded-full bg-camlife-light text-camlife-action font-extrabold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                  {{ index + 1 }}
-                </div>
-                <span class="text-sm font-semibold text-slate-700 leading-snug">{{ req }}</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Process Tab -->
-          <div v-if="activeTab === 'process'" class="space-y-6">
-            <h2 class="text-lg font-extrabold text-camlife-navy">{{ t('government.applicationSteps') }}</h2>
-            <div class="space-y-4">
-              <div
-                v-for="step in service.process"
-                :key="step.step"
-                class="flex items-start space-x-4 p-5 bg-slate-50 rounded-2xl border border-slate-200/60"
-              >
-                <div class="w-10 h-10 rounded-2xl bg-camlife-action text-white font-black text-sm flex items-center justify-center flex-shrink-0 shadow-sm">
-                  0{{ step.step }}
-                </div>
-                <div class="space-y-1">
-                  <h3 class="font-extrabold text-camlife-navy text-base">{{ localized(step.title, step.titleKh) }}</h3>
-                  <p class="text-xs text-slate-600 leading-relaxed">{{ localized(step.description, step.descriptionKh) }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Locations Tab -->
-          <div v-if="activeTab === 'locations'" class="space-y-6">
-            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200/60 space-y-3">
-              <div class="flex items-start space-x-3">
-                <MapPin class="w-5 h-5 text-camlife-action mt-0.5 flex-shrink-0" />
-                <div>
-                  <h3 class="font-bold text-camlife-navy text-base">{{ t('government.viewLocations') }}</h3>
-                  <p class="text-xs text-slate-600 mt-1 leading-relaxed">{{ localized(service.location, service.locationKh) }}</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex flex-wrap gap-3">
-              <router-link
-                to="/locations"
-                class="inline-flex items-center space-x-2 px-5 py-3 bg-camlife-action hover:bg-camlife-action-hover text-white text-xs font-bold rounded-xl shadow-sm transition-all"
-              >
-                <MapPin class="w-4 h-4" />
-                <span>Explore Nearby Locations</span>
-              </router-link>
-
-              <button
-                class="inline-flex items-center space-x-2 px-5 py-3 bg-slate-100 text-slate-400 rounded-xl text-xs font-bold cursor-not-allowed border border-slate-200"
-                disabled
-              >
-                <Download class="w-4 h-4" />
-                <span>{{ t('government.downloadGuide') }} (PDF)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- FAQ Tab -->
-          <div v-if="activeTab === 'faq'" class="space-y-4">
-            <h2 class="text-lg font-extrabold text-camlife-navy mb-4">Frequently Asked Questions</h2>
-            <div
-              v-for="(faq, index) in service.faq"
-              :key="index"
-              class="bg-slate-50 rounded-2xl border border-slate-200/60 overflow-hidden transition-all"
+        <div class="space-y-3">
+          <div
+            v-for="(item, idx) in service.faq"
+            :key="idx"
+            class="rounded-xl border border-slate-200/80 dark:border-slate-700 overflow-hidden"
+          >
+            <button
+              @click="toggleFaq(idx)"
+              class="w-full flex items-center justify-between p-4 bg-slate-50/70 dark:bg-slate-700/30 text-left font-bold text-xs sm:text-sm text-[#0A2540] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors"
+              type="button"
             >
-              <button
-                @click="toggleFaq(index)"
-                class="w-full flex items-center justify-between p-5 text-left focus:outline-none"
-              >
-                <span class="font-extrabold text-camlife-navy text-sm">{{ localized(faq.question, faq.questionKh) }}</span>
-                <HelpCircle class="w-5 h-5 text-slate-400 flex-shrink-0" />
-              </button>
-              <div v-if="expandedFaq === index" class="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-200/40">
-                {{ localized(faq.answer, faq.answerKh) }}
-              </div>
+              <span>{{ localized(item.question, item.questionKh) }}</span>
+              <ChevronDown
+                class="w-4 h-4 text-slate-400 transition-transform"
+                :class="expandedFaq === idx ? 'rotate-180 text-[#0D47A1]' : ''"
+              />
+            </button>
+
+            <div v-if="expandedFaq === idx" class="p-4 bg-white dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700">
+              {{ localized(item.answer, item.answerKh) }}
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
 
-    <NotFoundState v-else />
+    <!-- 404 Fallback -->
+    <NotFoundState
+      v-else
+      message="Government Guide Not Found"
+      subtitle="The official service guide you requested is not available in our registry."
+      back-link="/government"
+      back-text="Back to Government Guides"
+    />
   </div>
 </template>

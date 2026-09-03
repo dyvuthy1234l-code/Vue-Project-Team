@@ -18,11 +18,11 @@ defineProps<{
           'w-3.5 h-3.5',
           i <= Math.round(rating)
             ? 'text-amber-400 fill-amber-400'
-            : 'text-slate-200'
+            : 'text-slate-200 dark:text-slate-700'
         ]"
       />
     </div>
-    <span class="text-xs font-bold text-slate-700">{{ rating.toFixed(1) }}</span>
-    <span v-if="showCount && reviews" class="text-xs text-slate-400">({{ reviews }})</span>
+    <span class="text-xs font-bold text-slate-700 dark:text-slate-200">{{ rating.toFixed(1) }}</span>
+    <span v-if="showCount && reviews" class="text-xs text-slate-400 dark:text-slate-500">({{ reviews }})</span>
   </div>
 </template>
