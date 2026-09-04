@@ -182,6 +182,7 @@ export const kh = {
     getDirections: 'ទទួលទិសដៅ',
     categories: {
       all: 'ទីតាំងទាំងអស់',
+      governmentOwso: 'ច្រកចេញចូលតែមួយ & សង្កាត់',
       hospital: 'មន្ទីរពេទ្យ',
       policeStation: 'ស្ថានីយប៉ូលីស',
       bankAtm: 'ធនាគារ / ATM',

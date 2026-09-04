@@ -12,6 +12,42 @@
     "descriptionKh": "មន្ទីរពេទ្យសាធារណៈកម្រិតខ្ពស់នៅកណ្តាលរាជធានីភ្នំពេញ ផ្តល់សេវាសង្គ្រោះបន្ទាន់ ២៤ ម៉ោង។"
   },
   {
+    "id": "khmer-soviet-hospital-loc",
+    "name": "Khmer-Soviet Friendship Hospital (Russian Hospital)",
+    "nameKh": "មន្ទីរពេទ្យមិត្តភាពខ្មែរ-សូវៀត (ពេទ្យរុស្ស៊ី)",
+    "category": "Hospital",
+    "address": "Street 271, Sangkat Tumnub Teuk, Khan Boeung Keng Kang, Phnom Penh",
+    "addressKh": "ផ្លូវ ២៧១ សង្កាត់ទំនប់ទឹក ខណ្ឌបឹងកេងកង រាជធានីភ្នំពេញ",
+    "phone": "+855 23 217 764",
+    "coordinates": { "lat": 11.5398, "lng": 104.9082 },
+    "description": "National general hospital offering 24/7 specialized surgeries, ICU, trauma, and NSSF coverage.",
+    "descriptionKh": "មន្ទីរពេទ្យទូទៅថ្នាក់ជាតិ ទទួលព្យាបាលជំងឺទូទៅ វះកាត់ធំៗ និងទទួលប័ណ្ណ ប.ស.ស។"
+  },
+  {
+    "id": "preah-kossamak-hospital-loc",
+    "name": "Preah Kossamak Hospital (Cambodia-China Friendship)",
+    "nameKh": "មន្ទីរពេទ្យព្រះកុសុមៈ (មិត្តភាពកម្ពុជា-ចិន)",
+    "category": "Hospital",
+    "address": "St. 271, Sangkat Teuk Thla, Khan Sen Sok, Phnom Penh",
+    "addressKh": "ផ្លូវ ២៧១ សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ",
+    "phone": "+855 23 880 234",
+    "coordinates": { "lat": 11.5645, "lng": 104.8872 },
+    "description": "Modern public medical complex with advanced neurosurgery, cardiology, and 24/7 emergency unit.",
+    "descriptionKh": "អគារមន្ទីរពេទ្យទំនើប មានឯកទេសវះកាត់ប្រព័ន្ធប្រសាទ បេះដូង និងសង្គ្រោះបន្ទាន់ ២៤/៧។"
+  },
+  {
+    "id": "kantha-bopha-hospital-loc",
+    "name": "Kantha Bopha Children's Hospital (IV / Wat Phnom)",
+    "nameKh": "មន្ទីរពេទ្យគន្ធបុប្ផាទី៤ (វត្តភ្នំ)",
+    "category": "Hospital",
+    "address": "Street 47 (Near Wat Phnom), Khan Doun Penh, Phnom Penh",
+    "addressKh": "ផ្លូវ ៤៧ (ក្បែរវត្តភ្នំ) ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
+    "phone": "+855 23 430 021",
+    "coordinates": { "lat": 11.5768, "lng": 104.9241 },
+    "description": "Providing 100% free high-quality pediatric medical treatment, intensive care, and maternity.",
+    "descriptionKh": "ផ្តល់ការព្យាបាលកុមារ និងសម្ភពដោយឥតគិតថ្លៃ ១០០% ស្របតាមស្តង់ដារគុណភាពខ្ពស់។"
+  },
+  {
     "id": "royal-pp-hospital-loc",
     "name": "Royal Phnom Penh Hospital",
     "nameKh": "មន្ទីរពេទ្យរ៉ូយ៉ាល់ភ្នំពេញ",
@@ -44,8 +80,32 @@
     "addressKh": "ផ្លូវ ៥៩៨ កែង ៥១៦ សង្កាត់បឹងកក់២ ខណ្ឌទួលគោក រាជធានីភ្នំពេញ",
     "phone": "+855 12 999 999",
     "coordinates": { "lat": 11.5878, "lng": 104.8992 },
-    "description": "Central municipal police headquarters for emergency command and law enforcement.",
+    "description": "Central municipal police headquarters for emergency command, crime reports, and public security.",
     "descriptionKh": "បញ្ជាការដ្ឋាននគរបាលរាជធានីភ្នំពេញ សម្រាប់កិច្ចការសន្តិសុខ និងសណ្តាប់ធ្នាប់សាធារណៈ។"
+  },
+  {
+    "id": "daun-penh-police-station",
+    "name": "Khan Daun Penh Police Inspectorate",
+    "nameKh": "អធិការដ្ឋាននគរបាលខណ្ឌដូនពេញ",
+    "category": "Police Station",
+    "address": "Street 136, Sangkat Phsar Kandal 1, Khan Doun Penh, Phnom Penh",
+    "addressKh": "ផ្លូវ ១៣៦ សង្កាត់ផ្សារកណ្តាល១ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
+    "phone": "+855 12 841 841",
+    "coordinates": { "lat": 11.5678, "lng": 104.9286 },
+    "description": "District police station responding to security, traffic, administrative complaints, and emergency calls.",
+    "descriptionKh": "អធិការដ្ឋាននគរបាលទទួលបន្ទុកសន្តិសុខ សណ្តាប់ធ្នាប់ និងពាក្យបណ្តឹងពលរដ្ឋក្នុងខណ្ឌដូនពេញ។"
+  },
+  {
+    "id": "tuol-kouk-police-station",
+    "name": "Khan Tuol Kouk Police Inspectorate",
+    "nameKh": "អធិការដ្ឋាននគរបាលខណ្ឌទួលគោក",
+    "category": "Police Station",
+    "address": "Street 337, Sangkat Boeung Kak 1, Khan Tuol Kouk, Phnom Penh",
+    "addressKh": "ផ្លូវ ៣៣៧ សង្កាត់បឹងកក់១ ខណ្ឌទួលគោក រាជធានីភ្នំពេញ",
+    "phone": "+855 12 708 899",
+    "coordinates": { "lat": 11.5782, "lng": 104.9015 },
+    "description": "Tuol Kouk district police unit providing rapid 24/7 patrol and emergency dispatch.",
+    "descriptionKh": "អធិការដ្ឋាននគរបាលខណ្ឌទួលគោក ផ្តល់ការអន្តរាគមន៍បន្ទាន់ និងសន្តិសុខមូលដ្ឋាន ២៤ ម៉ោង។"
   },
   {
     "id": "tourist-police-phnom-penh",
@@ -56,20 +116,116 @@
     "addressKh": "តីរវិថីព្រះស៊ីសុវត្ថិ (ក្បែរព្រះបរមរាជវាំង) ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
     "phone": "+855 12 942 484",
     "coordinates": { "lat": 11.5642, "lng": 104.9338 },
-    "description": "Specialized assistance desk for foreign travelers, lost property, and tourist safety.",
-    "descriptionKh": "ប៉ុស្តិ៍ផ្តល់ជំនួយដល់ភ្ញៀវទេសចរ បញ្ហាបាត់បង់សម្ភារៈ និងសុវត្ថិភាពទេសចរណ៍។"
+    "description": "Specialized assistance desk for citizens and visitors, lost property, and public safety.",
+    "descriptionKh": "ប៉ុស្តិ៍ផ្តល់ជំនួយដល់ពលរដ្ឋនិងភ្ញៀវទេសចរ បញ្ហាបាត់បង់សម្ភារៈ និងសុវត្ថិភាពទូទៅ។"
   },
   {
     "id": "siem-reap-tourist-police",
-    "name": "Siem Reap Tourist Police Headquarters",
-    "nameKh": "ស្នងការដ្ឋាននគរបាលទេសចរណ៍ខេត្តសៀមរាប",
+    "name": "Siem Reap Provincial Police Commissariat",
+    "nameKh": "ស្នងការដ្ឋាននគរបាលខេត្តសៀមរាប",
     "category": "Police Station",
-    "address": "Angkor Wat Complex Checkpoint Area, Siem Reap",
-    "addressKh": "តំបន់ឆែកសំបុត្រប្រាសាទអង្គរវត្ត ក្រុងសៀមរាប",
-    "phone": "+855 12 838 768",
-    "coordinates": { "lat": 13.3855, "lng": 103.8642 },
-    "description": "Dedicated tourist safety division managing Angkor temple visitor services.",
-    "descriptionKh": "ផ្នែកនគរបាលទេសចរណ៍ការពារសុវត្ថិភាពនៅរមណីយដ្ឋានអង្គរ។"
+    "address": "National Road 6, Sangkat Svay Dangkum, Siem Reap",
+    "addressKh": "ផ្លូវជាតិលេខ ៦ សង្កាត់ស្វាយដង្គំ ក្រុងសៀមរាប",
+    "phone": "+855 63 760 117",
+    "coordinates": { "lat": 13.3645, "lng": 103.8542 },
+    "description": "Provincial police headquarters managing law enforcement and citizen emergency dispatch in Siem Reap.",
+    "descriptionKh": "ស្នងការដ្ឋាននគរបាលខេត្តសៀមរាប ទទួលបន្ទុកសន្តិសុខ និងអន្តរាគមន៍បន្ទាន់។"
+  },
+  {
+    "id": "owso-daun-penh",
+    "name": "One Window Service Office (OWSO) Khan Daun Penh",
+    "nameKh": "ការិយាល័យច្រកចេញចូលតែមួយ ខណ្ឌដូនពេញ (OWSO)",
+    "category": "Government/OWSO",
+    "address": "Street 136 & St 53, Sangkat Phsar Kandal 1, Khan Doun Penh, Phnom Penh",
+    "addressKh": "ផ្លូវ ១៣៦ កែង ៥៣ សង្កាត់ផ្សារកណ្តាល១ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
+    "phone": "+855 23 722 888",
+    "coordinates": { "lat": 11.5684, "lng": 104.9272 },
+    "description": "District public service center for business licenses, civil registration, land title certifications, and building permits.",
+    "descriptionKh": "មជ្ឈមណ្ឌលផ្តល់សេវារដ្ឋបាលច្រកចេញចូលតែមួយ៖ លិខិតអាជីវកម្ម អត្រានុកូលដ្ឋាន និងការបញ្ជាក់ឯកសារផ្សេងៗ។"
+  },
+  {
+    "id": "owso-tuol-kouk",
+    "name": "One Window Service Office (OWSO) Khan Tuol Kouk",
+    "nameKh": "ការិយាល័យច្រកចេញចូលតែមួយ ខណ្ឌទួលគោក (OWSO)",
+    "category": "Government/OWSO",
+    "address": "Street 598, Sangkat Boeung Kak 2, Khan Tuol Kouk, Phnom Penh",
+    "addressKh": "ផ្លូវ ៥៩៨ សង្កាត់បឹងកក់២ ខណ្ឌទួលគោក រាជធានីភ្នំពេញ",
+    "phone": "+855 23 881 234",
+    "coordinates": { "lat": 11.5835, "lng": 104.9032 },
+    "description": "Official OWSO office for fast citizen administrative filings, land services, and legal certifications.",
+    "descriptionKh": "ការិយាល័យច្រកចេញចូលតែមួយ ខណ្ឌទួលគោក ផ្តល់សេវារដ្ឋបាលឆាប់រហ័ស តម្លាភាព និងមានតម្លៃកំណត់ច្បាស់លាស់។"
+  },
+  {
+    "id": "owso-chamkarmon",
+    "name": "One Window Service Office (OWSO) Khan Chamkarmon",
+    "nameKh": "ការិយាល័យច្រកចេញចូលតែមួយ ខណ្ឌចំការមន (OWSO)",
+    "category": "Government/OWSO",
+    "address": "Street 432, Sangkat Tuol Tompoung 2, Khan Chamkarmon, Phnom Penh",
+    "addressKh": "ផ្លូវ ៤៣២ សង្កាត់ទួលទំពូង២ ខណ្ឌចំការមន រាជធានីភ្នំពេញ",
+    "phone": "+855 23 211 445",
+    "coordinates": { "lat": 11.5385, "lng": 104.9148 },
+    "description": "District administrative center for commerce registration, family books, residence certification, and permits.",
+    "descriptionKh": "ការិយាល័យច្រកចេញចូលតែមួយ ផ្តល់សេវាបញ្ជាក់សៀវភៅស្នាក់នៅ លិខិតបញ្ជាក់ទីលំនៅ និងលិខិតអនុញ្ញាតអាជីវកម្ម។"
+  },
+  {
+    "id": "sangkat-bkk1-office",
+    "name": "Sangkat Boeung Keng Kang 1 Administrative Office",
+    "nameKh": "សាលាសង្កាត់បឹងកេងកងទី១",
+    "category": "Government/OWSO",
+    "address": "Street 352, Sangkat Boeung Keng Kang 1, Khan BKK, Phnom Penh",
+    "addressKh": "ផ្លូវ ៣៥២ សង្កាត់បឹងកេងកងទី១ ខណ្ឌបឹងកេងកង រាជធានីភ្នំពេញ",
+    "phone": "+855 23 219 876",
+    "coordinates": { "lat": 11.5512, "lng": 104.9255 },
+    "description": "Local commune office for birth/marriage certificates, family books, voting registration, and resident affairs.",
+    "descriptionKh": "សាលាសង្កាត់ផ្តល់សេវាសំបុត្រកំណើត សំបុត្រអាពាហ៍ពិពាហ៍ សៀវភៅគ្រួសារ និងការចុះឈ្មោះបោះឆ្នោត។"
+  },
+  {
+    "id": "phnom-penh-central-bus-station",
+    "name": "Phnom Penh Central City Bus Terminal (Night Market)",
+    "nameKh": "ស្ថានីយរថយន្តក្រុងកណ្តាលភ្នំពេញ (ផ្សាររាត្រី)",
+    "category": "Bus Station",
+    "address": "Preah Sisowath Quay, Night Market Area, Sangkat Wat Phnom, Phnom Penh",
+    "addressKh": "តីរវិថីព្រះស៊ីសុវត្ថិ តំបន់ផ្សាររាត្រី សង្កាត់វត្តភ្នំ រាជធានីភ្នំពេញ",
+    "phone": "+855 23 430 000",
+    "coordinates": { "lat": 11.5742, "lng": 104.9288 },
+    "description": "Hub interchange for all 13 municipal city bus lines connecting urban districts (1,500 KHR per ride).",
+    "descriptionKh": "ចំណតប្តូរខ្សែរថយន្តក្រុងសាធារណៈទាំង ១៣ ខ្សែ ក្នុងរាជធានីភ្នំពេញ (តម្លៃ ១,៥០០៛ ក្នុងមួយជើង ឥតគិតថ្លៃចំពោះសិស្ស/ចាស់ជរា/ប.ស.ស)។"
+  },
+  {
+    "id": "century-plaza-bus-hub",
+    "name": "Century Plaza Public Bus Terminal",
+    "nameKh": "ស្ថានីយរថយន្តក្រុង សេនជូរីផ្លាហ្សា (ពោធិ៍ចិនតុង)",
+    "category": "Bus Station",
+    "address": "Russian Federation Blvd, Sangkat Kakab, Khan Por Senchey, Phnom Penh",
+    "addressKh": "មហាវិថីសហព័ន្ធរុស្ស៊ី សង្កាត់កាកាប ខណ្ឌពោធិ៍សែនជ័យ រាជធានីភ្នំពេញ",
+    "phone": "+855 23 890 123",
+    "coordinates": { "lat": 11.5542, "lng": 104.8621 },
+    "description": "Western transit hub linking airport travelers and industrial workers with lines 03, 04, and 08.",
+    "descriptionKh": "ស្ថានីយផ្ទេររថយន្តក្រុងប៉ែកខាងលិច ភ្ជាប់ផ្លូវទៅព្រលានយន្តហោះ និងខ្សែរថយន្តក្រុង ០៣, ០៤, ០៨។"
+  },
+  {
+    "id": "chbar-ampov-bus-hub",
+    "name": "Chbar Ampov Public Bus Terminal",
+    "nameKh": "ស្ថានីយរថយន្តក្រុង ច្បារអំពៅ",
+    "category": "Bus Station",
+    "address": "National Road 1 (Near Preah Monivong Bridge), Khan Chbar Ampov, Phnom Penh",
+    "addressKh": "ផ្លូវជាតិលេខ ១ (ក្បែរស្ពានព្រះមុនីវង្ស) ខណ្ឌច្បារអំពៅ រាជធានីភ្នំពេញ",
+    "phone": "+855 23 430 000",
+    "coordinates": { "lat": 11.5365, "lng": 104.9398 },
+    "description": "Eastern transit terminus connecting bus line 01, 02 with Chbar Ampov and Kandal commuters.",
+    "descriptionKh": "ចំណតរថយន្តក្រុងប៉ែកខាងកើត ភ្ជាប់ខ្សែទី ១ និង ២ សម្រួលការធ្វើដំណើរឆ្លងស្ពានមុនីវង្ស។"
+  },
+  {
+    "id": "giant-ibis-terminal-loc",
+    "name": "Giant Ibis Bus Main Terminal",
+    "nameKh": "ស្ថានីយរថយន្តក្រុង ហ្សាយអិន អ៊ីប៊ីស",
+    "category": "Bus Station",
+    "address": "Street 106 (Near Night Market), Sangkat Wat Phnom, Phnom Penh",
+    "addressKh": "ផ្លូវ ១០៦ (ក្បែរផ្សាររាត្រី) សង្កាត់វត្តភ្នំ រាជធានីភ្នំពេញ",
+    "phone": "+855 23 999 333",
+    "coordinates": { "lat": 11.5731, "lng": 104.9275 },
+    "description": "Departure lounge for express air-conditioned coaches to Siem Reap, Sihanoukville, and Kampot.",
+    "descriptionKh": "ស្ថានីយចេញដំណើរបណ្តាញរថយន្តក្រុងទេសចរណ៍ទៅកាន់សៀមរាប ព្រះសីហនុ និងកំពត។"
   },
   {
     "id": "aba-bank-headquarters",
@@ -96,30 +252,6 @@
     "descriptionKh": "ទីស្នាក់ការធនាគារពាណិជ្ជធំបំផុតនៅកម្ពុជា មានទូ ATM ពហុរូបិយប័ណ្ណ។"
   },
   {
-    "id": "canadia-bank-tower",
-    "name": "Canadia Bank Tower (24/7 Banking)",
-    "nameKh": "អគារធនាគារ កាណាឌីយ៉ា",
-    "category": "Bank/ATM",
-    "address": "No. 315, Corner of Monivong Blvd and St 114, Phnom Penh",
-    "addressKh": "ផ្ទះលេខ ៣១៥ កែងមហាវិថីមុនីវង្ស និងផ្លូវ ១១៤ រាជធានីភ្នំពេញ",
-    "phone": "+855 23 868 222",
-    "coordinates": { "lat": 11.5711, "lng": 104.9195 },
-    "description": "Major landmark tower featuring international ATM cash dispensers and banking services.",
-    "descriptionKh": "អគារពាណិជ្ជកម្មកម្ពស់ខ្ពស់ មានទូ ATM និងសេវាធនាគារអន្តរជាតិ។"
-  },
-  {
-    "id": "sokimex-gas-monivong",
-    "name": "Sokimex Fuel Station (Monivong)",
-    "nameKh": "ស្ថានីយប្រេងឥន្ធនៈ សូគីម៉ិច (មុនីវង្ស)",
-    "category": "Gas Station",
-    "address": "Preah Monivong Blvd, Sangkat Boeung Keng Kang 3, Phnom Penh",
-    "addressKh": "មហាវិថីព្រះមុនីវង្ស សង្កាត់បឹងកេងកង៣ រាជធានីភ្នំពេញ",
-    "phone": "+855 23 218 018",
-    "coordinates": { "lat": 11.5435, "lng": 104.9218 },
-    "description": "24-hour gasoline, premium diesel, tire air pressure station, and convenience mini-mart.",
-    "descriptionKh": "ស្ថានីយចាក់សាំង និងម៉ាស៊ូត ២៤ ម៉ោង មានកន្លែងបូមខ្យល់កង់ និងម៉ាត។"
-  },
-  {
     "id": "ptt-station-russian-blvd",
     "name": "PTT Station & Cafe Amazon (Russian Blvd)",
     "nameKh": "ស្ថានីយប្រេង ភីធីធី និងកាហ្វេអាម៉ាហ្សូន (សហព័ន្ធរុស្ស៊ី)",
@@ -130,42 +262,6 @@
     "coordinates": { "lat": 11.5682, "lng": 104.8905 },
     "description": "Modern service station featuring clean rest stops, EV charging docks, 7-Eleven, and Cafe Amazon.",
     "descriptionKh": "ស្ថានីយប្រេងទំនើប បន្ទប់ទឹកស្អាត កន្លែងសាកឡានអគ្គិសនី 7-Eleven និងកាហ្វេអាម៉ាហ្សូន។"
-  },
-  {
-    "id": "totalenergies-norodom",
-    "name": "TotalEnergies Service Station (Norodom)",
-    "nameKh": "ស្ថានីយប្រេងឥន្ធនៈ តូតាល់ (នរោត្តម)",
-    "category": "Gas Station",
-    "address": "Norodom Blvd, Sangkat Tonle Bassac, Khan Chamkarmon, Phnom Penh",
-    "addressKh": "មហាវិថីនរោត្តម សង្កាត់ទន្លេបាសាក់ ខណ្ឌចំការមន រាជធានីភ្នំពេញ",
-    "phone": "+855 23 218 641",
-    "coordinates": { "lat": 11.5468, "lng": 104.9298 },
-    "description": "High-quality Excellium fuels, car engine oil change bays, Bonjour store, and car wash.",
-    "descriptionKh": "ប្រេងឥន្ធនៈស្តង់ដារបារាំង សេវាប្តូរប្រេងម៉ាស៊ីន និងហាងទំនិញ Bonjour។"
-  },
-  {
-    "id": "phnom-penh-central-bus-station",
-    "name": "Phnom Penh Central City Bus Terminal",
-    "nameKh": "ស្ថានីយរថយន្តក្រុងកណ្តាលភ្នំពេញ (ផ្សាររាត្រី)",
-    "category": "Bus Station",
-    "address": "Preah Sisowath Quay, Night Market Area, Sangkat Wat Phnom, Phnom Penh",
-    "addressKh": "តីរវិថីព្រះស៊ីសុវត្ថិ តំបន់ផ្សាររាត្រី សង្កាត់វត្តភ្នំ រាជធានីភ្នំពេញ",
-    "phone": "+855 23 430 000",
-    "coordinates": { "lat": 11.5742, "lng": 104.9288 },
-    "description": "Hub interchange for all 13 municipal city bus lines connecting urban districts.",
-    "descriptionKh": "ចំណតប្តូរខ្សែរថយន្តក្រុងសាធារណៈទាំង ១៣ ខ្សែ ក្នុងរាជធានីភ្នំពេញ។"
-  },
-  {
-    "id": "giant-ibis-terminal-loc",
-    "name": "Giant Ibis Bus Main Terminal",
-    "nameKh": "ស្ថានីយរថយន្តក្រុង ហ្សាយអិន អ៊ីប៊ីស",
-    "category": "Bus Station",
-    "address": "Street 106 (Near Night Market), Sangkat Wat Phnom, Phnom Penh",
-    "addressKh": "ផ្លូវ ១០៦ (ក្បែរផ្សាររាត្រី) សង្កាត់វត្តភ្នំ រាជធានីភ្នំពេញ",
-    "phone": "+855 23 999 333",
-    "coordinates": { "lat": 11.5731, "lng": 104.9275 },
-    "description": "Departure lounge for express air-conditioned coaches to Siem Reap and Kampot.",
-    "descriptionKh": "ស្ថានីយចេញដំណើរបណ្តាញរថយន្តក្រុងទេសចរណ៍ទៅកាន់សៀមរាប និងកំពត។"
   },
   {
     "id": "royal-palace-phnom-penh",
@@ -202,17 +298,5 @@
     "coordinates": { "lat": 11.5564, "lng": 104.9282 },
     "description": "Iconic lotus-shaped stupa designed by architect Vann Molyvann commemorating Cambodia's national independence.",
     "descriptionKh": "ស្តូបផ្កាឈូកនិមិត្តរូបរចនាដោយលោកបណ្ឌិត វណ្ណ ម៉ូលីវណ្ណ ដើម្បីរំលឹកដល់ទិវាបុណ្យឯករាជ្យជាតិ។"
-  },
-  {
-    "id": "central-market-phnom-penh",
-    "name": "Central Market (Phsar Thmey)",
-    "nameKh": "ផ្សារធំថ្មី",
-    "category": "Tourist Attraction",
-    "address": "Calmette St. 53, Sangkat Phsar Thmey 1, Khan Doun Penh, Phnom Penh",
-    "addressKh": "ផ្លូវ ៥៣ សង្កាត់ផ្សារថ្មី១ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
-    "phone": "+855 23 218 849",
-    "coordinates": { "lat": 11.5696, "lng": 104.9213 },
-    "description": "Art-deco dome landmark marketplace packed with jewelry, textiles, Khmer souvenirs, and street food.",
-    "descriptionKh": "ផ្សារស្ថាបត្យកម្មអាដេកូ ដំបូលមូលធំ លក់គ្រឿងអលង្ការ សម្លៀកបំពាក់ វត្ថុអនុស្សាវរីយ៍ និងម្ហូបអាហារ។"
   }
 ]

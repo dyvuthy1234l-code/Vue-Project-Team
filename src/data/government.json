@@ -4,6 +4,7 @@
     "title": "National ID Card (Khmer Identity Card)",
     "titleKh": "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ",
     "category": "ID Card",
+    "image": "/images/documents/national-id.jpg",
     "description": "Apply for or renew your Cambodian National Identification Card. Required for all Cambodian citizens aged 15 and above for official identification, banking, property transactions, and voting.",
     "descriptionKh": "ដាក់ពាក្យសុំ ឬបន្តអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ។ តម្រូវសម្រាប់ពលរដ្ឋកម្ពុជាទាំងអស់ដែលមានអាយុ ១៥ ឆ្នាំឡើង សម្រាប់ការសម្គាល់ខ្លួន ធនាគារ ទិញលក់អចលនទ្រព្យ និងការបោះឆ្នោត។",
     "requirements": [
@@ -80,6 +81,7 @@
     "title": "Cambodian Passport Issuance",
     "titleKh": "ការធ្វើលិខិតឆ្លងដែនកម្ពុជា",
     "category": "Passport",
+    "image": "/images/documents/passport.jpg",
     "description": "Apply for standard 10-year biometric international travel passport for Cambodian citizens through the General Department of Identification.",
     "descriptionKh": "ដាក់ពាក្យស្នើសុំលិខិតឆ្លងដែនអន្តរជាតិជីវមាត្រសុពលភាព ១០ ឆ្នាំ សម្រាប់ពលរដ្ឋកម្ពុជា តាមរយៈអគ្គនាយកដ្ឋានអត្តសញ្ញាណកម្ម។",
     "requirements": [
@@ -150,6 +152,7 @@
     "title": "Driver's License (Type A & B)",
     "titleKh": "ប័ណ្ណបើកបរយានយន្ត (ប្រភេទ ក និង ខ)",
     "category": "Driver's License",
+    "image": "/images/documents/driver-license.jpg",
     "description": "Application, theoretical and practical examination, and renewal of Cambodian motorcycle and light passenger motor vehicle driving licenses.",
     "descriptionKh": "ការដាក់ពាក្យ ប្រឡងទ្រឹស្តី និងការបើកបរជាក់ស្តែង ព្រមទាំងការបន្តសុពលភាពប័ណ្ណបើកបរទោចក្រយានយន្ត និងរថយន្តទេសចរណ៍។",
     "requirements": [
@@ -218,6 +221,7 @@
     "title": "Official Birth Certificate Registration",
     "titleKh": "ការចុះសំបុត្រកំណើត (អត្រានុកូលដ្ឋាន)",
     "category": "Birth Certificate",
+    "image": "/images/documents/birth-certificate.jpg",
     "description": "Registration of newborn childbirth or delayed birth certificate declaration with Commune/Sangkat civil registrars.",
     "descriptionKh": "ការចុះបញ្ជីកំណើតទារកកើតថ្មី ឬការស្នើសុំសំបុត្រកំណើតយឺតពេលនៅសាលាឃុំ/សង្កាត់។",
     "requirements": [
@@ -279,6 +283,7 @@
     "title": "Family Book (Kor.Bou.4) Issuance",
     "titleKh": "ការធ្វើសៀវភៅគ្រួសារ (ក.ប.៤)",
     "category": "Family Book",
+    "image": "/images/documents/family-book.jpg",
     "description": "Official household family registry document designating household head and familial relationship records.",
     "descriptionKh": "ឯកសារបញ្ជីគ្រួសារផ្លូវការ ដែលបញ្ជាក់អំពីមេគ្រួសារ និងទំនាក់ទំនងសមាជិកគ្រួសារ។",
     "requirements": [
@@ -342,6 +347,7 @@
     "title": "Legal Marriage Registration Certificate",
     "titleKh": "ការចុះសំបុត្រអាពាហ៍ពិពាហ៍ស្របច្បាប់",
     "category": "Marriage Certificate",
+    "image": "/images/documents/marriage-certificate.svg",
     "description": "Civil status legal union certification for Cambodian couples under the Law on Civil Status and Marriage.",
     "descriptionKh": "ការចុះបញ្ជីអាពាហ៍ពិពាហ៍ស្របច្បាប់សម្រាប់គូស្វាមីភរិយាកម្ពុជា ស្របតាមច្បាប់ស្តីពីអាពាហ៍ពិពាហ៍និងគ្រួសារ។",
     "requirements": [
@@ -405,6 +411,7 @@
     "title": "Online Business Registration (CamDX Single Portal)",
     "titleKh": "ការចុះបញ្ជីពាណិជ្ជកម្មតាមប្រព័ន្ធអនឡាញ (CamDX)",
     "category": "Business Registration",
+    "image": "/images/documents/business-registration.svg",
     "description": "Unified online business registration across Ministry of Commerce, General Department of Taxation, and Ministry of Labour & Vocational Training.",
     "descriptionKh": "ការចុះបញ្ជីពាណិជ្ជកម្មរួមគ្នាតាមប្រព័ន្ធអនឡាញ តាមរយៈក្រសួងពាណិជ្ជកម្ម អគ្គនាយកដ្ឋានពន្ធដារ និងក្រសួងការងារ។",
     "requirements": [
@@ -468,6 +475,7 @@
     "title": "Hard Title Land Transfer & Registration",
     "titleKh": "ការផ្ទេរសិទ្ធិកាន់កាប់អចលនទ្រព្យ (ប្លង់រឹង)",
     "category": "Land Title",
+    "image": "/images/documents/land-title.svg",
     "description": "Cadastral transfer of hard title land and real estate ownership through the Ministry of Land Management, Urban Planning and Construction.",
     "descriptionKh": "ការផ្ទេរសិទ្ធិកម្មសិទ្ធិដីធ្លី និងអចលនទ្រព្យ (ប្លង់រឹង) តាមរយៈក្រសួងរៀបចំដែនដី នគរូបនីយកម្ម និងសំណង់។",
     "requirements": [

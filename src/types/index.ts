@@ -15,6 +15,9 @@ export interface Hospital {
   address: string
   addressKh: string
   coordinates: { lat: number; lng: number }
+  ownership?: 'public' | 'private'
+  acceptsNssf?: boolean
+  emergencyHotline?: string
 }
 
 export interface GovernmentService {
@@ -22,6 +25,7 @@ export interface GovernmentService {
   title: string
   titleKh: string
   category: string
+  image?: string
   description: string
   descriptionKh: string
   requirements: string[]
@@ -51,6 +55,8 @@ export interface Job {
   type: 'Full-time' | 'Part-time' | 'Internship' | 'Freelance'
   category: string
   postedDate: string
+  image?: string
+  logo?: string
   description: string
   requirements: string[]
   benefits: string[]
@@ -66,7 +72,10 @@ export interface HomeService {
   image: string
   location: string
   rating: number
+  reviews?: number
+  priceEstimate?: string
   phone: string
+  coordinates?: { lat: number; lng: number }
   description: string
   descriptionKh: string
 }
@@ -76,6 +85,7 @@ export interface Transport {
   type: 'bus' | 'taxi' | 'train' | 'plane' | 'ferry'
   name: string
   nameKh: string
+  image?: string
   description: string
   descriptionKh: string
   route: string
@@ -105,6 +115,7 @@ export interface LocationItem {
   name: string
   nameKh: string
   category: string
+  image?: string
   address: string
   addressKh: string
   phone: string
@@ -118,6 +129,7 @@ export interface EmergencyContact {
   name: string
   nameKh: string
   number: string
+  image?: string
   description: string
   descriptionKh: string
   icon: string

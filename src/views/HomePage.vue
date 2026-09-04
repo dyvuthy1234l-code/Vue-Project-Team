@@ -1,910 +1,1337 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  Search,
-  ArrowRight,
-  ShieldCheck,
-  Clock3,
-  Users,
-  Compass,
-  Sparkles,
-  Phone,
-  ShieldAlert,
-  Flame,
   Ambulance,
-  HeartPulse,
-  Building2,
+  ArrowRight,
+  BadgeCheck,
+  Banknote,
+  Bell,
   Briefcase,
+  Building2,
   Bus,
-  Wrench,
-  Newspaper,
-  CalendarDays,
+  CarFront,
   CheckCircle2,
   ChevronRight,
+  Clock3,
+  FileText,
+  Flame,
+  HeartPulse,
+  Hospital,
+  IdCard,
+  Landmark,
+  LocateFixed,
+  MapPin,
+  Newspaper,
+  Phone,
   PhoneCall,
-  X
+  Search,
+  ShieldCheck,
+  ShieldAlert,
+  Siren,
+  Sparkles,
+  Wrench,
+  AlertTriangle,
+  CheckSquare
 } from 'lucide-vue-next'
-
-import { getNews } from '@/services/dataService'
-import { usePageMeta } from '@/composables/usePageMeta'
 import { useLanguage } from '@/composables/useLanguage'
+import { usePageMeta } from '@/composables/usePageMeta'
+import { useLocation } from '@/composables/useLocation'
+import {
+  getEmergencyContacts,
+  getGovernmentServices,
+  getHomeServices,
+  getHospitals,
+  getJobs,
+  getLocations,
+  getNews,
+  globalSearch
+} from '@/services/dataService'
+import VerificationBadge from '@/components/VerificationBadge.vue'
 import LazyImage from '@/components/LazyImage.vue'
-import SearchModal from '@/components/SearchModal.vue'
+import heroIllustration from '@/assets/cambodia-hero.png'
+
+type NearbyTab = 'hospitals' | 'police' | 'owso' | 'transport' | 'services'
+
+interface MapPoint {
+  name: string
+  nameKh: string
+  address: string
+  addressKh: string
+  coordinates: { lat: number; lng: number }
+}
+
+interface NearbyEntry extends Omit<MapPoint, 'coordinates'> {
+  id: string
+  meta: string
+  categoryName: string
+  categoryNameKh: string
+  phone?: string
+  coordinates?: { lat: number; lng: number }
+  route: string
+}
+
+usePageMeta({
+  title: 'CamLife — វិបផតថលសេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃសម្រាប់ពលរដ្ឋកម្ពុជា',
+  description: 'ស្វែងរកសេវាសាធារណៈ សុខាភិបាល ឱកាសការងារ ការដឹកជញ្ជូន និងជំនួយបន្ទាន់ ២៤/៧ នៅកម្ពុជា'
+})
 
 const router = useRouter()
 const { currentLanguage, localized } = useLanguage()
+const { selectedProvince } = useLocation()
 
-usePageMeta({
-  title: 'CamLife — Everything You Need For Life in Cambodia',
-  description:
-    "CamLife is Cambodia's premier life-service portal for healthcare, government services, jobs, transport, emergency contacts and everyday services.",
-})
+const hospitals = getHospitals()
+const jobs = getJobs()
+const governmentServices = getGovernmentServices()
+const homeServices = getHomeServices()
+const locations = getLocations()
+const news = getNews()
+const emergencyContacts = getEmergencyContacts()
 
 const searchQuery = ref('')
-const isSearchModalOpen = ref(false)
+const newsletterEmail = ref('')
+const newsletterSubscribed = ref(false)
+const activeNearbyTab = ref<NearbyTab>('hospitals')
+const selectedEntryId = ref<string>('')
+const activeMapPoint = ref<MapPoint>({
+  name: locations[0].name,
+  nameKh: locations[0].nameKh,
+  address: locations[0].address,
+  addressKh: locations[0].addressKh,
+  coordinates: locations[0].coordinates
+})
 
-const popularSearches = [
-  { label: 'Hospitals', labelKh: 'មន្ទីរពេទ្យ', path: '/health' },
-  { label: 'Jobs', labelKh: 'ការងារ', path: '/jobs' },
-  { label: 'Driving License', labelKh: 'ប័ណ្ណបើកបរ', path: '/government' },
-  { label: 'Passport', labelKh: 'លិខិតឆ្លងដែន', path: '/government' },
-  { label: 'Emergency', labelKh: 'សង្គ្រោះបន្ទាន់', path: '/emergency' },
+// 5 Essential Civic Service Categories for Nearby Services
+const nearbyTabs = [
+  { id: 'hospitals' as const, labelEn: 'Hospitals', labelKh: 'មន្ទីរពេទ្យ', icon: Hospital, badge: '24/7' },
+  { id: 'police' as const, labelEn: 'Police & Security', labelKh: 'ប៉ុស្តិ៍នគរបាល', icon: ShieldAlert, badge: '117' },
+  { id: 'owso' as const, labelEn: 'OWSO & Sangkat', labelKh: 'ច្រកចេញចូលតែមួយ', icon: Landmark, badge: 'Civic' },
+  { id: 'transport' as const, labelEn: 'Bus & Transit', labelKh: 'ចំណតឡានក្រុង', icon: Bus, badge: '1,500៛' },
+  { id: 'services' as const, labelEn: 'Home Repairs', labelKh: 'សេវាជាងបន្ទាន់', icon: Wrench, badge: 'Repairs' }
 ]
 
-const stats = [
-  { value: '50+', label: 'Healthcare Centers', labelKh: 'មន្ទីរពេទ្យ និងគ្លីនិក', icon: HeartPulse },
-  { value: '30+', label: 'Official Procedures', labelKh: 'សេវារដ្ឋបាលសាធារណៈ', icon: Building2 },
-  { value: '100+', label: 'Career Openings', labelKh: 'ឱកាសការងារ', icon: Briefcase },
-  { value: '24/7', label: 'Toll-Free Hotlines', labelKh: 'សង្គ្រោះបន្ទាន់ ២៤/៧', icon: PhoneCall },
+// 7 Citizen Essential Service Pillars
+const quickAccess = [
+  {
+    label: 'Emergency 24/7',
+    labelKh: 'សង្គ្រោះបន្ទាន់',
+    description: 'Hotlines & Crisis',
+    descriptionKh: 'ទូរស័ព្ទ ១១៧/១១៨/១១៩',
+    route: '/emergency',
+    icon: Siren,
+    image: '/images/pillars/emergency.jpg',
+    color: 'text-red-500',
+    bg: 'bg-red-50 dark:bg-red-950/40',
+    accent: 'bg-red-500',
+    hover: 'hover:border-red-300 dark:hover:border-red-700'
+  },
+  {
+    label: 'Civic Guides',
+    labelKh: 'សេវារដ្ឋបាល',
+    description: 'ID, Passport, License',
+    descriptionKh: 'អត្តសញ្ញាណប័ណ្ណ លិខិតឆ្លងដែន',
+    route: '/government',
+    icon: Landmark,
+    image: '/images/pillars/government.jpg',
+    color: 'text-blue-600',
+    bg: 'bg-blue-50 dark:bg-blue-950/40',
+    accent: 'bg-blue-500',
+    hover: 'hover:border-blue-300 dark:hover:border-blue-700'
+  },
+  {
+    label: 'Healthcare',
+    labelKh: 'សុខាភិបាល',
+    description: 'Hospitals & Clinics',
+    descriptionKh: 'មន្ទីរពេទ្យ និងគ្លីនិក',
+    route: '/health',
+    icon: HeartPulse,
+    image: '/images/pillars/health.jpg',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-50 dark:bg-emerald-950/40',
+    accent: 'bg-emerald-500',
+    hover: 'hover:border-emerald-300 dark:hover:border-emerald-700'
+  },
+  {
+    label: 'Public Jobs',
+    labelKh: 'ឱកាសការងារ',
+    description: 'Verified Vacancies',
+    descriptionKh: 'ការងាររដ្ឋ និងឯកជន',
+    route: '/jobs',
+    icon: Briefcase,
+    image: '/images/pillars/jobs.jpg',
+    color: 'text-violet-600',
+    bg: 'bg-violet-50 dark:bg-violet-950/40',
+    accent: 'bg-violet-500',
+    hover: 'hover:border-violet-300 dark:hover:border-violet-700'
+  },
+  {
+    label: 'City Transit',
+    labelKh: 'រថយន្តក្រុង',
+    description: 'Bus Lines & Fares',
+    descriptionKh: 'ខ្សែរត់ ១៣ ខ្សែ & សំបុត្រ',
+    route: '/transport',
+    icon: Bus,
+    image: '/images/pillars/transport.jpg',
+    color: 'text-amber-600',
+    bg: 'bg-amber-50 dark:bg-amber-950/40',
+    accent: 'bg-amber-500',
+    hover: 'hover:border-amber-300 dark:hover:border-amber-700'
+  },
+  {
+    label: 'Home Services',
+    labelKh: 'សេវាគេហដ្ឋាន',
+    description: 'Electricians & Plumbers',
+    descriptionKh: 'ជាងភ្លើង ទឹក ម៉ាស៊ីនត្រជាក់',
+    route: '/home-services',
+    icon: Wrench,
+    image: '/images/pillars/home-services.jpg',
+    color: 'text-cyan-600',
+    bg: 'bg-cyan-50 dark:bg-cyan-950/40',
+    accent: 'bg-cyan-500',
+    hover: 'hover:border-cyan-300 dark:hover:border-cyan-700'
+  },
+  {
+    label: 'Public News',
+    labelKh: 'សេចក្តីជូនដំណឹង',
+    description: 'Official Bulletins',
+    descriptionKh: 'ព្រឹត្តិបត្រព័ត៌មានជាតិ',
+    route: '/news',
+    icon: Newspaper,
+    image: '/images/pillars/news.jpg',
+    color: 'text-rose-600',
+    bg: 'bg-rose-50 dark:bg-rose-950/40',
+    accent: 'bg-rose-500',
+    hover: 'hover:border-rose-300 dark:hover:border-rose-700'
+  }
 ]
 
-function handleSearchSubmit() {
-  const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return
+const popularSearches = computed(() => [
+  { label: currentLanguage.value === 'kh' ? 'អត្តសញ្ញាណប័ណ្ណ' : 'National ID', query: 'National ID Card' },
+  { label: currentLanguage.value === 'kh' ? 'ប័ណ្ណបើកបរ' : 'Driving License', query: 'Driving License' },
+  { label: currentLanguage.value === 'kh' ? 'លិខិតឆ្លងដែន' : 'Passport', query: 'Passport' },
+  { label: currentLanguage.value === 'kh' ? 'មន្ទីរពេទ្យ' : 'Hospitals', query: 'Hospitals' },
+  { label: currentLanguage.value === 'kh' ? 'ការងារ' : 'Jobs', query: 'Jobs' },
+  { label: currentLanguage.value === 'kh' ? 'សង្គ្រោះបន្ទាន់ ១១៩' : 'Emergency 119', query: '119' }
+])
 
-  if (
-    q.includes('job') ||
-    q.includes('work') ||
-    q.includes('career') ||
-    q.includes('hire')
-  ) {
-    router.push({
-      path: '/jobs',
-      query: { q: searchQuery.value.trim() },
-    })
-  } else if (
-    q.includes('emerg') ||
-    q.includes('police') ||
-    q.includes('fire') ||
-    q.includes('ambulance') ||
-    q.includes('117') ||
-    q.includes('119')
-  ) {
-    router.push('/emergency')
-  } else if (
-    q.includes('passport') ||
-    q.includes('license') ||
-    q.includes('gov') ||
-    q.includes('tax') ||
-    q.includes('id card') ||
-    q.includes('birth')
-  ) {
-    router.push({
-      path: '/government',
-      query: { q: searchQuery.value.trim() },
-    })
-  } else if (
-    q.includes('bus') ||
-    q.includes('train') ||
-    q.includes('taxi') ||
-    q.includes('transit') ||
-    q.includes('flight')
-  ) {
-    router.push('/transport')
-  } else if (
-    q.includes('clean') ||
-    q.includes('plumb') ||
-    q.includes('electric') ||
-    q.includes('repair') ||
-    q.includes('ac')
-  ) {
-    router.push('/home-services')
-  } else if (q.includes('news')) {
-    router.push('/news')
-  } else {
-    router.push({
-      path: '/health',
-      query: { q: searchQuery.value.trim() },
-    })
+const serviceThemes = [
+  { icon: IdCard, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-950/50', border: 'hover:border-blue-300 dark:hover:border-blue-600', ring: 'ring-blue-500/20' },
+  { icon: FileText, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/50', border: 'hover:border-indigo-300 dark:hover:border-indigo-600', ring: 'ring-indigo-500/20' },
+  { icon: CarFront, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950/50', border: 'hover:border-amber-300 dark:hover:border-amber-600', ring: 'ring-amber-500/20' },
+  { icon: Landmark, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/50', border: 'hover:border-emerald-300 dark:hover:border-emerald-600', ring: 'ring-emerald-500/20' },
+  { icon: Banknote, color: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-950/50', border: 'hover:border-violet-300 dark:hover:border-violet-600', ring: 'ring-violet-500/20' },
+  { icon: Building2, color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/50', border: 'hover:border-rose-300 dark:hover:border-rose-600', ring: 'ring-rose-500/20' }
+]
+
+const popularServices = computed(() => governmentServices.slice(0, 6).map((service, index) => {
+  const theme = serviceThemes[index % serviceThemes.length]
+  return {
+    ...service,
+    theme,
+    shortTitle: service.title.replace('Cambodian ', '').replace(' (Khmer Identity Card)', '')
+  }
+}))
+
+const latestJobs = computed(() => jobs.slice(0, 3))
+const latestNews = computed(() => news.slice(0, 3))
+const emergencyHighlights = computed(() => emergencyContacts.slice(0, 4))
+
+const nearbyEntries = computed<NearbyEntry[]>(() => {
+  const provName = selectedProvince.value?.name || ''
+  const isProvMatch = (text: string) => {
+    if (!provName || provName === 'Phnom Penh') return true
+    return text.toLowerCase().includes(provName.toLowerCase())
+  }
+
+  if (activeNearbyTab.value === 'hospitals') {
+    const list = hospitals.filter(h => isProvMatch(h.address) || isProvMatch(h.location || ''))
+    const source = list.length > 0 ? list : hospitals
+    return source.slice(0, 5).map(hospital => ({
+      id: hospital.id,
+      name: hospital.name,
+      nameKh: hospital.nameKh,
+      address: hospital.address,
+      addressKh: hospital.addressKh,
+      categoryName: 'Hospital',
+      categoryNameKh: 'មន្ទីរពេទ្យ',
+      meta: (hospital.openingHours?.includes('24') || hospital.openingHours === '24/7') ? (currentLanguage.value === 'kh' ? 'សង្គ្រោះបន្ទាន់ ២៤/៧' : '24/7 Emergency Care') : hospital.openingHours,
+      phone: hospital.phone,
+      coordinates: hospital.coordinates,
+      route: `/health/${hospital.id}`
+    }))
+  }
+
+  if (activeNearbyTab.value === 'police') {
+    const list = locations.filter(l => l.category === 'Police Station' && (isProvMatch(l.address) || isProvMatch(l.name)))
+    const source = list.length > 0 ? list : locations.filter(l => l.category === 'Police Station')
+    return source.slice(0, 5).map(loc => ({
+      id: loc.id,
+      name: loc.name,
+      nameKh: loc.nameKh,
+      address: loc.address,
+      addressKh: loc.addressKh,
+      categoryName: 'Police Station',
+      categoryNameKh: 'ប៉ុស្តិ៍នគរបាល',
+      meta: currentLanguage.value === 'kh' ? 'អន្តរាគមន៍បន្ទាន់ ២៤ ម៉ោង' : '24/7 Police Dispatch',
+      phone: loc.phone,
+      coordinates: loc.coordinates,
+      route: '/locations'
+    }))
+  }
+
+  if (activeNearbyTab.value === 'owso') {
+    const list = locations.filter(l => l.category === 'Government/OWSO' && (isProvMatch(l.address) || isProvMatch(l.name)))
+    const source = list.length > 0 ? list : locations.filter(l => l.category === 'Government/OWSO')
+    return source.slice(0, 5).map(loc => ({
+      id: loc.id,
+      name: loc.name,
+      nameKh: loc.nameKh,
+      address: loc.address,
+      addressKh: loc.addressKh,
+      categoryName: 'Government/OWSO',
+      categoryNameKh: 'ច្រកចេញចូលតែមួយ',
+      meta: currentLanguage.value === 'kh' ? 'ការិយាល័យច្រកចេញចូលតែមួយ' : 'One Window Service (OWSO)',
+      phone: loc.phone,
+      coordinates: loc.coordinates,
+      route: '/locations'
+    }))
+  }
+
+  if (activeNearbyTab.value === 'transport') {
+    const list = locations.filter(l => l.category === 'Bus Station' && (isProvMatch(l.address) || isProvMatch(l.name)))
+    const source = list.length > 0 ? list : locations.filter(l => l.category === 'Bus Station')
+    return source.slice(0, 5).map(loc => ({
+      id: loc.id,
+      name: loc.name,
+      nameKh: loc.nameKh,
+      address: loc.address,
+      addressKh: loc.addressKh,
+      categoryName: 'Bus Station',
+      categoryNameKh: 'ចំណតរថយន្តក្រុង',
+      meta: currentLanguage.value === 'kh' ? 'ខ្សែរថយន្តក្រុងសាធារណៈ · ១,៥០០៛' : 'City Bus Terminal · 1,500 KHR',
+      phone: loc.phone,
+      coordinates: loc.coordinates,
+      route: '/transport'
+    }))
+  }
+
+  const list = homeServices.filter(s => isProvMatch(s.location) || isProvMatch(s.provider))
+  const source = list.length > 0 ? list : homeServices
+  return source.slice(0, 5).map(service => ({
+    id: service.id,
+    name: service.serviceName,
+    nameKh: service.serviceNameKh,
+    address: `${service.provider} · ${service.location}`,
+    addressKh: `${service.provider} · ${service.location}`,
+    categoryName: service.category,
+    categoryNameKh: 'សេវាជាង',
+    meta: `${service.category} · ★ ${service.rating.toFixed(1)} (${service.priceEstimate || '$10-$30'})`,
+    phone: service.phone,
+    coordinates: service.coordinates,
+    route: '/home-services'
+  }))
+})
+
+const mapEmbedUrl = computed(() => {
+  const { lat, lng } = activeMapPoint.value.coordinates
+  return `https://www.google.com/maps?q=${lat},${lng}&z=14&output=embed`
+})
+
+const mapDirectionsUrl = computed(() => {
+  const { lat, lng } = activeMapPoint.value.coordinates
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+})
+
+function submitSearch() {
+  const query = searchQuery.value.trim()
+  if (!query) return router.push('/government')
+  const results = globalSearch(query)
+  router.push(results[0]?.route || '/government')
+}
+
+function usePopularSearch(term: string) {
+  searchQuery.value = term
+  submitSearch()
+}
+
+function selectMapEntry(entry: NearbyEntry) {
+  selectedEntryId.value = entry.id
+  if (entry.coordinates) {
+    activeMapPoint.value = {
+      name: entry.name,
+      nameKh: entry.nameKh,
+      address: entry.address,
+      addressKh: entry.addressKh,
+      coordinates: entry.coordinates
+    }
   }
 }
 
-const servicesList = [
-  {
-    category: 'Emergency',
-    categoryKh: 'សង្គ្រោះបន្ទាន់',
-    title: 'Emergency Hotlines',
-    titleKh: 'សង្គ្រោះបន្ទាន់ជាតិ',
-    description: 'Police, ambulance, fire rescue and 24/7 toll-free crisis lines.',
-    descriptionKh: 'ទំនាក់ទំនងបន្ទាន់សម្រាប់ប៉ូលិស រថយន្តសង្គ្រោះ និងពន្លត់អគ្គិភ័យ។',
-    path: '/emergency',
-    icon: ShieldAlert,
-    accent: '#E53935',
-    iconBg: 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400',
-    highlight: true,
-  },
-  {
-    category: 'Health',
-    categoryKh: 'សុខាភិបាល',
-    title: 'Healthcare & Hospitals',
-    titleKh: 'សុខភាព និងមន្ទីរពេទ្យ',
-    description: 'Find verified hospitals, clinics, and 24/7 medical centers.',
-    descriptionKh: 'ស្វែងរកមន្ទីរពេទ្យ គ្លីនិក និងសេវាសុខាភិបាលទូទាំងប្រទេស។',
-    path: '/health',
-    icon: HeartPulse,
-    accent: '#16A34A',
-    iconBg: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
-  },
-  {
-    category: 'Government',
-    categoryKh: 'រដ្ឋបាល',
-    title: 'Public Civic Guides',
-    titleKh: 'សេវារដ្ឋបាលសាធារណៈ',
-    description: 'Step-by-step guides for passports, driving licenses, and IDs.',
-    descriptionKh: 'ការណែនាំសម្រាប់លិខិតឆ្លងដែន ប័ណ្ណបើកបរ និងសេវារដ្ឋ។',
-    path: '/government',
-    icon: Building2,
-    accent: '#0D47A1',
-    iconBg: 'bg-blue-50 text-[#0D47A1] dark:bg-blue-950/40 dark:text-blue-400',
-  },
-  {
-    category: 'Jobs',
-    categoryKh: 'ការងារ',
-    title: 'Jobs & Careers',
-    titleKh: 'ឱកាសការងារ និងអាជីព',
-    description: 'Explore full-time, part-time jobs, and internship positions.',
-    descriptionKh: 'ស្វែងរកការងារ កម្មសិក្សា និងឱកាសអាជីពថ្មីៗ។',
-    path: '/jobs',
-    icon: Briefcase,
-    accent: '#7C3AED',
-    iconBg: 'bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400',
-  },
-  {
-    category: 'Transport',
-    categoryKh: 'ដឹកជញ្ជូន',
-    title: 'Transit & Transport',
-    titleKh: 'ការធ្វើដំណើរ និងដឹកជញ្ជូន',
-    description: 'Bus routes, provincial lines, train schedules, and taxi contacts.',
-    descriptionKh: 'ព័ត៌មានផ្លូវធ្វើដំណើរ កាលវិភាគរថភ្លើង និងរថយន្តក្រុង។',
-    path: '/transport',
-    icon: Bus,
-    accent: '#D97706',
-    iconBg: 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400',
-  },
-  {
-    category: 'Home Services',
-    categoryKh: 'សេវាផ្ទះ',
-    title: 'Home & Utilities',
-    titleKh: 'សេវាកម្មគេហដ្ឋាន',
-    description: 'Verified electricians, plumbers, AC technicians, and cleaners.',
-    descriptionKh: 'ស្វែងរកជាងជំនាញ និងសេវាកម្មជួសជុលសម្រាប់គេហដ្ឋាន។',
-    path: '/home-services',
-    icon: Wrench,
-    accent: '#0891B2',
-    iconBg: 'bg-cyan-50 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-400',
-  },
-  {
-    category: 'News',
-    categoryKh: 'ព័ត៌មាន',
-    title: 'Public Bulletins',
-    titleKh: 'ព័ត៌មាន និងសេចក្តីប្រកាស',
-    description: 'Stay updated with verified official announcements and advisories.',
-    descriptionKh: 'សេចក្តីប្រកាស និងព័ត៌មានផ្លូវការសំខាន់ៗប្រចាំថ្ងៃ។',
-    path: '/news',
-    icon: Newspaper,
-    accent: '#DB2777',
-    iconBg: 'bg-pink-50 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400',
-  },
-]
+function setNearbyTab(tab: NearbyTab) {
+  activeNearbyTab.value = tab
+  nextTick(() => {
+    const firstPoint = nearbyEntries.value[0]
+    if (firstPoint) {
+      selectMapEntry(firstPoint)
+    }
+  })
+}
 
-const emergencyDials = [
-  {
-    label: 'Police Department',
-    labelKh: 'នគរបាលជាតិ',
-    number: '117',
-    icon: ShieldAlert,
-    tel: 'tel:117',
-    desc: 'Crime, safety & urgent dispatch',
-    descKh: 'បទល្មើស ចោរកម្ម និងសន្តិសុខ',
-    gradient: 'from-blue-600/20 to-indigo-600/10 hover:border-blue-500/50',
-    numberColor: 'text-white',
-  },
-  {
-    label: 'Ambulance & SAMU',
-    labelKh: 'រថយន្តសង្គ្រោះបន្ទាន់',
-    number: '119',
-    icon: Ambulance,
-    tel: 'tel:119',
-    desc: 'Medical trauma & emergency care',
-    descKh: 'សង្គ្រោះវេជ្ជសាស្ត្របន្ទាន់',
-    gradient: 'from-red-600/20 to-rose-600/10 hover:border-red-500/50',
-    numberColor: 'text-red-400',
-  },
-  {
-    label: 'Fire Department',
-    labelKh: 'ពន្លត់អគ្គិភ័យ',
-    number: '666',
-    icon: Flame,
-    tel: 'tel:666',
-    desc: 'Fire rescue & hazard control',
-    descKh: 'អគ្គិភ័យ និងការជួយសង្គ្រោះ',
-    gradient: 'from-amber-600/20 to-orange-600/10 hover:border-amber-500/50',
-    numberColor: 'text-amber-400',
-  },
-  {
-    label: 'National Emergency',
-    labelKh: 'សង្គ្រោះបន្ទាន់ទូទៅ',
-    number: '112',
-    icon: Phone,
-    tel: 'tel:112',
-    desc: 'Nationwide 24/7 hotline',
-    descKh: 'ខ្សែទូរស័ព្ទទាន់ហេតុការណ៍ជាតិ',
-    gradient: 'from-purple-600/20 to-violet-600/10 hover:border-purple-500/50',
-    numberColor: 'text-purple-300',
-  },
-]
+function getNearbyIcon(tab: NearbyTab) {
+  if (tab === 'hospitals') return Hospital
+  if (tab === 'police') return ShieldAlert
+  if (tab === 'owso') return Landmark
+  if (tab === 'transport') return Bus
+  return Wrench
+}
 
-const latestNews = computed(() => getNews().slice(0, 3))
+function getNearbyIconBg(tab: NearbyTab) {
+  if (tab === 'hospitals') return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 ring-emerald-500/20'
+  if (tab === 'police') return 'bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400 ring-rose-500/20'
+  if (tab === 'owso') return 'bg-blue-50 text-[#0D47A1] dark:bg-blue-950/60 dark:text-blue-300 ring-blue-500/20'
+  if (tab === 'transport') return 'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 ring-amber-500/20'
+  return 'bg-cyan-50 text-cyan-600 dark:bg-cyan-950/60 dark:text-cyan-400 ring-cyan-500/20'
+}
 
-const trustPillars = [
-  {
-    title: 'Verified Information',
-    titleKh: 'ព័ត៌មានផ្លូវការច្បាស់លាស់',
-    desc: 'Directly sourced and curated from official ministries and vetted providers.',
-    icon: ShieldCheck,
-  },
-  {
-    title: 'Always Available 24/7',
-    titleKh: 'ប្រើប្រាស់បាន ២៤/៧',
-    desc: 'Immediate access to critical hotlines and information whenever you need it.',
-    icon: Clock3,
-  },
-  {
-    title: 'Built For Everyone',
-    titleKh: 'សម្រាប់ប្រជាពលរដ្ឋគ្រប់គ្នា',
-    desc: 'Fully bilingual in Khmer and English, accessible on mobile and desktop.',
-    icon: Users,
-  },
-  {
-    title: 'Fast & Intuitive',
-    titleKh: 'រហ័ស និងងាយស្រួល',
-    desc: 'Find directions, phone numbers, and guidelines in seconds with zero friction.',
-    icon: Compass,
-  },
-]
+watch(selectedProvince, () => {
+  nextTick(() => {
+    const firstPoint = nearbyEntries.value[0]
+    if (firstPoint) {
+      selectMapEntry(firstPoint)
+    }
+  })
+})
+
+function submitNewsletter() {
+  if (newsletterEmail.value.trim()) newsletterSubscribed.value = true
+}
+
+function emergencyIcon(id: string) {
+  if (id === 'police') return ShieldCheck
+  if (id === 'ambulance') return Ambulance
+  if (id === 'fire') return Flame
+  return Phone
+}
+
+function emergencyTone(id: string) {
+  if (id === 'police') return 'border-blue-400/20 bg-blue-400/[.09] hover:bg-blue-400/[.16]'
+  if (id === 'ambulance') return 'border-cyan-400/20 bg-cyan-400/[.09] hover:bg-cyan-400/[.16]'
+  if (id === 'fire') return 'border-orange-400/20 bg-orange-400/[.09] hover:bg-orange-400/[.16]'
+  return 'border-rose-400/20 bg-rose-400/[.09] hover:bg-rose-400/[.16]'
+}
+
+function emergencyNumberTone(id: string) {
+  if (id === 'police') return 'text-blue-300'
+  if (id === 'ambulance') return 'text-cyan-300'
+  if (id === 'fire') return 'text-orange-300'
+  return 'text-rose-300'
+}
+
+let scrollObserver: IntersectionObserver | null = null
+
+onMounted(async () => {
+  await nextTick()
+  if (nearbyEntries.value[0]) {
+    selectMapEntry(nearbyEntries.value[0])
+  }
+  scrollObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-in')
+          entry.target.classList.remove('reveal-out')
+        } else {
+          entry.target.classList.remove('reveal-in')
+          entry.target.classList.add('reveal-out')
+        }
+      })
+    },
+    {
+      threshold: 0.08,
+      rootMargin: '0px 0px -40px 0px'
+    }
+  )
+
+  const elements = document.querySelectorAll('.scroll-reveal')
+  elements.forEach((el) => scrollObserver?.observe(el))
+})
+
+onUnmounted(() => {
+  if (scrollObserver) {
+    scrollObserver.disconnect()
+    scrollObserver = null
+  }
+})
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F8FAFC] dark:bg-[#07111F] text-slate-900 dark:text-white transition-colors duration-300">
+  <div class="reference-home pb-10 text-[#0A2540] dark:text-white">
+    <div class="max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-6">
 
-    <!-- =====================================================
-         HERO SECTION WITH SMOOTH AMBIENT ANIMATIONS
-    ====================================================== -->
-    <section class="relative overflow-hidden pt-10 sm:pt-16 lg:pt-20 pb-14 lg:pb-24">
-      <!-- Ambient Glow Orbs -->
-      <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div class="absolute -top-32 -right-32 w-[540px] h-[540px] rounded-full bg-blue-500/10 dark:bg-blue-600/15 blur-[120px] animate-pulse-glow" />
-        <div class="absolute top-48 -left-32 w-[460px] h-[460px] rounded-full bg-indigo-500/10 dark:bg-indigo-600/15 blur-[120px] animate-pulse-glow-delay" />
-        <div class="absolute bottom-0 right-1/4 w-[360px] h-[360px] rounded-full bg-emerald-500/5 dark:bg-emerald-500/10 blur-[100px]" />
-      </div>
+      <!-- ============================================================
+           1. CIVIC HERO SECTION: BRANDING, SEARCH & TRUST SIGNALS
+      ============================================================= -->
+      <section class="hero-card scroll-reveal relative min-h-[490px] overflow-hidden rounded-b-3xl bg-white dark:bg-slate-900 sm:min-h-[520px] lg:min-h-[550px]">
+        <img
+          :src="heroIllustration"
+          alt="Phnom Penh skyline and Cambodian monument"
+          class="hero-illustration-mask pointer-events-none absolute right-0 top-0 hidden h-full w-[78%] sm:w-[74%] md:block md:w-[70%] lg:w-[72%] xl:w-[68%] 2xl:w-[64%] object-cover object-right-top dark:opacity-85"
+        />
+        <div class="pointer-events-none absolute inset-y-0 left-0 hidden w-[50%] bg-gradient-to-r from-white via-white/90 to-transparent dark:from-slate-900 dark:via-slate-900/90 dark:to-transparent lg:block z-[5]" />
 
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-[1.15fr_0.85fr] gap-12 lg:gap-16 items-center">
+        <div class="relative z-10 flex min-h-[490px] sm:min-h-[520px] lg:min-h-[550px] flex-col justify-center max-w-2xl px-4 py-8 sm:px-7 sm:py-10 lg:px-8">
+          <!-- Citizen Badge -->
+          <div class="inline-flex w-fit items-center gap-2 rounded-full bg-blue-50 px-3.5 py-1.5 text-xs font-bold text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300 font-khmer">
+            <span class="text-sm">🇰🇭</span>
+            <span>{{ currentLanguage === 'kh' ? 'វិបផតថលសេវាសាធារណៈសម្រាប់ពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}</span>
+          </div>
 
-          <!-- LEFT COLUMN: Headline, Subtitle, Interactive Search -->
-          <div class="space-y-6 sm:space-y-8 animate-fade-in-up">
-            <!-- Brand Badge -->
-            <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/80 shadow-xs backdrop-blur-md">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          <!-- Main Hero Title -->
+          <h1 class="mt-4 text-3xl font-black tracking-normal text-[#0A2458] dark:text-white sm:text-5xl lg:text-[3.25rem] leading-[1.2] sm:leading-[1.18] font-khmer">
+            {{ currentLanguage === 'kh' ? 'អ្វីៗដែលអ្នកត្រូវការ សម្រាប់ជីវិតនៅកម្ពុជា' : 'Everything You Need For Life in' }}
+            <span class="text-[#1456E5]">{{ currentLanguage === 'kh' ? '' : ' Cambodia' }}</span>
+          </h1>
+
+          <!-- Subtitle -->
+          <p class="mt-3.5 text-sm sm:text-base text-slate-600 dark:text-slate-300 font-khmer leading-relaxed max-w-xl">
+            {{ currentLanguage === 'kh'
+              ? 'ស្វែងរក យល់ដឹង រៀបចំឯកសារ និងទៅប្រើប្រាស់សេវាសាធារណៈ សុខាភិបាល ការងារ និងការសង្គ្រោះបន្ទាន់យ៉ាងងាយស្រួល។'
+              : 'Search, understand procedures, prepare documents, and access civic, healthcare, transit, and emergency services with ease.'
+            }}
+          </p>
+
+          <!-- Main Search Box -->
+          <form class="mt-6 flex rounded-2xl bg-white p-2 shadow-[0_16px_36px_rgba(15,54,120,.13)] ring-1 ring-slate-200/90 dark:bg-slate-800 dark:ring-slate-700" @submit.prevent="submitSearch">
+            <div class="relative min-w-0 flex-1">
+              <Search class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#0D47A1] dark:text-blue-400" />
+              <input
+                v-model="searchQuery"
+                class="w-full rounded-xl border-0 bg-transparent py-3.5 pl-12 pr-2 text-xs sm:text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white font-khmer"
+                :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកសេវារដ្ឋ, មន្ទីរពេទ្យ, ការងារ, ប័ណ្ណបើកបរ...' : 'Search public services, hospitals, jobs, driver license...'"
+                aria-label="Search CamLife Services"
+              />
+            </div>
+            <button
+              type="submit"
+              class="rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-5 sm:px-7 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-600/20 transition active:scale-98 font-khmer"
+            >
+              {{ currentLanguage === 'kh' ? 'ស្វែងរក' : 'Search' }}
+            </button>
+          </form>
+
+          <!-- Popular Searches Pills -->
+          <div class="mt-5 flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 font-khmer">{{ currentLanguage === 'kh' ? 'ពេញនិយម:' : 'Popular:' }}</span>
+            <button
+              v-for="term in popularSearches"
+              :key="term.label"
+              type="button"
+              class="rounded-xl border border-slate-200 bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-[#1456E5] hover:bg-blue-50 hover:text-[#1456E5] dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:bg-slate-700 font-khmer"
+              @click="usePopularSearch(term.query)"
+            >
+              {{ term.label }}
+            </button>
+          </div>
+
+          <!-- Trust Signals Row -->
+          <div class="mt-6 flex flex-wrap items-center gap-4 sm:gap-6 border-t border-slate-100 pt-4 dark:border-slate-800/80 font-khmer">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
+                <CheckCircle2 class="h-3.5 w-3.5" />
               </span>
-              <span class="text-[11px] sm:text-xs font-black tracking-wider uppercase text-[#0D47A1] dark:text-blue-400">
-                Cambodia Life Service Portal
+              <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានផ្ទៀងផ្ទាត់ផ្លូវការ' : 'Verified Public Information' }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[#0D47A1] dark:bg-blue-950/60 dark:text-blue-400">
+                <ShieldCheck class="h-3.5 w-3.5" />
               </span>
+              <span>{{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃសម្រាប់ពលរដ្ឋ' : '100% Free & Open Access' }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400">
+                <Siren class="h-3.5 w-3.5" />
+              </span>
+              <span>{{ currentLanguage === 'kh' ? 'សង្គ្រោះបន្ទាន់ ២៤/៧' : '24/7 Citizen Emergency' }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           2. 7 CITIZEN SERVICE ESSENTIAL PILLARS
+      ============================================================= -->
+      <section class="section-card scroll-reveal mt-5 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(31,64,122,.06)] ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
+        <div class="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-blue-50/75 via-white to-transparent px-5 py-4 dark:border-slate-700 dark:from-blue-950/20 dark:via-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0D47A1] text-white shadow-sm">
+              <Sparkles class="h-4 w-4" />
+            </div>
+            <div>
+              <h2 class="text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+                {{ currentLanguage === 'kh' ? 'សេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃ (7 Core Pillars)' : '7 Essential Citizen Pillars' }}
+              </h2>
+              <p class="text-[11px] font-medium text-slate-400 font-khmer">
+                {{ currentLanguage === 'kh' ? 'សេវាកម្មសំខាន់ៗដែលបម្រើដល់ពលរដ្ឋដោយផ្ទាល់' : 'Direct access to verified civic, healthcare, and daily services' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3.5 p-4 sm:grid-cols-4 lg:grid-cols-7">
+          <router-link
+            v-for="item in quickAccess"
+            :key="item.label"
+            :to="item.route"
+            :class="['stagger-card group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-hover dark:border-slate-700 dark:bg-slate-800', item.hover]"
+          >
+            <span :class="['absolute inset-x-0 top-0 h-1 z-10 opacity-0 transition-opacity group-hover:opacity-100', item.accent]" />
+            
+            <!-- Clear Representative Image Banner with Icon Badge Overlay -->
+            <div class="relative h-28 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+              <LazyImage
+                :src="item.image"
+                :alt="currentLanguage === 'kh' ? item.labelKh : item.label"
+                img-class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent pointer-events-none" />
+              
+              <!-- Floating Icon Badge -->
+              <div :class="['absolute bottom-2 left-2 flex h-8 w-8 items-center justify-center rounded-xl shadow-md backdrop-blur-xs transition duration-300 group-hover:scale-110 border border-white/50 dark:border-slate-600', item.bg]">
+                <component :is="item.icon" :class="['h-4 w-4', item.color]" />
+              </div>
+
+              <!-- Action Arrow Badge -->
+              <div class="absolute top-2 right-2 rounded-full bg-black/40 backdrop-blur-xs p-1 text-white opacity-80 group-hover:opacity-100 group-hover:bg-[#0D47A1] transition-all">
+                <ChevronRight class="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+              </div>
             </div>
 
-            <!-- Main Heading with Dual Script -->
-            <div class="space-y-3">
-              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#0A2540] dark:text-white leading-[1.1] sm:leading-[1.08]">
-                Everything you need for life in
-                <span class="relative inline-block text-[#0D47A1] dark:text-blue-400">
-                  Cambodia
-                  <svg class="absolute -bottom-1 left-0 w-full h-2 text-[#0D47A1]/20 dark:text-blue-400/30" viewBox="0 0 100 12" preserveAspectRatio="none">
-                    <path d="M0,0 Q50,12 100,0" stroke="currentColor" stroke-width="4" fill="none" />
-                  </svg>
-                </span>
-              </h1>
-
-              <p class="text-base sm:text-xl font-khmer text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                សេវាកម្មសាធារណៈ សុខាភិបាល ការងារ និងព័ត៌មានសំខាន់ៗសម្រាប់ការរស់នៅប្រចាំថ្ងៃ
-              </p>
-
-              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl leading-relaxed">
-                Find healthcare centers, official administrative procedures, career opportunities, transit routes, and 24/7 toll-free emergency contacts in one clean place.
-              </p>
+            <!-- Content Area -->
+            <div class="p-3 text-center flex-1 flex flex-col justify-between">
+              <div>
+                <p class="text-xs font-black tracking-tight text-[#0A2458] dark:text-white font-khmer line-clamp-1 group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors">
+                  {{ currentLanguage === 'kh' ? item.labelKh : item.label }}
+                </p>
+                <p class="mt-1 text-[10.5px] font-medium text-slate-500 dark:text-slate-400 font-khmer line-clamp-1">
+                  {{ currentLanguage === 'kh' ? item.descriptionKh : item.description }}
+                </p>
+              </div>
             </div>
+          </router-link>
+        </div>
+      </section>
 
-            <!-- Elevated Interactive Search Bar -->
-            <div class="space-y-3 pt-1">
-              <form
-                @submit.prevent="handleSearchSubmit"
-                class="group relative flex items-center bg-white dark:bg-slate-800/90 border-2 border-slate-200/90 dark:border-slate-700 rounded-2xl p-2 shadow-card hover:border-[#0D47A1]/60 focus-within:border-[#0D47A1] focus-within:ring-4 focus-within:ring-blue-500/10 transition-all duration-300 backdrop-blur-md"
-              >
-                <div class="pl-3 text-slate-400 group-focus-within:text-[#0D47A1] dark:group-focus-within:text-blue-400 transition-colors">
-                  <Search class="w-5 h-5" />
-                </div>
-
-                <input
-                  v-model="searchQuery"
-                  type="text"
-                  :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកមន្ទីរពេទ្យ ការងារ សេវារដ្ឋ...' : 'Search hospitals, jobs, civic guides, transit...'"
-                  class="flex-1 min-w-0 bg-transparent border-0 outline-none px-3.5 py-3 text-sm sm:text-base text-slate-900 dark:text-white placeholder:text-slate-400 font-medium"
-                />
-
-                <button
-                  v-if="searchQuery"
-                  @click="searchQuery = ''"
-                  type="button"
-                  class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg mr-1 transition-colors"
-                  aria-label="Clear search"
-                >
-                  <X class="w-4 h-4" />
-                </button>
-
-                <button
-                  type="submit"
-                  class="inline-flex items-center gap-2 px-5 sm:px-6 py-3 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] active:scale-98 text-white text-xs sm:text-sm font-bold shadow-xs transition-all duration-200 shrink-0"
-                >
-                  <span>{{ currentLanguage === 'kh' ? 'ស្វែងរក' : 'Search' }}</span>
-                  <ArrowRight class="w-4 h-4" />
-                </button>
-              </form>
-
-              <!-- Popular Search Chips -->
-              <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
-                <span class="font-bold text-slate-400 uppercase tracking-wider text-[11px]">
-                  {{ currentLanguage === 'kh' ? 'ពេញនិយម:' : 'Popular:' }}
+      <!-- ============================================================
+           3. INTERACTIVE CITIZEN LIVE MAP & NEARBY SERVICES
+      ============================================================= -->
+      <section class="section-card scroll-reveal mt-5 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(31,64,122,.07)] ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
+        <div class="flex flex-col justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 via-white to-transparent px-5 py-4 dark:border-slate-700 dark:from-blue-950/20 dark:via-slate-800 lg:flex-row lg:items-center">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0D47A1] text-white shadow-md shadow-blue-950/20">
+              <LocateFixed class="h-5 w-5 animate-pulse" />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-base sm:text-lg font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+                  {{ currentLanguage === 'kh' ? 'ស្វែងរកសេវាកម្មជិតអ្នក (Nearby Services)' : 'Find Essential Services Near You' }}
+                </h2>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 text-[9px] font-black text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  LIVE MAP
                 </span>
-
-                <router-link
-                  v-for="tag in popularSearches"
-                  :key="tag.label"
-                  :to="tag.path"
-                  class="px-3 py-1 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/70 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:border-[#0D47A1] hover:text-[#0D47A1] dark:hover:text-blue-400 hover:shadow-xs transition-all duration-200 active:scale-95"
-                >
-                  {{ currentLanguage === 'kh' ? tag.labelKh : tag.label }}
-                </router-link>
+              </div>
+              <div class="mt-0.5 flex items-center gap-2 font-khmer">
+                <span class="text-xs text-slate-500 dark:text-slate-400">
+                  {{ currentLanguage === 'kh' ? 'ទីតាំងបច្ចុប្បន្ន:' : 'Active Location:' }}
+                  <strong class="text-[#0D47A1] dark:text-blue-400 font-black">{{ currentLanguage === 'kh' ? selectedProvince.nameKh : selectedProvince.name }}</strong>
+                </span>
+                <span class="text-slate-300 dark:text-slate-600">·</span>
+                <span class="text-[11px] text-slate-400">
+                  {{ currentLanguage === 'kh' ? 'ចុចលើទីតាំងដើម្បីមើលលើផែនទីភ្លាមៗ' : 'Click any facility to preview on map' }}
+                </span>
               </div>
             </div>
           </div>
 
-          <!-- RIGHT COLUMN: Official Emblem Graphic Card with Smooth Floating Animation -->
-          <div class="relative lg:pl-4">
-            <!-- Glow under card -->
-            <div class="absolute -inset-2 bg-gradient-to-r from-blue-600/20 via-cyan-500/20 to-indigo-600/20 rounded-[2.5rem] blur-2xl opacity-75 dark:opacity-50 pointer-events-none" />
+          <!-- 5 Essential Civic Filter Tabs -->
+          <div class="flex flex-wrap gap-1.5 rounded-2xl bg-slate-100/90 p-1.5 dark:bg-slate-700/60 font-khmer">
+            <button
+              v-for="tab in nearbyTabs"
+              :key="tab.id"
+              type="button"
+              :class="[
+                'inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all duration-200',
+                activeNearbyTab === tab.id
+                  ? 'bg-white text-[#0D47A1] shadow-sm dark:bg-slate-800 dark:text-blue-300 font-black scale-102 ring-1 ring-blue-500/20'
+                  : 'text-slate-600 hover:text-[#0D47A1] dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-800/50'
+              ]"
+              @click="setNearbyTab(tab.id)"
+            >
+              <component :is="tab.icon" class="h-3.5 w-3.5 shrink-0" />
+              <span>{{ currentLanguage === 'kh' ? tab.labelKh : tab.labelEn }}</span>
+              <span
+                :class="[
+                  'text-[9px] font-black px-1.5 py-0.2 rounded-md',
+                  activeNearbyTab === tab.id
+                    ? 'bg-blue-100 text-[#0D47A1] dark:bg-blue-950 dark:text-blue-300'
+                    : 'bg-slate-200/70 text-slate-500 dark:bg-slate-600 dark:text-slate-300'
+                ]"
+              >
+                {{ tab.badge }}
+              </span>
+            </button>
+          </div>
+        </div>
 
-            <div class="relative rounded-[2rem] bg-gradient-to-br from-[#0A2540] via-[#0F3156] to-[#0A2540] border border-white/10 p-7 sm:p-9 shadow-2xl overflow-hidden animate-float">
-              <!-- Geometric Mesh Overlay -->
-              <div class="absolute inset-0 opacity-[0.06] pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;" />
+        <div class="grid gap-0 p-4 lg:grid-cols-[1.15fr_.85fr]">
+          <!-- Map Embed Frame -->
+          <div class="relative min-h-[420px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
+            <iframe
+              :key="mapEmbedUrl"
+              :src="mapEmbedUrl"
+              title="CamLife nearby services interactive map"
+              class="absolute inset-0 h-full w-full border-0"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            />
 
-              <!-- Card Header -->
-              <div class="relative z-10 flex items-center justify-between border-b border-white/10 pb-5">
-                <div class="flex items-center gap-2.5">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span class="text-xs font-bold text-blue-200 tracking-wider uppercase">
-                    Kingdom of Cambodia
-                  </span>
-                </div>
-
-                <div class="px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-extrabold text-blue-300 tracking-wider">
-                  OFFICIAL DIRECTORY
-                </div>
-              </div>
-
-              <!-- Official Logo Emblem Showcase -->
-              <div class="relative z-10 py-8 flex flex-col items-center justify-center text-center space-y-4">
-                <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl bg-white p-3 shadow-xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
-                  <img
-                    src="/logo.png"
-                    alt="CamLife Cambodia"
-                    class="w-full h-full object-contain"
-                  />
-                </div>
-
-                <div class="space-y-1">
-                  <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    CamLife Platform
-                  </h2>
-                  <p class="text-xs font-khmer text-blue-200">
-                    សេវាកម្មជីវិតកម្ពុជា • ងាយស្រួល ទំនុកចិត្ត រហ័ស
+            <!-- Top Active Location Floating Card -->
+            <div class="absolute left-3 top-3 max-w-[85%] rounded-2xl border border-white/90 bg-white/95 p-3 shadow-xl backdrop-blur dark:border-slate-600/90 dark:bg-slate-800/95 font-khmer">
+              <div class="flex items-start gap-2.5">
+                <span :class="['flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ring-1', getNearbyIconBg(activeNearbyTab)]">
+                  <component :is="getNearbyIcon(activeNearbyTab)" class="h-4 w-4" />
+                </span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <p class="truncate text-xs sm:text-sm font-black text-[#0A2540] dark:text-white">
+                      {{ localized(activeMapPoint.name, activeMapPoint.nameKh) }}
+                    </p>
+                    <span class="rounded bg-blue-100 dark:bg-blue-950/70 px-1.5 py-0.2 text-[9px] font-black text-blue-700 dark:text-blue-300 shrink-0">
+                      {{ currentLanguage === 'kh' ? 'ទីតាំងជ្រើសរើស' : 'Selected' }}
+                    </span>
+                  </div>
+                  <p class="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-300">
+                    {{ localized(activeMapPoint.address, activeMapPoint.addressKh) }}
                   </p>
                 </div>
               </div>
+            </div>
 
-              <!-- Quick Highlight Mini Grid -->
-              <div class="relative z-10 grid grid-cols-3 gap-2.5 pt-4 border-t border-white/10">
-                <router-link
-                  to="/health"
-                  class="rounded-xl bg-white/10 hover:bg-white/15 p-3 text-center transition-all duration-200 group border border-white/5"
-                >
-                  <HeartPulse class="w-5 h-5 mx-auto text-emerald-400 group-hover:scale-110 transition-transform" />
-                  <span class="block text-[11px] font-bold text-white mt-1.5">Health</span>
-                  <span class="block text-[9px] text-blue-200/70">24/7 Care</span>
-                </router-link>
+            <!-- Bottom Floating Action Bar -->
+            <div class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 font-khmer">
+              <a
+                :href="mapDirectionsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-4 py-2.5 text-xs font-black text-white shadow-lg transition duration-150 active:scale-98"
+              >
+                <MapPin class="h-4 w-4" />
+                <span>{{ currentLanguage === 'kh' ? 'ទទួលទិសដៅលើ Google Maps' : 'Get Directions (Google Maps)' }}</span>
+              </a>
 
-                <router-link
-                  to="/government"
-                  class="rounded-xl bg-white/10 hover:bg-white/15 p-3 text-center transition-all duration-200 group border border-white/5"
-                >
-                  <Building2 class="w-5 h-5 mx-auto text-blue-300 group-hover:scale-110 transition-transform" />
-                  <span class="block text-[11px] font-bold text-white mt-1.5">Civic</span>
-                  <span class="block text-[9px] text-blue-200/70">Procedures</span>
-                </router-link>
-
-                <router-link
-                  to="/jobs"
-                  class="rounded-xl bg-white/10 hover:bg-white/15 p-3 text-center transition-all duration-200 group border border-white/5"
-                >
-                  <Briefcase class="w-5 h-5 mx-auto text-violet-300 group-hover:scale-110 transition-transform" />
-                  <span class="block text-[11px] font-bold text-white mt-1.5">Jobs</span>
-                  <span class="block text-[9px] text-blue-200/70">Careers</span>
-                </router-link>
-              </div>
-
-              <!-- Floating Verification Chip -->
-              <div class="absolute -bottom-3 -left-3 sm:-left-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl px-4 py-2.5 flex items-center gap-2.5 backdrop-blur-md">
-                <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center shrink-0">
-                  <CheckCircle2 class="w-4 h-4" />
-                </div>
-                <div>
-                  <div class="text-xs font-bold text-slate-900 dark:text-white leading-tight">
-                    Verified Public Data
-                  </div>
-                  <div class="text-[10px] text-slate-500 font-khmer">
-                    ទិន្នន័យមានការផ្ទៀងផ្ទាត់
-                  </div>
-                </div>
+              <div class="flex items-center gap-2">
+                <span class="hidden sm:inline-block rounded-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur px-3 py-2 text-[11px] font-bold text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 shadow-sm">
+                  GPS: {{ activeMapPoint.coordinates.lat.toFixed(4) }}, {{ activeMapPoint.coordinates.lng.toFixed(4) }}
+                </span>
               </div>
             </div>
           </div>
 
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         KEY STATS RIBBON
-    ====================================================== -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16">
-      <div class="bg-white dark:bg-slate-800/70 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-7 shadow-xs backdrop-blur-md">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 dark:divide-slate-700/60">
-          <div
-            v-for="(item, idx) in stats"
-            :key="item.label"
-            :class="['flex items-center gap-3.5', idx > 0 ? 'pt-4 sm:pt-0 sm:pl-6' : '']"
-          >
-            <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-400 flex items-center justify-center shrink-0 shadow-xs">
-              <component :is="item.icon" class="w-6 h-6" />
-            </div>
-
+          <!-- Recommended Places List -->
+          <div class="bg-slate-50/70 p-3.5 dark:bg-slate-900/40 lg:ml-4 lg:rounded-2xl space-y-2 flex flex-col justify-between">
             <div>
-              <div class="text-2xl sm:text-3xl font-black text-[#0A2540] dark:text-white tracking-tight">
-                {{ item.value }}
-              </div>
-              <div class="text-xs font-bold text-slate-700 dark:text-slate-200 leading-tight mt-0.5">
-                {{ currentLanguage === 'kh' ? item.labelKh : item.label }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         EXPLORE ALL SERVICES (7 Modern Service Cards)
-    ====================================================== -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <!-- Section Header -->
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-        <div>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60">
-            <Sparkles class="w-3.5 h-3.5" />
-            <span>Essential Services</span>
-          </div>
-
-          <h2 class="mt-2.5 text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[#0A2540] dark:text-white">
-            What do you need today?
-          </h2>
-
-          <p class="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-khmer">
-            ជ្រើសរើសសេវាកម្មដែលលោកអ្នកត្រូវការសម្រាប់ការរស់នៅប្រចាំថ្ងៃ
-          </p>
-        </div>
-
-        <router-link
-          to="/services"
-          class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#0D47A1] dark:text-blue-400 hover:gap-2.5 transition-all group"
-        >
-          <span>View all services directory</span>
-          <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </router-link>
-      </div>
-
-      <!-- Services Cards Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-        <router-link
-          v-for="(service, index) in servicesList"
-          :key="service.category"
-          :to="service.path"
-          class="group relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 shadow-sm hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden"
-          :class="index === 0 ? 'sm:col-span-2 lg:col-span-2' : ''"
-        >
-          <!-- Top Row: Icon + Arrow -->
-          <div>
-            <div class="flex items-start justify-between gap-3">
-              <div
-                :class="[
-                  'w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-xs',
-                  service.iconBg
-                ]"
-              >
-                <component :is="service.icon" class="w-6 h-6" />
+              <div class="flex items-center justify-between px-2 py-1 text-[11px] font-black uppercase tracking-wider text-slate-400 font-khmer">
+                <span>{{ currentLanguage === 'kh' ? 'ទីតាំងផ្ទៀងផ្ទាត់ក្នុងរាជធានី-ខេត្ត' : 'Verified Facilities Near You' }}</span>
+                <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ nearbyEntries.length }} ទីតាំង</span>
               </div>
 
-              <div class="flex items-center gap-1">
-                <span
-                  v-if="service.highlight"
-                  class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400"
+              <!-- List Cards -->
+              <div class="mt-2 space-y-2">
+                <button
+                  v-for="entry in nearbyEntries"
+                  :key="entry.id"
+                  type="button"
+                  :class="[
+                    'group relative flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-200 cursor-pointer',
+                    selectedEntryId === entry.id
+                      ? 'border-[#0D47A1] bg-white shadow-md ring-2 ring-[#0D47A1]/20 dark:bg-slate-800 dark:border-blue-400'
+                      : 'border-slate-200/70 bg-white/70 hover:border-blue-200 hover:bg-white hover:shadow-xs dark:border-slate-700/60 dark:bg-slate-800/60 dark:hover:bg-slate-800'
+                  ]"
+                  @click="selectMapEntry(entry)"
                 >
-                  24/7 Hotline
-                </span>
+                  <!-- Active Pin Indicator Ribbon -->
+                  <span
+                    v-if="selectedEntryId === entry.id"
+                    class="absolute -left-1 top-3 bottom-3 w-1.5 rounded-r bg-[#0D47A1] dark:bg-blue-400"
+                  />
 
-                <div class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700/60 text-slate-400 group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 flex items-center justify-center group-hover:translate-x-1 transition-all">
-                  <ChevronRight class="w-4 h-4" />
-                </div>
+                  <!-- Icon Badge -->
+                  <div :class="['flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-xs ring-1 transition-transform group-hover:scale-105', getNearbyIconBg(activeNearbyTab)]">
+                    <component :is="getNearbyIcon(activeNearbyTab)" class="h-5 w-5" />
+                  </div>
+
+                  <!-- Details -->
+                  <div class="min-w-0 flex-1 font-khmer">
+                    <div class="flex items-center gap-2">
+                      <p class="truncate text-xs sm:text-sm font-black text-[#0A2458] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-300 transition-colors">
+                        {{ localized(entry.name, entry.nameKh) }}
+                      </p>
+                      <span
+                        v-if="selectedEntryId === entry.id"
+                        class="hidden sm:inline-flex items-center gap-1 rounded bg-emerald-100 dark:bg-emerald-950/80 px-1.5 py-0.2 text-[9px] font-black text-emerald-700 dark:text-emerald-300"
+                      >
+                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                        {{ currentLanguage === 'kh' ? 'កំពុងមើល' : 'Active' }}
+                      </span>
+                    </div>
+
+                    <p class="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+                      {{ localized(entry.address, entry.addressKh) }}
+                    </p>
+
+                    <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                      <span class="inline-block rounded-lg bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                        {{ entry.meta }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Actions (1-Tap Call & Route) -->
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <a
+                      v-if="entry.phone"
+                      :href="`tel:${entry.phone}`"
+                      class="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition shadow-xs dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                      :title="currentLanguage === 'kh' ? `ហៅទូរស័ព្ទ ${entry.phone}` : `Call ${entry.phone}`"
+                      @click.stop
+                    >
+                      <PhoneCall class="h-4 w-4" />
+                    </a>
+
+                    <router-link
+                      :to="entry.route"
+                      class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:text-[#0D47A1] hover:border-blue-300 transition dark:border-slate-700 dark:bg-slate-800"
+                      :title="currentLanguage === 'kh' ? 'មើលព័ត៌មានលម្អិត' : 'View details'"
+                      @click.stop
+                    >
+                      <ChevronRight class="h-4 w-4" />
+                    </router-link>
+                  </div>
+                </button>
               </div>
             </div>
 
-            <!-- Content -->
-            <div class="mt-5 space-y-1.5">
-              <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 block">
-                {{ currentLanguage === 'kh' ? service.categoryKh : service.category }}
-              </span>
-
-              <h3 class="text-base sm:text-lg font-bold text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug">
-                {{ currentLanguage === 'kh' ? service.titleKh : service.title }}
-              </h3>
-
-              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">
-                {{ currentLanguage === 'kh' ? service.descriptionKh : service.description }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Bottom Accent Hover Line -->
-          <div
-            class="absolute bottom-0 left-0 right-0 h-[3px] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"
-            :style="{ backgroundColor: service.accent }"
-          />
-        </router-link>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         EMERGENCY SECTION (Clean High-Urgency Speed Dials)
-    ====================================================== -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <div class="relative overflow-hidden rounded-3xl bg-[#0B1727] dark:bg-[#07111F] border border-red-900/40 p-6 sm:p-10 lg:p-12 shadow-2xl text-white">
-        <!-- Ambient Red Glow -->
-        <div class="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-red-600/15 blur-3xl pointer-events-none" />
-        <div class="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-blue-600/10 blur-3xl pointer-events-none" />
-
-        <div class="relative z-10 grid lg:grid-cols-[0.85fr_1.15fr] gap-8 lg:gap-12 items-center">
-          <!-- Left: Urgent Headline -->
-          <div class="space-y-4">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wider border border-red-500/30">
-              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span>Free 24/7 Nationwide Hotlines</span>
-            </div>
-
-            <h2 class="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-              Need Help Right Now?
-            </h2>
-
-            <p class="text-xs sm:text-sm font-khmer text-red-200/90 leading-relaxed">
-              ពេលមានហេតុការណ៍បន្ទាន់ សូមហៅទូរស័ព្ទទៅកាន់លេខសង្គ្រោះបន្ទាន់ជាតិដោយឥតគិតថ្លៃ។
-            </p>
-
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Direct emergency dispatch from any mobile or landline across Cambodia. Available day and night.
-            </p>
-
-            <div class="pt-2">
+            <!-- Footer of List Area -->
+            <div class="mt-3 flex items-center justify-between border-t border-slate-200/80 px-2 pt-3 dark:border-slate-700 font-khmer">
               <router-link
-                to="/emergency"
-                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 transition-all active:scale-95"
+                :to="activeNearbyTab === 'hospitals' ? '/health' : activeNearbyTab === 'transport' ? '/transport' : activeNearbyTab === 'services' ? '/home-services' : '/locations'"
+                class="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-3.5 py-2 text-xs font-bold text-[#0D47A1] transition hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300"
               >
-                <span>View All Emergency Helplines</span>
-                <ArrowRight class="w-4 h-4" />
+                <span>{{ currentLanguage === 'kh' ? 'មើលសេវាកម្មទាំងអស់ក្នុងប្រភេទនេះ' : 'Explore All in this category' }}</span>
+                <ArrowRight class="h-3.5 w-3.5" />
               </router-link>
+              <span class="text-xs font-semibold text-slate-400">{{ nearbyEntries.length }} ទីតាំង</span>
             </div>
           </div>
+        </div>
+      </section>
 
-          <!-- Right: 4 Speed-Dial Cards -->
-          <div class="grid grid-cols-2 gap-3 sm:gap-4">
-            <a
-              v-for="dial in emergencyDials"
-              :key="dial.number"
-              :href="dial.tel"
-              class="group relative rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-red-500/40 p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between active:scale-98"
-            >
-              <div class="flex items-center justify-between">
-                <span :class="['text-3xl sm:text-4xl font-black tracking-tight', dial.numberColor]">
-                  {{ dial.number }}
-                </span>
-
-                <div class="w-9 h-9 rounded-xl bg-white/10 group-hover:bg-red-600 text-white flex items-center justify-center transition-colors duration-200">
-                  <PhoneCall class="w-4 h-4" />
-                </div>
+      <!-- ============================================================
+           4. EMERGENCY 24/7 CENTER & CRISIS PROTOCOL
+      ============================================================= -->
+      <section class="emergency-card scroll-reveal relative mt-5 overflow-hidden rounded-3xl bg-[#070B18] p-6 text-white shadow-[0_16px_34px_rgba(12,16,34,.22)] sm:p-8">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_79%_40%,rgba(225,36,42,.38),transparent_24%),radial-gradient(circle_at_70%_120%,rgba(150,21,58,.27),transparent_34%),linear-gradient(105deg,#070B18,rgba(17,17,35,.97))]" />
+        <div class="relative">
+          <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div class="flex items-center gap-3">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/20 text-red-300 ring-1 ring-red-400/30">
+                <Siren class="h-6 w-6" />
               </div>
-
-              <div class="mt-3">
-                <div class="text-xs font-bold text-white group-hover:text-red-300 transition-colors">
-                  {{ dial.label }}
+              <div class="font-khmer">
+                <div class="flex items-center gap-2">
+                  <h2 class="text-xl sm:text-2xl font-black tracking-tight">
+                    {{ currentLanguage === 'kh' ? 'មជ្ឈមណ្ឌលសង្គ្រោះបន្ទាន់ ២៤/៧ (Emergency Center)' : '24/7 Emergency Response Center' }}
+                  </h2>
+                  <span class="flex h-2.5 w-2.5 rounded-full bg-red-400 animate-pulse" />
                 </div>
-                <div class="text-[10px] font-khmer text-slate-400 mt-0.5">
-                  {{ dial.labelKh }}
+                <p class="mt-1 text-xs sm:text-sm text-slate-300">
+                  {{ currentLanguage === 'kh' ? 'ហៅទូរស័ព្ទផ្ទាល់ឥតគិតថ្លៃពេលមានអាសន្ន គ្រោះថ្នាក់ ឬជំងឺធ្ងន់ធ្ងរ' : 'Direct 1-tap call for police, fire, ambulance, and disaster helplines' }}
+                </p>
+              </div>
+            </div>
+
+            <router-link
+              to="/emergency"
+              class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-red-950/40 transition hover:from-red-500 hover:to-rose-500 font-khmer shrink-0"
+            >
+              <span>{{ currentLanguage === 'kh' ? 'សេវាសង្គ្រោះទាំងអស់' : 'All Emergency Helplines' }}</span>
+              <ArrowRight class="h-4 w-4" />
+            </router-link>
+          </div>
+
+          <!-- Emergency Hotlines Grid -->
+          <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <a
+              v-for="contact in emergencyHighlights"
+              :key="contact.id"
+              :href="`tel:${contact.number}`"
+              :title="currentLanguage === 'kh' ? `ចុចដើម្បីហៅ ${contact.number}` : `Call ${contact.number}`"
+              :class="['stagger-card group relative overflow-hidden rounded-2xl border p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-lg', emergencyTone(contact.id)]"
+            >
+              <div class="relative flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/[.12] text-amber-300 ring-1 ring-white/10 group-hover:scale-105 transition-transform">
+                    <component :is="emergencyIcon(contact.id)" class="h-5 w-5" />
+                  </div>
+                  <div class="min-w-0">
+                    <p :class="['text-2xl sm:text-3xl font-black leading-none tracking-tight font-mono', emergencyNumberTone(contact.id)]">
+                      {{ contact.number }}
+                    </p>
+                    <p class="mt-1 truncate text-xs font-bold text-slate-200 font-khmer">
+                      {{ localized(contact.name, contact.nameKh) }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Green Glowing Call Trigger Button -->
+                <div class="relative ml-auto flex shrink-0 items-center justify-center">
+                  <span class="absolute -inset-1 rounded-full bg-emerald-500/40 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
+                  <div class="relative flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md shadow-emerald-950/40 ring-2 ring-emerald-400/40 transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-400 group-hover:shadow-[0_0_18px_rgba(52,211,153,0.7)]">
+                    <PhoneCall class="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                  </div>
                 </div>
               </div>
             </a>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- =====================================================
-         LATEST NEWS & OFFICIAL BULLETINS
-    ====================================================== -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <div class="flex items-end justify-between gap-4 mb-8">
-        <div>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60">
-            <Newspaper class="w-3.5 h-3.5" />
-            <span>Public Bulletins</span>
+          <!-- Emergency Protocol Guidance Checklist -->
+          <div class="mt-6 rounded-2xl bg-white/[.06] border border-white/10 p-4 font-khmer">
+            <p class="text-xs font-bold text-amber-300 flex items-center gap-1.5 mb-2">
+              <AlertTriangle class="w-4 h-4" />
+              <span>{{ currentLanguage === 'kh' ? 'គោលការណ៍ណែនាំពេលមានអាសន្ន (Emergency Protocol):' : 'What to do in an emergency:' }}</span>
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs text-slate-300">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-[10px]">1</span>
+                <span>{{ currentLanguage === 'kh' ? 'រក្សាភាពស្ងប់ស្ងៀម' : '1. Stay calm' }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-[10px]">2</span>
+                <span>{{ currentLanguage === 'kh' ? 'ហៅទៅលេខត្រឹមត្រូវ' : '2. Call correct service' }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-[10px]">3</span>
+                <span>{{ currentLanguage === 'kh' ? 'ប្រាប់ទីតាំងឱ្យច្បាស់' : '3. Give exact location' }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-[10px]">4</span>
+                <span>{{ currentLanguage === 'kh' ? 'ធ្វើតាមការណែនាំ' : '4. Follow instructions' }}</span>
+              </div>
+            </div>
           </div>
-
-          <h2 class="mt-2.5 text-2xl sm:text-3xl font-black tracking-tight text-[#0A2540] dark:text-white">
-            Latest News & Announcements
-          </h2>
-
-          <p class="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-khmer">
-            ព័ត៌មាន និងសេចក្តីប្រកាសសំខាន់ៗប្រចាំថ្ងៃ
-          </p>
         </div>
+      </section>
 
-        <router-link
-          to="/news"
-          class="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#0D47A1] dark:text-blue-400 hover:gap-2.5 transition-all group"
-        >
-          <span>See all news</span>
-          <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </router-link>
-      </div>
-
-      <!-- News Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <article
-          v-for="item in latestNews"
-          :key="item.id"
-          class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
-        >
-          <div>
-            <router-link :to="'/news/' + item.id">
-              <div class="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-700">
-                <LazyImage
-                  :src="item.image"
-                  :alt="localized(item.title, item.titleKh)"
-                  img-class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                  class="w-full h-full"
-                />
-
-                <div class="absolute top-3 left-3">
-                  <span class="px-2.5 py-1 rounded-lg bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-[10px] font-bold text-[#0D47A1] dark:text-blue-400 shadow-xs uppercase tracking-wider">
-                    {{ item.category }}
-                  </span>
-                </div>
+      <!-- ============================================================
+           5. POPULAR CIVIC & ADMINISTRATIVE PROCEDURES
+      ============================================================= -->
+      <section class="section-card scroll-reveal mt-5 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 sm:p-8">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300">
+              <Landmark class="h-5 w-5" />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-base sm:text-lg font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+                  {{ currentLanguage === 'kh' ? 'មគ្គុទ្ទេសក៍សេវារដ្ឋបាលសាធារណៈ' : 'Official Government Procedures' }}
+                </h2>
+                <VerificationBadge compact />
               </div>
-            </router-link>
-
-            <div class="p-5 space-y-2.5">
-              <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-400">
-                <CalendarDays class="w-3.5 h-3.5" />
-                <span>{{ item.date }}</span>
-                <span>•</span>
-                <span>{{ item.source }}</span>
-              </div>
-
-              <router-link :to="'/news/' + item.id">
-                <h3 class="text-base font-bold leading-snug text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                  {{ localized(item.title, item.titleKh) }}
-                </h3>
-              </router-link>
-
-              <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                {{ localized(item.description, item.descriptionKh) }}
+              <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400 font-khmer">
+                {{ currentLanguage === 'kh' ? 'នីតិវិធីផ្លូវការ ឯកសារតម្រូវ ថ្លៃសេវា និងទីតាំងផ្តល់សេវាច្រកចេញចូលតែមួយ' : 'Step-by-step guides, required documents, official fees, and OWSO office locations' }}
               </p>
             </div>
           </div>
-
-          <div class="p-5 pt-0">
-            <router-link
-              :to="'/news/' + item.id"
-              class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0D47A1] dark:text-blue-400 group-hover:gap-2.5 transition-all"
-            >
-              <span>Read article</span>
-              <ArrowRight class="w-3.5 h-3.5" />
-            </router-link>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         TRUST & QUALITY PILLARS
-    ====================================================== -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <div class="rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-7 sm:p-10 lg:p-12 shadow-sm">
-        <div class="max-w-2xl">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-400">
-            <ShieldCheck class="w-3.5 h-3.5" />
-            <span>Why CamLife</span>
-          </div>
-
-          <h2 class="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-[#0A2540] dark:text-white">
-            Built to make everyday life simpler.
-          </h2>
-
-          <p class="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-khmer">
-            បង្កើតឡើងដើម្បីសម្រួលដល់ការស្វែងរកសេវាកម្មប្រចាំថ្ងៃ និងព័ត៌មានរដ្ឋបាលសាធារណៈ
-          </p>
+          <router-link
+            to="/government"
+            class="inline-flex w-fit items-center gap-1.5 rounded-xl bg-blue-50 px-4 py-2 text-xs font-bold text-[#0D47A1] transition hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300 font-khmer"
+          >
+            <span>{{ currentLanguage === 'kh' ? 'មើលសេវាទាំងអស់' : 'View all civic guides' }}</span>
+            <ArrowRight class="h-3.5 w-3.5" />
+          </router-link>
         </div>
 
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div
-            v-for="pillar in trustPillars"
-            :key="pillar.title"
-            class="group p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-750 border border-slate-200/60 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xs transition-all duration-200"
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <router-link
+            v-for="service in popularServices"
+            :key="service.id"
+            :to="`/government/${service.id}`"
+            :class="[
+              'stagger-card group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-800/60 dark:hover:bg-slate-800',
+              service.theme.border
+            ]"
           >
-            <div class="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <component :is="pillar.icon" class="w-5 h-5" />
+            <div>
+              <div class="flex items-center justify-between">
+                <div :class="['flex h-11 w-11 items-center justify-center rounded-xl shadow-xs transition-transform duration-200 group-hover:scale-110 ring-1', service.theme.bg, service.theme.color, service.theme.ring]">
+                  <component :is="service.theme.icon" class="h-5 w-5" />
+                </div>
+                <span class="rounded-md bg-white/80 px-2 py-0.5 text-[10px] font-bold text-slate-500 shadow-2xs border border-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">
+                  {{ service.category }}
+                </span>
+              </div>
+
+              <h3 class="mt-3.5 text-xs sm:text-sm font-extrabold text-[#0A2458] group-hover:text-[#0D47A1] dark:text-white line-clamp-2 leading-snug font-khmer min-h-[2.4rem]">
+                {{ localized(service.shortTitle, service.titleKh) }}
+              </h3>
+
+              <p class="mt-1.5 text-[11px] text-slate-400 flex items-center gap-1.5 font-khmer">
+                <Clock3 class="h-3 w-3 shrink-0 text-slate-400" />
+                <span class="truncate">{{ localized(service.processingTime, service.processingTimeKh) }}</span>
+              </p>
             </div>
 
-            <h3 class="mt-4 text-sm font-bold text-[#0A2540] dark:text-white">
-              {{ currentLanguage === 'kh' ? pillar.titleKh : pillar.title }}
-            </h3>
+            <div class="mt-4 flex items-center justify-between border-t border-slate-100/90 pt-3 text-[11px] font-bold text-[#0D47A1] dark:text-blue-400 font-khmer">
+              <span>{{ currentLanguage === 'kh' ? 'ពិនិត្យឯកសារ & ថ្លៃសេវា' : 'View Guide' }}</span>
+              <div class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-[#0D47A1] transition-transform duration-200 group-hover:translate-x-1 group-hover:bg-[#0D47A1] group-hover:text-white dark:bg-blue-950/60 dark:text-blue-300">
+                <ArrowRight class="h-3 w-3" />
+              </div>
+            </div>
+          </router-link>
+        </div>
+      </section>
 
-            <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-              {{ pillar.desc }}
+      <!-- ============================================================
+           6. PUBLIC JOBS & NEWS BULLETINS SPLIT SECTION
+      ============================================================= -->
+      <section class="scroll-reveal mt-5 grid gap-5 lg:grid-cols-2">
+        <!-- Verified Job Opportunities -->
+        <div class="section-card rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 sm:p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 ring-1 ring-violet-500/20 dark:bg-violet-950/60 dark:text-violet-300">
+                  <Briefcase class="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 class="text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+                    {{ currentLanguage === 'kh' ? 'ឱកាសការងារសាធារណៈ & ឯកជន' : 'Public & Career Opportunities' }}
+                  </h2>
+                  <p class="text-[11px] text-slate-400 font-medium font-khmer">
+                    {{ currentLanguage === 'kh' ? 'ការងារពីក្រុមហ៊ុន និងស្ថាប័នផ្ទៀងផ្ទាត់' : 'Verified vacancies with clear salary details' }}
+                  </p>
+                </div>
+              </div>
+              <router-link
+                to="/jobs"
+                class="inline-flex items-center gap-1 text-xs font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 font-khmer"
+              >
+                {{ currentLanguage === 'kh' ? 'មើលការងារទាំងអស់' : 'View all jobs' }}
+                <ArrowRight class="h-3.5 w-3.5" />
+              </router-link>
+            </div>
+
+            <div class="mt-4 space-y-3">
+              <router-link
+                v-for="job in latestJobs"
+                :key="job.id"
+                :to="`/jobs/${job.id}`"
+                class="stagger-card group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md dark:border-slate-700/60 dark:bg-slate-800/40 dark:hover:bg-slate-800"
+              >
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-100/70 text-violet-700 font-bold text-sm shadow-xs dark:bg-violet-950/60 dark:text-violet-300 group-hover:scale-105 transition-transform">
+                    <Building2 class="h-5 w-5" />
+                  </div>
+                  <div class="min-w-0 font-khmer">
+                    <p class="truncate text-xs sm:text-sm font-black text-[#0A2458] group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-300 transition-colors">
+                      {{ job.title }}
+                    </p>
+                    <p class="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                      <span class="font-bold text-slate-700 dark:text-slate-300">{{ job.company }}</span>
+                      <span class="text-slate-300 dark:text-slate-600">·</span>
+                      <MapPin class="h-3 w-3 text-slate-400" />
+                      <span class="truncate">{{ job.location }}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0">
+                  <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-950/50 dark:text-emerald-300">
+                    {{ job.salary }}
+                  </span>
+                  <span class="rounded-md bg-slate-200/70 px-2 py-0.5 text-[9px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                    {{ job.type }}
+                  </span>
+                </div>
+              </router-link>
+            </div>
+          </div>
+        </div>
+
+        <!-- Official Bulletins & News -->
+        <div class="section-card rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 sm:p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-950/60 dark:text-rose-300">
+                  <Newspaper class="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 class="text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+                    {{ currentLanguage === 'kh' ? 'សេចក្តីជូនដំណឹង និងព័ត៌មានជាតិ' : 'Official Bulletins & Advisories' }}
+                  </h2>
+                  <p class="text-[11px] text-slate-400 font-medium font-khmer">
+                    {{ currentLanguage === 'kh' ? 'ព័ត៌មានសុខភាព សង្គម និងការអភិវឌ្ឍ' : 'Verified public interest notices' }}
+                  </p>
+                </div>
+              </div>
+              <router-link
+                to="/news"
+                class="inline-flex items-center gap-1 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 font-khmer"
+              >
+                {{ currentLanguage === 'kh' ? 'មើលទាំងអស់' : 'View all news' }}
+                <ArrowRight class="h-3.5 w-3.5" />
+              </router-link>
+            </div>
+
+            <div class="mt-4 space-y-3">
+              <router-link
+                v-for="item in latestNews"
+                :key="item.id"
+                :to="`/news/${item.id}`"
+                class="stagger-card group flex items-center gap-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-white hover:shadow-md dark:border-slate-700/60 dark:bg-slate-800/40 dark:hover:bg-slate-800"
+              >
+                <div class="flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 shadow-xs dark:bg-slate-700">
+                  <img v-if="item.image" :src="item.image" :alt="item.title" class="h-full w-full object-cover transition duration-300 group-hover:scale-110">
+                  <Newspaper v-else class="h-6 w-6 text-rose-400" />
+                </div>
+                <div class="min-w-0 flex-1 font-khmer">
+                  <p class="line-clamp-2 text-xs sm:text-sm font-black text-[#0A2458] group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 transition-colors leading-snug">
+                    {{ localized(item.title, item.titleKh) }}
+                  </p>
+                  <p class="mt-1.5 flex items-center gap-2 text-[10px] text-slate-400">
+                    <span class="rounded-full bg-rose-50 px-2 py-0.5 font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+                      {{ item.category }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <Clock3 class="h-3 w-3" />
+                      {{ item.date }}
+                    </span>
+                  </p>
+                </div>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-slate-300 shadow-2xs transition-all group-hover:translate-x-1 group-hover:bg-rose-50 group-hover:text-rose-600 dark:bg-slate-700">
+                  <ChevronRight class="h-4 w-4" />
+                </div>
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           7. 3-STEP CITIZEN GUIDE & SERVICE CHARTER
+      ============================================================= -->
+      <section class="section-card scroll-reveal mt-5 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 sm:p-8">
+        <div class="text-center max-w-xl mx-auto">
+          <div class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300 font-khmer">
+            <Sparkles class="h-3.5 w-3.5 text-amber-500" />
+            <span>{{ currentLanguage === 'kh' ? 'ងាយស្រួល ៤ ជំហានសម្រាប់ប្រជាពលរដ្ឋ' : '3-Step Citizen Action Guide' }}</span>
+          </div>
+          <h2 class="mt-3 text-lg sm:text-2xl font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+            {{ currentLanguage === 'kh' ? 'របៀបប្រើប្រាស់ CamLife ឱ្យមានប្រសិទ្ធភាព' : 'How CamLife Serves Every Citizen' }}
+          </h2>
+          <p class="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-khmer">
+            {{ currentLanguage === 'kh' ? 'ស្វែងរក ផ្ទៀងផ្ទាត់ និងសម្រេចកិច្ចការប្រចាំថ្ងៃរបស់អ្នកយ៉ាងរលូន' : 'Search, prepare required documents, and complete tasks with confidence' }}
+          </p>
+        </div>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-3 font-khmer">
+          <!-- Step 1 -->
+          <router-link
+            to="/government"
+            class="stagger-card group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-gradient-to-b from-blue-50/40 via-white to-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
+          >
+            <div>
+              <div class="flex items-center justify-between">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-[#0D47A1] ring-2 ring-blue-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-blue-950 dark:text-blue-300">
+                  <Search class="h-6 w-6" />
+                </div>
+                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-xs font-black text-[#0D47A1] dark:bg-blue-950/60 dark:text-blue-300 font-mono">
+                  01
+                </span>
+              </div>
+              <h3 class="mt-4 text-sm font-extrabold text-[#0A2458] group-hover:text-[#0D47A1] dark:text-white dark:group-hover:text-blue-300 transition-colors font-khmer">
+                {{ currentLanguage === 'kh' ? '១. ស្វែងរកសេវា ឬបញ្ហាដែលចង់ដោះស្រាយ' : '1. Search Service or Need' }}
+              </h3>
+              <p class="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
+                {{ currentLanguage === 'kh' ? 'វាយបញ្ចូលពាក្យគន្លឹះដើម្បីស្វែងរកមន្ទីរពេទ្យ សេវាសាធារណៈ ការងារ ឬលេខសង្គ្រោះបន្ទាន់ដែលអ្នកត្រូវការ។' : 'Use Smart Search to quickly find verified procedures, clinics, or crisis helplines.' }}
+              </p>
+            </div>
+            <div class="mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-[#0D47A1] dark:text-blue-400">
+              <span>{{ currentLanguage === 'kh' ? 'ស្វែងរកសេវាឥឡូវនេះ' : 'Search Services Now' }}</span>
+              <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </router-link>
+
+          <!-- Step 2 -->
+          <router-link
+            to="/government/national-id-card"
+            class="stagger-card group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-gradient-to-b from-emerald-50/40 via-white to-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
+          >
+            <div>
+              <div class="flex items-center justify-between">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 ring-2 ring-emerald-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-emerald-950 dark:text-emerald-300">
+                  <CheckSquare class="h-6 w-6" />
+                </div>
+                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-xs font-black text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300 font-mono">
+                  02
+                </span>
+              </div>
+              <h3 class="mt-4 text-sm font-extrabold text-[#0A2458] group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-300 transition-colors font-khmer">
+                {{ currentLanguage === 'kh' ? '២. ពិនិត្យបញ្ជីឯកសារ & ថ្លៃសេវា' : '2. Check Document Checklist' }}
+              </h3>
+              <p class="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
+                {{ currentLanguage === 'kh' ? 'ប្រើប្រាស់ Interactive Checklist ដើម្បីផ្ទៀងផ្ទាត់ឯកសារដែលអ្នកមាន និងដឹងពីថ្លៃសេវាផ្លូវការច្បាស់លាស់។' : 'Use interactive checklists to prepare all papers before visiting administrative offices.' }}
+              </p>
+            </div>
+            <div class="mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              <span>{{ currentLanguage === 'kh' ? 'សាកល្បងពិនិត្យឯកសារ' : 'Try Document Checklist' }}</span>
+              <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </router-link>
+
+          <!-- Step 3 -->
+          <router-link
+            to="/locations"
+            class="stagger-card group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-gradient-to-b from-violet-50/40 via-white to-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
+          >
+            <div>
+              <div class="flex items-center justify-between">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-600 ring-2 ring-violet-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-violet-950 dark:text-violet-300">
+                  <BadgeCheck class="h-6 w-6" />
+                </div>
+                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-50 text-xs font-black text-violet-600 dark:bg-violet-950/60 dark:text-violet-300 font-mono">
+                  03
+                </span>
+              </div>
+              <h3 class="mt-4 text-sm font-extrabold text-[#0A2458] group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-300 transition-colors font-khmer">
+                {{ currentLanguage === 'kh' ? '៣. ទៅកាន់ការិយាល័យ & បំពេញកិច្ចការ' : '3. Complete with Confidence' }}
+              </h3>
+              <p class="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
+                {{ currentLanguage === 'kh' ? 'ទៅកាន់ការិយាល័យច្រកចេញចូលតែមួយ ឬទាក់ទងលេខផ្ទាល់ ដើម្បីសម្រេចកិច្ចការរបស់អ្នកដោយរលូន។' : 'Follow office maps, submit required papers, and complete your tasks smoothly.' }}
+              </p>
+            </div>
+            <div class="mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-violet-600 dark:text-violet-400">
+              <span>{{ currentLanguage === 'kh' ? 'រុករកទីតាំងការិយាល័យ' : 'Explore Public Offices' }}</span>
+              <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </router-link>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           8. CITIZEN NEWSLETTER & ADVISORY SUBSCRIPTION
+      ============================================================= -->
+      <section class="scroll-reveal relative mt-5 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0A2540] via-[#0D47A1] to-[#1565C0] p-6 text-white sm:p-8">
+        <div class="absolute bottom-[-2rem] right-5 opacity-15 pointer-events-none">
+          <Bell class="h-36 w-36" />
+        </div>
+        <div class="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between font-khmer">
+          <div>
+            <h2 class="text-lg sm:text-xl font-black">
+              {{ currentLanguage === 'kh' ? 'ទទួលសេចក្តីជូនដំណឹង និងព័ត៌មានជាតិថ្មីៗពី CamLife' : 'Stay Informed with Public Citizen Advisories' }}
+            </h2>
+            <p class="mt-1 text-xs text-blue-100 max-w-xl">
+              {{ currentLanguage === 'kh' ? 'ទទួលបានការជូនដំណឹងពីការប្រកាសសេវាសាធារណៈ ថ្ងៃឈប់សម្រាកជាតិ និងឱកាសការងារសំខាន់ៗ។' : 'Receive updates on new civic services, official public notices, and career alerts.' }}
             </p>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         CLEAN FINAL CALL TO ACTION
-    ====================================================== -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24">
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0D47A1] via-[#1565C0] to-[#0A2540] p-8 sm:p-12 text-center text-white shadow-xl">
-        <div class="absolute -right-20 -top-20 w-72 h-72 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-
-        <div class="relative max-w-2xl mx-auto space-y-4">
-          <Sparkles class="w-8 h-8 mx-auto text-blue-200 animate-pulse" />
-
-          <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">
-            Find what you need in seconds.
-          </h2>
-
-          <p class="text-xs sm:text-sm text-blue-100 font-khmer">
-            ស្វែងរកសេវាកម្មសំខាន់ៗសម្រាប់ការរស់នៅប្រចាំថ្ងៃរបស់អ្នកដោយឥតគិតថ្លៃ។
-          </p>
-
-          <div class="pt-3 flex flex-col sm:flex-row justify-center gap-3">
-            <router-link
-              to="/services"
-              class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-blue-50 text-[#0D47A1] text-xs sm:text-sm font-bold shadow-xs transition-all active:scale-95"
+          <form class="flex max-w-md flex-1 rounded-2xl bg-white p-1.5 shadow-lg" @submit.prevent="submitNewsletter">
+            <input
+              v-model="newsletterEmail"
+              type="email"
+              required
+              class="min-w-0 flex-1 rounded-xl border-0 bg-transparent px-3.5 text-xs text-slate-800 outline-none placeholder:text-slate-400 focus:ring-0 font-khmer"
+              :placeholder="currentLanguage === 'kh' ? 'បញ្ចូលអ៊ីមែលរបស់អ្នក...' : 'Enter your email address...'"
+            />
+            <button
+              type="submit"
+              class="rounded-xl bg-[#0D47A1] hover:bg-[#0A2540] px-5 py-2.5 text-xs font-bold text-white transition font-khmer"
             >
-              <span>Explore All Services</span>
-              <ArrowRight class="w-4 h-4" />
-            </router-link>
-
-            <router-link
-              to="/emergency"
-              class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-all active:scale-95"
-            >
-              <span>Emergency Hotlines</span>
-              <Phone class="w-4 h-4" />
-            </router-link>
-          </div>
+              {{ newsletterSubscribed ? (currentLanguage === 'kh' ? 'បានជាវរួចរាល់!' : 'Subscribed!') : (currentLanguage === 'kh' ? 'ជាវដំណឹង' : 'Subscribe') }}
+            </button>
+          </form>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Search Modal -->
-    <SearchModal
-      :is-open="isSearchModalOpen"
-      @close="isSearchModalOpen = false"
-    />
-
+    </div>
   </div>
 </template>
 
 <style scoped>
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+.reference-home {
+  background:
+    radial-gradient(70rem 30rem at 50% 0%, rgba(196, 222, 255, .7), transparent 70%),
+    linear-gradient(180deg, #f5f9ff 0%, #f9fbff 46%, #edf4ff 100%);
 }
 
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.05);
-  }
+:global(.dark) .reference-home {
+  background-color: #0b1727;
+  background-image: none;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.hero-card { box-shadow: 0 8px 28px rgba(22, 55, 107, .06); }
+
+.hero-illustration-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.2) 6%, rgba(0, 0, 0, 0.8) 18%, black 28%);
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.2) 6%, rgba(0, 0, 0, 0.8) 18%, black 28%);
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+/* Scroll reveal bidirectional animations */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px) scale(0.985);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 8s ease-in-out infinite;
+.scroll-reveal.reveal-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
-.animate-pulse-glow-delay {
-  animation: pulseGlow 8s ease-in-out infinite 4s;
+.scroll-reveal.reveal-out {
+  opacity: 0;
+  transform: translateY(24px) scale(0.985);
+  transition: opacity 0.45s ease-out, transform 0.45s ease-out;
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Stagger cards within revealed sections */
+.scroll-reveal .stagger-card {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
 }
+
+.scroll-reveal.reveal-in .stagger-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reveal.reveal-in .stagger-card:nth-child(1) { transition-delay: 40ms; }
+.scroll-reveal.reveal-in .stagger-card:nth-child(2) { transition-delay: 80ms; }
+.scroll-reveal.reveal-in .stagger-card:nth-child(3) { transition-delay: 120ms; }
+.scroll-reveal.reveal-in .stagger-card:nth-child(4) { transition-delay: 160ms; }
+.scroll-reveal.reveal-in .stagger-card:nth-child(5) { transition-delay: 200ms; }
+.scroll-reveal.reveal-in .stagger-card:nth-child(6) { transition-delay: 240ms; }
+.scroll-reveal.reveal-in .stagger-card:nth-child(7) { transition-delay: 280ms; }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-float,
-  .animate-pulse-glow,
-  .animate-pulse-glow-delay,
-  .animate-fade-in-up {
-    animation: none !important;
+  .scroll-reveal,
+  .scroll-reveal .stagger-card {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 </style>

@@ -11,10 +11,28 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  goToPage: [page: number]
-  nextPage: []
-  prevPage: []
+  (e: 'pageChange', page: number): void
+  (e: 'goToPage', page: number): void
+  (e: 'prev'): void
+  (e: 'prevPage'): void
+  (e: 'next'): void
+  (e: 'nextPage'): void
 }>()
+
+function onPageClick(page: number) {
+  emit('pageChange', page)
+  emit('goToPage', page)
+}
+
+function onPrev() {
+  emit('prev')
+  emit('prevPage')
+}
+
+function onNext() {
+  emit('next')
+  emit('nextPage')
+}
 
 const visiblePages = computed(() => {
   const pages: number[] = []
@@ -49,7 +67,7 @@ const visiblePages = computed(() => {
     <div class="flex items-center gap-1.5">
       <!-- Previous Page -->
       <button
-        @click="emit('prevPage')"
+        @click="onPrev"
         :disabled="currentPage <= 1"
         class="p-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs"
         type="button"
@@ -63,7 +81,7 @@ const visiblePages = computed(() => {
         <span v-if="page === -1" class="px-1.5 text-slate-400 text-xs select-none">…</span>
         <button
           v-else
-          @click="emit('goToPage', page)"
+          @click="onPageClick(page)"
           :class="[
             'min-w-[36px] h-9 px-2 rounded-xl text-xs font-bold transition-all shadow-xs',
             page === currentPage
@@ -78,7 +96,7 @@ const visiblePages = computed(() => {
 
       <!-- Next Page -->
       <button
-        @click="emit('nextPage')"
+        @click="onNext"
         :disabled="currentPage >= totalPages"
         class="p-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs"
         type="button"

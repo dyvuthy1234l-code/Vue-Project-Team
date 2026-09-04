@@ -74,6 +74,34 @@ export function globalSearch(query: string): SearchResult[] {
   const q = query.toLowerCase().trim()
   const results: SearchResult[] = []
 
+  // Search emergency contacts
+  emergencyContacts.forEach(e => {
+    if (
+      e.name.toLowerCase().includes(q) ||
+      (e.nameKh && e.nameKh.toLowerCase().includes(q)) ||
+      e.number.includes(q) ||
+      e.description.toLowerCase().includes(q) ||
+      (e.descriptionKh && e.descriptionKh.toLowerCase().includes(q)) ||
+      q.includes('អាសន្ន') ||
+      q.includes('សង្គ្រោះ') ||
+      q.includes('emergency') ||
+      q.includes('police') ||
+      q.includes('បាញ់') ||
+      q.includes('ភ្លើង')
+    ) {
+      if (!results.some(r => r.id === e.id)) {
+        results.push({
+          id: e.id,
+          title: `${e.number} - ${e.name}`,
+          description: e.description,
+          category: 'Emergency 24/7',
+          type: 'emergency' as any,
+          route: '/emergency'
+        })
+      }
+    }
+  })
+
   // Search hospitals
   hospitals.forEach(h => {
     if (
@@ -85,16 +113,22 @@ export function globalSearch(query: string): SearchResult[] {
       h.location.toLowerCase().includes(q) ||
       (h.address && h.address.toLowerCase().includes(q)) ||
       (h.addressKh && h.addressKh.toLowerCase().includes(q)) ||
-      h.services.some(s => s.toLowerCase().includes(q))
+      h.services.some(s => s.toLowerCase().includes(q)) ||
+      q.includes('ឈឺ') ||
+      q.includes('ពេទ្យ') ||
+      q.includes('doctor') ||
+      q.includes('sick')
     ) {
-      results.push({
-        id: h.id,
-        title: h.name,
-        description: h.description,
-        category: h.category,
-        type: 'hospital',
-        route: `/health/${h.id}`
-      })
+      if (!results.some(r => r.id === h.id)) {
+        results.push({
+          id: h.id,
+          title: h.name,
+          description: h.description,
+          category: h.category,
+          type: 'hospital',
+          route: `/health/${h.id}`
+        })
+      }
     }
   })
 

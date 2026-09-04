@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+  <defs>
+    <linearGradient id="mrgDeskBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b2d2b"/>
+      <stop offset="50%" stop-color="#241a19"/>
+      <stop offset="100%" stop-color="#140d0d"/>
+    </linearGradient>
+
+    <linearGradient id="mrgPaper" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffdfa"/>
+      <stop offset="50%" stop-color="#fcf8f0"/>
+      <stop offset="100%" stop-color="#f7f0e1"/>
+    </linearGradient>
+
+    <filter id="mrgShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="8" dy="18" stdDeviation="15" flood-color="#000" flood-opacity="0.55"/>
+    </filter>
+
+    <pattern id="mrgPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="12" r="1" fill="#b91c1c" fill-opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <style>
+    .khmer-moul { font-family: 'Moul', 'Kantumruy Pro', sans-serif; }
+    .khmer-font { font-family: 'Kantumruy Pro', 'Hanuman', 'Khmer OS Siemreap', sans-serif; }
+  </style>
+
+  <!-- Surface Background -->
+  <rect width="1200" height="675" fill="url(#mrgDeskBg)"/>
+  <ellipse cx="600" cy="300" rx="550" ry="300" fill="#f43f5e" opacity="0.03"/>
+
+  <!-- Marriage Document -->
+  <g transform="translate(360, 30)" filter="url(#mrgShadow)">
+    <rect width="480" height="615" rx="4" fill="url(#mrgPaper)"/>
+    <rect width="480" height="615" rx="4" fill="url(#mrgPattern)"/>
+
+    <!-- Double Burgundy & Gold Border -->
+    <rect x="18" y="18" width="444" height="579" rx="3" fill="none" stroke="#991b1b" stroke-width="2.5"/>
+    <rect x="23" y="23" width="434" height="569" rx="2" fill="none" stroke="#d97706" stroke-width="1"/>
+
+    <!-- Corner Decorative Flourishes -->
+    <g stroke="#991b1b" stroke-width="1.5" fill="none">
+      <path d="M23,38 Q38,38 38,23"/>
+      <path d="M457,38 Q442,38 442,23"/>
+      <path d="M23,577 Q38,577 38,592"/>
+      <path d="M457,577 Q442,577 442,592"/>
+    </g>
+
+    <!-- Royal Emblem -->
+    <g transform="translate(240, 60) scale(0.65)">
+      <path d="M-25,20 C-25,5 -10,-20 0,-30 C10,-20 25,5 25,20 C15,25 -15,25 -25,20 Z" fill="#991b1b"/>
+      <circle cx="0" cy="-35" r="4" fill="#d97706"/>
+      <path d="M-30,18 L30,18 L25,26 L-25,26 Z" fill="#d97706"/>
+    </g>
+
+    <!-- Header -->
+    <text x="240" y="104" text-anchor="middle" class="khmer-moul" font-size="14" fill="#991b1b">ព្រះរាជាណាចក្រកម្ពុជា</text>
+    <text x="240" y="122" text-anchor="middle" class="khmer-font" font-size="11" fill="#991b1b">ជាតិ សាសនា ព្រះមហាក្សត្រ</text>
+    <path d="M185,128 Q240,133 295,128" fill="none" stroke="#991b1b" stroke-width="1"/>
+
+    <text x="45" y="150" class="khmer-font" font-size="10" fill="#334155" font-weight="bold">ក្រសួងមហាផ្ទៃ</text>
+    <text x="45" y="165" class="khmer-font" font-size="9" fill="#64748b">សាលាសង្កាត់ចតុមុខ ខណ្ឌដូនពេញ</text>
+
+    <text x="435" y="150" text-anchor="end" class="khmer-font" font-size="9" fill="#64748b">លេខសំបុត្រ: <tspan fill="#0f172a" font-weight="bold">០៤៨ / ២០២៣</tspan></text>
+
+    <!-- Title Badge -->
+    <rect x="100" y="182" width="280" height="34" rx="4" fill="#fef2f2" stroke="#991b1b" stroke-width="0.8"/>
+    <text x="240" y="204" text-anchor="middle" class="khmer-moul" font-size="16" fill="#991b1b">សំបុត្រអាពាហ៍ពិពាហ៍</text>
+    <text x="240" y="228" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#b91c1c" letter-spacing="3">ACTE DE MARIAGE / MARRIAGE CERTIFICATE</text>
+
+    <!-- Spouse Details Section -->
+    <g transform="translate(45, 250)" class="khmer-font" font-size="10" fill="#1e293b">
+      <!-- Husband Box -->
+      <rect x="0" y="0" width="185" height="150" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="12" y="22" font-weight="bold" fill="#1e3a8a">ព័ត៌មានស្វាមី (Husband)</text>
+      <text x="12" y="46" fill="#64748b">ឈ្មោះ: <tspan fill="#0f172a" font-weight="bold">ចាន់ ពិសិដ្ឋ</tspan></text>
+      <text x="12" y="68" fill="#64748b">ថ្ងៃខែឆ្នាំ: <tspan fill="#0f172a">១២ មករា ១៩៩៥</tspan></text>
+      <text x="12" y="90" fill="#64748b">សញ្ជាតិ: <tspan fill="#0f172a">ខ្មែរ</tspan></text>
+      <text x="12" y="112" fill="#64748b">អត្តសញ្ញាណប័ណ្ណ:</text>
+      <text x="12" y="130" font-weight="bold" fill="#0f172a">០១០៩៨២៣៤១</text>
+
+      <!-- Wife Box -->
+      <rect x="205" y="0" width="185" height="150" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="217" y="22" font-weight="bold" fill="#9d174d">ព័ត៌មានភរិយា (Wife)</text>
+      <text x="217" y="46" fill="#64748b">ឈ្មោះ: <tspan fill="#0f172a" font-weight="bold">សេង សុភា</tspan></text>
+      <text x="217" y="68" fill="#64748b">ថ្ងៃខែឆ្នាំ: <tspan fill="#0f172a">០៨ តុលា ១៩៩៧</tspan></text>
+      <text x="217" y="90" fill="#64748b">សញ្ជាតិ: <tspan fill="#0f172a">ខ្មែរ</tspan></text>
+      <text x="217" y="112" fill="#64748b">អត្តសញ្ញាណប័ណ្ណ:</text>
+      <text x="217" y="130" font-weight="bold" fill="#0f172a">០១១២៩៤៨៥៧</text>
+    </g>
+
+    <!-- Authority & Seal -->
+    <g transform="translate(45, 435)">
+      <text x="10" y="20" class="khmer-font" font-size="9.5" fill="#475569">បានចុះកិច្ចសន្យាអាពាហ៍ពិពាហ៍ត្រឹមត្រូវតាមច្បាប់នៃព្រះរាជាណាចក្រកម្ពុជា</text>
+
+      <text x="310" y="55" text-anchor="middle" class="khmer-font" font-size="9.5" fill="#334155">ថ្ងៃទី ២៥ ខែ វិច្ឆិកា ឆ្នាំ ២០២៣</text>
+      <text x="310" y="72" text-anchor="middle" class="khmer-font" font-size="10.5" font-weight="bold" fill="#0f172a">ចៅសង្កាត់ចតុមុខ</text>
+
+      <!-- Signature -->
+      <path d="M260,110 Q285,85 310,110 Q335,95 365,115" fill="none" stroke="#1d4ed8" stroke-width="2.2" stroke-linecap="round"/>
+
+      <!-- Red Stamp -->
+      <g transform="translate(310, 105)" opacity="0.88">
+        <circle cx="0" cy="0" r="44" fill="none" stroke="#dc2626" stroke-width="3"/>
+        <circle cx="0" cy="0" r="39" fill="none" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4 2"/>
+        <text y="-22" text-anchor="middle" class="khmer-font" font-size="7.5" fill="#dc2626" font-weight="bold">ក្រសួងមហាផ្ទៃ * កម្ពុជា</text>
+        <text y="28" text-anchor="middle" class="khmer-font" font-size="7.5" fill="#dc2626" font-weight="bold">រដ្ឋបាលសង្កាត់ចតុមុខ</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Side Badge -->
+  <g transform="translate(60, 240)">
+    <rect width="250" height="190" rx="14" fill="#0f172a" fill-opacity="0.88" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="45" cy="45" r="22" fill="#e11d48" fill-opacity="0.2"/>
+    <path d="M45,40 C42,35 34,35 34,42 C34,49 45,56 45,56 C45,56 56,49 56,42 C56,35 48,35 45,40 Z" fill="#f43f5e"/>
+    <text x="78" y="42" fill="#ffffff" font-family="sans-serif" font-size="15" font-weight="bold">សំបុត្រអាពាហ៍ពិពាហ៍</text>
+    <text x="78" y="60" fill="#94a3b8" font-family="sans-serif" font-size="12">Marriage Certificate</text>
+    
+    <line x1="25" y1="85" x2="225" y2="85" stroke="#334155" stroke-width="1"/>
+    
+    <text x="30" y="112" fill="#cbd5e1" font-family="'Kantumruy Pro', sans-serif" font-size="13">✓ ឯកសារនីត្យានុកូលភាព</text>
+    <text x="30" y="138" fill="#cbd5e1" font-family="'Kantumruy Pro', sans-serif" font-size="13">✓ ចេញដោយសាលាសង្កាត់/ឃុំ</text>
+    <text x="30" y="164" fill="#cbd5e1" font-family="'Kantumruy Pro', sans-serif" font-size="13">✓ ការពារសិទ្ធិស្របច្បាប់ប្តីប្រពន្ធ</text>
+  </g>
+</svg>

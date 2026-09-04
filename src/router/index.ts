@@ -44,6 +44,16 @@ const router = createRouter({
       component: () => import('@/views/SavedJobsPage.vue')
     },
     {
+      path: '/saved-services',
+      name: 'saved-services',
+      component: () => import('@/views/SavedServicesPage.vue')
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('@/views/AdminDashboard.vue')
+    },
+    {
       path: '/home-services',
       name: 'home-services',
       component: () => import('@/views/HomeServicesPage.vue')

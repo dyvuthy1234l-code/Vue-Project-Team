@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+  <defs>
+    <linearGradient id="bizDeskBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="bizPaper" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+
+    <linearGradient id="camdxBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <filter id="bizShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="8" dy="18" stdDeviation="16" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <style>
+    .khmer-moul { font-family: 'Moul', 'Kantumruy Pro', sans-serif; }
+    .khmer-body { font-family: 'Kantumruy Pro', 'Hanuman', 'Khmer OS Siemreap', sans-serif; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1200" height="675" fill="url(#bizDeskBg)"/>
+  <ellipse cx="600" cy="300" rx="550" ry="300" fill="#0284c7" opacity="0.04"/>
+
+  <!-- Certificate Object -->
+  <g transform="translate(360, 30)" filter="url(#bizShadow)">
+    <rect width="480" height="615" rx="6" fill="url(#bizPaper)"/>
+
+    <!-- Top Blue Accent Header Bar -->
+    <rect width="480" height="12" rx="6 6 0 0" fill="url(#camdxBlue)"/>
+
+    <!-- Subtle Watermark Coat of Arms -->
+    <circle cx="240" cy="320" r="110" fill="#f1f5f9" opacity="0.6"/>
+
+    <!-- Dual Border Frame -->
+    <rect x="18" y="24" width="444" height="573" rx="4" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+    <rect x="22" y="28" width="436" height="565" rx="3" fill="none" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="4 2"/>
+
+    <!-- Official Header -->
+    <g transform="translate(240, 56) scale(0.65)">
+      <path d="M-25,20 C-25,5 -10,-20 0,-30 C10,-20 25,5 25,20 C15,25 -15,25 -25,20 Z" fill="#1e3a8a"/>
+      <circle cx="0" cy="-35" r="4" fill="#f59e0b"/>
+      <path d="M-30,18 L30,18 L25,26 L-25,26 Z" fill="#f59e0b"/>
+    </g>
+
+    <text x="240" y="100" text-anchor="middle" class="khmer-moul" font-size="13" fill="#1e3a8a">ព្រះរាជាណាចក្រកម្ពុជា</text>
+    <text x="240" y="118" text-anchor="middle" class="khmer-body" font-size="10.5" fill="#1e3a8a">ជាតិ សាសនា ព្រះមហាក្សត្រ</text>
+    <path d="M190,123 Q240,127 290,123" fill="none" stroke="#1e3a8a" stroke-width="1"/>
+
+    <!-- Ministry Name -->
+    <text x="45" y="146" class="khmer-body" font-size="11" font-weight="bold" fill="#0369a1">ក្រសួងពាណិជ្ជកម្ម</text>
+    <text x="45" y="160" font-family="sans-serif" font-size="8.5" fill="#64748b" font-weight="600">MINISTRY OF COMMERCE (CamDX)</text>
+
+    <!-- CamDX Verified Badge -->
+    <g transform="translate(370, 134)">
+      <rect width="68" height="24" rx="12" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+      <circle cx="12" cy="12" r="5" fill="#0284c7"/>
+      <text x="22" y="16" font-family="sans-serif" font-size="9" font-weight="bold" fill="#0369a1">CamDX</text>
+    </g>
+
+    <!-- Certificate Title -->
+    <rect x="60" y="178" width="360" height="38" rx="5" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1"/>
+    <text x="240" y="198" text-anchor="middle" class="khmer-moul" font-size="15" fill="#0369a1">វិញ្ញាបនបត្រចុះបញ្ជីពាណិជ្ជកម្ម</text>
+    <text x="240" y="211" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#0284c7" letter-spacing="2">CERTIFICATE OF INCORPORATION</text>
+
+    <!-- Corporate Information Box -->
+    <g transform="translate(45, 235)" class="khmer-body" font-size="10" fill="#1e293b">
+      <rect x="0" y="0" width="390" height="195" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+      
+      <!-- Registration ID -->
+      <text x="16" y="26" fill="#64748b">លេខចុះបញ្ជីពាណិជ្ជកម្ម (Reg. No.):</text>
+      <text x="200" y="26" font-weight="bold" fill="#0f172a">00054892 / 2023</text>
+
+      <line x1="16" y1="36" x2="374" y2="36" stroke="#f1f5f9" stroke-width="1"/>
+
+      <!-- Company Name KH -->
+      <text x="16" y="58" fill="#64748b">នាមករណ៍ក្រុមហ៊ុន (Khmer):</text>
+      <text x="16" y="78" font-size="12" font-weight="bold" fill="#0369a1">ខេមឡាយហ្វ ឌីជីថល សលូសិន ឯ.ក</text>
+
+      <!-- Company Name EN -->
+      <text x="16" y="102" fill="#64748b">Company Name (English):</text>
+      <text x="16" y="120" font-family="sans-serif" font-size="11" font-weight="bold" fill="#0f172a">CAMLIFE DIGITAL SOLUTIONS CO., LTD.</text>
+
+      <line x1="16" y1="130" x2="374" y2="130" stroke="#f1f5f9" stroke-width="1"/>
+
+      <!-- Form of Business -->
+      <text x="16" y="150" fill="#64748b">ទម្រង់ក្រុមហ៊ុន (Legal Entity):</text>
+      <text x="200" y="150" font-weight="bold" fill="#0f172a">ក្រុមហ៊ុនឯកជនទទួលខុសត្រូវមានកម្រិត</text>
+
+      <!-- Date of Registration -->
+      <text x="16" y="174" fill="#64748b">កាលបរិច្ឆេទចុះបញ្ជី:</text>
+      <text x="200" y="174" font-weight="bold" fill="#0f172a">១៨ តុលា ២០២៣</text>
+    </g>
+
+    <!-- Bottom QR Verification & Stamp Section -->
+    <g transform="translate(45, 450)">
+      <!-- Official Security QR -->
+      <rect x="10" y="15" width="75" height="75" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" rx="4"/>
+      <rect x="16" y="21" width="20" height="20" fill="#0284c7"/>
+      <rect x="20" y="25" width="12" height="12" fill="#fff"/>
+      <rect x="24" y="29" width="4" height="4" fill="#0284c7"/>
+      <rect x="59" y="21" width="20" height="20" fill="#0284c7"/>
+      <rect x="63" y="25" width="12" height="12" fill="#fff"/>
+      <rect x="67" y="29" width="4" height="4" fill="#0284c7"/>
+      <rect x="16" y="64" width="20" height="20" fill="#0284c7"/>
+      <rect x="20" y="68" width="12" height="12" fill="#fff"/>
+      <rect x="24" y="72" width="4" height="4" fill="#0284c7"/>
+      <rect x="42" y="42" width="10" height="10" fill="#0284c7"/>
+      <text x="47" y="104" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#64748b">verify.camdx.gov.kh</text>
+
+      <!-- Authority Signoff -->
+      <text x="290" y="25" text-anchor="middle" class="khmer-body" font-size="9.5" fill="#475569">រាជធានីភ្នំពេញ, ថ្ងៃទី ១៨ ខែ តុលា ឆ្នាំ ២០២៣</text>
+      <text x="290" y="42" text-anchor="middle" class="khmer-body" font-size="10.5" font-weight="bold" fill="#0f172a">ប្រធាននាយកដ្ឋានចុះបញ្ជីពាណិជ្ជកម្ម</text>
+
+      <!-- Digital Signature -->
+      <path d="M245,85 Q265,58 290,82 Q315,62 345,86" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round"/>
+
+      <!-- Digital Seal Stamp -->
+      <g transform="translate(290, 80)" opacity="0.9">
+        <circle cx="0" cy="0" r="42" fill="none" stroke="#0284c7" stroke-width="2.5"/>
+        <circle cx="0" cy="0" r="38" fill="none" stroke="#0284c7" stroke-width="1" stroke-dasharray="3 2"/>
+        <text y="-20" text-anchor="middle" class="khmer-body" font-size="7" fill="#0284c7" font-weight="bold">ក្រសួងពាណិជ្ជកម្ម * CAMBODIA</text>
+        <text y="26" text-anchor="middle" class="khmer-body" font-size="7" fill="#0284c7" font-weight="bold">នាយកដ្ឋានចុះបញ្ជីពាណិជ្ជកម្ម</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Side Badge -->
+  <g transform="translate(60, 240)">
+    <rect width="250" height="190" rx="14" fill="#0f172a" fill-opacity="0.88" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="45" cy="45" r="22" fill="#0284c7" fill-opacity="0.2"/>
+    <path d="M45,35 L55,42 L55,54 L45,61 L35,54 L35,42 Z" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="78" y="42" fill="#ffffff" font-family="sans-serif" font-size="15" font-weight="bold">ចុះបញ្ជីពាណិជ្ជកម្ម</text>
+    <text x="78" y="60" fill="#94a3b8" font-family="sans-serif" font-size="12">CamDX Business Reg.</text>
+    
+    <line x1="25" y1="85" x2="225" y2="85" stroke="#334155" stroke-width="1"/>
+    
+    <text x="30" y="112" fill="#cbd5e1" font-family="'Kantumruy Pro', sans-serif" font-size="13">✓ ប្រព័ន្ធអនឡាញ CamDX</text>
+    <text x="30" y="138" fill="#cbd5e1" font-family="'Kantumruy Pro', sans-serif" font-size="13">✓ វិញ្ញាបនបត្រឌីជីថលផ្លូវការ</text>
+    <text x="30" y="164" fill="#cbd5e1" font-family="'Kantumruy Pro', sans-serif" font-size="13">✓ ទទួលស្គាល់ទូទាំងប្រទេស</text>
+  </g>
+</svg>

@@ -4,7 +4,7 @@
     "name": "Calmette Hospital",
     "nameKh": "មន្ទីរពេទ្យកាល់ម៉ែត",
     "category": "hospital",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=800&q=80",
     "rating": 4.5,
     "reviews": 342,
     "location": "Phnom Penh",
@@ -12,17 +12,32 @@
     "openingHours": "24/7",
     "description": "Calmette Hospital is one of the largest and oldest public tertiary hospitals in Phnom Penh, Cambodia. It provides comprehensive healthcare services, high-end surgeries, emergency trauma care, cardiology, and oncology.",
     "descriptionKh": "មន្ទីរពេទ្យកាល់ម៉ែត ជាមន្ទីរពេទ្យសាធារណៈកម្រិតខ្ពស់ និងធំជាងគេមួយក្នុងរាជធានីភ្នំពេញ។ ផ្តល់សេវាព្យាបាលសុខភាពទូទៅ ការវះកាត់កម្រិតខ្ពស់ សង្គ្រោះបន្ទាន់ ជំងឺបេះដូង និងជំងឺមហារីក។",
-    "services": ["Emergency Care", "Cardiology", "Neurology", "General Surgery", "ICU", "Oncology", "Radiology", "Laboratory"],
+    "services": [
+      "Emergency Care",
+      "Cardiology",
+      "Neurology",
+      "General Surgery",
+      "ICU",
+      "Oncology",
+      "Radiology",
+      "Laboratory"
+    ],
     "address": "No. 3, Preah Monivong Blvd, Sangkat Srah Chak, Khan Doun Penh, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ៣ មហាវិថីព្រះមុនីវង្ស សង្កាត់ស្រះចក ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5794, "lng": 104.9198 }
+    "coordinates": {
+      "lat": 11.5794,
+      "lng": 104.9198
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 23 426 948"
   },
   {
     "id": "royal-phnom-penh-hospital",
     "name": "Royal Phnom Penh Hospital",
     "nameKh": "មន្ទីរពេទ្យរ៉ូយ៉ាល់ភ្នំពេញ",
     "category": "hospital",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80",
     "rating": 4.8,
     "reviews": 215,
     "location": "Phnom Penh",
@@ -30,35 +45,61 @@
     "openingHours": "24/7",
     "description": "A member of the Bangkok Dusit Medical Services (BDMS) network, offering international standard medical services, multi-lingual doctors, cutting-edge diagnostic equipment, and 24-hour emergency evacuation.",
     "descriptionKh": "មន្ទីរពេទ្យស្តង់ដារអន្តរជាតិ សមាជិកបណ្តាញ BDMS ផ្តល់សេវាវេជ្ជសាស្ត្រកម្រិតខ្ពស់ ក្រុមវេជ្ជបណ្ឌិតពហុភាសា និងសេវាសង្គ្រោះបន្ទាន់ ២៤ ម៉ោង។",
-    "services": ["International Emergency Care", "Cardiology", "Orthopedics", "Pediatrics", "Health Screening", "Telemedicine"],
+    "services": [
+      "International Emergency Care",
+      "Cardiology",
+      "Orthopedics",
+      "Pediatrics",
+      "Health Screening",
+      "Telemedicine"
+    ],
     "address": "No. 888, Russian Confederation Blvd, Sangkat Toeuk Thla, Khan Sen Sok, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ៨៨៨ មហាវិថីសហព័ន្ធរុស្ស៊ី សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5588, "lng": 104.8785 }
+    "coordinates": {
+      "lat": 11.5588,
+      "lng": 104.8785
+    },
+    "ownership": "private",
+    "acceptsNssf": false,
+    "emergencyHotline": "+855 23 991 000"
   },
   {
     "id": "khmer-soviet-friendship-hospital",
     "name": "Khmer-Soviet Friendship Hospital",
     "nameKh": "មន្ទីរពេទ្យមិត្តភាពខ្មែរ-សូវៀត",
     "category": "hospital",
-    "image": "",
-    "rating": 4.0,
+    "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=800&q=80",
+    "rating": 4,
     "reviews": 180,
     "location": "Phnom Penh",
     "phone": "+855 23 217 764",
     "openingHours": "24/7",
     "description": "Known commonly as Russian Hospital, this public hospital is a major center for tertiary care, general surgery, infectious disease control, and medical training in Cambodia.",
     "descriptionKh": "ស្គាល់ជាទូទៅថាមន្ទីរពេទ្យរុស្ស៊ី ជាមន្ទីរពេទ្យរដ្ឋធំមួយដែលផ្តល់សេវាព្យាបាលកម្រិតខ្ពស់ ការវះកាត់ទូទៅ និងការបណ្តុះបណ្តាលវេជ្ជសាស្ត្រ។",
-    "services": ["Emergency", "Infectious Diseases", "Pulmonology", "General Surgery", "Internal Medicine", "Maternity"],
+    "services": [
+      "Emergency",
+      "Infectious Diseases",
+      "Pulmonology",
+      "General Surgery",
+      "Internal Medicine",
+      "Maternity"
+    ],
     "address": "Street 271, Sangkat Tomnoub Tuek, Khan Boeung Keng Kang, Phnom Penh",
     "addressKh": "ផ្លូវ ២៧១ សង្កាត់ទំនប់ទឹក ខណ្ឌបឹងកេងកង រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5372, "lng": 104.9084 }
+    "coordinates": {
+      "lat": 11.5372,
+      "lng": 104.9084
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 23 217 764"
   },
   {
     "id": "sunrise-japan-hospital",
     "name": "Sunrise Japan Hospital Phnom Penh",
     "nameKh": "មន្ទីរពេទ្យជប៉ុន សាន់រ៉ាយស៍ ភ្នំពេញ",
     "category": "hospital",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80",
     "rating": 4.7,
     "reviews": 195,
     "location": "Phnom Penh",
@@ -66,17 +107,30 @@
     "openingHours": "24/7",
     "description": "Sunrise Japan Hospital brings Japanese-quality healthcare, neurosurgery, stroke center expertise, and health check-up services with state-of-the-art Japanese medical technology to Cambodia.",
     "descriptionKh": "មន្ទីរពេទ្យស្តង់ដារជប៉ុន ជំនាញឯកទេសផ្នែកប្រព័ន្ធប្រសាទ ជំងឺដាច់សរសៃឈាមខួរក្បាល ការវះកាត់ និងការពិនិត្យសុខភាពទូទៅ។",
-    "services": ["Neurosurgery", "Stroke Center", "Health Check-up", "Emergency", "Rehabilitation", "Gastroenterology"],
+    "services": [
+      "Neurosurgery",
+      "Stroke Center",
+      "Health Check-up",
+      "Emergency",
+      "Rehabilitation",
+      "Gastroenterology"
+    ],
     "address": "No. 177D, Phum 2, Sangkat Chroy Changvar, Khan Chroy Changvar, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ១៧៧D ភូមិ២ សង្កាត់ជ្រោយចង្វារ ខណ្ឌជ្រោយចង្វារ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5947, "lng": 104.9312 }
+    "coordinates": {
+      "lat": 11.5947,
+      "lng": 104.9312
+    },
+    "ownership": "private",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 23 260 152"
   },
   {
     "id": "angkor-hospital-for-children",
     "name": "Angkor Hospital for Children",
     "nameKh": "មន្ទីរពេទ្យកុមារអង្គរ",
     "category": "hospital",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80",
     "rating": 4.9,
     "reviews": 412,
     "location": "Siem Reap",
@@ -84,17 +138,30 @@
     "openingHours": "24/7",
     "description": "A premier non-profit pediatric healthcare organization in Siem Reap, dedicated to providing compassionate, high-quality, free healthcare to all Cambodian children.",
     "descriptionKh": "មន្ទីរពេទ្យកុមារមិនគិតកម្រៃឈានមុខគេនៅខេត្តសៀមរាប ផ្តល់សេវាថែទាំសុខភាពប្រកបដោយគុណភាព និងក្តីមេត្តាដល់កុមារកម្ពុជា។",
-    "services": ["Pediatric Outpatient", "Inpatient & ICU", "Pediatric Surgery", "Dental Clinic", "Eye Clinic", "Neonatal Care"],
+    "services": [
+      "Pediatric Outpatient",
+      "Inpatient & ICU",
+      "Pediatric Surgery",
+      "Dental Clinic",
+      "Eye Clinic",
+      "Neonatal Care"
+    ],
     "address": "Tep Vong Street & Oum Chhay Street, Svay Dangkum, Siem Reap",
     "addressKh": "ផ្លូវទេពវង្ស និងផ្លូវអ៊ុំឆាយ សង្កាត់ស្វាយដង្គំ ក្រុងសៀមរាប",
-    "coordinates": { "lat": 13.3592, "lng": 103.8564 }
+    "coordinates": {
+      "lat": 13.3592,
+      "lng": 103.8564
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 63 963 409"
   },
   {
     "id": "preah-kossamak-hospital",
     "name": "Preah Kossamak Hospital (Cambodia-China Friendship)",
     "nameKh": "មន្ទីរពេទ្យព្រះកុសុមៈ (មិត្តភាពកម្ពុជា-ចិន)",
     "category": "hospital",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
     "rating": 4.3,
     "reviews": 164,
     "location": "Phnom Penh",
@@ -102,17 +169,30 @@
     "openingHours": "24/7",
     "description": "Modernized state hospital featuring top surgical, traditional Chinese medicine, cardiology, and orthopedics departments with upgraded high-capacity facilities.",
     "descriptionKh": "មន្ទីរពេទ្យរដ្ឋទំនើបបំពាក់សម្ភារៈទំនើប ជំនាញឯកទេសផ្នែកវះកាត់ ឆ្អឹង និងសន្លាក់ និងឱសថបុរាណចិន។",
-    "services": ["Orthopedics", "Traditional Chinese Medicine", "Surgical Center", "Emergency", "Cardiology", "Dialysis"],
+    "services": [
+      "Orthopedics",
+      "Traditional Chinese Medicine",
+      "Surgical Center",
+      "Emergency",
+      "Cardiology",
+      "Dialysis"
+    ],
     "address": "St. 271, Sangkat Tuek L'ak II, Khan Tuol Kouk, Phnom Penh",
     "addressKh": "ផ្លូវ ២៧១ សង្កាត់ទឹកល្អក់ទី២ ខណ្ឌទួលគោក រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5645, "lng": 104.8943 }
+    "coordinates": {
+      "lat": 11.5645,
+      "lng": 104.8943
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 23 880 475"
   },
   {
     "id": "national-pediatric-hospital",
     "name": "National Pediatric Hospital",
     "nameKh": "មន្ទីរពេទ្យកុមារជាតិ",
     "category": "hospital",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?auto=format&fit=crop&w=800&q=80",
     "rating": 4.2,
     "reviews": 140,
     "location": "Phnom Penh",
@@ -120,17 +200,29 @@
     "openingHours": "24/7",
     "description": "National leading government pediatric hospital providing specialized child healthcare, vaccinations, malnutrition treatment, and pediatric emergency services.",
     "descriptionKh": "មន្ទីរពេទ្យរដ្ឋឯកទេសកុមារឈានមុខគេ ផ្តល់ការថែទាំកុមារ វ៉ាក់សាំង និងការព្យាបាលសង្គ្រោះបន្ទាន់កុមារ។",
-    "services": ["Pediatric ICU", "Vaccination Center", "Neonatal Care", "Pediatric Surgery", "Nutrition Clinic"],
+    "services": [
+      "Pediatric ICU",
+      "Vaccination Center",
+      "Neonatal Care",
+      "Pediatric Surgery",
+      "Nutrition Clinic"
+    ],
     "address": "No. 100, Russian Federation Blvd, Sangkat Toeuk Thla, Khan Sen Sok, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ១០០ មហាវិថីសហព័ន្ធរុស្ស៊ី សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5651, "lng": 104.8912 }
+    "coordinates": {
+      "lat": 11.5651,
+      "lng": 104.8912
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 23 880 475"
   },
   {
     "id": "sen-sok-hospital",
     "name": "Sen Sok International University Hospital",
     "nameKh": "មន្ទីរពេទ្យសាកលវិទ្យាល័យអន្តរជាតិសែនសុខ",
     "category": "hospital",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&w=800&q=80",
     "rating": 4.4,
     "reviews": 112,
     "location": "Phnom Penh",
@@ -138,17 +230,29 @@
     "openingHours": "24/7",
     "description": "Teaching and tertiary hospital providing specialized orthopedic, trauma, general medical, and surgical care with competitive pricing.",
     "descriptionKh": "មន្ទីរពេទ្យបង្រៀននិងព្យាបាល ជំនាញផ្នែកវះកាត់ ឆ្អឹង សន្លាក់ និងការថែទាំវេជ្ជសាស្ត្រទូទៅ។",
-    "services": ["Trauma & Orthopedics", "General Surgery", "Obstetrics & Gynecology", "Hemodialysis", "Radiology"],
+    "services": [
+      "Trauma & Orthopedics",
+      "General Surgery",
+      "Obstetrics & Gynecology",
+      "Hemodialysis",
+      "Radiology"
+    ],
     "address": "Building 9-13, Street 1986, Sangkat Phnom Penh Thmey, Khan Sen Sok, Phnom Penh",
     "addressKh": "អគារលេខ ៩-១៣ ផ្លូវ ១៩៨៦ សង្កាត់ភ្នំពេញថ្មី ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5833, "lng": 104.8722 }
+    "coordinates": {
+      "lat": 11.5833,
+      "lng": 104.8722
+    },
+    "ownership": "private",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 23 883 712"
   },
   {
     "id": "naga-clinic",
     "name": "Naga Clinic",
     "nameKh": "គ្លីនិក ណាហ្គា",
     "category": "clinic",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=800&q=80",
     "rating": 4.6,
     "reviews": 88,
     "location": "Phnom Penh",
@@ -156,17 +260,29 @@
     "openingHours": "8:00 AM - 6:00 PM (Mon-Sat)",
     "description": "Founded by French physician Dr. Jean-Claude Garen, Naga Clinic offers family medicine, dermatology, pediatrics, travel medicine, and ultrasound diagnostics.",
     "descriptionKh": "គ្លីនិកឯកជនបង្កើតឡើងដោយវេជ្ជបណ្ឌិតបារាំង ផ្តល់សេវាវេជ្ជសាស្ត្រគ្រួសារ ជំងឺសើស្បែក កុមារ និងអេកូសាស្ត្រ។",
-    "services": ["General Consultation", "Dermatology", "Pediatrics", "Ultrasound", "Vaccinations"],
+    "services": [
+      "General Consultation",
+      "Dermatology",
+      "Pediatrics",
+      "Ultrasound",
+      "Vaccinations"
+    ],
     "address": "No. 11, Street 254, Sangkat Chaktomuk, Khan Doun Penh, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ១១ ផ្លូវ ២៥៤ សង្កាត់ចតុមុខ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5542, "lng": 104.9305 }
+    "coordinates": {
+      "lat": 11.5542,
+      "lng": 104.9305
+    },
+    "ownership": "private",
+    "acceptsNssf": false,
+    "emergencyHotline": "+855 11 811 175"
   },
   {
     "id": "international-sos-clinic",
     "name": "International SOS Clinic Phnom Penh",
     "nameKh": "គ្លីនិក អន្តរជាតិ អេសអូអេស",
     "category": "clinic",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=800&q=80",
     "rating": 4.5,
     "reviews": 96,
     "location": "Phnom Penh",
@@ -174,17 +290,29 @@
     "openingHours": "24/7",
     "description": "Part of the worldwide International SOS network, delivering 24/7 family practice, urgent care, international medical evacuation, and diagnostic imaging.",
     "descriptionKh": "គ្លីនិកសមាជិកបណ្តាញសកល SOS ផ្តល់ការពិគ្រោះជំងឺទូទៅ សង្គ្រោះបន្ទាន់ និងសេវាបញ្ជូនអ្នកជំងឺតាមផ្លូវអាកាស។",
-    "services": ["Family Medicine", "Emergency Evacuation", "Diagnostic X-ray", "Laboratory", "Pharmacy"],
+    "services": [
+      "Family Medicine",
+      "Emergency Evacuation",
+      "Diagnostic X-ray",
+      "Laboratory",
+      "Pharmacy"
+    ],
     "address": "No. 161, Street 51 (Pasteur), Sangkat Boeung Keng Kang 1, Khan Boeung Keng Kang, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ១៦១ ផ្លូវ ៥១ (ប៉ាស្ទ័រ) សង្កាត់បឹងកេងកង១ ខណ្ឌបឹងកេងកង រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5511, "lng": 104.9248 }
+    "coordinates": {
+      "lat": 11.5511,
+      "lng": 104.9248
+    },
+    "ownership": "private",
+    "acceptsNssf": false,
+    "emergencyHotline": "+855 23 216 911"
   },
   {
     "id": "raffles-medical-phnom-penh",
     "name": "Raffles Medical Phnom Penh",
     "nameKh": "រ៉ាហ្វលស៍ មេឌីខល ភ្នំពេញ",
     "category": "clinic",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=800&q=80",
     "rating": 4.7,
     "reviews": 75,
     "location": "Phnom Penh",
@@ -192,17 +320,29 @@
     "openingHours": "8:00 AM - 8:00 PM",
     "description": "Singapore-standard primary care clinic in Phnom Penh, offering family medicine, health screenings, travel vaccinations, and specialist referrals.",
     "descriptionKh": "គ្លីនិកស្តង់ដារសិង្ហបុរី ផ្តល់សេវាពិនិត្យសុខភាព វេជ្ជសាស្ត្រទូទៅ វ៉ាក់សាំង និងការបញ្ជូនទៅកាន់អ្នកឯកទេស។",
-    "services": ["Health Screening", "Family Medicine", "Vaccinations", "Dental", "Laboratory"],
+    "services": [
+      "Health Screening",
+      "Family Medicine",
+      "Vaccinations",
+      "Dental",
+      "Laboratory"
+    ],
     "address": "No. 161, Street 51 (Corner St 294), Sangkat Boeung Keng Kang 1, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ១៦១ ផ្លូវ ៥១ កែងផ្លូវ ២៩៤ សង្កាត់បឹងកេងកង១ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5502, "lng": 104.9242 }
+    "coordinates": {
+      "lat": 11.5502,
+      "lng": 104.9242
+    },
+    "ownership": "private",
+    "acceptsNssf": false,
+    "emergencyHotline": "+855 23 996 611"
   },
   {
     "id": "ucare-pharmacy-norodom",
     "name": "Ucare Pharmacy (Norodom Blvd)",
     "nameKh": "ឱសថស្ថាន យូឃែរ (មហាវិថីនរោត្តម)",
     "category": "pharmacy",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1586015555751-63c25b746816?auto=format&fit=crop&w=800&q=80",
     "rating": 4.5,
     "reviews": 120,
     "location": "Phnom Penh",
@@ -210,17 +350,29 @@
     "openingHours": "7:30 AM - 10:00 PM",
     "description": "Leading licensed retail pharmacy chain offering 100% authentic international medications, healthcare products, baby care, and skincare items.",
     "descriptionKh": "បណ្តាញឱសថស្ថានស្របច្បាប់ឈានមុខគេ ផ្តល់ឱសថស្តង់ដារអន្តរជាតិ ផលិតផលថែរក្សាសុខភាព និងសម្ភារៈទារក។",
-    "services": ["Prescription Dispensing", "Over-the-counter Drugs", "Skincare", "Vitamins & Supplements", "Blood Pressure Check"],
+    "services": [
+      "Prescription Dispensing",
+      "Over-the-counter Drugs",
+      "Skincare",
+      "Vitamins & Supplements",
+      "Blood Pressure Check"
+    ],
     "address": "No. 26-28, Norodom Blvd, Sangkat Phsar Thmey 3, Khan Doun Penh, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ២៦-២៨ មហាវិថីនរោត្តម សង្កាត់ផ្សារថ្មី៣ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5714, "lng": 104.9272 }
+    "coordinates": {
+      "lat": 11.5714,
+      "lng": 104.9272
+    },
+    "ownership": "private",
+    "acceptsNssf": false,
+    "emergencyHotline": "+855 23 224 099"
   },
   {
     "id": "pharmacie-de-la-gare",
     "name": "Pharmacie De La Gare",
     "nameKh": "ឱសថស្ថាន ដឺឡាហ្គារ",
     "category": "pharmacy",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=800&q=80",
     "rating": 4.4,
     "reviews": 92,
     "location": "Phnom Penh",
@@ -228,17 +380,28 @@
     "openingHours": "7:00 AM - 9:00 PM",
     "description": "Renowned pharmacy near the Railway Station carrying authentic French and European imported medications, specialized pharmaceutical advice, and medical devices.",
     "descriptionKh": "ឱសថស្ថានល្បីឈ្មោះក្បែរស្ថានីយរថភ្លើង នាំចូលឱសថពីប្រទេសបារាំង និងអឺរ៉ុប ព្រមទាំងឧបករណ៍វេជ្ជសាស្ត្រ។",
-    "services": ["Imported European Medication", "Pharmaceutical Consultation", "Medical Supplies", "First Aid Kits"],
+    "services": [
+      "Imported European Medication",
+      "Pharmaceutical Consultation",
+      "Medical Supplies",
+      "First Aid Kits"
+    ],
     "address": "No. 81E0, Preah Monivong Blvd, Sangkat Srah Chak, Khan Doun Penh, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ៨១E0 មហាវិថីព្រះមុនីវង្ស សង្កាត់ស្រះចក ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5745, "lng": 104.9190 }
+    "coordinates": {
+      "lat": 11.5745,
+      "lng": 104.919
+    },
+    "ownership": "private",
+    "acceptsNssf": false,
+    "emergencyHotline": "+855 23 430 200"
   },
   {
     "id": "city-pharma-monivong",
     "name": "City Pharma",
     "nameKh": "ឱសថស្ថាន ស៊ីធី ហ្វាម៉ា",
     "category": "pharmacy",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80",
     "rating": 4.3,
     "reviews": 64,
     "location": "Phnom Penh",
@@ -246,17 +409,28 @@
     "openingHours": "8:00 AM - 9:30 PM",
     "description": "Affordable neighborhood pharmacy providing wide range of authentic generic and brand-name drugs, wellness supplements, and first-aid essentials.",
     "descriptionKh": "ឱសថស្ថានតម្លៃសមរម្យ ផ្តល់ថ្នាំពេទ្យដែលមានគុណភាព វីតាមីន និងសម្ភារៈសង្គ្រោះបឋម។",
-    "services": ["Prescription Filling", "Generic & Brand Medications", "Medical Devices", "Health Supplements"],
+    "services": [
+      "Prescription Filling",
+      "Generic & Brand Medications",
+      "Medical Devices",
+      "Health Supplements"
+    ],
     "address": "No. 320, Monivong Blvd, Sangkat Boeung Keng Kang 1, Phnom Penh",
     "addressKh": "ផ្ទះលេខ ៣២០ មហាវិថីមុនីវង្ស សង្កាត់បឹងកេងកង១ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5498, "lng": 104.9221 }
+    "coordinates": {
+      "lat": 11.5498,
+      "lng": 104.9221
+    },
+    "ownership": "private",
+    "acceptsNssf": false,
+    "emergencyHotline": "+855 23 990 123"
   },
   {
     "id": "lucky-pharmacy-sihanouk",
     "name": "Lucky Pharmacy (Sihanouk Blvd)",
     "nameKh": "ឱសថស្ថាន ឡាក់គី (មហាវិថីព្រះសីហនុ)",
     "category": "pharmacy",
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=800&q=80",
     "rating": 4.5,
     "reviews": 85,
     "location": "Phnom Penh",
@@ -264,9 +438,201 @@
     "openingHours": "8:00 AM - 10:00 PM",
     "description": "Part of Lucky Supermarket network, Lucky Pharmacy provides trusted prescription medicine, personal hygiene products, and imported healthcare brands.",
     "descriptionKh": "ផ្នែកមួយនៃបណ្តាញផ្សារទំនើបឡាក់គី ផ្តល់ថ្នាំពេទ្យទុកចិត្តបាន ផលិតផលអនាម័យ និងសម្ភារៈថែទាំសុខភាព។",
-    "services": ["Prescription Drugs", "Personal Care", "Infant Healthcare", "Nutritional Drinks"],
+    "services": [
+      "Prescription Drugs",
+      "Personal Care",
+      "Infant Healthcare",
+      "Nutritional Drinks"
+    ],
     "address": "Lucky Mall, Sihanouk Blvd, Sangkat Boeung Keng Kang 1, Phnom Penh",
     "addressKh": "ផ្សារទំនើបឡាក់គី មហាវិថីព្រះសីហនុ សង្កាត់បឹងកេងកង១ រាជធានីភ្នំពេញ",
-    "coordinates": { "lat": 11.5549, "lng": 104.9256 }
+    "coordinates": {
+      "lat": 11.5549,
+      "lng": 104.9256
+    },
+    "ownership": "private",
+    "acceptsNssf": false,
+    "emergencyHotline": "+855 23 215 350"
+  },
+  {
+    "id": "battambang-provincial-hospital",
+    "name": "Battambang Provincial Referral Hospital",
+    "nameKh": "មន្ទីរពេទ្យបង្អែកខេត្តបាត់ដំបង",
+    "category": "hospital",
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.6,
+    "reviews": 142,
+    "location": "Battambang",
+    "phone": "+855 53 952 873",
+    "openingHours": "24/7",
+    "description": "Main public regional hospital in northwestern Cambodia providing emergency trauma surgery, pediatric care, maternity ward, and general medicine.",
+    "descriptionKh": "មន្ទីរពេទ្យបង្អែករដ្ឋកម្រិតខេត្តធំជាងគេនៅភាគពាយព្យ ផ្តល់សេវាសង្គ្រោះបន្ទាន់ វះកាត់ ផ្នែកកុមារ សម្ភព និងជំងឺទូទៅ។",
+    "services": [
+      "Emergency 24/7",
+      "General Surgery",
+      "Pediatrics",
+      "Maternity",
+      "Internal Medicine",
+      "ICU"
+    ],
+    "address": "National Road 5, Sangkat Svay Pao, Krong Battambang, Battambang",
+    "addressKh": "ផ្លូវជាតិលេខ ៥ សង្កាត់ស្វាយប៉ោ ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង",
+    "coordinates": {
+      "lat": 13.0957,
+      "lng": 103.2022
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 53 952 873"
+  },
+  {
+    "id": "sihanoukville-provincial-hospital",
+    "name": "Preah Sihanouk Provincial Referral Hospital",
+    "nameKh": "មន្ទីរពេទ្យបង្អែកខេត្តព្រះសីហនុ (ចំការចេក)",
+    "category": "hospital",
+    "image": "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.4,
+    "reviews": 98,
+    "location": "Preah Sihanouk",
+    "phone": "+855 34 933 605",
+    "openingHours": "24/7",
+    "description": "Key seaside regional healthcare facility equipped for diving decompression accidents, traffic trauma, emergency surgery, and inpatient care.",
+    "descriptionKh": "មន្ទីរពេទ្យបង្អែកប្រចាំខេត្តព្រះសីហនុ ផ្តល់សេវាសង្គ្រោះបន្ទាន់គ្រោះថ្នាក់ចរាចរណ៍ ការវះកាត់ និងការសម្រាកព្យាបាល។",
+    "services": [
+      "Emergency Trauma 24/7",
+      "Surgery",
+      "ICU",
+      "Maternity",
+      "Ambulance Dispatch"
+    ],
+    "address": "Phum 4, Sangkat 4, Krong Preah Sihanouk, Preah Sihanouk",
+    "addressKh": "ភូមិ ៤ សង្កាត់ ៤ ក្រុងព្រះសីហនុ ខេត្តព្រះសីហនុ",
+    "coordinates": {
+      "lat": 10.6275,
+      "lng": 103.5221
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 34 933 605"
+  },
+  {
+    "id": "kampong-cham-provincial-hospital",
+    "name": "Kampong Cham Provincial Referral Hospital",
+    "nameKh": "មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ចាម",
+    "category": "hospital",
+    "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.5,
+    "reviews": 115,
+    "location": "Kampong Cham",
+    "phone": "+855 42 941 228",
+    "openingHours": "24/7",
+    "description": "Major regional healthcare hub for the central Mekong region with comprehensive surgical suites, diagnostic imaging, and maternity care.",
+    "descriptionKh": "មជ្ឈមណ្ឌលសុខាភិបាលតំបន់ទន្លេមេគង្គ ផ្តល់សេវាព្យាបាលទូទៅ វះកាត់ រូបភាពវេជ្ជសាស្ត្រ និងសង្គ្រោះបន្ទាន់ ២៤ ម៉ោង។",
+    "services": [
+      "24/7 Emergency",
+      "Surgical Units",
+      "Laboratory",
+      "Infectious Disease",
+      "Maternity"
+    ],
+    "address": "Preah Monivong Street, Krong Kampong Cham, Kampong Cham",
+    "addressKh": "វិថីព្រះមុនីវង្ស ក្រុងកំពង់ចាម ខេត្តកំពង់ចាម",
+    "coordinates": {
+      "lat": 11.9924,
+      "lng": 105.4645
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 42 941 228"
+  },
+  {
+    "id": "kampot-provincial-hospital",
+    "name": "Kampot Provincial Referral Hospital",
+    "nameKh": "មន្ទីរពេទ្យបង្អែកខេត្តកំពត",
+    "category": "hospital",
+    "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.3,
+    "reviews": 84,
+    "location": "Kampot",
+    "phone": "+855 33 932 505",
+    "openingHours": "24/7",
+    "description": "Primary healthcare and emergency hospital serving Kampot province and coastal communities, offering 24-hour ambulance and medical wards.",
+    "descriptionKh": "មន្ទីរពេទ្យរដ្ឋកម្រិតខេត្តបម្រើប្រជាពលរដ្ឋខេត្តកំពត និងតំបន់ឆ្នេរ ជាមួយសេវាសង្គ្រោះបន្ទាន់ ២៤ ម៉ោង។",
+    "services": [
+      "Emergency Ward",
+      "Outpatient Consultation",
+      "Maternity",
+      "Pediatrics",
+      "Laboratory"
+    ],
+    "address": "National Road 3, Krong Kampot, Kampot",
+    "addressKh": "ផ្លូវជាតិលេខ ៣ ក្រុងកំពត ខេត្តកំពត",
+    "coordinates": {
+      "lat": 10.6104,
+      "lng": 104.1815
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 33 932 505"
+  },
+  {
+    "id": "siem-reap-provincial-hospital",
+    "name": "Siem Reap Provincial Hospital",
+    "nameKh": "មន្ទីរពេទ្យបង្អែកខេត្តសៀមរាប",
+    "category": "hospital",
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.6,
+    "reviews": 165,
+    "location": "Siem Reap",
+    "phone": "+855 63 760 114",
+    "openingHours": "24/7",
+    "description": "Major public hospital in Siem Reap offering emergency care, trauma management for locals and tourists, surgery, and intensive care.",
+    "descriptionKh": "មន្ទីរពេទ្យសាធារណៈធំក្នុងក្រុងសៀមរាប ផ្តល់សេវាសង្គ្រោះបន្ទាន់ វះកាត់ ជំងឺទូទៅ និងសេវាថែទាំកម្រិតខ្ពស់។",
+    "services": [
+      "Emergency Care 24/7",
+      "Trauma Center",
+      "Surgery",
+      "Internal Medicine",
+      "ICU"
+    ],
+    "address": "Pokambor Ave, Krong Siem Reap, Siem Reap",
+    "addressKh": "មហាវិថីពោធិកំបោរ ក្រុងសៀមរាប ខេត្តសៀមរាប",
+    "coordinates": {
+      "lat": 13.3671,
+      "lng": 103.8448
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 63 760 114"
+  },
+  {
+    "id": "kandal-provincial-hospital",
+    "name": "Kandal Provincial Referral Hospital (Chey Chumneas)",
+    "nameKh": "មន្ទីរពេទ្យបង្អែកជ័យជំនះ ខេត្តកណ្តាល",
+    "category": "hospital",
+    "image": "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.4,
+    "reviews": 92,
+    "location": "Kandal",
+    "phone": "+855 24 985 119",
+    "openingHours": "24/7",
+    "description": "Comprehensive provincial hospital in Ta Khmau City providing general medical services, maternal healthcare, and emergency trauma support.",
+    "descriptionKh": "មន្ទីរពេទ្យបង្អែកជ័យជំនះ ក្រុងតាខ្មៅ ផ្តល់សេវាព្យាបាលសុខភាពទូទៅ សម្ភព និងសង្គ្រោះបន្ទាន់ ២៤ ម៉ោង។",
+    "services": [
+      "Emergency Care 24/7",
+      "General Medicine",
+      "Maternity",
+      "Radiology",
+      "Pediatrics"
+    ],
+    "address": "Street 21, Krong Ta Khmau, Kandal",
+    "addressKh": "ផ្លូវ ២១ ក្រុងតាខ្មៅ ខេត្តកណ្តាល",
+    "coordinates": {
+      "lat": 11.4554,
+      "lng": 104.9454
+    },
+    "ownership": "public",
+    "acceptsNssf": true,
+    "emergencyHotline": "+855 24 985 119"
   }
 ]

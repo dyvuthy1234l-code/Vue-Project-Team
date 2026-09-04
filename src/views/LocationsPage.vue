@@ -5,54 +5,61 @@ import {
   Phone,
   Navigation,
   RotateCcw,
-  ChevronRight,
   Hospital,
   ShieldAlert,
   Building,
-  Fuel,
   Bus,
-  Palmtree,
-  Compass
+  Compass,
+  FileCheck2,
+  Clock,
+  PhoneCall,
+  Search,
+  CheckCircle2
 } from 'lucide-vue-next'
-import SectionHeader from '@/components/SectionHeader.vue'
-import SearchBar from '@/components/SearchBar.vue'
-import CategoryFilter from '@/components/CategoryFilter.vue'
+import ServiceHeroBanner from '@/components/ServiceHeroBanner.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
+import VerificationBadge from '@/components/VerificationBadge.vue'
+import LazyImage from '@/components/LazyImage.vue'
+import type { LocationItem } from '@/types'
 import { useLanguage } from '@/composables/useLanguage'
 import { getLocations } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
 
-const { t, localized } = useLanguage()
+const { t, localized, currentLanguage } = useLanguage()
 
 usePageMeta({
-  title: 'Key Locations & Points of Interest — CamLife',
-  description: 'Essential public points of interest across Cambodia: hospitals, police stations, transit hubs, and banks.'
+  title: 'ទីតាំងរដ្ឋបាលសាធារណៈ & ច្រកចេញចូលតែមួយ (OWSO) — CamLife Civic Offices',
+  description: 'ស្វែងរកសាលាខណ្ឌ សាលាសង្កាត់ ការិយាល័យច្រកចេញចូលតែមួយ (OWSO) ប៉ុស្តិ៍នគរបាល និងមន្ទីរពេទ្យរដ្ឋ'
 })
+
+const defaultCategoryImages: Record<string, string> = {
+  'Hospital': 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=800&q=80',
+  'Police Station': 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80',
+  'Government/OWSO': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+  'Bus Station': 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80',
+  'Bank/ATM': 'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?auto=format&fit=crop&w=800&q=80',
+  'Gas Station': 'https://images.unsplash.com/photo-1527018607636-96b010c2627e?auto=format&fit=crop&w=800&q=80',
+  'Tourist Attraction': 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80'
+}
+
+function getLocationImage(loc: LocationItem): string {
+  return loc.image || defaultCategoryImages[loc.category] || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80'
+}
 
 const allLocations = getLocations()
 const searchQuery = ref('')
 const activeCategory = ref('All')
-
-const categoryIcons: Record<string, any> = {
-  All: Compass,
-  Hospital: Hospital,
-  'Police Station': ShieldAlert,
-  'Bank/ATM': Building,
-  'Gas Station': Fuel,
-  'Bus Station': Bus,
-  'Tourist Attraction': Palmtree
-}
+const viewMode = ref<'grid' | 'map'>('grid')
+const selectedLocation = ref<LocationItem>(allLocations[0] ?? ({} as LocationItem))
 
 const categories = computed(() => [
-  { value: 'All', label: t('locations.categories.all'), icon: Compass },
-  { value: 'Hospital', label: t('locations.categories.hospital'), icon: Hospital },
-  { value: 'Police Station', label: t('locations.categories.policeStation'), icon: ShieldAlert },
-  { value: 'Bank/ATM', label: t('locations.categories.bankAtm'), icon: Building },
-  { value: 'Gas Station', label: t('locations.categories.gasStation'), icon: Fuel },
-  { value: 'Bus Station', label: t('locations.categories.busStation'), icon: Bus },
-  { value: 'Tourist Attraction', label: t('locations.categories.touristAttraction'), icon: Palmtree }
+  { value: 'All', labelKh: 'គ្រប់ការិយាល័យ & ទីតាំង', labelEn: 'All Public Offices', icon: Compass },
+  { value: 'Government/OWSO', labelKh: 'ច្រកចេញចូលតែមួយ & សាលាសង្កាត់ (OWSO)', labelEn: 'OWSO & Communes', icon: Building },
+  { value: 'Police Station', labelKh: 'ស្នងការ & ប៉ុស្តិ៍នគរបាល', labelEn: 'Police Stations', icon: ShieldAlert },
+  { value: 'Hospital', labelKh: 'មន្ទីរពេទ្យសាធារណៈ', labelEn: 'Public Hospitals', icon: Hospital },
+  { value: 'Bus Station', labelKh: 'ស្ថានីយរថយន្តក្រុង', labelEn: 'Public Transit Hubs', icon: Bus }
 ])
 
 const filteredLocations = computed(() => {
@@ -94,6 +101,10 @@ function getDirectionsUrl(location: { coordinates: { lat: number; lng: number };
   return `https://www.google.com/maps/dir/?api=1&destination=${location.coordinates.lat},${location.coordinates.lng}`
 }
 
+function selectOffice(loc: LocationItem) {
+  selectedLocation.value = loc
+}
+
 function resetFilters() {
   searchQuery.value = ''
   activeCategory.value = 'All'
@@ -101,42 +112,139 @@ function resetFilters() {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs font-semibold text-slate-400" aria-label="Breadcrumb">
-      <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
-        {{ t('nav.home') }}
-      </router-link>
-      <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-      <span class="text-slate-700 dark:text-slate-200">{{ t('nav.locations') }}</span>
-    </nav>
-
-    <!-- Header -->
-    <SectionHeader
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-khmer">
+    <!-- Service Hero Banner with 25 Provinces Selector -->
+    <ServiceHeroBanner
       :title="t('locations.title')"
       :subtitle="t('locations.subtitle')"
-      badge="Points of Interest"
+      badge="Government & OWSO Locator"
+      badge-kh="ទីតាំងរដ្ឋបាល & ច្រកចេញចូលតែមួយ (OWSO)"
+      banner-image="/images/pillars/locations.jpg"
+      :breadcrumb-current="t('nav.locations')"
     />
 
-    <!-- Filter Control Panel -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-4 sm:p-5 shadow-sm space-y-4">
-      <SearchBar v-model="searchQuery" :placeholder="t('locations.searchPlaceholder')" large />
+    <!-- OWSO Citizen Paperwork Guide Callout Banner -->
+    <div class="rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-7 shadow-lg relative overflow-hidden">
+      <div class="relative z-10 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white ring-1 ring-white/30 shrink-0">
+              <FileCheck2 class="w-6 h-6 text-amber-300" />
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-base sm:text-lg font-black tracking-tight">
+                  {{ currentLanguage === 'kh' ? 'ការិយាល័យច្រកចេញចូលតែមួយ (One Window Service Office - OWSO)' : 'One Window Service Offices (OWSO) Network' }}
+                </h3>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-400 text-slate-900 uppercase">
+                  {{ currentLanguage === 'kh' ? 'សេវាសាធារណៈរហ័ស' : 'Citizen Services' }}
+                </span>
+              </div>
+              <p class="text-xs text-blue-100 mt-1">
+                {{ currentLanguage === 'kh' ? 'ផ្តល់សេវារដ្ឋបាលប្រកបដោយតម្លាភាព គណនេយ្យភាព និងមានតម្លៃកម្រៃសេវាកំណត់ដោយច្បាប់ច្បាស់លាស់៖' : 'Standardized municipal administrative service counters providing transparent fees and turnaround times:' }}
+              </p>
+            </div>
+          </div>
+        </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
-        <CategoryFilter
-          :categories="categories"
-          :active-category="activeCategory"
-          @select="activeCategory = $event"
-        />
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 pt-1 text-xs font-bold text-white">
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
+            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+            <span>{{ currentLanguage === 'kh' ? 'សំបុត្រកំណើត/អាពាហ៍ពិពាហ៍' : 'Civil Registry' }}</span>
+          </div>
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
+            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+            <span>{{ currentLanguage === 'kh' ? 'សៀវភៅស្នាក់នៅ/គ្រួសារ' : 'Residence / Family' }}</span>
+          </div>
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
+            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+            <span>{{ currentLanguage === 'kh' ? 'ចុះបញ្ជីអាជីវកម្មខ្នាតតូច' : 'Business Permits' }}</span>
+          </div>
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
+            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+            <span>{{ currentLanguage === 'kh' ? 'លិខិតអនុញ្ញាតសាងសង់' : 'Building Permits' }}</span>
+          </div>
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
+            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+            <span>{{ currentLanguage === 'kh' ? 'បញ្ជាក់នីត្យានុកូលភាព' : 'Document Legalization' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Filter Control Panel & View Mode Switcher -->
+    <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 shadow-sm space-y-4">
+      <!-- Search Input + View Toggle Buttons -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex-1 relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <Search class="w-4 h-4" />
+          </div>
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកសាលាខណ្ឌ, សាលាសង្កាត់, ការិយាល័យច្រកចេញចូលតែមួយ (OWSO), ប៉ុស្តិ៍នគរបាល...' : 'Search OWSO offices, district halls, police stations, hospitals...'"
+            class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-[#0A2540] dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#0D47A1]"
+          />
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <button
+            @click="viewMode = 'grid'"
+            type="button"
+            class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 border shadow-2xs"
+            :class="viewMode === 'grid'
+              ? 'bg-[#0D47A1] text-white border-[#0D47A1]'
+              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'"
+          >
+            <span>{{ currentLanguage === 'kh' ? '⊞ បញ្ជីកាត' : '⊞ Directory Grid' }}</span>
+          </button>
+          <button
+            @click="viewMode = 'map'"
+            type="button"
+            class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 border shadow-2xs"
+            :class="viewMode === 'map'
+              ? 'bg-[#0D47A1] text-white border-[#0D47A1]'
+              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'"
+          >
+            <span>{{ currentLanguage === 'kh' ? '🗺️ ផែនទីទីតាំង' : '🗺️ Interactive Map' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60">
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="cat in categories"
+            :key="cat.value"
+            @click="activeCategory = cat.value"
+            type="button"
+            class="px-3.5 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border"
+            :class="activeCategory === cat.value
+              ? 'bg-[#0D47A1] text-white border-[#0D47A1] shadow-2xs'
+              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
+          >
+            <component :is="cat.icon" class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? cat.labelKh : cat.labelEn }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Filters Reset -->
+      <div
+        v-if="searchQuery || activeCategory !== 'All'"
+        class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/60 text-xs"
+      >
+        <span class="text-slate-400 font-medium">
+          {{ currentLanguage === 'kh' ? 'តម្រងសកម្ម' : 'Filters Active' }}
+        </span>
         <button
-          v-if="searchQuery || activeCategory !== 'All'"
           @click="resetFilters"
-          class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
-          type="button"
+          class="text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 inline-flex items-center gap-1 cursor-pointer"
         >
           <RotateCcw class="w-3.5 h-3.5" />
-          <span>Reset Filters</span>
+          <span>{{ currentLanguage === 'kh' ? 'កំណត់តម្រងឡើងវិញ' : 'Reset Filters' }}</span>
         </button>
       </div>
     </div>
@@ -144,92 +252,258 @@ function resetFilters() {
     <!-- Result Count -->
     <div class="flex items-center justify-between">
       <p class="text-xs font-bold text-slate-500 dark:text-slate-400">
-        Found <span class="text-[#0A2540] dark:text-white font-black">{{ filteredLocations.length }}</span> points of interest
+        {{ currentLanguage === 'kh' ? 'រកឃើញការិយាល័យ & ទីតាំងរដ្ឋបាលចំនួន' : 'Found' }}
+        <span class="text-[#0A2540] dark:text-white font-black">{{ filteredLocations.length }}</span>
+        {{ currentLanguage === 'kh' ? 'កន្លែង' : 'civic locations' }}
       </p>
+      <VerificationBadge compact />
     </div>
 
-    <!-- Location Cards Grid -->
-    <div v-if="paginatedLocations.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="loc in paginatedLocations"
-        :key="loc.id"
-        class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 shadow-sm hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between"
-      >
-        <div class="space-y-3">
-          <!-- Top Row: Icon & Category Badge -->
-          <div class="flex items-center justify-between">
-            <div class="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <component :is="categoryIcons[loc.category] || MapPin" class="w-5 h-5" />
-            </div>
-            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600">
-              {{ loc.category }}
+    <!-- INTERACTIVE MAP VIEW -->
+    <div v-if="viewMode === 'map'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- Interactive Stylized Vector Map -->
+      <div class="lg:col-span-8 bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-sm relative min-h-[460px] p-4 flex flex-col justify-between">
+        <!-- Map Overlay Header -->
+        <div class="flex items-center justify-between z-10">
+          <span class="px-3 py-1 rounded-xl bg-slate-800/90 text-white text-xs font-bold border border-slate-700 backdrop-blur-md flex items-center gap-1.5">
+            <Compass class="w-3.5 h-3.5 text-blue-400" />
+            <span>Phnom Penh & Cambodia Civic Map</span>
+          </span>
+          <span class="text-[11px] font-bold text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded-xl">
+            {{ filteredLocations.length }} markers plotted
+          </span>
+        </div>
+
+        <!-- Stylized Vector Map Canvas with Pins -->
+        <div class="relative my-6 h-80 w-full rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex items-center justify-center overflow-hidden border border-slate-800">
+          <!-- Vector Grid Accents -->
+          <div class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
+
+          <!-- Stylized Road Arteries (SVG) -->
+          <svg class="absolute inset-0 w-full h-full stroke-blue-500/20" fill="none" stroke-width="2">
+            <path d="M 50 200 Q 250 80 500 240 T 900 120" />
+            <path d="M 200 350 Q 400 150 650 100 T 950 300" stroke-dasharray="4 4" />
+            <path d="M 100 80 Q 450 320 800 180" />
+          </svg>
+
+          <!-- Interactive Pins -->
+          <div class="absolute inset-0 p-8 flex flex-wrap items-center justify-around">
+            <button
+              v-for="loc in filteredLocations.slice(0, 10)"
+              :key="loc.id"
+              @click="selectOffice(loc)"
+              type="button"
+              class="group/pin relative m-2 transition-transform hover:scale-125 cursor-pointer focus:outline-hidden"
+              :title="loc.name"
+            >
+              <div
+                class="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg transition-all"
+                :class="selectedLocation?.id === loc.id
+                  ? 'bg-amber-400 text-slate-950 ring-4 ring-amber-400/50 scale-110'
+                  : 'bg-[#0D47A1] text-white hover:bg-blue-600'"
+              >
+                <Building v-if="loc.category === 'Government/OWSO'" class="w-4 h-4" />
+                <Hospital v-else-if="loc.category === 'Hospital'" class="w-4 h-4" />
+                <ShieldAlert v-else-if="loc.category === 'Police Station'" class="w-4 h-4" />
+                <Bus v-else class="w-4 h-4" />
+              </div>
+              <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-md bg-slate-950/90 text-[10px] font-bold text-white border border-slate-800 opacity-0 group-hover/pin:opacity-100 transition-opacity pointer-events-none z-20">
+                {{ localized(loc.name, loc.nameKh) }}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Map Footer Legend -->
+        <div class="flex flex-wrap items-center gap-4 text-xs font-bold text-slate-400 z-10">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400" /> {{ currentLanguage === 'kh' ? 'ទីតាំងដែលបានជ្រើស' : 'Selected Location' }}</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#0D47A1]" /> {{ currentLanguage === 'kh' ? 'ការិយាល័យរដ្ឋបាល' : 'Civic Office' }}</span>
+        </div>
+      </div>
+
+      <!-- Selected Office Details Drawer -->
+      <div class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 shadow-sm space-y-4 sticky top-6">
+        <div v-if="selectedLocation && selectedLocation.id" class="space-y-4">
+          <div class="relative h-44 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700">
+            <LazyImage
+              :src="getLocationImage(selectedLocation)"
+              :alt="localized(selectedLocation.name, selectedLocation.nameKh)"
+              img-class="w-full h-44 object-cover"
+            />
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider bg-white/95 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 border border-slate-200/60 shadow-sm backdrop-blur-md">
+              {{ selectedLocation.category }}
             </span>
           </div>
 
-          <!-- Name & Khmer Name -->
           <div>
-            <h3 class="font-bold text-base text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug">
-              {{ localized(loc.name, loc.nameKh) }}
+            <h3 class="text-base sm:text-lg font-black text-[#0A2540] dark:text-white leading-snug">
+              {{ localized(selectedLocation.name, selectedLocation.nameKh) }}
             </h3>
-            <p v-if="loc.nameKh" class="text-xs font-khmer text-slate-400 dark:text-slate-500 mt-0.5">
-              {{ loc.nameKh }}
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              {{ localized(selectedLocation.description, selectedLocation.descriptionKh) }}
+            </p>
+          </div>
+
+          <!-- Working Hours -->
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700 text-xs space-y-1">
+            <div class="flex items-center gap-1.5 text-slate-400 font-bold uppercase text-[10px]">
+              <Clock class="w-3.5 h-3.5" />
+              <span>{{ currentLanguage === 'kh' ? 'ម៉ោងបំពេញការងារ' : 'Office Operating Hours' }}</span>
+            </div>
+            <p class="font-black text-slate-700 dark:text-slate-200">
+              ច័ន្ទ - សុក្រ៖ 8:00 ព្រឹក - 11:30 ព្រឹក | 2:00 រសៀល - 5:00 ល្ងាច
             </p>
           </div>
 
           <!-- Address -->
-          <div class="flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400">
-            <MapPin class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0 mt-0.5" />
-            <span class="leading-relaxed">{{ localized(loc.address, loc.addressKh) }}</span>
+          <div class="text-xs text-slate-600 dark:text-slate-300 flex items-start gap-2">
+            <MapPin class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+            <span class="leading-relaxed">{{ localized(selectedLocation.address, selectedLocation.addressKh) }}</span>
           </div>
 
-          <!-- Description -->
-          <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
-            {{ localized(loc.description, loc.descriptionKh) }}
-          </p>
+          <!-- Action Buttons -->
+          <div class="pt-2 grid grid-cols-2 gap-2 text-xs font-bold">
+            <a
+              :href="'tel:' + selectedLocation.phone"
+              class="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] border border-slate-200 dark:border-slate-600 flex items-center justify-center gap-1.5 transition-all"
+            >
+              <PhoneCall class="w-3.5 h-3.5 text-blue-600" />
+              <span>{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទ' : 'Call' }}</span>
+            </a>
+
+            <a
+              :href="getDirectionsUrl(selectedLocation)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="py-2.5 px-3 rounded-xl bg-[#0D47A1] hover:bg-blue-700 text-white flex items-center justify-center gap-1.5 transition-all shadow-2xs"
+            >
+              <Navigation class="w-3.5 h-3.5" />
+              <span>{{ currentLanguage === 'kh' ? 'នាំផ្លូវ' : 'Directions' }}</span>
+            </a>
+          </div>
         </div>
 
-        <!-- Action Row -->
-        <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-3">
-          <a
-            v-if="loc.phone"
-            :href="'tel:' + loc.phone"
-            class="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-[#0D47A1] dark:hover:text-blue-400 flex items-center gap-1"
-          >
-            <Phone class="w-3.5 h-3.5 text-emerald-600" />
-            <span>{{ loc.phone }}</span>
-          </a>
-          <div v-else />
-
-          <a
-            :href="getDirectionsUrl(loc)"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 hover:bg-[#0D47A1] text-[#0D47A1] dark:text-blue-300 hover:text-white dark:hover:text-white text-xs font-bold transition-colors"
-          >
-            <Navigation class="w-3.5 h-3.5" />
-            <span>Directions</span>
-          </a>
+        <div v-else class="text-center py-12 text-slate-400 text-xs">
+          {{ currentLanguage === 'kh' ? 'សូមចុចលើចំណុចផែនទី ដើម្បីមើលព័ត៌មានលម្អិត' : 'Click any map pin to view office details' }}
         </div>
       </div>
     </div>
 
-    <!-- Empty State -->
-    <EmptyState
-      v-else
-      :message="t('common.noResults')"
-      @reset="resetFilters"
-    />
+    <!-- DIRECTORY GRID VIEW -->
+    <div v-else class="space-y-6">
+      <div v-if="paginatedLocations.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          v-for="item in paginatedLocations"
+          :key="item.id"
+          class="group bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <!-- Representative Image Banner -->
+            <div class="relative h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+              <LazyImage
+                :src="getLocationImage(item)"
+                :alt="localized(item.name, item.nameKh)"
+                img-class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
 
-    <!-- Pagination -->
-    <PaginationBar
-      :current-page="currentPage"
-      :total-pages="totalPages"
-      :showing-from="showingFrom"
-      :showing-to="showingTo"
-      :total-items="totalItems"
-      @go-to-page="goToPage"
-      @next-page="nextPage"
-      @prev-page="prevPage"
-    />
+              <!-- Category Badge -->
+              <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                <span class="px-2.5 py-1 text-[11px] font-black uppercase tracking-wider rounded-xl bg-white/95 dark:bg-slate-900/90 text-[#0A2540] dark:text-white border border-slate-200/60 shadow-sm backdrop-blur-md flex items-center gap-1.5">
+                  <component :is="categories.find(c => c.value === item.category)?.icon || Building" class="w-3.5 h-3.5 text-blue-600" />
+                  <span>{{ item.category }}</span>
+                </span>
+
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-600 text-white shadow-sm">
+                  <CheckCircle2 class="w-3 h-3" />
+                  <span>Open Today</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="p-6 space-y-3.5">
+              <!-- Name & Description -->
+              <div>
+                <h3 class="text-base sm:text-lg font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug">
+                  {{ localized(item.name, item.nameKh) }}
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed line-clamp-2">
+                  {{ localized(item.description, item.descriptionKh) }}
+                </p>
+              </div>
+
+              <!-- Address Box -->
+              <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700 space-y-1">
+                <div class="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <MapPin class="w-3 h-3 text-red-500" />
+                  <span>{{ currentLanguage === 'kh' ? 'អាសយដ្ឋានផ្លូវការ' : 'Official Address' }}</span>
+                </div>
+                <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 leading-relaxed">
+                  {{ localized(item.address, item.addressKh) }}
+                </p>
+              </div>
+
+              <!-- Phone & Schedule -->
+              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
+                <span class="flex items-center gap-1 font-bold">
+                  <Clock class="w-3.5 h-3.5 text-blue-600" />
+                  <span>8:00 AM - 5:00 PM</span>
+                </span>
+                <span class="flex items-center gap-1 font-bold text-[#0D47A1] dark:text-blue-400">
+                  <Phone class="w-3.5 h-3.5" />
+                  <span>{{ item.phone }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="px-6 pb-6 pt-0">
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-3">
+              <a
+                :href="'tel:' + item.phone"
+                class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-[#0D47A1] dark:hover:text-blue-400"
+              >
+                <PhoneCall class="w-3.5 h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'ហៅទូរស័ព្ទ' : 'Call Office' }}</span>
+              </a>
+
+              <a
+                :href="getDirectionsUrl(item)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-[#0D47A1] dark:text-blue-300 hover:bg-[#0D47A1] hover:text-white dark:hover:bg-blue-600 text-xs font-bold border border-blue-200/70 dark:border-blue-700/60 transition-all cursor-pointer"
+              >
+                <Navigation class="w-3.5 h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'នាំផ្លូវលើ Google Maps' : 'Directions' }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-8 text-center">
+        <EmptyState
+          :title="t('locations.emptyTitle')"
+          :subtitle="t('locations.emptySubtitle')"
+          :action-label="t('locations.resetSearch')"
+          @action="resetFilters"
+        />
+      </div>
+
+      <!-- Pagination -->
+      <PaginationBar
+        v-if="totalPages > 1"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :showing-from="showingFrom"
+        :showing-to="showingTo"
+        :total-items="totalItems"
+        @page-change="goToPage"
+        @prev="prevPage"
+        @next="nextPage"
+      />
+    </div>
   </div>
 </template>

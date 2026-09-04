@@ -182,6 +182,7 @@ export const en = {
     getDirections: 'Get Directions',
     categories: {
       all: 'All Locations',
+      governmentOwso: 'OWSO & Sangkat Offices',
       hospital: 'Hospitals',
       policeStation: 'Police Stations',
       bankAtm: 'Banks / ATMs',

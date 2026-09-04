@@ -3,6 +3,7 @@
     "id": "frontend-dev-wing",
     "title": "Senior Frontend Developer (Vue.js / TypeScript)",
     "company": "Wing Bank (Cambodia) Plc",
+    "logo": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=200&q=80",
     "location": "Phnom Penh",
     "salary": "$1,200 - $2,200/month",
     "salaryMin": 1200,
@@ -29,6 +30,7 @@
     "id": "backend-dev-aba",
     "title": "Backend Software Engineer (Golang / Microservices)",
     "company": "ABA Bank Cambodia",
+    "logo": "https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?auto=format&fit=crop&w=200&q=80",
     "location": "Phnom Penh",
     "salary": "$1,500 - $2,800/month",
     "salaryMin": 1500,
@@ -364,5 +366,221 @@
       "Annual performance bonus and telecom equipment allowances"
     ],
     "applyUrl": "https://www.ezecom.com.kh/careers"
+  },
+  {
+    "id": "bank-officer-kampot",
+    "title": "Branch Operations & Customer Service Officer",
+    "company": "Canadia Bank Plc",
+    "location": "Kampot",
+    "salary": "$450 - $750/month",
+    "salaryMin": 450,
+    "salaryMax": 750,
+    "type": "Full-time",
+    "category": "Finance",
+    "postedDate": "2025-08-25",
+    "description": "Provide premier customer banking assistance, handle daily counter deposits, loan inquiries, and electronic banking onboarding for retail clients in Kampot city.",
+    "requirements": [
+      "Bachelor's degree in Banking & Finance, Accounting, or Business",
+      "Fresh graduates with strong communication skills are welcome to apply",
+      "Honest, customer-oriented, and proficient in Khmer & conversational English"
+    ],
+    "benefits": [
+      "Fixed base salary + quarterly branch incentives",
+      "13th-month Khmer New Year & Pchum Ben bonuses",
+      "NSSF insurance and comprehensive health scheme"
+    ],
+    "applyUrl": "https://www.canadiabank.com.kh/careers"
+  },
+  {
+    "id": "credit-officer-kampong-cham",
+    "title": "Rural Community Credit Officer",
+    "company": "KB PRASAC Bank",
+    "location": "Kampong Cham",
+    "salary": "$500 - $950/month",
+    "salaryMin": 500,
+    "salaryMax": 950,
+    "type": "Full-time",
+    "category": "Finance",
+    "postedDate": "2025-08-26",
+    "description": "Engage with local agricultural producers, SMEs, and household entrepreneurs to assess micro-loan applications and support financial literacy in Kampong Cham districts.",
+    "requirements": [
+      "Associate or Bachelor's in Finance, Economics, or Rural Development",
+      "Valid motorcycle driver's license and willingness to travel in local communes",
+      "Good interpersonal and client assessment skills"
+    ],
+    "benefits": [
+      "Motorcycle maintenance and monthly fuel allowance",
+      "Comprehensive hospital insurance and accident coverage",
+      "Annual performance bonus and career progression to Branch Manager"
+    ],
+    "applyUrl": "https://www.kbprasacbank.com.kh/careers"
+  },
+  {
+    "id": "agri-specialist-battambang",
+    "title": "Sustainable Agriculture Field Specialist",
+    "company": "Battambang Agri-Tech Cooperative",
+    "location": "Battambang",
+    "salary": "$600 - $1,100/month",
+    "salaryMin": 600,
+    "salaryMax": 1100,
+    "type": "Full-time",
+    "category": "Engineering",
+    "postedDate": "2025-08-23",
+    "description": "Train rice farmers in modern climate-resilient irrigation, drone crop monitoring, and organic soil enhancement techniques across Battambang province.",
+    "requirements": [
+      "Degree in Agronomy, Agricultural Engineering, or Environmental Science",
+      "2+ years experience in paddy farming techniques or extension projects",
+      "Passionate about rural sustainable empowerment"
+    ],
+    "benefits": [
+      "Competitive salary with field trip daily allowances",
+      "Full medical cover and company vehicle for district visits",
+      "Project completion bonuses"
+    ],
+    "applyUrl": "https://agri-cambodia.org/careers"
+  },
+  {
+    "id": "logistics-coord-kandal",
+    "title": "Warehouse Logistics & Supply Chain Coordinator",
+    "company": "Kandal Inland Container Terminal",
+    "location": "Kandal",
+    "salary": "$550 - $900/month",
+    "salaryMin": 550,
+    "salaryMax": 900,
+    "type": "Full-time",
+    "category": "Other",
+    "postedDate": "2025-08-27",
+    "description": "Coordinate cargo handling, customs dispatch documentation, and transport fleet scheduling at the bustling Kandal trade depot near Phnom Penh.",
+    "requirements": [
+      "Bachelor's in Logistics, Supply Chain, or Business Management",
+      "Proficient in ERP or Warehouse Management Systems (WMS)",
+      "Good command of English; basic Chinese is an advantage"
+    ],
+    "benefits": [
+      "Free daily staff shuttle from Phnom Penh to Kandal depot",
+      "Free duty meals and overtime compensation",
+      "Yearly performance bonus and medical insurance"
+    ],
+    "applyUrl": "https://kandal-logistics.com.kh/careers"
+  },
+  {
+    "id": "poipet-trade-coord",
+    "title": "Cross-Border Trade & Customs Coordinator",
+    "company": "Poipet International Logistics Hub",
+    "location": "Banteay Meanchey",
+    "salary": "$650 - $1,200/month",
+    "salaryMin": 650,
+    "salaryMax": 1200,
+    "type": "Full-time",
+    "category": "Other",
+    "postedDate": "2025-08-28",
+    "description": "Oversee cross-border freight manifest clearance, customs documentation, and logistics coordination with Thai-Cambodia border freight operators.",
+    "requirements": [
+      "Degree in Logistics, International Trade, or Business Administration",
+      "2+ years experience in customs clearance and cross-border transport",
+      "Proficient in Thai or English communication"
+    ],
+    "benefits": [
+      "Border allowance and subsidized company accommodation",
+      "Performance incentives and full health coverage",
+      "Career growth in international logistics"
+    ],
+    "applyUrl": "https://poipethub.com.kh/careers"
+  },
+  {
+    "id": "resort-manager-kohkong",
+    "title": "Eco-Resort Operations Supervisor",
+    "company": "Cardamom Sanctuary Resort Koh Kong",
+    "location": "Koh Kong",
+    "salary": "$700 - $1,300/month",
+    "salaryMin": 700,
+    "salaryMax": 1300,
+    "type": "Full-time",
+    "category": "Hospitality",
+    "postedDate": "2025-08-29",
+    "description": "Direct front-of-house eco-hospitality operations, rainforest tour coordination, and high-end guest hospitality in the scenic Koh Kong Cardamom corridor.",
+    "requirements": [
+      "3+ years experience in resort or boutique hotel operations",
+      "Fluent English; French or Chinese is a strong asset",
+      "Passion for sustainable community ecotourism"
+    ],
+    "benefits": [
+      "Full on-site resort accommodation and duty meals",
+      "Service charge share and quarterly bonus",
+      "Staff health & emergency insurance"
+    ],
+    "applyUrl": "https://cardamom-resort.com.kh/careers"
+  },
+  {
+    "id": "qa-engineer-svayrieng",
+    "title": "Manufacturing QA/QC Inspection Engineer",
+    "company": "Bavet Special Economic Zone Electronics",
+    "location": "Svay Rieng",
+    "salary": "$800 - $1,500/month",
+    "salaryMin": 800,
+    "salaryMax": 1500,
+    "type": "Full-time",
+    "category": "Engineering",
+    "postedDate": "2025-08-30",
+    "description": "Lead quality assurance protocols, ISO 9001 audits, and component inspection lines for high-precision electronics export manufacturing in Bavet.",
+    "requirements": [
+      "Bachelor's in Electrical, Industrial Engineering, or Quality Management",
+      "Familiar with ISO standards and statistical process control (SPC)",
+      "Good command of English or Chinese"
+    ],
+    "benefits": [
+      "Daily transport shuttle between Svay Rieng city and Bavet SEZ",
+      "Annual 13th-month salary and performance bonus",
+      "Comprehensive medical package"
+    ],
+    "applyUrl": "https://bavet-sez.com.kh/careers"
+  },
+  {
+    "id": "solar-tech-takeo",
+    "title": "Solar Energy Systems Field Technician",
+    "company": "Green Solar Cambodia",
+    "location": "Takeo",
+    "salary": "$450 - $800/month",
+    "salaryMin": 450,
+    "salaryMax": 800,
+    "type": "Full-time",
+    "category": "Engineering",
+    "postedDate": "2025-08-27",
+    "description": "Install, inspect, and maintain agricultural solar water pumping systems and rural commercial rooftop photovoltaic arrays across Takeo province.",
+    "requirements": [
+      "Technical diploma in Electrical Engineering or Renewable Energy",
+      "Hands-on experience with solar inverters and DC wiring",
+      "Valid driving license and willingness to work in field locations"
+    ],
+    "benefits": [
+      "Field travel allowance and company toolset provided",
+      "Health and personal accident insurance",
+      "Continuous technical solar certification training"
+    ],
+    "applyUrl": "https://greensolar.com.kh/careers"
+  },
+  {
+    "id": "agro-supervisor-kampongspeu",
+    "title": "Agro-Industrial Processing Supervisor",
+    "company": "Kampong Speu Palm Sugar & Agro Enterprises",
+    "location": "Kampong Speu",
+    "salary": "$600 - $1,000/month",
+    "salaryMin": 600,
+    "salaryMax": 1000,
+    "type": "Full-time",
+    "category": "Other",
+    "postedDate": "2025-08-25",
+    "description": "Supervise processing hygiene, GI (Geographical Indication) packaging standards, and export batch quality control for premium Kampong Speu palm sugar.",
+    "requirements": [
+      "Bachelor's in Food Science, Agronomy, or Industrial Management",
+      "Knowledge of HACCP, GMP, and food safety standards",
+      "Strong leadership and team supervision capabilities"
+    ],
+    "benefits": [
+      "Free on-site meals and production attendance incentive",
+      "NSSF and supplementary private health coverage",
+      "Annual performance bonus"
+    ],
+    "applyUrl": "https://kampongspeu-agro.com/careers"
   }
 ]
