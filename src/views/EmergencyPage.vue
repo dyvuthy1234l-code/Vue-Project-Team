@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import {
   AlertTriangle,
+  LocateFixed,
   X,
   Check,
   ChevronRight,
@@ -157,8 +158,8 @@ const emergencySteps = computed(() => [
   }
 ])
 
-// Emergency Map Stations (Hospitals, Police, Fire)
-interface EmergencyStation {
+// Emergency Map Stations (Hospitals, Police, Fire) with Real Coordinates
+export interface EmergencyStation {
   id: string
   name: string
   nameKh: string
@@ -167,8 +168,9 @@ interface EmergencyStation {
   addressKh: string
   phone: string
   distance: string
-  coords: { x: number; y: number }
-  gmapsQuery: string
+  coordinates: { lat: number; lng: number }
+  openHours: string
+  openHoursKh: string
 }
 
 const mapStations = ref<EmergencyStation[]>([
@@ -181,8 +183,9 @@ const mapStations = ref<EmergencyStation[]>([
     addressKh: 'ផ្ទះលេខ ៣ មហាវិថីព្រះមុនីវង្ស សង្កាត់ស្រះចក ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ',
     phone: '+855 23 426 948',
     distance: '1.2 គ.ម',
-    coords: { x: 52, y: 35 },
-    gmapsQuery: 'Calmette Hospital Phnom Penh'
+    coordinates: { lat: 11.5833, lng: 104.9192 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
   },
   {
     id: 'khmer-soviet-hospital',
@@ -193,8 +196,9 @@ const mapStations = ref<EmergencyStation[]>([
     addressKh: 'ផ្លូវ ២៧១ សង្កាត់ទំនប់ទឹក ខណ្ឌបឹងកេងកង រាជធានីភ្នំពេញ',
     phone: '+855 23 217 764',
     distance: '3.4 គ.ម',
-    coords: { x: 44, y: 68 },
-    gmapsQuery: 'Khmer-Soviet Friendship Hospital'
+    coordinates: { lat: 11.5369, lng: 104.9083 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
   },
   {
     id: 'kossamak-hospital',
@@ -205,8 +209,9 @@ const mapStations = ref<EmergencyStation[]>([
     addressKh: 'ផ្លូវ ២៧១ សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ',
     phone: '+855 23 880 234',
     distance: '2.8 គ.ម',
-    coords: { x: 30, y: 48 },
-    gmapsQuery: 'Preah Kossamak Hospital Phnom Penh'
+    coordinates: { lat: 11.5684, lng: 104.8967 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
   },
   {
     id: 'national-police-commissariat',
@@ -217,8 +222,9 @@ const mapStations = ref<EmergencyStation[]>([
     addressKh: 'ផ្លូវ ៥៩៨ សង្កាត់ច្រាំងចំរេះទី១ ខណ្ឌឫស្សីកែវ រាជធានីភ្នំពេញ',
     phone: '117',
     distance: '2.1 គ.ម',
-    coords: { x: 42, y: 22 },
-    gmapsQuery: 'Phnom Penh Municipal Police Commissariat'
+    coordinates: { lat: 11.5517, lng: 104.9298 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
   },
   {
     id: 'central-traffic-police',
@@ -229,25 +235,37 @@ const mapStations = ref<EmergencyStation[]>([
     addressKh: 'មហាវិថីសហព័ន្ធរុស្ស៊ី ខណ្ឌទួលគោក រាជធានីភ្នំពេញ',
     phone: '+855 12 999 117',
     distance: '1.9 គ.ម',
-    coords: { x: 48, y: 52 },
-    gmapsQuery: 'Phnom Penh Traffic Police Office'
+    coordinates: { lat: 11.5714, lng: 104.8950 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
   },
   {
     id: 'central-fire-rescue',
     name: 'Phnom Penh Central Fire & Rescue Brigade',
-    nameKh: 'កងកម្លាំងនគរបាលបង្ការ និងពន្លត់អគ្គីភ័យរាជធានីភ្នំពេញ',
+    nameKh: 'កងកម្លាំងនគរបាលបង្ការ និងពន្លត់អគ្គីភ័យរាជធានីភ្នំពេញ (១១៨)',
     type: 'fire',
     address: 'Near Olympic Stadium, Khan 7 Makara, Phnom Penh',
     addressKh: 'ក្បែរស្តាតអូឡាំពិក ខណ្ឌ៧មករា រាជធានីភ្នំពេញ',
     phone: '118',
     distance: '1.5 គ.ម',
-    coords: { x: 50, y: 58 },
-    gmapsQuery: 'Phnom Penh Fire Station Olympic'
+    coordinates: { lat: 11.5583, lng: 104.9167 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
   }
 ])
 
 const activeMapFilter = ref<'all' | 'hospital' | 'police' | 'fire'>('all')
 const selectedStation = ref<EmergencyStation>(mapStations.value[0])
+
+const mapEmbedUrl = computed(() => {
+  const { lat, lng } = selectedStation.value.coordinates
+  return `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`
+})
+
+const mapDirectionsUrl = computed(() => {
+  const { lat, lng } = selectedStation.value.coordinates
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+})
 
 const mapFilters = computed(() => [
   { id: 'all', label: currentLanguage.value === 'kh' ? 'ទាំងអស់ (៦)' : 'All Facilities (6)' },
@@ -260,6 +278,22 @@ const filteredMapStations = computed(() => {
   if (activeMapFilter.value === 'all') return mapStations.value
   return mapStations.value.filter(s => s.type === activeMapFilter.value)
 })
+
+function selectStation(station: EmergencyStation) {
+  selectedStation.value = station
+}
+
+function getStationIcon(type: 'hospital' | 'police' | 'fire') {
+  if (type === 'hospital') return Hospital
+  if (type === 'police') return ShieldAlert
+  return Flame
+}
+
+function getStationIconBg(type: 'hospital' | 'police' | 'fire') {
+  if (type === 'hospital') return 'bg-rose-600 text-white'
+  if (type === 'police') return 'bg-blue-600 text-white'
+  return 'bg-amber-500 text-white'
+}
 
 const firstAidProtocols = [
   {
@@ -1049,121 +1083,187 @@ function selectProvince(id: string) {
       </section>
 
       <!-- ============================================================
-           8. INTERACTIVE EMERGENCY RADAR MAP & NEARBY HOSPITALS
+           8. INTERACTIVE REAL GOOGLE MAP & NEARBY EMERGENCY STATIONS
            ============================================================ -->
-      <section class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <span class="text-xs font-black text-[#0D47A1] uppercase tracking-wider flex items-center gap-1">
-              <MapPin class="w-3.5 h-3.5" />
-              <span>{{ currentLanguage === 'kh' ? 'ទីតាំងសង្គ្រោះបន្ទាន់' : 'Emergency Radar' }}</span>
-            </span>
-            <h2 class="text-lg sm:text-xl font-black text-slate-900">
-              {{ currentLanguage === 'kh' ? 'ផែនទីស្ថានីយសង្គ្រោះបន្ទាន់ & មន្ទីរពេទ្យជិតបំផុត' : 'Nearby Trauma Hospitals & Emergency Stations' }}
-            </h2>
+      <section class="overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(31,64,122,.07)] ring-1 ring-slate-100 border border-slate-200/90">
+        <!-- Header & Category Filter Tabs -->
+        <div class="flex flex-col justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 via-white to-transparent px-6 py-4 lg:flex-row lg:items-center">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0D47A1] text-white shadow-md shadow-blue-950/20">
+              <LocateFixed class="h-5 w-5 animate-pulse" />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-base sm:text-lg font-black tracking-tight text-[#0A2458]">
+                  {{ currentLanguage === 'kh' ? 'ផែនទីស្ថានីយសង្គ្រោះបន្ទាន់ & មន្ទីរពេទ្យជិតបំផុត' : 'Emergency Stations & Nearby Trauma Centers' }}
+                </h2>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black text-emerald-700 ring-1 ring-emerald-500/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  LIVE REAL MAP
+                </span>
+              </div>
+              <div class="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
+                <span>{{ currentLanguage === 'kh' ? 'ផែនទីផ្កាយរណបពិតជាក់ស្តែង (Google Maps)' : 'Live Interactive Google Map Navigation' }}</span>
+                <span class="text-slate-300">·</span>
+                <span class="text-[11px] text-slate-400 font-bold">
+                  {{ currentLanguage === 'kh' ? 'ចុចលើស្ថានីយដើម្បីបង្ហាញទីតាំង និងនាំផ្លូវ' : 'Click any station to view live map' }}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+          <!-- Category Filter Tabs -->
+          <div class="flex flex-wrap gap-1.5 rounded-2xl bg-slate-100/90 p-1.5">
             <button
               v-for="filter in mapFilters"
               :key="filter.id"
-              @click="activeMapFilter = filter.id as any"
               type="button"
-              :class="['px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer', activeMapFilter === filter.id ? 'bg-white text-[#0D47A1] shadow-2xs font-black' : 'text-slate-500']"
+              :class="[
+                'inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer',
+                activeMapFilter === filter.id
+                  ? 'bg-white text-[#0D47A1] shadow-sm font-black ring-1 ring-blue-500/20'
+                  : 'text-slate-600 hover:text-[#0D47A1] hover:bg-white/50'
+              ]"
+              @click="activeMapFilter = filter.id as any"
             >
-              {{ filter.label }}
+              <span>{{ filter.label }}</span>
             </button>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          <!-- Stylized Radar Map Canvas -->
-          <div class="lg:col-span-8 relative min-h-[360px] rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 p-4 flex flex-col justify-between">
-            <div class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:20px_20px] opacity-40" />
-            <div class="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-900/90 to-blue-950/80" />
+        <!-- Real Map & Stations Grid (Matching HomePage Layout) -->
+        <div class="grid gap-0 p-4 lg:grid-cols-[1.2fr_.8fr]">
+          <!-- Real Google Map Embed Frame -->
+          <div class="relative min-h-[440px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner border border-slate-200/80">
+            <iframe
+              :key="mapEmbedUrl"
+              :src="mapEmbedUrl"
+              title="CamLife Emergency Real Map"
+              class="absolute inset-0 h-full w-full border-0"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            />
 
-            <div class="relative z-10 flex items-center gap-2">
-              <span class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900/90 px-3 py-1.5 text-xs font-bold text-white border border-white/10">
-                <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>{{ currentLanguage === 'kh' ? 'តំបន់រាជធានីភ្នំពេញ (Live Radar)' : 'Phnom Penh Command' }}</span>
-              </span>
-            </div>
-
-            <!-- Map Markers -->
-            <div class="absolute inset-0 z-20">
-              <button
-                v-for="station in filteredMapStations"
-                :key="station.id"
-                type="button"
-                @click="selectedStation = station"
-                :style="{ left: `${station.coords.x}%`, top: `${station.coords.y}%` }"
-                :class="['absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-125 z-20', selectedStation.id === station.id ? 'scale-125 z-30' : '']"
-              >
-                <div
-                  :class="[
-                    'w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-lg border border-white font-bold text-xs',
-                    station.type === 'hospital' ? 'bg-rose-600' : station.type === 'police' ? 'bg-blue-600' : 'bg-amber-600',
-                    selectedStation.id === station.id ? 'ring-4 ring-white/50 animate-bounce' : ''
-                  ]"
-                >
-                  <Hospital v-if="station.type === 'hospital'" class="w-4 h-4" />
-                  <ShieldAlert v-else-if="station.type === 'police'" class="w-4 h-4" />
-                  <Flame v-else class="w-4 h-4" />
+            <!-- Top Active Location Floating Card -->
+            <div class="absolute left-3 top-3 max-w-[88%] rounded-2xl border border-white/90 bg-white/95 p-3 shadow-xl backdrop-blur">
+              <div class="flex items-start gap-2.5">
+                <span :class="['flex h-8 w-8 shrink-0 items-center justify-center rounded-xl shadow-xs', getStationIconBg(selectedStation.type)]">
+                  <component :is="getStationIcon(selectedStation.type)" class="h-4 w-4" />
+                </span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <p class="truncate text-xs sm:text-sm font-black text-[#0A2540]">
+                      {{ currentLanguage === 'kh' ? selectedStation.nameKh : selectedStation.name }}
+                    </p>
+                    <span class="rounded bg-blue-100 px-1.5 py-0.5 text-[9px] font-black text-blue-700 shrink-0">
+                      {{ currentLanguage === 'kh' ? 'កំពុងជ្រើសរើស' : 'Selected' }}
+                    </span>
+                  </div>
+                  <p class="mt-0.5 truncate text-[11px] text-slate-500">
+                    {{ currentLanguage === 'kh' ? selectedStation.addressKh : selectedStation.address }}
+                  </p>
                 </div>
-              </button>
+              </div>
             </div>
 
-            <!-- Legend -->
-            <div class="relative z-10 flex items-center gap-3 bg-slate-900/80 backdrop-blur-xs p-2.5 rounded-xl border border-white/10 text-[11px] text-white">
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500" /> មន្ទីរពេទ្យ (119)</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500" /> នគរបាល (117)</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500" /> ពន្លត់អគ្គីភ័យ (118)</span>
+            <!-- Bottom Floating Action Bar -->
+            <div class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2">
+              <a
+                :href="mapDirectionsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-4 py-2.5 text-xs font-black text-white shadow-lg transition duration-150 active:scale-98"
+              >
+                <MapPin class="h-4 w-4" />
+                <span>{{ currentLanguage === 'kh' ? 'ទទួលទិសដៅលើ Google Maps' : 'Get Directions (Google Maps)' }}</span>
+              </a>
+
+              <div class="flex items-center gap-2">
+                <span class="hidden sm:inline-block rounded-xl bg-white/95 backdrop-blur px-3 py-2 text-[11px] font-bold text-slate-700 border border-slate-200 shadow-sm font-mono">
+                  GPS: {{ selectedStation.coordinates.lat.toFixed(4) }}, {{ selectedStation.coordinates.lng.toFixed(4) }}
+                </span>
+              </div>
             </div>
           </div>
 
-          <!-- Station Detail Panel -->
-          <div class="lg:col-span-4 p-5 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col justify-between space-y-4">
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-white text-[#0D47A1] border border-slate-200">
-                  {{ selectedStation.type === 'hospital' ? 'មជ្ឈមណ្ឌលសង្គ្រោះបន្ទាន់' : selectedStation.type === 'police' ? 'ស្នងការដ្ឋាននគរបាល' : 'ស្ថានីយពន្លត់អគ្គីភ័យ' }}
-                </span>
-                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  📍 {{ selectedStation.distance }}
-                </span>
+          <!-- Stations List Panel -->
+          <div class="bg-slate-50/70 p-3.5 lg:ml-4 lg:rounded-2xl space-y-2 flex flex-col justify-between mt-4 lg:mt-0">
+            <div>
+              <div class="flex items-center justify-between px-2 py-1 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                <span>{{ currentLanguage === 'kh' ? 'ស្ថានីយសង្គ្រោះបន្ទាន់ផ្ទៀងផ្ទាត់' : 'Verified Emergency Stations' }}</span>
+                <span class="text-blue-600 font-mono font-bold">{{ filteredMapStations.length }} ទីតាំង</span>
               </div>
 
-              <h3 class="font-black text-base text-slate-900 leading-snug">
-                {{ selectedStation.nameKh }}
-              </h3>
+              <!-- List of Station Cards -->
+              <div class="mt-2 space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                <button
+                  v-for="station in filteredMapStations"
+                  :key="station.id"
+                  type="button"
+                  :class="[
+                    'group relative flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-200 cursor-pointer',
+                    selectedStation.id === station.id
+                      ? 'border-[#0D47A1] bg-white shadow-md ring-2 ring-[#0D47A1]/20'
+                      : 'border-slate-200/70 bg-white/80 hover:border-blue-200 hover:bg-white hover:shadow-xs'
+                  ]"
+                  @click="selectStation(station)"
+                >
+                  <!-- Active Indicator Ribbon -->
+                  <span
+                    v-if="selectedStation.id === station.id"
+                    class="absolute -left-1 top-3 bottom-3 w-1.5 rounded-r bg-[#0D47A1]"
+                  />
 
-              <p class="text-xs text-slate-500 leading-relaxed">
-                {{ selectedStation.addressKh }}
-              </p>
+                  <!-- Icon Badge -->
+                  <div :class="['flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-xs ring-1 transition-transform group-hover:scale-105', getStationIconBg(station.type)]">
+                    <component :is="getStationIcon(station.type)" class="h-5 w-5" />
+                  </div>
 
-              <div class="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
-                <span class="text-[10px] font-bold text-slate-400 uppercase">លេខទូរស័ព្ទផ្ទាល់</span>
-                <p class="font-mono font-black text-base text-[#0D47A1]">{{ selectedStation.phone }}</p>
+                  <!-- Details -->
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between gap-1.5">
+                      <h4 class="truncate text-xs font-black text-slate-900">
+                        {{ currentLanguage === 'kh' ? station.nameKh : station.name }}
+                      </h4>
+                      <span class="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700 shrink-0">
+                        {{ station.distance }}
+                      </span>
+                    </div>
+
+                    <p class="truncate text-[11px] text-slate-500 mt-0.5">
+                      {{ currentLanguage === 'kh' ? station.addressKh : station.address }}
+                    </p>
+
+                    <div class="flex items-center gap-2 mt-1.5 text-[10px]">
+                      <span class="font-mono font-black text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                        {{ station.phone }}
+                      </span>
+                      <span class="text-slate-400">·</span>
+                      <span class="text-emerald-700 font-bold">{{ currentLanguage === 'kh' ? station.openHoursKh : station.openHours }}</span>
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
 
-            <div class="space-y-2 pt-2">
+            <!-- Quick Hotline Call Footer for Selected Station -->
+            <div class="pt-3 border-t border-slate-200/80 flex items-center gap-2">
               <a
                 :href="'tel:' + selectedStation.phone"
-                class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
               >
                 <PhoneCall class="w-3.5 h-3.5" />
-                <span>ហៅផ្ទាល់ទៅកាន់ស្ថានីយ</span>
+                <span>{{ currentLanguage === 'kh' ? 'ហៅទូរស័ព្ទទៅកាន់ស្ថានីយនេះ' : 'Call Station Now' }}</span>
               </a>
 
               <a
-                :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(selectedStation.gmapsQuery)"
+                :href="mapDirectionsUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="w-full py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-blue-600 transition-colors shadow-2xs flex items-center justify-center"
+                title="Google Maps"
               >
-                <Navigation class="w-3.5 h-3.5 text-blue-600" />
-                <span>បើកមើលផ្លូវលើ Google Maps</span>
+                <Navigation class="w-4 h-4" />
               </a>
             </div>
           </div>
