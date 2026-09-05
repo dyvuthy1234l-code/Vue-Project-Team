@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import {
   AlertTriangle,
+  X,
   Check,
   ChevronRight,
   Clock3,
@@ -287,14 +288,70 @@ const firstAidProtocols = [
   }
 ]
 
-// Provincial Quick Contacts
+// ==========================================
+// 25 PROVINCES & CITIES EMERGENCY DATA & SEARCH
+// ==========================================
+export interface ProvinceEmergency {
+  id: string
+  name: string
+  nameKh: string
+  code: string
+  police: string
+  hospital: string
+  hospitalName: string
+  redCross: string
+}
+
+const allProvincesData: ProvinceEmergency[] = [
+  { id: 'phnom-penh', name: 'Phnom Penh', nameKh: 'រាជធានីភ្នំពេញ', code: 'PP', police: '023 212 117', hospital: '023 426 948', hospitalName: 'មន្ទីរពេទ្យកាល់ម៉ែត (Calmette)', redCross: '023 212 876' },
+  { id: 'kandal', name: 'Kandal', nameKh: 'ខេត្តកណ្តាល', code: 'KD', police: '024 985 117', hospital: '024 985 244', hospitalName: 'មន្ទីរពេទ្យបង្អែកជ័យជំនះ', redCross: '024 985 300' },
+  { id: 'siem-reap', name: 'Siem Reap', nameKh: 'ខេត្តសៀមរាប', code: 'SR', police: '063 760 117', hospital: '063 764 091', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តសៀមរាប', redCross: '063 760 224' },
+  { id: 'battambang', name: 'Battambang', nameKh: 'ខេត្តបាត់ដំបង', code: 'BB', police: '053 952 117', hospital: '053 952 822', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តបាត់ដំបង', redCross: '053 952 411' },
+  { id: 'preah-sihanouk', name: 'Preah Sihanouk', nameKh: 'ខេត្តព្រះសីហនុ', code: 'SHV', police: '034 933 117', hospital: '034 933 411', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តព្រះសីហនុ', redCross: '034 933 765' },
+  { id: 'kampong-cham', name: 'Kampong Cham', nameKh: 'ខេត្តកំពង់ចាម', code: 'KC', police: '042 941 117', hospital: '042 941 233', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ចាម', redCross: '042 941 405' },
+  { id: 'kampot', name: 'Kampot', nameKh: 'ខេត្តកំពត', code: 'KP', police: '033 932 117', hospital: '033 932 805', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពត', redCross: '033 932 543' },
+  { id: 'takeo', name: 'Takeo', nameKh: 'ខេត្តតាកែវ', code: 'TK', police: '032 931 117', hospital: '032 931 230', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តតាកែវ', redCross: '032 931 411' },
+  { id: 'kampong-chhnang', name: 'Kampong Chhnang', nameKh: 'ខេត្តកំពង់ឆ្នាំង', code: 'KCH', police: '026 988 117', hospital: '026 988 200', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ឆ្នាំង', redCross: '026 988 321' },
+  { id: 'kampong-speu', name: 'Kampong Speu', nameKh: 'ខេត្តកំពង់ស្ពឺ', code: 'KS', police: '025 987 117', hospital: '025 987 220', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ស្ពឺ', redCross: '025 987 342' },
+  { id: 'kampong-thom', name: 'Kampong Thom', nameKh: 'ខេត្តកំពង់ធំ', code: 'KT', police: '062 961 117', hospital: '062 961 240', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ធំ', redCross: '062 961 355' },
+  { id: 'koh-kong', name: 'Koh Kong', nameKh: 'ខេត្តកោះកុង', code: 'KK', police: '035 936 117', hospital: '035 936 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកោះកុង', redCross: '035 936 344' },
+  { id: 'kratie', name: 'Kratie', nameKh: 'ខេត្តក្រចេះ', code: 'KR', police: '072 971 117', hospital: '072 971 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តក្រចេះ', redCross: '072 971 311' },
+  { id: 'mondulkiri', name: 'Mondulkiri', nameKh: 'ខេត្តមណ្ឌលគិរី', code: 'MK', police: '073 973 117', hospital: '073 973 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តមណ្ឌលគិរី', redCross: '073 973 345' },
+  { id: 'preah-vihear', name: 'Preah Vihear', nameKh: 'ខេត្តព្រះវិហារ', code: 'PV', police: '064 954 117', hospital: '064 954 210', hospitalName: 'មន្ទីរពេទ្យបង្អែក ១៦ មករា ព្រះវិហារ', redCross: '064 954 311' },
+  { id: 'prey-veng', name: 'Prey Veng', nameKh: 'ខេត្តព្រៃវែង', code: 'PVG', police: '043 944 117', hospital: '043 944 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តព្រៃវែង', redCross: '043 944 322' },
+  { id: 'pursat', name: 'Pursat', nameKh: 'ខេត្តពោធិ៍សាត់', code: 'PS', police: '052 951 117', hospital: '052 951 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តពោធិ៍សាត់', redCross: '052 951 333' },
+  { id: 'ratanakiri', name: 'Ratanakiri', nameKh: 'ខេត្តរតនគិរី', code: 'RK', police: '075 974 117', hospital: '075 974 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកបានលុង រតនគិរី', redCross: '075 974 344' },
+  { id: 'stung-treng', name: 'Stung Treng', nameKh: 'ខេត្តស្ទឹងត្រែង', code: 'ST', police: '074 973 117', hospital: '074 973 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តស្ទឹងត្រែង', redCross: '074 973 355' },
+  { id: 'svay-rieng', name: 'Svay Rieng', nameKh: 'ខេត្តស្វាយរៀង', code: 'SVR', police: '044 945 117', hospital: '044 945 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តស្វាយរៀង', redCross: '044 945 321' },
+  { id: 'banteay-meanchey', name: 'Banteay Meanchey', nameKh: 'ខេត្តបន្ទាយមានជ័យ', code: 'BMC', police: '054 958 117', hospital: '054 958 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកមង្គលបូរី', redCross: '054 958 344' },
+  { id: 'kep', name: 'Kep', nameKh: 'ខេត្តកែប', code: 'KEP', police: '036 936 117', hospital: '036 936 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកែប', redCross: '036 936 322' },
+  { id: 'pailin', name: 'Pailin', nameKh: 'ខេត្តប៉ៃលិន', code: 'PL', police: '053 953 117', hospital: '053 953 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តប៉ៃលិន', redCross: '053 953 311' },
+  { id: 'oddar-meanchey', name: 'Oddar Meanchey', nameKh: 'ខេត្តឧត្តរមានជ័យ', code: 'OMC', police: '065 957 117', hospital: '065 957 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកសំរោង ឧត្តរមានជ័យ', redCross: '065 957 333' },
+  { id: 'tboung-khmum', name: 'Tboung Khmum', nameKh: 'ខេត្តត្បូងឃ្មុំ', code: 'TBK', police: '042 942 117', hospital: '042 942 210', hospitalName: 'មន្ទីរពេទ្យមិត្តភាពកម្ពុជា-ចិន ត្បូងឃ្មុំ', redCross: '042 942 344' }
+]
+
 const selectedProvince = ref('phnom-penh')
-const provincialContacts: Record<string, { police: string; hospital: string; hospitalName: string }> = {
-  'phnom-penh': { police: '023 212 117', hospital: '023 426 948', hospitalName: 'មន្ទីរពេទ្យកាល់ម៉ែត' },
-  'siem-reap': { police: '063 760 117', hospital: '063 764 091', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តសៀមរាប' },
-  'battambang': { police: '053 952 117', hospital: '053 952 822', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តបាត់ដំបង' },
-  'sihanoukville': { police: '034 933 117', hospital: '034 933 411', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តព្រះសីហនុ' },
-  'kampot': { police: '033 932 117', hospital: '033 932 805', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពត' }
+const provinceSearchQuery = ref('')
+
+const filteredProvinces = computed(() => {
+  if (!provinceSearchQuery.value.trim()) return allProvincesData
+  const q = provinceSearchQuery.value.trim().toLowerCase()
+  return allProvincesData.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.nameKh.toLowerCase().includes(q) ||
+    p.code.toLowerCase().includes(q) ||
+    p.hospitalName.toLowerCase().includes(q) ||
+    p.police.includes(q) ||
+    p.hospital.includes(q)
+  )
+})
+
+const activeProvince = computed(() => {
+  return allProvincesData.find(p => p.id === selectedProvince.value) || allProvincesData[0]
+})
+
+function selectProvince(id: string) {
+  selectedProvince.value = id
 }
 </script>
 
@@ -753,56 +810,199 @@ const provincialContacts: Record<string, { police: string; hospital: string; hos
       </section>
 
       <!-- ============================================================
-           6. PROVINCIAL EMERGENCY HOTLINES (រាជធានី-ខេត្តទាំង ២៥)
+           6. PROVINCIAL EMERGENCY HOTLINES (រាជធានី-ខេត្តទាំង ២៥ + ប្រព័ន្ធស្វែងរក)
            ============================================================ -->
-      <section class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+      <section class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div class="space-y-1">
-            <h2 class="text-base font-black text-slate-900 flex items-center gap-2">
-              <Building2 class="w-4 h-4 text-[#0D47A1]" />
-              <span>{{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទសង្គ្រោះបន្ទាន់ប្រចាំរាជធានី-ខេត្ត' : 'Provincial Direct Hotlines' }}</span>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-black border border-blue-200">
+              <Building2 class="w-3.5 h-3.5 text-[#0D47A1]" />
+              <span>{{ currentLanguage === 'kh' ? 'រាជធានី-ខេត្តទាំង ២៥ នៃព្រះរាជាណាចក្រកម្ពុជា' : 'All 25 Cambodian Provinces & Municipalities' }}</span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-black text-slate-900">
+              {{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទសង្គ្រោះបន្ទាន់ប្រចាំរាជធានី-ខេត្តទាំង ២៥' : '25 Provincial Emergency Command Hotlines' }}
             </h2>
-            <p class="text-xs text-slate-500">លេខទូរស័ព្ទបន្ទាន់ផ្ទាល់របស់ស្នងការដ្ឋាននគរបាល និងមន្ទីរពេទ្យបង្អែកខេត្ត</p>
+            <p class="text-xs text-slate-500">ស្វែងរក ឬជ្រើសរើសខេត្តក្រុង ដើម្បីមើលលេខទូរស័ព្ទស្នងការដ្ឋាននគរបាល មន្ទីរពេទ្យបង្អែកខេត្ត និងកាកបាទក្រហម</p>
           </div>
 
-          <div class="flex items-center gap-2">
-            <label class="text-xs font-bold text-slate-600">ជ្រើសរើសខេត្ត៖</label>
-            <select
-              v-model="selectedProvince"
-              class="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-[#0D47A1]"
-            >
-              <option value="phnom-penh">រាជធានីភ្នំពេញ (Phnom Penh)</option>
-              <option value="siem-reap">ខេត្តសៀមរាប (Siem Reap)</option>
-              <option value="battambang">ខេត្តបាត់ដំបង (Battambang)</option>
-              <option value="sihanoukville">ខេត្តព្រះសីហនុ (Sihanoukville)</option>
-              <option value="kampot">ខេត្តកំពត (Kampot)</option>
-            </select>
+          <!-- Quick Actions: Search Input & Province Dropdown -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <!-- Search Bar for Provinces -->
+            <div class="relative min-w-[240px]">
+              <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                v-model="provinceSearchQuery"
+                type="text"
+                :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកខេត្តក្រុង (ឧ. ភ្នំពេញ, សៀមរាប, Kampot)...' : 'Search province...'"
+                class="w-full pl-9 pr-8 py-2 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50/80 focus:bg-white focus:border-[#0D47A1] focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-400"
+              />
+              <button
+                v-if="provinceSearchQuery"
+                @click="provinceSearchQuery = ''"
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                title="សម្អាត"
+              >
+                <X class="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <!-- Dropdown of all 25 Provinces -->
+            <div class="flex items-center gap-2 shrink-0">
+              <select
+                v-model="selectedProvince"
+                class="w-full sm:w-auto px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-[#0D47A1] focus:bg-white focus:border-[#0D47A1] outline-none shadow-2xs cursor-pointer"
+              >
+                <option
+                  v-for="prov in allProvincesData"
+                  :key="prov.id"
+                  :value="prov.id"
+                >
+                  {{ prov.nameKh }} ({{ prov.name }})
+                </option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <div v-if="provincialContacts[selectedProvince]" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-center justify-between">
-            <div class="space-y-1">
-              <span class="text-[10px] font-black uppercase text-blue-700">ស្នងការដ្ឋាននគរបាលខេត្ត</span>
-              <h4 class="font-black text-sm text-slate-900">បញ្ជាការដ្ឋាននគរបាលប្រចាំខេត្ត</h4>
-              <p class="text-base font-mono font-black text-[#0D47A1]">{{ provincialContacts[selectedProvince].police }}</p>
-            </div>
-            <a :href="'tel:' + provincialContacts[selectedProvince].police" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs">
-              <PhoneCall class="w-3.5 h-3.5" />
-              <span>ហៅបន្ទាន់</span>
-            </a>
+        <!-- Province Quick Selection Tags (Filtered by Search Query if entered) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs text-slate-500 font-bold">
+            <span>{{ provinceSearchQuery ? `លទ្ធផលស្វែងរក (${filteredProvinces.length} ខេត្តក្រុង)` : 'ចុចជ្រើសរើសខេត្តក្រុងរហ័ស (Quick Select)：' }}</span>
+            <span v-if="provinceSearchQuery" class="text-blue-600 cursor-pointer hover:underline" @click="provinceSearchQuery = ''">
+              បង្ហាញទាំងអស់ (២៥)
+            </span>
           </div>
 
-          <div class="p-4 rounded-2xl bg-rose-50/70 border border-rose-100 flex items-center justify-between">
-            <div class="space-y-1">
-              <span class="text-[10px] font-black uppercase text-rose-700">ផ្នែកសង្គ្រោះបន្ទាន់មន្ទីរពេទ្យ</span>
-              <h4 class="font-black text-sm text-slate-900">{{ provincialContacts[selectedProvince].hospitalName }}</h4>
-              <p class="text-base font-mono font-black text-rose-600">{{ provincialContacts[selectedProvince].hospital }}</p>
+          <div class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1 pb-1">
+            <button
+              v-for="p in filteredProvinces"
+              :key="p.id"
+              @click="selectProvince(p.id)"
+              :class="[
+                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border',
+                selectedProvince === p.id
+                  ? 'bg-[#0D47A1] text-white border-[#0D47A1] shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
+              ]"
+            >
+              <span>{{ p.nameKh }}</span>
+              <span :class="selectedProvince === p.id ? 'text-blue-200' : 'text-slate-400'" class="text-[10px] font-mono font-semibold">[{{ p.code }}]</span>
+            </button>
+            <div v-if="filteredProvinces.length === 0" class="text-xs text-slate-400 py-2 italic">
+              មិនមានខេត្តក្រុងដែលត្រូវនឹងពាក្យស្វែងរក "{{ provinceSearchQuery }}" នោះទេ។
             </div>
-            <a :href="'tel:' + provincialContacts[selectedProvince].hospital" class="px-4 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs">
-              <PhoneCall class="w-3.5 h-3.5" />
-              <span>ហៅបន្ទាន់</span>
-            </a>
+          </div>
+        </div>
+
+        <!-- Active Selected Province Display Banner & Action Hotlines -->
+        <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 border border-blue-100 p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-blue-100/80">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-xs">
+                {{ activeProvince.code }}
+              </div>
+              <div>
+                <h3 class="font-black text-base text-slate-900 flex items-center gap-2">
+                  <span>{{ activeProvince.nameKh }}</span>
+                  <span class="text-slate-400 font-normal text-xs">({{ activeProvince.name }})</span>
+                </h3>
+                <p class="text-xs text-slate-500 font-medium">លេខទំនាក់ទំនងបន្ទាន់ផ្លូវការប្រចាំតំបន់ ២៤ម៉ោង</p>
+              </div>
+            </div>
+            <div class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-white px-3 py-1 rounded-full border border-emerald-200 shadow-2xs self-start sm:self-auto">
+              <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+              <span>ប្រចាំការ ២៤/៧</span>
+            </div>
+          </div>
+
+          <!-- 3-Column Hotlines: Police Commissariat, Referral Hospital, Red Cross -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- 1. Police Dispatch -->
+            <div class="p-4 rounded-xl bg-white border border-blue-100 shadow-xs flex flex-col justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-black uppercase text-blue-700 tracking-wider">ស្នងការដ្ឋាននគរបាលខេត្ត</span>
+                  <ShieldAlert class="w-4 h-4 text-blue-600" />
+                </div>
+                <h4 class="font-black text-xs text-slate-800">បញ្ជាការដ្ឋាននគរបាល {{ activeProvince.nameKh }}</h4>
+                <p class="text-lg font-mono font-black text-[#0D47A1]">{{ activeProvince.police }}</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a
+                  :href="'tel:' + activeProvince.police"
+                  class="flex-1 py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <PhoneCall class="w-3.5 h-3.5" />
+                  <span>ហៅបន្ទាន់</span>
+                </a>
+                <button
+                  @click="copyToClipboard(activeProvince.police)"
+                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+                  :title="copiedNumber === activeProvince.police ? 'បានចម្លង!' : 'ចម្លងលេខ'"
+                >
+                  <Check v-if="copiedNumber === activeProvince.police" class="w-3.5 h-3.5 text-emerald-600" />
+                  <Copy v-else class="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. Provincial Hospital Emergency -->
+            <div class="p-4 rounded-xl bg-white border border-rose-100 shadow-xs flex flex-col justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-black uppercase text-rose-700 tracking-wider">ផ្នែកសង្គ្រោះបន្ទាន់មន្ទីរពេទ្យ</span>
+                  <Hospital class="w-4 h-4 text-rose-600" />
+                </div>
+                <h4 class="font-black text-xs text-slate-800 truncate" :title="activeProvince.hospitalName">{{ activeProvince.hospitalName }}</h4>
+                <p class="text-lg font-mono font-black text-rose-600">{{ activeProvince.hospital }}</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a
+                  :href="'tel:' + activeProvince.hospital"
+                  class="flex-1 py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <PhoneCall class="w-3.5 h-3.5" />
+                  <span>ហៅបន្ទាន់</span>
+                </a>
+                <button
+                  @click="copyToClipboard(activeProvince.hospital)"
+                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+                  :title="copiedNumber === activeProvince.hospital ? 'បានចម្លង!' : 'ចម្លងលេខ'"
+                >
+                  <Check v-if="copiedNumber === activeProvince.hospital" class="w-3.5 h-3.5 text-emerald-600" />
+                  <Copy v-else class="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <!-- 3. Red Cross / Humanitarian Aid -->
+            <div class="p-4 rounded-xl bg-white border border-emerald-100 shadow-xs flex flex-col justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-black uppercase text-emerald-700 tracking-wider">កាកបាទក្រហម / ជំនួយសង្គ្រោះ</span>
+                  <HeartPulse class="w-4 h-4 text-emerald-600" />
+                </div>
+                <h4 class="font-black text-xs text-slate-800">កាកបាទក្រហមកម្ពុជា សាខា{{ activeProvince.nameKh }}</h4>
+                <p class="text-lg font-mono font-black text-emerald-700">{{ activeProvince.redCross }}</p>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <a
+                  :href="'tel:' + activeProvince.redCross"
+                  class="flex-1 py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <PhoneCall class="w-3.5 h-3.5" />
+                  <span>ហៅបន្ទាន់</span>
+                </a>
+                <button
+                  @click="copyToClipboard(activeProvince.redCross)"
+                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+                  :title="copiedNumber === activeProvince.redCross ? 'បានចម្លង!' : 'ចម្លងលេខ'"
+                >
+                  <Check v-if="copiedNumber === activeProvince.redCross" class="w-3.5 h-3.5 text-emerald-600" />
+                  <Copy v-else class="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
