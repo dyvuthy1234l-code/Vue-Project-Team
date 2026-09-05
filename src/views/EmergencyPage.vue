@@ -1399,7 +1399,7 @@ const firstAidProtocols = [
         <!-- Real Map & Stations Grid (Matching HomePage Layout) -->
         <div class="grid gap-0 p-4 lg:grid-cols-[1.2fr_.8fr]">
           <!-- Real Google Map Embed Frame -->
-          <div class="relative min-h-[440px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner border border-slate-200/80">
+          <div class="relative h-[280px] sm:h-[310px] lg:h-[325px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner border border-slate-200/80">
             <iframe
               :key="mapEmbedUrl"
               :src="mapEmbedUrl"
@@ -1452,21 +1452,21 @@ const firstAidProtocols = [
           </div>
 
           <!-- Stations List Panel -->
-          <div class="bg-slate-50/70 p-3.5 lg:ml-4 lg:rounded-2xl space-y-2 flex flex-col justify-between mt-4 lg:mt-0">
-            <div>
+          <div class="bg-slate-50/70 p-3 lg:ml-4 lg:rounded-2xl flex flex-col justify-between h-[280px] sm:h-[310px] lg:h-[325px] mt-3 lg:mt-0">
+            <div class="min-h-0 flex-1 flex flex-col">
               <div class="flex items-center justify-between px-2 py-1 text-[11px] font-black uppercase tracking-wider text-slate-400">
                 <span>{{ currentLanguage === 'kh' ? 'ស្ថានីយសង្គ្រោះបន្ទាន់ផ្ទៀងផ្ទាត់' : 'Verified Emergency Stations' }}</span>
                 <span class="text-blue-600 font-mono font-bold">{{ filteredMapStations.length }} ទីតាំង</span>
               </div>
 
               <!-- List of Station Cards -->
-              <div class="mt-2 space-y-2 max-h-[380px] overflow-y-auto pr-1">
+              <div class="mt-1.5 space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-0">
                 <button
                   v-for="station in filteredMapStations"
                   :key="station.id"
                   type="button"
                   :class="[
-                    'group relative flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-200 cursor-pointer',
+                    'group relative flex w-full items-center gap-2.5 rounded-xl border p-2 text-left transition-all duration-200 cursor-pointer',
                     selectedStation.id === station.id
                       ? 'border-[#0D47A1] bg-white shadow-md ring-2 ring-[#0D47A1]/20'
                       : 'border-slate-200/70 bg-white/80 hover:border-blue-200 hover:bg-white hover:shadow-xs'

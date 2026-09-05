@@ -685,7 +685,7 @@ onUnmounted(() => {
 
         <div class="grid gap-0 p-4 lg:grid-cols-[1.15fr_.85fr]">
           <!-- Map Embed Frame -->
-          <div class="relative min-h-[420px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
+          <div class="relative h-[280px] sm:h-[310px] lg:h-[325px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
             <iframe
               :key="mapEmbedUrl"
               :src="mapEmbedUrl"
@@ -696,10 +696,10 @@ onUnmounted(() => {
             />
 
             <!-- Top Active Location Floating Card -->
-            <div class="absolute left-3 top-3 max-w-[85%] rounded-2xl border border-white/90 bg-white/95 p-3 shadow-xl backdrop-blur dark:border-slate-600/90 dark:bg-slate-800/95 font-khmer">
+            <div class="absolute left-2.5 top-2.5 max-w-[85%] rounded-xl border border-white/90 bg-white/95 p-2 sm:p-2.5 shadow-lg backdrop-blur dark:border-slate-600/90 dark:bg-slate-800/95 font-khmer">
               <div class="flex items-start gap-2.5">
-                <span :class="['flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ring-1', getNearbyIconBg(activeNearbyTab)]">
-                  <component :is="getNearbyIcon(activeNearbyTab)" class="h-4 w-4" />
+                <span :class="['flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ring-1', getNearbyIconBg(activeNearbyTab)]">
+                  <component :is="getNearbyIcon(activeNearbyTab)" class="h-3.5 w-3.5" />
                 </span>
                 <div class="min-w-0">
                   <div class="flex items-center gap-1.5">
@@ -718,19 +718,19 @@ onUnmounted(() => {
             </div>
 
             <!-- Bottom Floating Action Bar -->
-            <div class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 font-khmer">
+            <div class="absolute bottom-2.5 left-2.5 right-2.5 flex flex-wrap items-center justify-between gap-1.5 font-khmer">
               <a
                 :href="mapDirectionsUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-4 py-2.5 text-xs font-black text-white shadow-lg transition duration-150 active:scale-98"
+                class="inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-3 py-1.5 sm:px-3.5 sm:py-2 text-[11px] sm:text-xs font-black text-white shadow-md transition duration-150 active:scale-98"
               >
                 <MapPin class="h-4 w-4" />
                 <span>{{ currentLanguage === 'kh' ? 'ទទួលទិសដៅលើ Google Maps' : 'Get Directions (Google Maps)' }}</span>
               </a>
 
               <div class="flex items-center gap-2">
-                <span class="hidden sm:inline-block rounded-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur px-3 py-2 text-[11px] font-bold text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 shadow-sm">
+                <span class="hidden sm:inline-block rounded-lg sm:rounded-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur px-2.5 py-1.5 text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 shadow-xs">
                   GPS: {{ activeMapPoint.coordinates.lat.toFixed(4) }}, {{ activeMapPoint.coordinates.lng.toFixed(4) }}
                 </span>
               </div>
@@ -738,21 +738,21 @@ onUnmounted(() => {
           </div>
 
           <!-- Recommended Places List -->
-          <div class="bg-slate-50/70 p-3.5 dark:bg-slate-900/40 lg:ml-4 lg:rounded-2xl space-y-2 flex flex-col justify-between">
-            <div>
+          <div class="bg-slate-50/70 p-3 dark:bg-slate-900/40 lg:ml-4 lg:rounded-2xl flex flex-col justify-between h-[280px] sm:h-[310px] lg:h-[325px] mt-3 lg:mt-0">
+            <div class="min-h-0 flex-1 flex flex-col">
               <div class="flex items-center justify-between px-2 py-1 text-[11px] font-black uppercase tracking-wider text-slate-400 font-khmer">
                 <span>{{ currentLanguage === 'kh' ? 'ទីតាំងផ្ទៀងផ្ទាត់ក្នុងរាជធានី-ខេត្ត' : 'Verified Facilities Near You' }}</span>
                 <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ nearbyEntries.length }} ទីតាំង</span>
               </div>
 
               <!-- List Cards -->
-              <div class="mt-2 space-y-2">
+              <div class="mt-1.5 space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-0">
                 <button
                   v-for="entry in nearbyEntries"
                   :key="entry.id"
                   type="button"
                   :class="[
-                    'group relative flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-200 cursor-pointer',
+                    'group relative flex w-full items-center gap-2.5 rounded-xl border p-2 text-left transition-all duration-200 cursor-pointer',
                     selectedEntryId === entry.id
                       ? 'border-[#0D47A1] bg-white shadow-md ring-2 ring-[#0D47A1]/20 dark:bg-slate-800 dark:border-blue-400'
                       : 'border-slate-200/70 bg-white/70 hover:border-blue-200 hover:bg-white hover:shadow-xs dark:border-slate-700/60 dark:bg-slate-800/60 dark:hover:bg-slate-800'
@@ -767,7 +767,7 @@ onUnmounted(() => {
 
                   <!-- Icon Badge -->
                   <div :class="['flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-xs ring-1 transition-transform group-hover:scale-105', getNearbyIconBg(activeNearbyTab)]">
-                    <component :is="getNearbyIcon(activeNearbyTab)" class="h-5 w-5" />
+                    <component :is="getNearbyIcon(activeNearbyTab)" class="h-4 w-4" />
                   </div>
 
                   <!-- Details -->
