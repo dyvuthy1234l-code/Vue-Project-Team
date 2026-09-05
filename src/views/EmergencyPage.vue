@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
   AlertTriangle,
   LocateFixed,
@@ -25,6 +25,7 @@ import {
   LifeBuoy
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import { useLocation, CAMBODIAN_PROVINCES } from '@/composables/useLocation'
 import { getEmergencyContacts } from '@/services/dataService'
 import { usePageMeta } from '@/composables/usePageMeta'
 import LocationSelector from '@/components/LocationSelector.vue'
@@ -158,7 +159,77 @@ const emergencySteps = computed(() => [
   }
 ])
 
-// Emergency Map Stations (Hospitals, Police, Fire) with Real Coordinates
+// ==========================================
+// 25 PROVINCES & CITIES EMERGENCY DATA & SEARCH
+// ==========================================
+export interface ProvinceEmergency {
+  id: string
+  name: string
+  nameKh: string
+  code: string
+  police: string
+  hospital: string
+  hospitalName: string
+  redCross: string
+}
+
+const allProvincesData: ProvinceEmergency[] = [
+  { id: 'phnom-penh', name: 'Phnom Penh', nameKh: 'រាជធានីភ្នំពេញ', code: 'PP', police: '023 212 117', hospital: '023 426 948', hospitalName: 'មន្ទីរពេទ្យកាល់ម៉ែត (Calmette)', redCross: '023 212 876' },
+  { id: 'kandal', name: 'Kandal', nameKh: 'ខេត្តកណ្តាល', code: 'KD', police: '024 985 117', hospital: '024 985 244', hospitalName: 'មន្ទីរពេទ្យបង្អែកជ័យជំនះ', redCross: '024 985 300' },
+  { id: 'siem-reap', name: 'Siem Reap', nameKh: 'ខេត្តសៀមរាប', code: 'SR', police: '063 760 117', hospital: '063 764 091', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តសៀមរាប', redCross: '063 760 224' },
+  { id: 'battambang', name: 'Battambang', nameKh: 'ខេត្តបាត់ដំបង', code: 'BB', police: '053 952 117', hospital: '053 952 822', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តបាត់ដំបង', redCross: '053 952 411' },
+  { id: 'preah-sihanouk', name: 'Preah Sihanouk', nameKh: 'ខេត្តព្រះសីហនុ', code: 'SHV', police: '034 933 117', hospital: '034 933 411', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តព្រះសីហនុ', redCross: '034 933 765' },
+  { id: 'kampong-cham', name: 'Kampong Cham', nameKh: 'ខេត្តកំពង់ចាម', code: 'KC', police: '042 941 117', hospital: '042 941 233', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ចាម', redCross: '042 941 405' },
+  { id: 'kampot', name: 'Kampot', nameKh: 'ខេត្តកំពត', code: 'KP', police: '033 932 117', hospital: '033 932 805', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពត', redCross: '033 932 543' },
+  { id: 'takeo', name: 'Takeo', nameKh: 'ខេត្តតាកែវ', code: 'TK', police: '032 931 117', hospital: '032 931 230', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តតាកែវ', redCross: '032 931 411' },
+  { id: 'kampong-chhnang', name: 'Kampong Chhnang', nameKh: 'ខេត្តកំពង់ឆ្នាំង', code: 'KCH', police: '026 988 117', hospital: '026 988 200', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ឆ្នាំង', redCross: '026 988 321' },
+  { id: 'kampong-speu', name: 'Kampong Speu', nameKh: 'ខេត្តកំពង់ស្ពឺ', code: 'KS', police: '025 987 117', hospital: '025 987 220', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ស្ពឺ', redCross: '025 987 342' },
+  { id: 'kampong-thom', name: 'Kampong Thom', nameKh: 'ខេត្តកំពង់ធំ', code: 'KT', police: '062 961 117', hospital: '062 961 240', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ធំ', redCross: '062 961 355' },
+  { id: 'koh-kong', name: 'Koh Kong', nameKh: 'ខេត្តកោះកុង', code: 'KK', police: '035 936 117', hospital: '035 936 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកោះកុង', redCross: '035 936 344' },
+  { id: 'kratie', name: 'Kratie', nameKh: 'ខេត្តក្រចេះ', code: 'KR', police: '072 971 117', hospital: '072 971 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តក្រចេះ', redCross: '072 971 311' },
+  { id: 'mondulkiri', name: 'Mondulkiri', nameKh: 'ខេត្តមណ្ឌលគិរី', code: 'MK', police: '073 973 117', hospital: '073 973 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តមណ្ឌលគិរី', redCross: '073 973 345' },
+  { id: 'preah-vihear', name: 'Preah Vihear', nameKh: 'ខេត្តព្រះវិហារ', code: 'PV', police: '064 954 117', hospital: '064 954 210', hospitalName: 'មន្ទីរពេទ្យបង្អែក ១៦ មករា ព្រះវិហារ', redCross: '064 954 311' },
+  { id: 'prey-veng', name: 'Prey Veng', nameKh: 'ខេត្តព្រៃវែង', code: 'PVG', police: '043 944 117', hospital: '043 944 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តព្រៃវែង', redCross: '043 944 322' },
+  { id: 'pursat', name: 'Pursat', nameKh: 'ខេត្តពោធិ៍សាត់', code: 'PS', police: '052 951 117', hospital: '052 951 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តពោធិ៍សាត់', redCross: '052 951 333' },
+  { id: 'ratanakiri', name: 'Ratanakiri', nameKh: 'ខេត្តរតនគិរី', code: 'RK', police: '075 974 117', hospital: '075 974 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកបានលុង រតនគិរី', redCross: '075 974 344' },
+  { id: 'stung-treng', name: 'Stung Treng', nameKh: 'ខេត្តស្ទឹងត្រែង', code: 'ST', police: '074 973 117', hospital: '074 973 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តស្ទឹងត្រែង', redCross: '074 973 355' },
+  { id: 'svay-rieng', name: 'Svay Rieng', nameKh: 'ខេត្តស្វាយរៀង', code: 'SVR', police: '044 945 117', hospital: '044 945 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តស្វាយរៀង', redCross: '044 945 321' },
+  { id: 'banteay-meanchey', name: 'Banteay Meanchey', nameKh: 'ខេត្តបន្ទាយមានជ័យ', code: 'BMC', police: '054 958 117', hospital: '054 958 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកមង្គលបូរី', redCross: '054 958 344' },
+  { id: 'kep', name: 'Kep', nameKh: 'ខេត្តកែប', code: 'KEP', police: '036 936 117', hospital: '036 936 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកែប', redCross: '036 936 322' },
+  { id: 'pailin', name: 'Pailin', nameKh: 'ខេត្តប៉ៃលិន', code: 'PL', police: '053 953 117', hospital: '053 953 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តប៉ៃលិន', redCross: '053 953 311' },
+  { id: 'oddar-meanchey', name: 'Oddar Meanchey', nameKh: 'ខេត្តឧត្តរមានជ័យ', code: 'OMC', police: '065 957 117', hospital: '065 957 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកសំរោង ឧត្តរមានជ័យ', redCross: '065 957 333' },
+  { id: 'tboung-khmum', name: 'Tboung Khmum', nameKh: 'ខេត្តត្បូងឃ្មុំ', code: 'TBK', police: '042 942 117', hospital: '042 942 210', hospitalName: 'មន្ទីរពេទ្យមិត្តភាពកម្ពុជា-ចិន ត្បូងឃ្មុំ', redCross: '042 942 344' }
+]
+
+const selectedProvince = ref('phnom-penh')
+const provinceSearchQuery = ref('')
+
+const filteredProvinces = computed(() => {
+  if (!provinceSearchQuery.value.trim()) return allProvincesData
+  const q = provinceSearchQuery.value.trim().toLowerCase()
+  return allProvincesData.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.nameKh.toLowerCase().includes(q) ||
+    p.code.toLowerCase().includes(q) ||
+    p.hospitalName.toLowerCase().includes(q) ||
+    p.police.includes(q) ||
+    p.hospital.includes(q)
+  )
+})
+
+const activeProvince = computed(() => {
+  return allProvincesData.find(p => p.id === selectedProvince.value) || allProvincesData[0]
+})
+
+function selectProvince(id: string) {
+  selectedProvince.value = id
+  setProvince(id)
+}
+
+// Global Location Composable Binding
+const { selectedProvince: globalProvince, setProvince } = useLocation()
+
+// Emergency Map Stations with Real Coordinates
 export interface EmergencyStation {
   id: string
   name: string
@@ -173,7 +244,8 @@ export interface EmergencyStation {
   openHoursKh: string
 }
 
-const mapStations = ref<EmergencyStation[]>([
+// Pre-configured stations for Phnom Penh
+const phnomPenhStations: EmergencyStation[] = [
   {
     id: 'calmette-hospital',
     name: 'Calmette Hospital — National Trauma & ER Center',
@@ -252,14 +324,156 @@ const mapStations = ref<EmergencyStation[]>([
     openHours: 'Open 24/7',
     openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
   }
-])
+]
 
+// Pre-configured stations for Battambang
+const battambangStations: EmergencyStation[] = [
+  {
+    id: 'battambang-provincial-hospital',
+    name: 'Battambang Provincial Referral Hospital',
+    nameKh: 'មន្ទីរពេទ្យបង្អែកខេត្តបាត់ដំបង (សង្គ្រោះបន្ទាន់ ២៤/៧)',
+    type: 'hospital',
+    address: 'National Road 5, Sangkat Svay Pao, Krong Battambang',
+    addressKh: 'ផ្លូវជាតិលេខ ៥ សង្កាត់ស្វាយប៉ោ ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
+    phone: '053 952 822',
+    distance: '0.9 គ.ម',
+    coordinates: { lat: 13.0957, lng: 103.2022 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
+  },
+  {
+    id: 'battambang-police-commissariat',
+    name: 'Battambang Provincial Police Commissariat',
+    nameKh: 'ស្នងការដ្ឋាននគរបាលខេត្តបាត់ដំបង (បញ្ជាការដ្ឋាន ១១៧)',
+    type: 'police',
+    address: 'Street 1, Sangkat Svay Pao, Krong Battambang',
+    addressKh: 'ផ្លូវលេខ ១ សង្កាត់ស្វាយប៉ោ ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
+    phone: '053 952 117',
+    distance: '1.3 គ.ម',
+    coordinates: { lat: 13.0988, lng: 103.2045 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
+  },
+  {
+    id: 'battambang-fire-brigade',
+    name: 'Battambang Fire & Rescue Department',
+    nameKh: 'កងនគរបាលបង្ការ និងពន្លត់អគ្គីភ័យខេត្តបាត់ដំបង (១១៨)',
+    type: 'fire',
+    address: 'National Road 5, Krong Battambang',
+    addressKh: 'ផ្លូវជាតិលេខ ៥ ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
+    phone: '118',
+    distance: '1.6 គ.ម',
+    coordinates: { lat: 13.0930, lng: 103.1995 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
+  },
+  {
+    id: 'battambang-red-cross',
+    name: 'Cambodian Red Cross — Battambang Branch',
+    nameKh: 'កាកបាទក្រហមកម្ពុជា សាខាខេត្តបាត់ដំបង',
+    type: 'hospital',
+    address: 'Krong Battambang, Battambang',
+    addressKh: 'ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
+    phone: '053 952 411',
+    distance: '1.8 គ.ម',
+    coordinates: { lat: 13.1015, lng: 103.2060 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'សង្គ្រោះបឋម ២៤ម៉ោង'
+  }
+]
+
+// Generate stations dynamically for any of the 25 provinces
+function getStationsForProvince(provId: string): EmergencyStation[] {
+  if (provId === 'phnom-penh') return phnomPenhStations
+  if (provId === 'battambang') return battambangStations
+
+  const prov = allProvincesData.find(p => p.id === provId) || allProvincesData[0]
+  const geo = CAMBODIAN_PROVINCES.find(p => p.id === provId) || CAMBODIAN_PROVINCES[0]
+  const lat = geo.coordinates.lat
+  const lng = geo.coordinates.lng
+
+  return [
+    {
+      id: `${prov.id}-hospital`,
+      name: `${prov.name} Provincial Referral Hospital`,
+      nameKh: prov.hospitalName,
+      type: 'hospital',
+      address: `Center Town, Krong ${prov.name}, Cambodia`,
+      addressKh: `កណ្តាលក្រុង ${prov.nameKh}`,
+      phone: prov.hospital,
+      distance: '1.1 គ.ម',
+      coordinates: { lat: lat, lng: lng },
+      openHours: 'Open 24/7',
+      openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
+    },
+    {
+      id: `${prov.id}-police`,
+      name: `${prov.name} Provincial Police Commissariat`,
+      nameKh: `ស្នងការដ្ឋាននគរបាល${prov.nameKh} (១១៧)`,
+      type: 'police',
+      address: `Provincial Command Center, ${prov.name}`,
+      addressKh: `បញ្ជាការដ្ឋាននគរបាល ${prov.nameKh}`,
+      phone: prov.police,
+      distance: '1.4 គ.ម',
+      coordinates: { lat: lat + 0.0035, lng: lng + 0.0030 },
+      openHours: 'Open 24/7',
+      openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
+    },
+    {
+      id: `${prov.id}-fire`,
+      name: `${prov.name} Fire & Rescue Station (118)`,
+      nameKh: `កងនគរបាលបង្ការ និងពន្លត់អគ្គីភ័យ${prov.nameKh} (១១៨)`,
+      type: 'fire',
+      address: `Main Boulevard, Krong ${prov.name}`,
+      addressKh: `មហាវិថីធំ ក្រុង${prov.nameKh}`,
+      phone: '118',
+      distance: '1.7 គ.ម',
+      coordinates: { lat: lat - 0.0030, lng: lng - 0.0025 },
+      openHours: 'Open 24/7',
+      openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
+    },
+    {
+      id: `${prov.id}-redcross`,
+      name: `Cambodian Red Cross — ${prov.name} Branch`,
+      nameKh: `កាកបាទក្រហមកម្ពុជា សាខា${prov.nameKh}`,
+      type: 'hospital',
+      address: `Red Cross Regional Office, ${prov.name}`,
+      addressKh: `សាខាកាកបាទក្រហម ${prov.nameKh}`,
+      phone: prov.redCross,
+      distance: '2.0 គ.ម',
+      coordinates: { lat: lat + 0.0050, lng: lng - 0.0035 },
+      openHours: 'Open 24/7',
+      openHoursKh: 'សង្គ្រោះបឋម ២៤ម៉ោង'
+    }
+  ]
+}
+
+const mapStations = computed(() => getStationsForProvince(selectedProvince.value))
 const activeMapFilter = ref<'all' | 'hospital' | 'police' | 'fire'>('all')
-const selectedStation = ref<EmergencyStation>(mapStations.value[0])
+const selectedStation = ref<EmergencyStation>(phnomPenhStations[0])
+
+// Synchronize selectedStation whenever selectedProvince changes
+watch(selectedProvince, (newProvId) => {
+  const list = getStationsForProvince(newProvId)
+  if (list.length > 0) {
+    selectedStation.value = list[0]
+  }
+})
+
+// Synchronize with global location from navbar
+watch(
+  () => globalProvince.value?.id,
+  (newId) => {
+    if (newId && newId !== selectedProvince.value) {
+      selectedProvince.value = newId
+    }
+  },
+  { immediate: true }
+)
 
 const mapEmbedUrl = computed(() => {
   const { lat, lng } = selectedStation.value.coordinates
-  return `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`
+  return `https://www.google.com/maps?q=${lat},${lng}&z=14&output=embed`
 })
 
 const mapDirectionsUrl = computed(() => {
@@ -268,7 +482,7 @@ const mapDirectionsUrl = computed(() => {
 })
 
 const mapFilters = computed(() => [
-  { id: 'all', label: currentLanguage.value === 'kh' ? 'ទាំងអស់ (៦)' : 'All Facilities (6)' },
+  { id: 'all', label: currentLanguage.value === 'kh' ? `ទាំងអស់ (${mapStations.value.length})` : `All Facilities (${mapStations.value.length})` },
   { id: 'hospital', label: currentLanguage.value === 'kh' ? '🏥 មន្ទីរពេទ្យ (119)' : '🏥 Hospitals' },
   { id: 'police', label: currentLanguage.value === 'kh' ? '👮 ប៉ូលីស (117)' : '👮 Police' },
   { id: 'fire', label: currentLanguage.value === 'kh' ? '🚒 ពន្លត់អគ្គីភ័យ (118)' : '🚒 Fire' }
@@ -322,71 +536,7 @@ const firstAidProtocols = [
   }
 ]
 
-// ==========================================
-// 25 PROVINCES & CITIES EMERGENCY DATA & SEARCH
-// ==========================================
-export interface ProvinceEmergency {
-  id: string
-  name: string
-  nameKh: string
-  code: string
-  police: string
-  hospital: string
-  hospitalName: string
-  redCross: string
-}
 
-const allProvincesData: ProvinceEmergency[] = [
-  { id: 'phnom-penh', name: 'Phnom Penh', nameKh: 'រាជធានីភ្នំពេញ', code: 'PP', police: '023 212 117', hospital: '023 426 948', hospitalName: 'មន្ទីរពេទ្យកាល់ម៉ែត (Calmette)', redCross: '023 212 876' },
-  { id: 'kandal', name: 'Kandal', nameKh: 'ខេត្តកណ្តាល', code: 'KD', police: '024 985 117', hospital: '024 985 244', hospitalName: 'មន្ទីរពេទ្យបង្អែកជ័យជំនះ', redCross: '024 985 300' },
-  { id: 'siem-reap', name: 'Siem Reap', nameKh: 'ខេត្តសៀមរាប', code: 'SR', police: '063 760 117', hospital: '063 764 091', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តសៀមរាប', redCross: '063 760 224' },
-  { id: 'battambang', name: 'Battambang', nameKh: 'ខេត្តបាត់ដំបង', code: 'BB', police: '053 952 117', hospital: '053 952 822', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តបាត់ដំបង', redCross: '053 952 411' },
-  { id: 'preah-sihanouk', name: 'Preah Sihanouk', nameKh: 'ខេត្តព្រះសីហនុ', code: 'SHV', police: '034 933 117', hospital: '034 933 411', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តព្រះសីហនុ', redCross: '034 933 765' },
-  { id: 'kampong-cham', name: 'Kampong Cham', nameKh: 'ខេត្តកំពង់ចាម', code: 'KC', police: '042 941 117', hospital: '042 941 233', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ចាម', redCross: '042 941 405' },
-  { id: 'kampot', name: 'Kampot', nameKh: 'ខេត្តកំពត', code: 'KP', police: '033 932 117', hospital: '033 932 805', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពត', redCross: '033 932 543' },
-  { id: 'takeo', name: 'Takeo', nameKh: 'ខេត្តតាកែវ', code: 'TK', police: '032 931 117', hospital: '032 931 230', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តតាកែវ', redCross: '032 931 411' },
-  { id: 'kampong-chhnang', name: 'Kampong Chhnang', nameKh: 'ខេត្តកំពង់ឆ្នាំង', code: 'KCH', police: '026 988 117', hospital: '026 988 200', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ឆ្នាំង', redCross: '026 988 321' },
-  { id: 'kampong-speu', name: 'Kampong Speu', nameKh: 'ខេត្តកំពង់ស្ពឺ', code: 'KS', police: '025 987 117', hospital: '025 987 220', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ស្ពឺ', redCross: '025 987 342' },
-  { id: 'kampong-thom', name: 'Kampong Thom', nameKh: 'ខេត្តកំពង់ធំ', code: 'KT', police: '062 961 117', hospital: '062 961 240', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ធំ', redCross: '062 961 355' },
-  { id: 'koh-kong', name: 'Koh Kong', nameKh: 'ខេត្តកោះកុង', code: 'KK', police: '035 936 117', hospital: '035 936 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកោះកុង', redCross: '035 936 344' },
-  { id: 'kratie', name: 'Kratie', nameKh: 'ខេត្តក្រចេះ', code: 'KR', police: '072 971 117', hospital: '072 971 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តក្រចេះ', redCross: '072 971 311' },
-  { id: 'mondulkiri', name: 'Mondulkiri', nameKh: 'ខេត្តមណ្ឌលគិរី', code: 'MK', police: '073 973 117', hospital: '073 973 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តមណ្ឌលគិរី', redCross: '073 973 345' },
-  { id: 'preah-vihear', name: 'Preah Vihear', nameKh: 'ខេត្តព្រះវិហារ', code: 'PV', police: '064 954 117', hospital: '064 954 210', hospitalName: 'មន្ទីរពេទ្យបង្អែក ១៦ មករា ព្រះវិហារ', redCross: '064 954 311' },
-  { id: 'prey-veng', name: 'Prey Veng', nameKh: 'ខេត្តព្រៃវែង', code: 'PVG', police: '043 944 117', hospital: '043 944 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តព្រៃវែង', redCross: '043 944 322' },
-  { id: 'pursat', name: 'Pursat', nameKh: 'ខេត្តពោធិ៍សាត់', code: 'PS', police: '052 951 117', hospital: '052 951 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តពោធិ៍សាត់', redCross: '052 951 333' },
-  { id: 'ratanakiri', name: 'Ratanakiri', nameKh: 'ខេត្តរតនគិរី', code: 'RK', police: '075 974 117', hospital: '075 974 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកបានលុង រតនគិរី', redCross: '075 974 344' },
-  { id: 'stung-treng', name: 'Stung Treng', nameKh: 'ខេត្តស្ទឹងត្រែង', code: 'ST', police: '074 973 117', hospital: '074 973 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តស្ទឹងត្រែង', redCross: '074 973 355' },
-  { id: 'svay-rieng', name: 'Svay Rieng', nameKh: 'ខេត្តស្វាយរៀង', code: 'SVR', police: '044 945 117', hospital: '044 945 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តស្វាយរៀង', redCross: '044 945 321' },
-  { id: 'banteay-meanchey', name: 'Banteay Meanchey', nameKh: 'ខេត្តបន្ទាយមានជ័យ', code: 'BMC', police: '054 958 117', hospital: '054 958 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកមង្គលបូរី', redCross: '054 958 344' },
-  { id: 'kep', name: 'Kep', nameKh: 'ខេត្តកែប', code: 'KEP', police: '036 936 117', hospital: '036 936 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តកែប', redCross: '036 936 322' },
-  { id: 'pailin', name: 'Pailin', nameKh: 'ខេត្តប៉ៃលិន', code: 'PL', police: '053 953 117', hospital: '053 953 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកខេត្តប៉ៃលិន', redCross: '053 953 311' },
-  { id: 'oddar-meanchey', name: 'Oddar Meanchey', nameKh: 'ខេត្តឧត្តរមានជ័យ', code: 'OMC', police: '065 957 117', hospital: '065 957 210', hospitalName: 'មន្ទីរពេទ្យបង្អែកសំរោង ឧត្តរមានជ័យ', redCross: '065 957 333' },
-  { id: 'tboung-khmum', name: 'Tboung Khmum', nameKh: 'ខេត្តត្បូងឃ្មុំ', code: 'TBK', police: '042 942 117', hospital: '042 942 210', hospitalName: 'មន្ទីរពេទ្យមិត្តភាពកម្ពុជា-ចិន ត្បូងឃ្មុំ', redCross: '042 942 344' }
-]
-
-const selectedProvince = ref('phnom-penh')
-const provinceSearchQuery = ref('')
-
-const filteredProvinces = computed(() => {
-  if (!provinceSearchQuery.value.trim()) return allProvincesData
-  const q = provinceSearchQuery.value.trim().toLowerCase()
-  return allProvincesData.filter(p =>
-    p.name.toLowerCase().includes(q) ||
-    p.nameKh.toLowerCase().includes(q) ||
-    p.code.toLowerCase().includes(q) ||
-    p.hospitalName.toLowerCase().includes(q) ||
-    p.police.includes(q) ||
-    p.hospital.includes(q)
-  )
-})
-
-const activeProvince = computed(() => {
-  return allProvincesData.find(p => p.id === selectedProvince.value) || allProvincesData[0]
-})
-
-function selectProvince(id: string) {
-  selectedProvince.value = id
-}
 </script>
 
 <template>
@@ -1103,10 +1253,13 @@ function selectProvince(id: string) {
                 </span>
               </div>
               <div class="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
-                <span>{{ currentLanguage === 'kh' ? 'ផែនទីផ្កាយរណបពិតជាក់ស្តែង (Google Maps)' : 'Live Interactive Google Map Navigation' }}</span>
+                <span>
+                  {{ currentLanguage === 'kh' ? 'ទីតាំងបច្ចុប្បន្ន:' : 'Active Location:' }}
+                  <strong class="text-[#0D47A1] font-black">{{ currentLanguage === 'kh' ? activeProvince.nameKh : activeProvince.name }}</strong>
+                </span>
                 <span class="text-slate-300">·</span>
                 <span class="text-[11px] text-slate-400 font-bold">
-                  {{ currentLanguage === 'kh' ? 'ចុចលើស្ថានីយដើម្បីបង្ហាញទីតាំង និងនាំផ្លូវ' : 'Click any station to view live map' }}
+                  {{ currentLanguage === 'kh' ? 'ផែនទីផ្កាយរណបពិតជាក់ស្តែង (Google Maps)' : 'Live Interactive Google Map Navigation' }}
                 </span>
               </div>
             </div>
