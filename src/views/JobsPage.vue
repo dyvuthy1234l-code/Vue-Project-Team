@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import {
   MapPin,
-  FileText,
   Clock,
   Bookmark,
   BookmarkCheck,
@@ -547,37 +546,6 @@ function submitPostAd() {
 <template>
   <div class="bongthom-jobs-portal min-h-screen pb-20 text-slate-800 dark:text-white font-khmer bg-[#F2F4F7] dark:bg-slate-950">
     
-    <!-- ============================================================ -->
-    <!-- 1. BONGTHOM TOP CV REGISTRATION BANNER (EXACT SCREENSHOT TOP) -->
-    <!-- ============================================================ -->
-    <div class="w-full bg-gradient-to-r from-[#003366] via-[#0D47A1] to-[#1565C0] text-white shadow-xs">
-      <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-            <FileText class="w-5 h-5 text-amber-300" />
-          </div>
-          <div>
-            <p class="text-xs sm:text-sm font-black tracking-wide text-white">
-              Register your CV with <span class="text-amber-300">BongThom.com</span> now!! Connect preparation to opportunity
-            </p>
-            <p class="text-[11px] text-blue-200 font-medium">
-              CV Registration Gateway — ស្វែងរកឱកាសការងារកាន់តែលឿន និងទូលំទូលាយ
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button
-            @click="isPostAdModalOpen = true"
-            type="button"
-            class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-black shadow-md transition-all cursor-pointer shrink-0"
-          >
-            {{ currentLanguage === 'kh' ? 'ចុះផ្សាយការងារ / Register Now' : 'Register CV / Post Ad' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Main Container -->
     <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 pt-4 space-y-4">
       

@@ -4,7 +4,7 @@ import { en } from '@/locales/en'
 import { kh } from '@/locales/kh'
 
 const currentLanguage = ref<Language>(
-  (localStorage.getItem('camlife-language') as Language) || 'en'
+  (localStorage.getItem('camlife-language') as Language) || 'kh'
 )
 
 const translations = computed(() => {

@@ -322,23 +322,6 @@ function submitApplication() {
             </div>
           </div>
 
-          <!-- Card 4: Employer CV Registration Banner -->
-          <div class="bg-gradient-to-r from-[#003366] to-[#0D47A1] rounded-lg p-3.5 text-white text-center space-y-2 shadow-xs">
-            <p class="text-[11px] font-black leading-snug">
-              Connect preparation to opportunity
-            </p>
-            <p class="text-[10px] text-blue-200">
-              YOU EMPLOYER — Register your CV with BongThom.com now!
-            </p>
-            <button
-              @click="openApplyModal"
-              type="button"
-              class="w-full py-1.5 rounded-md bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-black cursor-pointer shadow-xs transition-colors uppercase tracking-wide"
-            >
-              Register / Apply Now
-            </button>
-          </div>
-
         </aside>
 
         <!-- ========================================================== -->

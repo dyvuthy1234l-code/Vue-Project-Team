@@ -152,7 +152,7 @@ function getIconForType(type: string) {
               v-model="query"
               type="text"
               class="w-full bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 text-sm sm:text-base font-bold outline-none font-khmer"
-              :placeholder="currentLanguage === 'kh' ? 'តើអ្នកកំពុងស្វែងរកអ្វី? (ឧ. ធ្វើប័ណ្ណបើកបរ, បាត់អត្តសញ្ញាណប័ណ្ណ, ពេទ្យ...)' : 'What do you need? (e.g. driving license, passport, 119 emergency, jobs...)'"
+              :placeholder="currentLanguage === 'kh' ? 'ឧ. ធ្វើប័ណ្ណបើកបរ, បាត់អត្តសញ្ញាណប័ណ្ណ, ពេទ្យ...' : 'e.g. driving license, passport, 119 emergency, jobs...'"
             />
           </div>
 
