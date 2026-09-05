@@ -510,11 +510,32 @@ onUnmounted(() => {
                   <div class="p-2 border-b border-slate-100 dark:border-slate-700 mb-1">
                     <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name }}</p>
                     <p class="text-[11px] text-slate-400 truncate">{{ currentUser.email }}</p>
-                    <span class="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 dark:bg-blue-900/40 text-[#0D47A1] dark:text-blue-300">
-                      {{ currentUser.role || 'Citizen Member' }}
+                    <span
+                      :class="[
+                        'inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold',
+                        currentUser.role === 'Administrator' || currentUser.role === 'Admin'
+                          ? 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800'
+                          : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800'
+                      ]"
+                    >
+                      <ShieldCheck v-if="currentUser.role === 'Administrator' || currentUser.role === 'Admin'" class="w-3 h-3 text-purple-600" />
+                      <span>{{ currentUser.role || 'Citizen Member' }}</span>
                     </span>
                   </div>
 
+                  <!-- Saved Jobs Link -->
+                  <router-link
+                    to="/saved-jobs"
+                    @click="isProfileOpen = false"
+                    class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors font-khmer"
+                  >
+                    <span class="flex items-center gap-2">
+                      <Briefcase class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      <span>{{ currentLanguage === 'kh' ? 'ការងារដែលបានរក្សាទុក' : 'Saved Jobs' }}</span>
+                    </span>
+                  </router-link>
+
+                  <!-- Saved Services Link -->
                   <router-link
                     to="/saved-services"
                     @click="isProfileOpen = false"
@@ -529,12 +550,14 @@ onUnmounted(() => {
                     </span>
                   </router-link>
 
+                  <!-- Admin Dashboard Link (Only visible to Administrators) -->
                   <router-link
+                    v-if="currentUser.role === 'Administrator' || currentUser.role === 'Admin'"
                     to="/admin"
                     @click="isProfileOpen = false"
                     class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors font-khmer"
                   >
-                    <LayoutDashboard class="w-4 h-4" />
+                    <LayoutDashboard class="w-4 h-4 text-purple-600" />
                     <span>{{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងទិន្នន័យ (Admin)' : 'Admin Dashboard' }}</span>
                   </router-link>
 
@@ -780,23 +803,46 @@ onUnmounted(() => {
 
         <!-- Drawer Footer: Auth -->
         <div class="p-4 border-t border-slate-100 dark:border-slate-700/80 space-y-3 bg-slate-50/50 dark:bg-slate-900/40 font-khmer">
-          <div v-if="currentUser" class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div class="w-8 h-8 rounded-lg bg-[#0D47A1] text-white flex items-center justify-center font-bold text-xs shrink-0">
-                {{ currentUser.name.charAt(0).toUpperCase() }}
+          <div v-if="currentUser" class="space-y-2">
+            <div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-[#0D47A1] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  {{ currentUser.name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="min-w-0">
+                  <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name }}</p>
+                  <p class="text-[10px] text-slate-400 truncate">{{ currentUser.email }}</p>
+                  <span
+                    :class="[
+                      'inline-flex items-center gap-1 mt-0.5 px-2 py-0.2 rounded-full text-[9px] font-extrabold',
+                      currentUser.role === 'Administrator' || currentUser.role === 'Admin'
+                        ? 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300'
+                        : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300'
+                    ]"
+                  >
+                    <span>{{ currentUser.role || 'Citizen Member' }}</span>
+                  </span>
+                </div>
               </div>
-              <div class="min-w-0">
-                <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name }}</p>
-                <p class="text-[10px] text-slate-400 truncate">{{ currentUser.email }}</p>
-              </div>
+              <button
+                @click="handleLogout"
+                class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors cursor-pointer"
+                title="Sign Out"
+                type="button"
+              >
+                <LogOut class="w-4 h-4" />
+              </button>
             </div>
+
+            <!-- Admin Link in Drawer for Administrators -->
             <button
-              @click="handleLogout"
-              class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
-              title="Sign Out"
+              v-if="currentUser.role === 'Administrator' || currentUser.role === 'Admin'"
+              @click="navigateTo('/admin')"
+              class="w-full py-2 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center justify-center gap-1.5 border border-purple-200 dark:border-purple-800 cursor-pointer"
               type="button"
             >
-              <LogOut class="w-4 h-4" />
+              <LayoutDashboard class="w-3.5 h-3.5" />
+              <span>{{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងទិន្នន័យ (Admin)' : 'Admin Dashboard' }}</span>
             </button>
           </div>
 

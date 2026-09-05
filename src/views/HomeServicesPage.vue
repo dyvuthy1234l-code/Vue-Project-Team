@@ -41,7 +41,21 @@ usePageMeta({
   description: 'ស្វែងរកជាងភ្លើង ជាងទឹក ជាងម៉ាស៊ីនត្រជាក់ និងសេវាសម្អាតដែលបានផ្ទៀងផ្ទាត់ និងមានការធានាគុណភាព'
 })
 
-const allServices = getHomeServices()
+function loadAllServices(): HomeService[] {
+  const base = getHomeServices()
+  try {
+    const saved = localStorage.getItem('camlife_custom_home_services')
+    if (saved) {
+      const custom: HomeService[] = JSON.parse(saved)
+      return [...custom, ...base]
+    }
+  } catch {
+    // fallback
+  }
+  return [...base]
+}
+
+const allServices = loadAllServices()
 const searchQuery = ref('')
 const activeCategory = ref('All')
 const activeLocation = ref('All')

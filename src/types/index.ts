@@ -47,6 +47,7 @@ export interface GovernmentService {
 export interface Job {
   id: string
   title: string
+  titleKh?: string
   company: string
   location: string
   salary: string
@@ -58,6 +59,7 @@ export interface Job {
   image?: string
   logo?: string
   description: string
+  descriptionKh?: string
   requirements: string[]
   benefits: string[]
   applyUrl: string

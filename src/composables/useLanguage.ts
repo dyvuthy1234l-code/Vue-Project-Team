@@ -48,8 +48,8 @@ export function useLanguage() {
   }
 
   // Helper to get localized field from data objects
-  function localized(enStr: string, khStr: string): string {
-    return currentLanguage.value === 'en' ? enStr : khStr
+  function localized(enStr: string, khStr?: string): string {
+    return currentLanguage.value === 'en' ? enStr : (khStr || enStr)
   }
 
   return {
