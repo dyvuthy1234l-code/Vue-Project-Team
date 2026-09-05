@@ -23,12 +23,6 @@ import {
   FileSpreadsheet,
   GraduationCap,
   Briefcase,
-  Rss,
-  MessageCircle,
-  Car,
-  Download,
-  Phone,
-  Copy,
   CheckCircle
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
@@ -118,8 +112,6 @@ const isQuickLinksOpen = ref(true)
 const isCategoryOpen = ref(true)
 const isCompanyLetterOpen = ref(true)
 const isDateFilterOpen = ref(true)
-const isKhonnectOpen = ref(true)
-const isRssOpen = ref(true)
 
 // 25 Cambodian Provinces Popover Dropdown
 const isLocationDropdownOpen = ref(false)
@@ -242,37 +234,6 @@ function matchesCategory(j: Job, catValue: string): boolean {
     return jCat === 'agriculture' || title.includes('agri') || title.includes('farm') || title.includes('cooperative') || desc.includes('crop')
   }
   return jCat === cat
-}
-
-// Khonnect Classified Ads Data
-interface KhonnectAd {
-  id: number
-  title: string
-  location: string
-  price: string
-  year: string
-  sellerPhone: string
-  image: string
-  details: string
-}
-
-const khonnectAds: KhonnectAd[] = [
-  { id: 1, title: 'Mercedes-Benz C200', location: 'Phnom Penh', price: '$28,500', year: '2016', sellerPhone: '012 888 999', image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80', details: 'Full Option, Silver color, Original Paint, Excellent condition.' },
-  { id: 2, title: 'LEXUS RX350', location: 'Phnom Penh', price: '$42,000', year: '2015', sellerPhone: '015 777 555', image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=600&q=80', details: 'White Pearl color, AWD, Laser headlights, Head-up display.' },
-  { id: 3, title: 'NISSAN ALTIMA 2014 (VIP CAR)', location: 'Phnom Penh', price: '$14,800', year: '2014', sellerPhone: '098 123 456', image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80', details: 'Black color, Remote start, Leather seats, Eco fuel saver engine.' },
-  { id: 4, title: 'Porsche Macan GTS', location: 'Phnom Penh', price: '$68,000', year: '2018', sellerPhone: '077 999 111', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80', details: 'Red Sport Chrono package, Sport exhaust system, Panora sunroof.' },
-  { id: 5, title: 'Cadillac Escalade Platinum', location: 'Phnom Penh', price: '$85,000', year: '2017', sellerPhone: '011 222 333', image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80', details: 'V8 Engine, Massage seats, Bose Surround system, Rear entertainment screens.' },
-  { id: 6, title: 'MERCEDES-BENZ C250', location: 'Phnom Penh', price: '$31,500', year: '2017', sellerPhone: '089 555 444', image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=600&q=80', details: 'AMG line bodykit, Burmester sound, Ambient lighting 64 colors.' },
-  { id: 7, title: 'TESLA MODEL 3', location: 'Phnom Penh', price: '$39,900', year: '2021', sellerPhone: '016 444 333', image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=600&q=80', details: 'Long Range Dual Motor AWD, Autopilot enabled, White interior.' },
-  { id: 8, title: 'Mazda BT-50 Thunder', location: 'Phnom Penh', price: '$26,000', year: '2020', sellerPhone: '097 888 777', image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80', details: 'Turbo Diesel 3.2L, 4x4 Off-road suspension, Snorkel & Winch fitted.' }
-]
-
-const isKhonnectModalOpen = ref(false)
-const selectedKhonnectAd = ref<KhonnectAd | null>(null)
-
-function openKhonnectModal(ad: KhonnectAd) {
-  selectedKhonnectAd.value = ad
-  isKhonnectModalOpen.value = true
 }
 
 // BongThom Job ID Generator
@@ -579,48 +540,6 @@ function submitPostAd() {
 
   isPostAdSubmitted.value = true
   scrollToResults()
-}
-
-// RSS Feed Generator & Reader Modal
-const isRssModalOpen = ref(false)
-const isRssCopied = ref(false)
-
-function downloadRssFeed() {
-  const itemsXml = filteredJobs.value.slice(0, 15).map(j => `
-    <item>
-      <title><![CDATA[${j.title} - ${j.company}]]></title>
-      <link>https://camlife.gov.kh/jobs/${j.id}</link>
-      <description><![CDATA[${j.description}]]></description>
-      <category>${j.category}</category>
-      <pubDate>${new Date(j.postedDate).toUTCString()}</pubDate>
-    </item>`).join('')
-
-  const rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
-  <channel>
-    <title>BongThom CamLife Careers RSS Feed</title>
-    <link>https://camlife.gov.kh/jobs</link>
-    <description>Latest Job Opportunities in Cambodia</description>
-    <language>en-us</language>
-    ${itemsXml}
-  </channel>
-</rss>`
-
-  const blob = new Blob([rssXml], { type: 'application/rss+xml' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'camlife-bongthom-jobs.xml'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-}
-
-function copyRssUrl() {
-  navigator.clipboard.writeText('https://camlife.gov.kh/rss/jobs.xml')
-  isRssCopied.value = true
-  setTimeout(() => { isRssCopied.value = false }, 2000)
 }
 </script>
 
@@ -967,93 +886,6 @@ function copyRssUrl() {
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- Card 6: Khonnect Vehicle/Item Listings -->
-          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-            <button
-              @click="isKhonnectOpen = !isKhonnectOpen"
-              type="button"
-              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
-            >
-              <div class="flex items-center gap-1.5">
-                <Car class="w-3.5 h-3.5 text-blue-600" />
-                <span>Khonnect</span>
-              </div>
-              <span class="text-[9px] px-2 py-0.5 rounded-md bg-[#003366] text-white font-bold">Browse Ads</span>
-            </button>
-
-            <div v-if="isKhonnectOpen" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-[10px]">
-              <div
-                v-for="item in khonnectAds"
-                :key="item.id"
-                @click="openKhonnectModal(item)"
-                class="p-2 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-slate-800/40 cursor-pointer transition-colors"
-              >
-                <div class="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs shrink-0">
-                  🚗
-                </div>
-                <div class="min-w-0 flex-1">
-                  <p class="font-bold text-[#0D47A1] dark:text-blue-400 truncate">{{ item.title }}</p>
-                  <div class="flex items-center justify-between text-[9px] text-slate-400">
-                    <span>📍 {{ item.location }}</span>
-                    <span class="font-black text-emerald-600">{{ item.price }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 7: RSS Feeds -->
-          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-            <button
-              @click="isRssOpen = !isRssOpen"
-              type="button"
-              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
-            >
-              <div class="flex items-center gap-1.5">
-                <Rss class="w-3.5 h-3.5 text-amber-500" />
-                <span>RSS Feeds</span>
-              </div>
-              <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isRssOpen }" />
-            </button>
-
-            <div v-if="isRssOpen" class="p-2.5 space-y-2 text-[11px]">
-              <button
-                @click="downloadRssFeed"
-                type="button"
-                class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-bold hover:bg-amber-100 transition-colors cursor-pointer"
-              >
-                <span class="flex items-center gap-1.5">
-                  <Download class="w-3.5 h-3.5 text-amber-600" />
-                  <span>Jobs RSS Feed</span>
-                </span>
-                <span class="text-[9px] text-amber-700 font-black">XML</span>
-              </button>
-
-              <button
-                @click="isRssModalOpen = true"
-                type="button"
-                class="w-full text-left text-slate-500 hover:text-slate-800 font-medium hover:underline text-[10px] px-1"
-              >
-                Download RSS Reader & Feed Guide
-              </button>
-            </div>
-          </div>
-
-          <!-- Card 8: Telegram Channel Join Banner Ad -->
-          <div class="bg-gradient-to-r from-sky-600 to-blue-700 rounded-lg p-3 text-white text-center space-y-2 shadow-md">
-            <div class="flex items-center justify-center gap-2">
-              <MessageCircle class="w-5 h-5 text-white" />
-              <span class="font-black text-xs">Telegram Channel for Job Seekers</span>
-            </div>
-            <a
-              href="https://t.me"
-              target="_blank"
-              class="inline-block px-4 py-1.5 bg-white text-sky-800 font-black text-xs rounded-md shadow-xs hover:bg-slate-100 transition-colors uppercase"
-            >
-              Join us on TELEGRAM
-            </a>
           </div>
 
         </aside>
@@ -1486,106 +1318,5 @@ function copyRssUrl() {
         </div>
       </div>
     </transition>
-
-    <!-- KHONNECT AD MODAL -->
-    <transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition duration-150 ease-in"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="isKhonnectModalOpen && selectedKhonnectAd"
-        class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 font-khmer"
-        @click.self="isKhonnectModalOpen = false"
-      >
-        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-          <button @click="isKhonnectModalOpen = false" class="absolute top-3 right-3 p-1.5 rounded-full bg-slate-900/40 text-white hover:bg-slate-900/60 z-10 cursor-pointer" type="button">
-            <X class="w-4 h-4" />
-          </button>
-
-          <div class="relative h-48 w-full bg-slate-100">
-            <img :src="selectedKhonnectAd.image" :alt="selectedKhonnectAd.title" class="w-full h-full object-cover" />
-            <div class="absolute bottom-2 left-2 px-2.5 py-1 rounded-md bg-slate-900/80 text-white font-black text-xs">
-              {{ selectedKhonnectAd.price }}
-            </div>
-          </div>
-
-          <div class="p-5 space-y-3 text-xs">
-            <div>
-              <span class="text-[10px] font-black uppercase text-blue-600">Khonnect Vehicle Listing</span>
-              <h3 class="text-base font-black text-slate-900 dark:text-white">{{ selectedKhonnectAd.title }} ({{ selectedKhonnectAd.year }})</h3>
-              <p class="text-slate-500">📍 {{ selectedKhonnectAd.location }}</p>
-            </div>
-
-            <p class="text-slate-600 dark:text-slate-300 leading-relaxed font-medium bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg">
-              {{ selectedKhonnectAd.details }}
-            </p>
-
-            <div class="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
-              <a :href="'tel:' + selectedKhonnectAd.sellerPhone" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold cursor-pointer">
-                <Phone class="w-3.5 h-3.5" />
-                <span>Call Seller: {{ selectedKhonnectAd.sellerPhone }}</span>
-              </a>
-              <button @click="isKhonnectModalOpen = false" type="button" class="px-3 py-2 text-slate-500 font-bold cursor-pointer">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
-
-    <!-- RSS READER & GUIDE MODAL -->
-    <transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition duration-150 ease-in"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="isRssModalOpen"
-        class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 font-khmer"
-        @click.self="isRssModalOpen = false"
-      >
-        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4">
-          <button @click="isRssModalOpen = false" class="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 cursor-pointer" type="button">
-            <X class="w-5 h-5" />
-          </button>
-
-          <div class="flex items-center gap-2">
-            <Rss class="w-5 h-5 text-amber-500" />
-            <h3 class="text-base font-black text-slate-900 dark:text-white">BongThom Jobs RSS Feed Service</h3>
-          </div>
-
-          <p class="text-xs text-slate-500 leading-relaxed">
-            Subscribe to our XML RSS feed in Feedly, NetNewsWire, or Outlook to receive automated real-time career updates.
-          </p>
-
-          <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-between gap-2">
-            <code class="text-[11px] font-mono text-blue-600 dark:text-blue-300 truncate">https://camlife.gov.kh/rss/jobs.xml</code>
-            <button
-              @click="copyRssUrl"
-              type="button"
-              class="px-2.5 py-1 rounded bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-[10px] font-bold shadow-xs hover:bg-slate-200 cursor-pointer shrink-0 flex items-center gap-1"
-            >
-              <Copy class="w-3 h-3" />
-              <span>{{ isRssCopied ? 'Copied!' : 'Copy Feed URL' }}</span>
-            </button>
-          </div>
-
-          <div class="pt-2 flex justify-between items-center">
-            <button @click="downloadRssFeed" type="button" class="px-4 py-2 bg-amber-400 text-slate-900 font-black rounded-lg text-xs cursor-pointer flex items-center gap-1.5">
-              <Download class="w-3.5 h-3.5" />
-              <span>Download XML File</span>
-            </button>
-            <button @click="isRssModalOpen = false" type="button" class="px-3 py-2 text-slate-500 font-bold text-xs cursor-pointer">Close</button>
-          </div>
-        </div>
-      </div>
-    </transition>
-
   </div>
 </template>
