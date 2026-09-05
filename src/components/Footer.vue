@@ -5,7 +5,12 @@ import {
   Mail,
   MapPin,
   ShieldCheck,
-  Send
+  Send,
+  ShieldAlert,
+  Flame,
+  Ambulance,
+  PhoneCall,
+  Settings
 } from 'lucide-vue-next'
 
 const { currentLanguage } = useLanguage()
@@ -41,7 +46,7 @@ function scrollToTop() {
             href="tel:117"
             class="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
           >
-            <span>👮 117</span>
+            <span class="inline-flex items-center gap-1.5"><ShieldAlert class="w-3.5 h-3.5" /> 117</span>
             <span class="text-[10px] font-sans font-normal opacity-90">{{ currentLanguage === 'kh' ? 'នគរបាល' : 'Police' }}</span>
           </a>
 
@@ -49,7 +54,7 @@ function scrollToTop() {
             href="tel:118"
             class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
           >
-            <span>🚒 118</span>
+            <span class="inline-flex items-center gap-1.5"><Flame class="w-3.5 h-3.5" /> 118</span>
             <span class="text-[10px] font-sans font-normal opacity-90">{{ currentLanguage === 'kh' ? 'អគ្គិភ័យ' : 'Fire' }}</span>
           </a>
 
@@ -57,7 +62,7 @@ function scrollToTop() {
             href="tel:119"
             class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
           >
-            <span>🚑 119</span>
+            <span class="inline-flex items-center gap-1.5"><Ambulance class="w-3.5 h-3.5" /> 119</span>
             <span class="text-[10px] font-sans font-normal opacity-90">{{ currentLanguage === 'kh' ? 'សង្គ្រោះ' : 'Ambulance' }}</span>
           </a>
 
@@ -65,7 +70,7 @@ function scrollToTop() {
             href="tel:1222"
             class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
           >
-            <span>📞 1222</span>
+            <span class="inline-flex items-center gap-1.5"><PhoneCall class="w-3.5 h-3.5" /> 1222</span>
             <span class="text-[10px] font-sans font-normal opacity-90">{{ currentLanguage === 'kh' ? 'សេវាពលរដ្ឋ' : 'Helpdesk' }}</span>
           </a>
         </div>
@@ -179,7 +184,7 @@ function scrollToTop() {
             </li>
             <li>
               <router-link to="/admin" class="text-purple-400 hover:text-purple-300 font-bold transition-colors">
-                {{ currentLanguage === 'kh' ? '⚙ ផ្ទាំងគ្រប់គ្រងទិន្នន័យ (Admin)' : '⚙ Content CMS & Reports' }}
+                <span class="inline-flex items-center gap-1.5"><Settings class="w-3.5 h-3.5" /> <span>{{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងទិន្នន័យ (Admin)' : 'Content CMS & Reports' }}</span></span>
               </router-link>
             </li>
           </ul>

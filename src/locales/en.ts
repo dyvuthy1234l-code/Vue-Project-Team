@@ -29,7 +29,7 @@ export const en = {
       title: 'Everything You Need for Everyday Life',
       khmerSubtitle: 'ជួយឱ្យជីវិតប្រចាំថ្ងៃរបស់ប្រជាជនកាន់តែងាយស្រួល',
       subtitle: 'Find essential services, useful information, and opportunities in one simple place.',
-      searchPlaceholder: 'What do you need today? (e.g. Hospital, Passport, Electrician...)',
+      searchPlaceholder: 'e.g. Hospital, Passport, Electrician...',
       exploreServices: 'Explore Services',
       learnMore: 'Learn More'
     },

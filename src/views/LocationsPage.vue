@@ -207,7 +207,7 @@ function resetFilters() {
               ? 'bg-[#0D47A1] text-white border-[#0D47A1]'
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'"
           >
-            <span>{{ currentLanguage === 'kh' ? '🗺️ ផែនទីទីតាំង' : '🗺️ Interactive Map' }}</span>
+            <span class="inline-flex items-center gap-1.5"><Map class="w-3.5 h-3.5" /> <span>{{ currentLanguage === 'kh' ? 'ផែនទីទីតាំង' : 'Interactive Map' }}</span></span>
           </button>
         </div>
       </div>

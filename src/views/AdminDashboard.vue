@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue'
 import {
   LayoutDashboard,
+  ThumbsUp,
+  ThumbsDown,
   ShieldCheck,
   AlertTriangle,
   MessageSquare,
@@ -362,7 +364,7 @@ function handleSetStatus(reportId: string, status: ServiceReport['status']) {
               'px-2.5 py-0.5 rounded-full text-[10px] font-bold',
               fb.isHelpful ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
             ]">
-              {{ fb.isHelpful ? '👍 Helpful' : '👎 Needs Improvement' }}
+              <span v-if="fb.isHelpful" class="inline-flex items-center gap-1"><ThumbsUp class="w-3 h-3" /> Helpful</span><span v-else class="inline-flex items-center gap-1"><ThumbsDown class="w-3 h-3" /> Needs Improvement</span>
             </span>
             <span class="text-xs text-slate-400">· {{ new Date(fb.createdAt).toLocaleDateString() }}</span>
           </div>

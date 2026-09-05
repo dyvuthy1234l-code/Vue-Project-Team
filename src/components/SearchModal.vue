@@ -329,7 +329,7 @@ function getIconForType(type: string) {
 
         <!-- Footer Tip -->
         <div class="px-6 py-3 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-[11px] text-slate-400 font-khmer">
-          <span>💡 {{ currentLanguage === 'kh' ? 'វាយបញ្ចូលពាក្យគន្លឹះ ឬបញ្ហាដែលអ្នកចង់ដោះស្រាយ' : 'Type keywords or the problem you wish to solve' }}</span>
+          <span class="inline-flex items-center gap-1.5"><Lightbulb class="w-3.5 h-3.5 text-amber-500 shrink-0" /> <span>{{ currentLanguage === 'kh' ? 'វាយបញ្ចូលពាក្យគន្លឹះ ឬបញ្ហាដែលអ្នកចង់ដោះស្រាយ' : 'Type keywords or the problem you wish to solve' }}</span></span>
           <span class="hidden sm:inline">CamLife Citizen Search</span>
         </div>
 

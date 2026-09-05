@@ -18,7 +18,12 @@ import {
   Newspaper,
   MapPin,
   ShieldCheck,
-  LayoutDashboard
+  LayoutDashboard,
+  Landmark,
+  ShieldAlert,
+  Flame,
+  Ambulance,
+  PhoneCall
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useAuth } from '@/composables/useAuth'
@@ -189,7 +194,7 @@ onUnmounted(() => {
       <div class="max-w-[1600px] mx-auto flex items-center justify-between gap-3">
         <!-- Left: National Portal Statement -->
         <div class="flex items-center gap-2 truncate font-khmer">
-          <span class="text-sm leading-none">🇰🇭</span>
+          <Landmark class="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
           <span class="font-bold tracking-tight truncate hidden sm:inline">
             {{ currentLanguage === 'kh' ? 'វិបផតថលសេវាសាធារណៈសម្រាប់ប្រជាពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}
           </span>
@@ -208,7 +213,7 @@ onUnmounted(() => {
             title="Police Hotline 117"
           >
             <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-ping" />
-            <span class="text-red-300">👮 117</span>
+            <span class="inline-flex items-center gap-1 text-red-300"><ShieldAlert class="w-3 h-3" /> 117</span>
           </a>
 
           <!-- Fire 118 -->
@@ -217,7 +222,7 @@ onUnmounted(() => {
             class="hidden md:flex items-center gap-1 hover:text-amber-300 transition-colors"
             title="Fire Service 118"
           >
-            <span class="text-amber-300">🚒 118</span>
+            <span class="inline-flex items-center gap-1 text-amber-300"><Flame class="w-3 h-3" /> 118</span>
           </a>
 
           <!-- Ambulance 119 -->
@@ -226,7 +231,7 @@ onUnmounted(() => {
             class="flex items-center gap-1 hover:text-emerald-300 transition-colors"
             title="Medical Ambulance 119"
           >
-            <span class="text-emerald-300">🚑 119</span>
+            <span class="inline-flex items-center gap-1 text-emerald-300"><Ambulance class="w-3 h-3" /> 119</span>
           </a>
 
           <!-- Citizen Service Desk 1222 -->
@@ -235,7 +240,7 @@ onUnmounted(() => {
             class="hidden lg:flex items-center gap-1 text-blue-200 hover:text-white transition-colors"
             title="Citizen Inquiry Hotline 1222"
           >
-            <span>📞 1222 {{ currentLanguage === 'kh' ? 'សេវាពលរដ្ឋ' : 'Helpdesk' }}</span>
+            <span class="inline-flex items-center gap-1"><PhoneCall class="w-3 h-3" /> 1222 {{ currentLanguage === 'kh' ? 'សេវាពលរដ្ឋ' : 'Helpdesk' }}</span>
           </a>
         </div>
       </div>

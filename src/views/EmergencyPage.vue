@@ -9,6 +9,7 @@ import {
   Clock3,
   Copy,
   Flame,
+  Ambulance,
   HeartPulse,
   Hospital,
   MapPin,
@@ -729,7 +730,7 @@ const firstAidProtocols = [
               type="button"
               :class="['p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5', activeTriage === 'traffic' ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-slate-50 hover:bg-blue-50 border-slate-200 text-slate-800']"
             >
-              <span class="text-lg">🚨</span>
+              <AlertTriangle class="w-5 h-5 text-rose-500 shrink-0" />
               <div class="min-w-0">
                 <p class="font-black text-xs truncate">{{ currentLanguage === 'kh' ? 'គ្រោះថ្នាក់ចរាចរណ៍' : 'Road Accident' }}</p>
                 <p :class="['text-[10px] truncate', activeTriage === 'traffic' ? 'text-blue-100' : 'text-slate-500']">ហៅ 117 ឬ 119</p>
@@ -741,7 +742,7 @@ const firstAidProtocols = [
               type="button"
               :class="['p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5', activeTriage === 'fire' ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-slate-50 hover:bg-amber-50 border-slate-200 text-slate-800']"
             >
-              <span class="text-lg">🚒</span>
+              <Flame class="w-5 h-5 text-amber-500 shrink-0" />
               <div class="min-w-0">
                 <p class="font-black text-xs truncate">{{ currentLanguage === 'kh' ? 'អគ្គីភ័យ / ផ្សែង' : 'Fire Incident' }}</p>
                 <p :class="['text-[10px] truncate', activeTriage === 'fire' ? 'text-amber-100' : 'text-slate-500']">ហៅពន្លត់ភ្លើង 118</p>
@@ -753,7 +754,7 @@ const firstAidProtocols = [
               type="button"
               :class="['p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5', activeTriage === 'medical' ? 'bg-rose-600 text-white border-rose-600 shadow-sm' : 'bg-slate-50 hover:bg-rose-50 border-slate-200 text-slate-800']"
             >
-              <span class="text-lg">🚑</span>
+              <Ambulance class="w-5 h-5 text-emerald-500 shrink-0" />
               <div class="min-w-0">
                 <p class="font-black text-xs truncate">{{ currentLanguage === 'kh' ? 'សន្លប់ / ឈឺធ្ងន់' : 'Medical Trauma' }}</p>
                 <p :class="['text-[10px] truncate', activeTriage === 'medical' ? 'text-rose-100' : 'text-slate-500']">ហៅរថយន្តសង្គ្រោះ 119</p>
@@ -765,7 +766,7 @@ const firstAidProtocols = [
               type="button"
               :class="['p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5', activeTriage === 'police' ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-slate-50 hover:bg-indigo-50 border-slate-200 text-slate-800']"
             >
-              <span class="text-lg">👮</span>
+              <ShieldAlert class="w-5 h-5 text-indigo-500 shrink-0" />
               <div class="min-w-0">
                 <p class="font-black text-xs truncate">{{ currentLanguage === 'kh' ? 'ចោរកម្ម / អំពើហិង្សា' : 'Crime & Assault' }}</p>
                 <p :class="['text-[10px] truncate', activeTriage === 'police' ? 'text-indigo-100' : 'text-slate-500']">ហៅនគរបាល 117</p>
@@ -820,7 +821,7 @@ const firstAidProtocols = [
             <div class="space-y-3">
               <div class="flex items-center justify-between">
                 <span class="px-3 py-1 rounded-xl bg-blue-100 text-[#0D47A1] text-xs font-black uppercase">
-                  👮 នគរបាលជាតិ
+                  <span class="inline-flex items-center gap-1.5"><ShieldAlert class="w-3.5 h-3.5" /> នគរបាលជាតិ</span>
                 </span>
                 <span class="text-[10px] font-bold text-slate-400">ឆ្លើយតប: ៣-៥ នាទី</span>
               </div>
@@ -869,7 +870,7 @@ const firstAidProtocols = [
             <div class="space-y-3">
               <div class="flex items-center justify-between">
                 <span class="px-3 py-1 rounded-xl bg-amber-100 text-amber-900 text-xs font-black uppercase">
-                  🚒 ពន្លត់អគ្គីភ័យ & សង្គ្រោះ
+                  <span class="inline-flex items-center gap-1.5"><Flame class="w-3.5 h-3.5" /> ពន្លត់អគ្គីភ័យ & សង្គ្រោះ</span>
                 </span>
                 <span class="text-[10px] font-bold text-slate-400">ឆ្លើយតប: បន្ទាន់</span>
               </div>
@@ -918,7 +919,7 @@ const firstAidProtocols = [
             <div class="space-y-3">
               <div class="flex items-center justify-between">
                 <span class="px-3 py-1 rounded-xl bg-rose-100 text-rose-900 text-xs font-black uppercase">
-                  🚑 សង្គ្រោះវេជ្ជសាស្ត្រ SAMU
+                  <span class="inline-flex items-center gap-1.5"><Ambulance class="w-3.5 h-3.5" /> សង្គ្រោះវេជ្ជសាស្ត្រ SAMU</span>
                 </span>
                 <span class="text-[10px] font-bold text-slate-400">២៤ ម៉ោង / ៧ ថ្ងៃ</span>
               </div>

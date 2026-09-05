@@ -325,7 +325,7 @@ const nearbyEntries = computed<NearbyEntry[]>(() => {
     addressKh: `${service.provider} · ${service.location}`,
     categoryName: service.category,
     categoryNameKh: 'សេវាជាង',
-    meta: `${service.category} · ★ ${service.rating.toFixed(1)} (${service.priceEstimate || '$10-$30'})`,
+    meta: `${service.category} · ${service.rating.toFixed(1)}/5 (${service.priceEstimate || '$10-$30'})`,
     phone: service.phone,
     coordinates: service.coordinates,
     route: '/home-services'
@@ -482,7 +482,7 @@ onUnmounted(() => {
         <div class="relative z-10 flex min-h-[490px] sm:min-h-[520px] lg:min-h-[550px] flex-col justify-center max-w-2xl px-4 py-8 sm:px-7 sm:py-10 lg:px-8">
           <!-- Citizen Badge -->
           <div class="inline-flex w-fit items-center gap-2 rounded-full bg-blue-50 px-3.5 py-1.5 text-xs font-bold text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300 font-khmer">
-            <span class="text-sm">🇰🇭</span>
+            <Landmark class="w-4 h-4 text-[#D4AF37] shrink-0" />
             <span>{{ currentLanguage === 'kh' ? 'វិបផតថលសេវាសាធារណៈសម្រាប់ពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}</span>
           </div>
 

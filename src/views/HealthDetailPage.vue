@@ -195,7 +195,7 @@ const checkedCount = computed(() => patientChecklist.value.filter(item => item.c
                 class="rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider text-white shadow-md backdrop-blur-md"
                 :class="hospital.ownership === 'public' ? 'bg-blue-600/90' : 'bg-violet-600/90'"
               >
-                {{ hospital.ownership === 'public' ? (currentLanguage === 'kh' ? '🏛️ មន្ទីរពេទ្យរដ្ឋ' : 'Public') : (currentLanguage === 'kh' ? '🏥 ឯកជន' : 'Private') }}
+                <span class="inline-flex items-center gap-1"><component :is="hospital.ownership === 'public' ? Building2 : HospitalIcon" class="w-3.5 h-3.5" /> <span>{{ hospital.ownership === 'public' ? (currentLanguage === 'kh' ? 'មន្ទីរពេទ្យរដ្ឋ' : 'Public') : (currentLanguage === 'kh' ? 'ឯកជន' : 'Private') }}</span></span>
               </span>
             </div>
 

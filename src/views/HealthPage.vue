@@ -106,13 +106,13 @@ onUnmounted(() => {
 // Quick Filter Chips tailored for Cambodian citizens
 const quickChips = computed(() => [
   { id: 'all', label: 'All Facilities', labelKh: 'ទាំងអស់', icon: HeartPulse },
-  { id: 'public', label: 'Public Hospitals', labelKh: '🏛️ មន្ទីរពេទ្យរដ្ឋ', icon: Building2 },
-  { id: 'private', label: 'Private Hospitals', labelKh: '🏥 មន្ទីរពេទ្យឯកជន', icon: HospitalIcon },
-  { id: 'clinic', label: 'Clinics', labelKh: '🩺 គ្លីនិកឯកទេស', icon: Stethoscope },
-  { id: 'pharmacy', label: 'Pharmacies', labelKh: '💊 ឱសថស្ថានស្របច្បាប់', icon: Pill },
-  { id: 'nssf', label: 'NSSF Accepted', labelKh: '🛡️ ទទួលប័ណ្ណ ប.ស.ស', icon: ShieldCheck },
-  { id: '24-7', label: '24/7 Emergency', labelKh: '🚨 សង្គ្រោះបន្ទាន់ ២៤/៧', icon: Ambulance },
-  { id: 'top-rated', label: 'Top Rated 4.5+', labelKh: '⭐ ពិន្ទុ ៤.៥+', icon: Star }
+  { id: 'public', label: 'Public Hospitals', labelKh: 'មន្ទីរពេទ្យរដ្ឋ', icon: Building2 },
+  { id: 'private', label: 'Private Hospitals', labelKh: 'មន្ទីរពេទ្យឯកជន', icon: HospitalIcon },
+  { id: 'clinic', label: 'Clinics', labelKh: 'គ្លីនិកឯកទេស', icon: Stethoscope },
+  { id: 'pharmacy', label: 'Pharmacies', labelKh: 'ឱសថស្ថានស្របច្បាប់', icon: Pill },
+  { id: 'nssf', label: 'NSSF Accepted', labelKh: 'ទទួលប័ណ្ណ ប.ស.ស', icon: ShieldCheck },
+  { id: '24-7', label: '24/7 Emergency', labelKh: 'សង្គ្រោះបន្ទាន់ ២៤/៧', icon: Ambulance },
+  { id: 'top-rated', label: 'Top Rated 4.5+', labelKh: 'ពិន្ទុ ៤.៥+', icon: Star }
 ])
 
 const filteredHospitals = computed(() => {
@@ -273,7 +273,7 @@ function getDirectionsUrl(hosp: Hospital) {
           <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10">
             <nav class="flex items-center gap-2 text-xs font-semibold text-slate-300" aria-label="Breadcrumb">
               <router-link to="/" class="inline-flex items-center gap-1.5 hover:text-white transition-colors">
-                <span>🏠 {{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}</span>
+                <span class="inline-flex items-center gap-1"><Home class="w-3.5 h-3.5" /> <span>{{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}</span></span>
               </router-link>
               <ChevronRight class="w-3.5 h-3.5 text-white/40" />
               <span class="text-white font-bold tracking-wide">
@@ -291,7 +291,7 @@ function getDirectionsUrl(hosp: Hospital) {
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span>🇰🇭 ព្រះរាជាណាចក្រកម្ពុជា • {{ currentLanguage === 'kh' ? 'បញ្ជីរាយនាមសុខាភិបាលផ្លូវការ' : 'Verified Cambodian Healthcare Directory' }}</span>
+                <span class="inline-flex items-center gap-1.5"><Landmark class="w-3.5 h-3.5 text-[#D4AF37]" /> <span>ព្រះរាជាណាចក្រកម្ពុជា • {{ currentLanguage === 'kh' ? 'បញ្ជីរាយនាមសុខាភិបាលផ្លូវការ' : 'Verified Cambodian Healthcare Directory' }}</span></span>
               </div>
 
               <div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] font-bold text-white/90 backdrop-blur-xs">
@@ -475,7 +475,7 @@ function getDirectionsUrl(hosp: Hospital) {
                     ]"
                   >
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="text-xs">📍</span>
+                      <MapPin class="w-3.5 h-3.5 text-blue-500 shrink-0" />
                       <p class="font-bold truncate">{{ currentLanguage === 'kh' ? prov.nameKh : prov.name }}</p>
                     </div>
                     <Check
@@ -508,9 +508,9 @@ function getDirectionsUrl(hosp: Hospital) {
                 v-model="sortBy"
                 class="appearance-none rounded-xl border border-slate-200/90 bg-slate-50 hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900 pl-3 pr-7 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 outline-none transition cursor-pointer shadow-2xs"
               >
-                <option value="rating">⭐ {{ currentLanguage === 'kh' ? 'ពិន្ទុខ្ពស់បំផុត' : 'Top Rated' }}</option>
-                <option value="reviews">💬 {{ currentLanguage === 'kh' ? 'ការវាយតម្លៃច្រើន' : 'Most Reviews' }}</option>
-                <option value="name">🔤 {{ currentLanguage === 'kh' ? 'ឈ្មោះ (A-Z)' : 'Name (A-Z)' }}</option>
+                <option value="rating">{{ currentLanguage === 'kh' ? 'ពិន្ទុខ្ពស់បំផុត' : 'Top Rated' }}</option>
+                <option value="reviews">{{ currentLanguage === 'kh' ? 'ការវាយតម្លៃច្រើន' : 'Most Reviews' }}</option>
+                <option value="name">{{ currentLanguage === 'kh' ? 'ឈ្មោះ (A-Z)' : 'Name (A-Z)' }}</option>
               </select>
               <div class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400">
                 <SlidersHorizontal class="w-3 h-3" />
@@ -529,7 +529,7 @@ function getDirectionsUrl(hosp: Hospital) {
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
                 ]"
               >
-                <span>⊞</span>
+                <LayoutGrid class="w-3.5 h-3.5" />
                 <span>{{ currentLanguage === 'kh' ? 'កាតបញ្ជី' : 'Grid' }}</span>
               </button>
 
@@ -543,7 +543,7 @@ function getDirectionsUrl(hosp: Hospital) {
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
                 ]"
               >
-                <span>🗺️</span>
+                <Map class="w-3.5 h-3.5" />
                 <span>{{ currentLanguage === 'kh' ? 'ផែនទី' : 'Map' }}</span>
               </button>
             </div>
@@ -572,7 +572,7 @@ function getDirectionsUrl(hosp: Hospital) {
 
                   <!-- Top-Left Rating & Reviews -->
                   <div class="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-black bg-slate-900/85 text-amber-300 backdrop-blur-md shadow-xs border border-white/10">
-                    <span>⭐ {{ hospital.rating }}</span>
+                    <span class="inline-flex items-center gap-1"><Star class="w-3 h-3 text-amber-400 fill-amber-400" /> {{ hospital.rating }}</span>
                     <span class="text-[10px] text-slate-300">({{ hospital.reviews }})</span>
                   </div>
 
@@ -585,7 +585,7 @@ function getDirectionsUrl(hosp: Hospital) {
                         ? 'bg-blue-600/90 text-white border-blue-400'
                         : 'bg-violet-600/90 text-white border-violet-400'"
                     >
-                      {{ hospital.ownership === 'public' ? (currentLanguage === 'kh' ? '🏛️ មន្ទីរពេទ្យរដ្ឋ' : 'Public Hospital') : (currentLanguage === 'kh' ? '🏥 ឯកជន' : 'Private') }}
+                      <span class="inline-flex items-center gap-1"><component :is="hospital.ownership === 'public' ? Building2 : HospitalIcon" class="w-3 h-3" /> <span>{{ hospital.ownership === 'public' ? (currentLanguage === 'kh' ? 'មន្ទីរពេទ្យរដ្ឋ' : 'Public Hospital') : (currentLanguage === 'kh' ? 'ឯកជន' : 'Private') }}</span></span>
                     </span>
 
                     <!-- NSSF Acceptance Badge -->
@@ -832,7 +832,7 @@ function getDirectionsUrl(hosp: Hospital) {
                     {{ selectedMapHospital.name }}
                   </p>
                   <div class="flex items-center gap-2 mt-1.5">
-                    <span class="text-amber-500 text-xs font-bold">⭐ {{ selectedMapHospital.rating }}</span>
+                    <span class="inline-flex items-center gap-1 text-amber-500 text-xs font-bold"><Star class="w-3.5 h-3.5 fill-amber-400" /> {{ selectedMapHospital.rating }}</span>
                     <span class="text-slate-400 text-xs">({{ selectedMapHospital.reviews }} reviews)</span>
                   </div>
                 </div>

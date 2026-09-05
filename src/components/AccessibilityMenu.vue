@@ -178,7 +178,7 @@ onUnmounted(() => {
               ]"
               type="button"
             >
-              <span>🇰🇭</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-blue-100 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300">KH</span>
               <span>ភាសាខ្មែរ</span>
             </button>
             <button
@@ -191,7 +191,7 @@ onUnmounted(() => {
               ]"
               type="button"
             >
-              <span>🇬🇧</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">EN</span>
               <span>English</span>
             </button>
           </div>

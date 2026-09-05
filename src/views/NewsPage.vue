@@ -24,6 +24,11 @@ import {
   Send,
   Coins,
   Check,
+  Newspaper,
+  Award,
+  Fuel,
+  Sun,
+  CloudRain,
   ExternalLink
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
@@ -474,7 +479,7 @@ function copyNewsLink(id: string) {
         <!-- Section Title & Results Count -->
         <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200">
           <div class="flex items-center gap-2 text-base font-black text-slate-900">
-            <span class="text-xl">📰</span>
+            <Newspaper class="w-5 h-5 text-blue-600 shrink-0" />
             <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានទើបចុះផ្សាយ' : 'Latest Dispatches' }}</span>
             <span class="ml-2 px-2 py-0.5 rounded-full bg-blue-50 text-[#0D47A1] text-xs font-black">
               {{ filteredNews.length }}
@@ -723,7 +728,7 @@ function copyNewsLink(id: string) {
           <div class="divide-y divide-slate-100 text-xs font-bold">
             <div class="py-2 flex items-center justify-between">
               <span class="flex items-center gap-2 text-slate-700">
-                <span>🇺🇸</span>
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-800">USD</span>
                 <span>USD / KHR</span>
               </span>
               <span class="font-mono text-emerald-700 font-black">4,085.00 ៛</span>
@@ -731,7 +736,7 @@ function copyNewsLink(id: string) {
 
             <div class="py-2 flex items-center justify-between">
               <span class="flex items-center gap-2 text-slate-700">
-                <span>🇪🇺</span>
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-indigo-100 text-indigo-800">EUR</span>
                 <span>EUR / KHR</span>
               </span>
               <span class="font-mono text-slate-800">4,452.10 ៛</span>
@@ -739,7 +744,7 @@ function copyNewsLink(id: string) {
 
             <div class="py-2 flex items-center justify-between">
               <span class="flex items-center gap-2 text-slate-700">
-                <span>🇹🇭</span>
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-800">THB</span>
                 <span>THB / KHR</span>
               </span>
               <span class="font-mono text-slate-800">118.40 ៛</span>
@@ -747,7 +752,7 @@ function copyNewsLink(id: string) {
 
             <div class="py-2 flex items-center justify-between">
               <span class="flex items-center gap-2 text-slate-700">
-                <span>🥇</span>
+                <Award class="w-4 h-4 text-amber-500 shrink-0" />
                 <span>មាសគីឡូ (Gold Spot)</span>
               </span>
               <span class="font-mono text-amber-700 font-black">$2,840.50 /oz</span>
@@ -755,7 +760,7 @@ function copyNewsLink(id: string) {
 
             <div class="py-2 flex items-center justify-between">
               <span class="flex items-center gap-2 text-slate-700">
-                <span>⛽</span>
+                <Fuel class="w-4 h-4 text-blue-600 shrink-0" />
                 <span>សាំងធម្មតា (EA92)</span>
               </span>
               <span class="font-mono text-blue-700 font-black">4,150 ៛ /L</span>
@@ -782,7 +787,7 @@ function copyNewsLink(id: string) {
               <span class="text-[11px] font-bold text-slate-600">ភ្នំពេញ</span>
               <div class="flex items-center justify-between">
                 <span class="text-lg font-black text-slate-900">31°C</span>
-                <span>⛅</span>
+                <CloudSun class="w-5 h-5 text-amber-500" />
               </div>
               <p class="text-[10px] text-slate-400">ពពកតិចតួច</p>
             </div>
@@ -791,7 +796,7 @@ function copyNewsLink(id: string) {
               <span class="text-[11px] font-bold text-slate-600">សៀមរាប</span>
               <div class="flex items-center justify-between">
                 <span class="text-lg font-black text-slate-900">30°C</span>
-                <span>☀️</span>
+                <Sun class="w-5 h-5 text-amber-500" />
               </div>
               <p class="text-[10px] text-slate-400">មេឃស្រឡះ</p>
             </div>
@@ -800,7 +805,7 @@ function copyNewsLink(id: string) {
               <span class="text-[11px] font-bold text-slate-600">ព្រះសីហនុ</span>
               <div class="flex items-center justify-between">
                 <span class="text-lg font-black text-slate-900">29°C</span>
-                <span>🌦️</span>
+                <CloudRain class="w-5 h-5 text-blue-500" />
               </div>
               <p class="text-[10px] text-slate-400">ភ្លៀងរលឹមស្រិចៗ</p>
             </div>
@@ -809,7 +814,7 @@ function copyNewsLink(id: string) {
               <span class="text-[11px] font-bold text-slate-600">បាត់ដំបង</span>
               <div class="flex items-center justify-between">
                 <span class="text-lg font-black text-slate-900">32°C</span>
-                <span>🌤️</span>
+                <CloudSun class="w-5 h-5 text-amber-400" />
               </div>
               <p class="text-[10px] text-slate-400">មានពន្លឺថ្ងៃល្អ</p>
             </div>

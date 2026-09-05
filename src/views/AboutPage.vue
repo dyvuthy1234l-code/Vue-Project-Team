@@ -52,7 +52,7 @@ const exploreLinks = [
 
       <div class="relative z-10 space-y-4 max-w-2xl">
         <div class="inline-flex items-center gap-2 px-3.5 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold text-blue-200 border border-white/10">
-          <span>🇰🇭 {{ t('app.slogan') }}</span>
+          <span class="inline-flex items-center gap-1.5"><Landmark class="w-3.5 h-3.5 text-[#D4AF37]" /> <span>{{ t('app.slogan') }}</span></span>
         </div>
 
         <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-[1.15]">

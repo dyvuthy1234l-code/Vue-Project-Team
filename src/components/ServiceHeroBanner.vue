@@ -78,7 +78,7 @@ const { selectedProvince } = useLocation()
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span>🇰🇭 ព្រះរាជាណាចក្រកម្ពុជា • {{ currentLanguage === 'kh' && badgeKh ? badgeKh : (badge || 'សេវាសាធារណៈផ្លូវការ') }}</span>
+              <span class="inline-flex items-center gap-1.5"><Landmark class="w-3.5 h-3.5 text-[#D4AF37]" /> <span>ព្រះរាជាណាចក្រកម្ពុជា • {{ currentLanguage === 'kh' && badgeKh ? badgeKh : (badge || 'សេវាសាធារណៈផ្លូវការ') }}</span></span>
             </div>
 
             <div class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold text-white/90 backdrop-blur-xs border border-white/10">

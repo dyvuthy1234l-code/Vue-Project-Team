@@ -368,7 +368,7 @@ function triggerDownload(formId: string) {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div class="flex items-center gap-2 font-bold">
           <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0D47A1] border border-blue-200 font-black">
-            <span>🇰🇭 ព្រះរាជាណាចក្រកម្ពុជា</span>
+            <span class="inline-flex items-center gap-1.5"><Landmark class="w-3.5 h-3.5 text-[#D4AF37]" /> <span>ព្រះរាជាណាចក្រកម្ពុជា</span></span>
             <span class="text-slate-300">|</span>
             <span class="text-[11px] font-normal">ជាតិ សាសនា ព្រះមហាក្សត្រ</span>
           </span>

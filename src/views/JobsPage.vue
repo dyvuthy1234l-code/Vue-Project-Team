@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import {
   MapPin,
+  FileText,
   Clock,
   Bookmark,
   BookmarkCheck,
@@ -552,8 +553,8 @@ function submitPostAd() {
     <div class="w-full bg-gradient-to-r from-[#003366] via-[#0D47A1] to-[#1565C0] text-white shadow-xs">
       <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl shrink-0">
-            📄
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+            <FileText class="w-5 h-5 text-amber-300" />
           </div>
           <div>
             <p class="text-xs sm:text-sm font-black tracking-wide text-white">
@@ -658,7 +659,7 @@ function submitPostAd() {
                     ]"
                   >
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="text-xs">📍</span>
+                      <MapPin class="w-3.5 h-3.5 text-blue-500 shrink-0" />
                       <p class="font-bold truncate">{{ currentLanguage === 'kh' ? prov.nameKh : prov.name }}</p>
                     </div>
                     <Check
@@ -1017,13 +1018,13 @@ function submitPostAd() {
                       <span>{{ getBongThomJobId(job) }}</span>
                     </span>
 
-                    <!-- Duration Remaining (e.g. 🕒 2 days) -->
+                    <!-- Duration Remaining (e.g. 2 days) -->
                     <span class="inline-flex items-center gap-1 font-medium text-slate-600 dark:text-slate-300">
                       <Clock class="w-3 h-3 text-slate-400" />
                       <span>{{ getBongThomDaysLeft(job).daysEn }}</span>
                     </span>
 
-                    <!-- Closing Expiry Date (e.g. 📅 18-Sep-2026) -->
+                    <!-- Closing Expiry Date (e.g. 18-Sep-2026) -->
                     <span class="inline-flex items-center gap-1 font-medium text-slate-600 dark:text-slate-300">
                       <CalendarIcon class="w-3 h-3 text-slate-400" />
                       <span>{{ getBongThomClosingDate(job) }}</span>
@@ -1098,8 +1099,8 @@ function submitPostAd() {
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800">
-                  <span>🕒 {{ getBongThomDaysLeft(job).daysEn }}</span>
-                  <span>📅 {{ getBongThomClosingDate(job) }}</span>
+                  <span class="inline-flex items-center gap-1"><Clock class="w-3 h-3 text-slate-400" /> {{ getBongThomDaysLeft(job).daysEn }}</span>
+                  <span class="inline-flex items-center gap-1"><CalendarIcon class="w-3 h-3 text-slate-400" /> {{ getBongThomClosingDate(job) }}</span>
                 </div>
               </div>
 

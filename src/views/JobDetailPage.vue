@@ -283,7 +283,7 @@ function submitApplication() {
               <!-- Contact Name -->
               <div class="space-y-0.5">
                 <p class="font-extrabold text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <span>👤 CONTACT NAME</span>
+                  <span class="inline-flex items-center gap-1"><User class="w-3.5 h-3.5 text-blue-600" /> <span>CONTACT NAME</span></span>
                 </p>
                 <p class="text-slate-800 dark:text-white font-bold">
                   {{ job.company }}
@@ -600,8 +600,8 @@ function submitApplication() {
                 </p>
                 <div class="flex items-center gap-3 text-[10px] text-slate-500 pt-0.5">
                   <span># {{ getJobIdNumber(simJob) }}</span>
-                  <span>🕒 {{ getDurationLeft(simJob) }}</span>
-                  <span>📅 {{ getClosingDate(simJob) }}</span>
+                  <span class="inline-flex items-center gap-1"><Clock class="w-3 h-3 text-slate-400" /> {{ getDurationLeft(simJob) }}</span>
+                  <span class="inline-flex items-center gap-1"><Calendar class="w-3 h-3 text-slate-400" /> {{ getClosingDate(simJob) }}</span>
                 </div>
               </div>
             </div>
