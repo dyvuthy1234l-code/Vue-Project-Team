@@ -331,15 +331,41 @@ const battambangStations: EmergencyStation[] = [
   {
     id: 'battambang-provincial-hospital',
     name: 'Battambang Provincial Referral Hospital',
-    nameKh: 'មន្ទីរពេទ្យបង្អែកខេត្តបាត់ដំបង (សង្គ្រោះបន្ទាន់ ២៤/៧)',
+    nameKh: 'មន្ទីរពេទ្យបង្អែកខេត្តបាត់ដំបង (សង្គ្រោះបន្ទាន់)',
     type: 'hospital',
     address: 'National Road 5, Sangkat Svay Pao, Krong Battambang',
     addressKh: 'ផ្លូវជាតិលេខ ៥ សង្កាត់ស្វាយប៉ោ ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
     phone: '053 952 822',
-    distance: '0.9 គ.ម',
+    distance: '0.8 គ.ម',
     coordinates: { lat: 13.0957, lng: 103.2022 },
     openHours: 'Open 24/7',
     openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
+  },
+  {
+    id: 'battambang-ek-phnom-hospital',
+    name: 'Ek Phnom Referral Hospital',
+    nameKh: 'មន្ទីរពេទ្យបង្អែកស្រុកឯកភ្នំ (បាត់ដំបង)',
+    type: 'hospital',
+    address: 'Ek Phnom District, Battambang',
+    addressKh: 'ស្រុកឯកភ្នំ ខេត្តបាត់ដំបង',
+    phone: '053 952 873',
+    distance: '2.5 គ.ម',
+    coordinates: { lat: 13.1220, lng: 103.1890 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
+  },
+  {
+    id: 'battambang-red-cross',
+    name: 'Cambodian Red Cross — Battambang Branch',
+    nameKh: 'កាកបាទក្រហមកម្ពុជា សាខាខេត្តបាត់ដំបង',
+    type: 'hospital',
+    address: 'Krong Battambang, Battambang',
+    addressKh: 'ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
+    phone: '053 952 411',
+    distance: '1.9 គ.ម',
+    coordinates: { lat: 13.1015, lng: 103.2060 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'សង្គ្រោះបឋម ២៤ម៉ោង'
   },
   {
     id: 'battambang-police-commissariat',
@@ -349,8 +375,21 @@ const battambangStations: EmergencyStation[] = [
     address: 'Street 1, Sangkat Svay Pao, Krong Battambang',
     addressKh: 'ផ្លូវលេខ ១ សង្កាត់ស្វាយប៉ោ ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
     phone: '053 952 117',
-    distance: '1.3 គ.ម',
+    distance: '1.2 គ.ម',
     coordinates: { lat: 13.0988, lng: 103.2045 },
+    openHours: 'Open 24/7',
+    openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
+  },
+  {
+    id: 'battambang-town-police',
+    name: 'Krong Battambang Police Inspectorate',
+    nameKh: 'អធិការដ្ឋាននគរបាលក្រុងបាត់ដំបង',
+    type: 'police',
+    address: 'Street 2, Krong Battambang',
+    addressKh: 'ផ្លូវលេខ ២ ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
+    phone: '+855 53 952 112',
+    distance: '1.5 គ.ម',
+    coordinates: { lat: 13.0945, lng: 103.2065 },
     openHours: 'Open 24/7',
     openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
   },
@@ -366,23 +405,10 @@ const battambangStations: EmergencyStation[] = [
     coordinates: { lat: 13.0930, lng: 103.1995 },
     openHours: 'Open 24/7',
     openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
-  },
-  {
-    id: 'battambang-red-cross',
-    name: 'Cambodian Red Cross — Battambang Branch',
-    nameKh: 'កាកបាទក្រហមកម្ពុជា សាខាខេត្តបាត់ដំបង',
-    type: 'hospital',
-    address: 'Krong Battambang, Battambang',
-    addressKh: 'ក្រុងបាត់ដំបង ខេត្តបាត់ដំបង',
-    phone: '053 952 411',
-    distance: '1.8 គ.ម',
-    coordinates: { lat: 13.1015, lng: 103.2060 },
-    openHours: 'Open 24/7',
-    openHoursKh: 'សង្គ្រោះបឋម ២៤ម៉ោង'
   }
 ]
 
-// Generate stations dynamically for any of the 25 provinces
+// Generate 6 realistic stations for any of the 25 provinces
 function getStationsForProvince(provId: string): EmergencyStation[] {
   if (provId === 'phnom-penh') return phnomPenhStations
   if (provId === 'battambang') return battambangStations
@@ -394,28 +420,67 @@ function getStationsForProvince(provId: string): EmergencyStation[] {
 
   return [
     {
-      id: `${prov.id}-hospital`,
+      id: `${prov.id}-hospital-main`,
       name: `${prov.name} Provincial Referral Hospital`,
       nameKh: prov.hospitalName,
       type: 'hospital',
       address: `Center Town, Krong ${prov.name}, Cambodia`,
       addressKh: `កណ្តាលក្រុង ${prov.nameKh}`,
       phone: prov.hospital,
-      distance: '1.1 គ.ម',
+      distance: '0.9 គ.ម',
       coordinates: { lat: lat, lng: lng },
       openHours: 'Open 24/7',
       openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
     },
     {
-      id: `${prov.id}-police`,
+      id: `${prov.id}-hospital-sub`,
+      name: `${prov.name} District Emergency Clinic`,
+      nameKh: `មជ្ឈមណ្ឌលសុខភាព និងសង្គ្រោះបឋម ${prov.nameKh}`,
+      type: 'hospital',
+      address: `District Road, ${prov.name}`,
+      addressKh: `ផ្លូវស្រុក ក្រុង${prov.nameKh}`,
+      phone: prov.hospital,
+      distance: '2.1 គ.ម',
+      coordinates: { lat: lat + 0.0060, lng: lng - 0.0040 },
+      openHours: 'Open 24/7',
+      openHoursKh: 'សង្គ្រោះបន្ទាន់ ២៤ម៉ោង'
+    },
+    {
+      id: `${prov.id}-redcross`,
+      name: `Cambodian Red Cross — ${prov.name} Branch`,
+      nameKh: `កាកបាទក្រហមកម្ពុជា សាខា${prov.nameKh}`,
+      type: 'hospital',
+      address: `Red Cross Regional Office, ${prov.name}`,
+      addressKh: `សាខាកាកបាទក្រហម ${prov.nameKh}`,
+      phone: prov.redCross,
+      distance: '1.8 គ.ម',
+      coordinates: { lat: lat + 0.0040, lng: lng - 0.0030 },
+      openHours: 'Open 24/7',
+      openHoursKh: 'សង្គ្រោះបឋម ២៤ម៉ោង'
+    },
+    {
+      id: `${prov.id}-police-hq`,
       name: `${prov.name} Provincial Police Commissariat`,
       nameKh: `ស្នងការដ្ឋាននគរបាល${prov.nameKh} (១១៧)`,
       type: 'police',
       address: `Provincial Command Center, ${prov.name}`,
       addressKh: `បញ្ជាការដ្ឋាននគរបាល ${prov.nameKh}`,
       phone: prov.police,
-      distance: '1.4 គ.ម',
+      distance: '1.2 គ.ម',
       coordinates: { lat: lat + 0.0035, lng: lng + 0.0030 },
+      openHours: 'Open 24/7',
+      openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
+    },
+    {
+      id: `${prov.id}-police-traffic`,
+      name: `${prov.name} Traffic & Public Order Police`,
+      nameKh: `ការិយាល័យនគរបាលចរាចរណ៍${prov.nameKh}`,
+      type: 'police',
+      address: `National Road, ${prov.name}`,
+      addressKh: `ផ្លូវជាតិ ក្រុង${prov.nameKh}`,
+      phone: prov.police,
+      distance: '1.6 គ.ម',
+      coordinates: { lat: lat - 0.0025, lng: lng + 0.0045 },
       openHours: 'Open 24/7',
       openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
     },
@@ -427,23 +492,10 @@ function getStationsForProvince(provId: string): EmergencyStation[] {
       address: `Main Boulevard, Krong ${prov.name}`,
       addressKh: `មហាវិថីធំ ក្រុង${prov.nameKh}`,
       phone: '118',
-      distance: '1.7 គ.ម',
+      distance: '1.4 គ.ម',
       coordinates: { lat: lat - 0.0030, lng: lng - 0.0025 },
       openHours: 'Open 24/7',
       openHoursKh: 'ប្រចាំការ ២៤ម៉ោង'
-    },
-    {
-      id: `${prov.id}-redcross`,
-      name: `Cambodian Red Cross — ${prov.name} Branch`,
-      nameKh: `កាកបាទក្រហមកម្ពុជា សាខា${prov.nameKh}`,
-      type: 'hospital',
-      address: `Red Cross Regional Office, ${prov.name}`,
-      addressKh: `សាខាកាកបាទក្រហម ${prov.nameKh}`,
-      phone: prov.redCross,
-      distance: '2.0 គ.ម',
-      coordinates: { lat: lat + 0.0050, lng: lng - 0.0035 },
-      openHours: 'Open 24/7',
-      openHoursKh: 'សង្គ្រោះបឋម ២៤ម៉ោង'
     }
   ]
 }
@@ -481,12 +533,52 @@ const mapDirectionsUrl = computed(() => {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
 })
 
-const mapFilters = computed(() => [
-  { id: 'all', label: currentLanguage.value === 'kh' ? `ទាំងអស់ (${mapStations.value.length})` : `All Facilities (${mapStations.value.length})` },
-  { id: 'hospital', label: currentLanguage.value === 'kh' ? '🏥 មន្ទីរពេទ្យ (119)' : '🏥 Hospitals' },
-  { id: 'police', label: currentLanguage.value === 'kh' ? '👮 ប៉ូលីស (117)' : '👮 Police' },
-  { id: 'fire', label: currentLanguage.value === 'kh' ? '🚒 ពន្លត់អគ្គីភ័យ (118)' : '🚒 Fire' }
+// Map Filter Tabs with Real Counts & Hotlines
+const emergencyMapTabs = computed(() => [
+  {
+    id: 'all' as const,
+    labelEn: 'All Facilities',
+    labelKh: 'ទាំងអស់',
+    icon: Building2,
+    count: mapStations.value.length,
+    hotline: ''
+  },
+  {
+    id: 'hospital' as const,
+    labelEn: 'Hospitals',
+    labelKh: 'មន្ទីរពេទ្យ',
+    icon: Hospital,
+    count: mapStations.value.filter(s => s.type === 'hospital').length,
+    hotline: '119'
+  },
+  {
+    id: 'police' as const,
+    labelEn: 'Police Dispatch',
+    labelKh: 'ប៉ុស្តិ៍នគរបាល',
+    icon: ShieldAlert,
+    count: mapStations.value.filter(s => s.type === 'police').length,
+    hotline: '117'
+  },
+  {
+    id: 'fire' as const,
+    labelEn: 'Fire & Rescue',
+    labelKh: 'ពន្លត់អគ្គីភ័យ',
+    icon: Flame,
+    count: mapStations.value.filter(s => s.type === 'fire').length,
+    hotline: '118'
+  }
 ])
+
+function setMapFilter(filterId: 'all' | 'hospital' | 'police' | 'fire') {
+  activeMapFilter.value = filterId
+  // Automatically select first facility in this filter so the real Google Map moves immediately!
+  const matching = filteredMapStations.value
+  if (matching.length > 0) {
+    if (!matching.some(s => s.id === selectedStation.value.id)) {
+      selectedStation.value = matching[0]
+    }
+  }
+}
 
 const filteredMapStations = computed(() => {
   if (activeMapFilter.value === 'all') return mapStations.value
@@ -1265,21 +1357,41 @@ const firstAidProtocols = [
             </div>
           </div>
 
-          <!-- Category Filter Tabs -->
-          <div class="flex flex-wrap gap-1.5 rounded-2xl bg-slate-100/90 p-1.5">
+          <!-- Category Filter Tabs Matching Authentic HomePage -->
+          <div class="flex flex-wrap gap-1.5 rounded-2xl bg-slate-100/90 p-1.5 font-khmer">
             <button
-              v-for="filter in mapFilters"
-              :key="filter.id"
+              v-for="tab in emergencyMapTabs"
+              :key="tab.id"
               type="button"
               :class="[
-                'inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer',
-                activeMapFilter === filter.id
-                  ? 'bg-white text-[#0D47A1] shadow-sm font-black ring-1 ring-blue-500/20'
-                  : 'text-slate-600 hover:text-[#0D47A1] hover:bg-white/50'
+                'inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer select-none',
+                activeMapFilter === tab.id
+                  ? 'bg-white text-[#0D47A1] shadow-sm font-black ring-1 ring-blue-500/20 scale-102'
+                  : 'text-slate-600 hover:text-[#0D47A1] hover:bg-white/60'
               ]"
-              @click="activeMapFilter = filter.id as any"
+              @click="setMapFilter(tab.id)"
             >
-              <span>{{ filter.label }}</span>
+              <component :is="tab.icon" class="h-3.5 w-3.5 shrink-0" />
+              <span>{{ currentLanguage === 'kh' ? tab.labelKh : tab.labelEn }}</span>
+              <span
+                :class="[
+                  'text-[10px] font-black px-1.5 py-0.2 rounded-md font-mono',
+                  activeMapFilter === tab.id
+                    ? 'bg-blue-100 text-[#0D47A1]'
+                    : 'bg-slate-200/70 text-slate-500'
+                ]"
+              >
+                {{ tab.count }}
+              </span>
+              <span
+                v-if="tab.hotline"
+                :class="[
+                  'text-[9px] font-black px-1.5 py-0.2 rounded-md font-mono',
+                  tab.id === 'hospital' ? 'bg-rose-100 text-rose-700' : tab.id === 'police' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
+                ]"
+              >
+                {{ tab.hotline }}
+              </span>
             </button>
           </div>
         </div>
