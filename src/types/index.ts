@@ -108,6 +108,12 @@ export interface NewsItem {
   date: string
   image: string
   source: string
+  author?: string
+  authorRole?: string
+  views?: number
+  readTime?: string
+  breaking?: boolean
+  tags?: string[]
 }
 
 export interface LocationItem {
