@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   MapPin,
   RotateCcw,
-  ChevronRight,
-  ChevronDown,
-  Check,
   HeartPulse,
   Hospital as HospitalIcon,
   Stethoscope,
@@ -21,7 +19,10 @@ import {
   ArrowRight,
   Navigation,
   Star,
-  FileText
+  FileText,
+  ExternalLink,
+  X,
+  Check
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
@@ -29,10 +30,13 @@ import { useLanguage } from '@/composables/useLanguage'
 import { getHospitals } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
-import { CAMBODIAN_PROVINCES } from '@/composables/useLocation'
+import { useLocation } from '@/composables/useLocation'
 import type { Hospital } from '@/types'
 
+const router = useRouter()
+
 const { t, currentLanguage, localized } = useLanguage()
+const { selectedProvince } = useLocation()
 
 usePageMeta({
   title: 'សេវាសុខាភិបាល និងមន្ទីរពេទ្យ — CamLife Healthcare Directory',
@@ -46,62 +50,7 @@ const activeLocation = ref('All')
 const sortBy = ref<'rating' | 'reviews' | 'name'>('rating')
 const viewMode = ref<'grid' | 'map'>('grid')
 
-// 25 Provinces Selector Popover
-const isLocationDropdownOpen = ref(false)
-const provinceSearchQuery = ref('')
 
-const provinceOptions = computed(() => [
-  {
-    id: 'All',
-    name: 'All Locations (Nationwide)',
-    nameKh: 'ទីតាំងទាំងអស់ (ទូទាំង ២៥ ខេត្ត-ក្រុង)',
-    code: 'KH'
-  },
-  ...CAMBODIAN_PROVINCES
-])
-
-const filteredProvinceOptions = computed(() => {
-  const q = provinceSearchQuery.value.toLowerCase().trim()
-  if (!q) return provinceOptions.value
-  return provinceOptions.value.filter(p =>
-    p.name.toLowerCase().includes(q) ||
-    p.nameKh.toLowerCase().includes(q) ||
-    p.code.toLowerCase().includes(q)
-  )
-})
-
-const selectedProvinceLabel = computed(() => {
-  if (activeLocation.value === 'All') {
-    return currentLanguage.value === 'kh' ? 'ទីតាំងទាំងអស់ (២៥ ខេត្ត-ក្រុង)' : 'All 25 Provinces'
-  }
-  const found = CAMBODIAN_PROVINCES.find(p => p.name.toLowerCase() === activeLocation.value.toLowerCase() || p.id === activeLocation.value)
-  if (found) {
-    return currentLanguage.value === 'kh' ? found.nameKh : found.name
-  }
-  return activeLocation.value
-})
-
-function selectProvince(provName: string) {
-  activeLocation.value = provName === 'All Locations (Nationwide)' ? 'All' : provName
-  isLocationDropdownOpen.value = false
-  provinceSearchQuery.value = ''
-  scrollToResults()
-}
-
-function onWindowClick(e: MouseEvent) {
-  const target = e.target as HTMLElement
-  if (!target.closest('.health-location-dropdown-container')) {
-    isLocationDropdownOpen.value = false
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('click', onWindowClick)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('click', onWindowClick)
-})
 
 // Quick Filter Chips tailored for Cambodian citizens
 const quickChips = computed(() => [
@@ -118,17 +67,15 @@ const quickChips = computed(() => [
 const filteredHospitals = computed(() => {
   let result = [...allHospitals]
 
-  // Location filter (25 provinces)
-  if (activeLocation.value !== 'All') {
-    const targetProvince = CAMBODIAN_PROVINCES.find(
-      p => p.name.toLowerCase() === activeLocation.value.toLowerCase() || p.id === activeLocation.value
-    )
-    const engName = (targetProvince ? targetProvince.name : activeLocation.value).toLowerCase()
-    const khName = targetProvince
-      ? targetProvince.nameKh.replace('ខេត្ត', '').replace('រាជធានី', '').trim().toLowerCase()
+  // Location filter (from Global Location Selector in Navbar)
+  if (selectedProvince.value && selectedProvince.value.id !== 'all') {
+    const prov = selectedProvince.value
+    const engName = (prov.name || '').toLowerCase()
+    const khName = prov.nameKh
+      ? prov.nameKh.replace('ខេត្ត', '').replace('រាជធានី', '').trim().toLowerCase()
       : ''
 
-    result = result.filter(h => {
+    const matched = result.filter(h => {
       const loc = (h.location || '').toLowerCase()
       const addr = (h.address || '').toLowerCase()
       const addrKh = (h.addressKh || '').toLowerCase()
@@ -138,6 +85,7 @@ const filteredHospitals = computed(() => {
         addr.includes(engName)
       )
     })
+    result = matched
   }
 
   // Quick Chips filter
@@ -206,6 +154,39 @@ const {
 
 const selectedMapHospital = ref<Hospital>(allHospitals[0])
 
+watch(
+  filteredHospitals,
+  (newVal) => {
+    if (newVal && newVal.length > 0) {
+      if (!selectedMapHospital.value || !newVal.some(h => h.id === selectedMapHospital.value.id)) {
+        selectedMapHospital.value = newVal[0]
+      }
+    }
+  },
+  { immediate: true }
+)
+
+const mapEmbedUrl = computed(() => {
+  if (selectedMapHospital.value?.coordinates?.lat && selectedMapHospital.value?.coordinates?.lng) {
+    return `https://www.google.com/maps?q=${selectedMapHospital.value.coordinates.lat},${selectedMapHospital.value.coordinates.lng}&z=15&output=embed`
+  }
+  const provCoords = selectedProvince.value?.coordinates
+  if (provCoords?.lat && provCoords?.lng) {
+    return `https://www.google.com/maps?q=${provCoords.lat},${provCoords.lng}&z=13&output=embed`
+  }
+  return 'https://www.google.com/maps?q=Phnom+Penh+Cambodia&z=13&output=embed'
+})
+
+const directionsUrl = computed(() => {
+  if (selectedMapHospital.value?.coordinates?.lat && selectedMapHospital.value?.coordinates?.lng) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${selectedMapHospital.value.coordinates.lat},${selectedMapHospital.value.coordinates.lng}`
+  }
+  if (selectedMapHospital.value?.address) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMapHospital.value.address)}`
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMapHospital.value?.name || 'Hospital')}`
+})
+
 function selectQuickPill(pillId: string) {
   activePill.value = pillId
   scrollToResults()
@@ -240,6 +221,50 @@ function getDirectionsUrl(hosp: Hospital) {
   }
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hosp.name + ' ' + (hosp.location || 'Cambodia'))}`
 }
+
+// 3 Essential Guidelines Interactivity & Modals
+const isDocModalOpen = ref(false)
+const isNssfModalOpen = ref(false)
+
+const nssfHospitalsCount = computed(() => allHospitals.filter(h => h.acceptsNssf).length)
+
+function openEmergency() {
+  router.push('/emergency')
+}
+
+function filterByNssf() {
+  activePill.value = 'nssf'
+  isNssfModalOpen.value = false
+  scrollToResults()
+}
+
+function openNssfModal() {
+  isNssfModalOpen.value = true
+}
+
+function openDocModal() {
+  isDocModalOpen.value = true
+}
+
+// Checklist state for documents modal
+const checkedDocs = ref<Record<string, boolean>>({
+  idCard: false,
+  nssfCard: false,
+  healthBook: false,
+  medications: false,
+  allergyCard: false,
+  emergencyContact: false
+})
+
+function toggleDoc(key: string) {
+  checkedDocs.value[key] = !checkedDocs.value[key]
+}
+
+function resetDocChecklist() {
+  for (const k in checkedDocs.value) {
+    checkedDocs.value[k] = false
+  }
+}
 </script>
 
 <template>
@@ -269,18 +294,7 @@ function getDirectionsUrl(hosp: Hospital) {
 
         <!-- Inner Content Container -->
         <div class="relative z-10 p-6 sm:p-8 lg:p-10 space-y-6">
-          <!-- Top Row: Breadcrumb -->
-          <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10">
-            <nav class="flex items-center gap-2 text-xs font-semibold text-slate-300" aria-label="Breadcrumb">
-              <router-link to="/" class="inline-flex items-center gap-1.5 hover:text-white transition-colors">
-                <span class="inline-flex items-center gap-1"><Home class="w-3.5 h-3.5" /> <span>{{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}</span></span>
-              </router-link>
-              <ChevronRight class="w-3.5 h-3.5 text-white/40" />
-              <span class="text-white font-bold tracking-wide">
-                {{ currentLanguage === 'kh' ? 'សុខាភិបាល និងមន្ទីរពេទ្យ' : 'Healthcare & Hospitals' }}
-              </span>
-            </nav>
-          </div>
+
 
           <!-- Main Banner Header Content -->
           <div class="max-w-3xl space-y-3.5">
@@ -412,82 +426,10 @@ function getDirectionsUrl(hosp: Hospital) {
                 </span>
               </h2>
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                {{ currentLanguage === 'kh' ? `បង្ហាញមណ្ឌលសុខភាពក្នុង ${selectedProvinceLabel}` : `Showing facilities in ${selectedProvinceLabel}` }}
+                {{ currentLanguage === 'kh' ? `បង្ហាញមណ្ឌលសុខភាពក្នុង ${selectedProvince ? selectedProvince.nameKh : '២៥ រាជធានី-ខេត្ត'}` : `Showing facilities in ${selectedProvince ? selectedProvince.name : 'All Provinces'}` }}
               </p>
             </div>
-
-            <!-- 25 Provinces Selector (Moved from Banner to Results Toolbar) -->
-            <div class="flex items-center gap-2">
-              <span class="hidden sm:inline text-xs text-slate-500 dark:text-slate-400 font-bold">
-                {{ currentLanguage === 'kh' ? 'រាជធានី-ខេត្ត:' : 'Province / City:' }}
-              </span>
-              <div class="relative health-location-dropdown-container">
-                <button
-                  type="button"
-                  @click="isLocationDropdownOpen = !isLocationDropdownOpen"
-                  class="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl border border-slate-200/90 bg-slate-50 hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-100 transition-all shadow-xs cursor-pointer select-none"
-                >
-                  <div class="flex items-center justify-center rounded-lg p-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                    <MapPin class="w-3.5 h-3.5 shrink-0" />
-                  </div>
-
-                  <div class="flex items-center gap-1.5 text-left">
-                    <span class="max-w-[130px] sm:max-w-[180px] truncate font-extrabold">
-                      {{ selectedProvinceLabel }}
-                    </span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded-md font-black bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                      {{ currentLanguage === 'kh' ? '២៥ ខេត្ត-ក្រុង' : '25 Prov.' }}
-                    </span>
-                  </div>
-
-                  <ChevronDown class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': isLocationDropdownOpen }" />
-                </button>
-
-              <!-- Popover Content -->
-              <div
-                v-if="isLocationDropdownOpen"
-                class="absolute left-0 top-full mt-2 w-[280px] sm:w-[320px] rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-50 overflow-hidden"
-              >
-                <div class="p-2.5 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-                  <div class="relative">
-                    <Search class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-                    <input
-                      v-model="provinceSearchQuery"
-                      type="text"
-                      :placeholder="currentLanguage === 'kh' ? 'ស្វែងរក ២៥ ខេត្ត-ក្រុង...' : 'Search 25 provinces...'"
-                      class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                      @click.stop
-                    />
-                  </div>
-                </div>
-
-                <div class="max-h-60 overflow-y-auto p-1.5 space-y-0.5">
-                  <button
-                    v-for="prov in filteredProvinceOptions"
-                    :key="prov.id"
-                    type="button"
-                    @click="selectProvince(prov.name)"
-                    class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-left transition-colors cursor-pointer"
-                    :class="[
-                      (activeLocation === 'All' && prov.id === 'All') || (activeLocation === prov.name)
-                        ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 font-black'
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60 font-medium'
-                    ]"
-                  >
-                    <div class="flex items-center gap-2 min-w-0">
-                      <MapPin class="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                      <p class="font-bold truncate">{{ currentLanguage === 'kh' ? prov.nameKh : prov.name }}</p>
-                    </div>
-                    <Check
-                      v-if="(activeLocation === 'All' && prov.id === 'All') || (activeLocation === prov.name)"
-                      class="w-3.5 h-3.5 text-[#0D47A1] dark:text-blue-400"
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
 
         <!-- Right: Sort & View Mode Switcher -->
           <div class="flex flex-wrap items-center gap-2.5">
@@ -721,77 +663,105 @@ function getDirectionsUrl(hosp: Hospital) {
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <!-- Stylized Vector Map Canvas -->
-            <div class="lg:col-span-7 relative min-h-[380px] sm:min-h-[440px] rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 bg-slate-900 shadow-inner flex flex-col justify-between p-4">
-              <div class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:22px_22px] opacity-40" />
-              <div class="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-900/90 to-blue-950/80" />
+            <!-- Real Interactive Google Map Column -->
+            <div class="lg:col-span-7 flex flex-col gap-3">
+              <div class="relative min-h-[380px] sm:min-h-[460px] flex-1 rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 shadow-inner">
+                <!-- Google Maps Real Embed iframe -->
+                <iframe
+                  :key="mapEmbedUrl"
+                  :src="mapEmbedUrl"
+                  :title="selectedMapHospital?.nameKh || selectedMapHospital?.name || 'Healthcare Location Map'"
+                  class="absolute inset-0 h-full w-full border-0"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                />
 
-              <!-- Vector Map Roads -->
-              <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
-                <path d="M-30,220 Q200,100 450,280 T900,200" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,4" />
-                <path d="M120,-20 Q280,220 380,500" fill="none" stroke="#64748b" stroke-width="1.5" />
-                <circle cx="350" cy="240" r="120" fill="none" stroke="#38bdf8" stroke-width="1" opacity="0.2" />
-              </svg>
+                <!-- Top Floating Overlay Bar -->
+                <div class="absolute top-3 inset-x-3 z-10 flex items-center justify-between gap-2 pointer-events-none">
+                  <span class="pointer-events-auto inline-flex items-center gap-1.5 rounded-xl bg-white/95 dark:bg-slate-900/90 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-white backdrop-blur-md shadow-md border border-slate-200/80 dark:border-slate-700">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>{{ currentLanguage === 'kh' ? 'មណ្ឌលសុខភាព ' + filteredHospitals.length + ' ទីតាំង' : filteredHospitals.length + ' Healthcare Centers' }}</span>
+                  </span>
 
-              <!-- Map Header Note -->
-              <div class="relative z-10 flex items-center justify-between">
-                <span class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900/85 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-md border border-white/10">
-                  <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>{{ currentLanguage === 'kh' ? 'មណ្ឌលសុខភាព ' + filteredHospitals.length + ' ទីតាំង' : filteredHospitals.length + ' Verified Centers' }}</span>
-                </span>
+                  <a
+                    :href="directionsUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-900/90 hover:bg-white text-slate-800 dark:text-white font-bold text-xs shadow-md border border-slate-200/80 dark:border-slate-700 backdrop-blur-md transition-all active:scale-95"
+                    :title="currentLanguage === 'kh' ? 'បើកមើលក្នុង Google Maps' : 'Open in Google Maps'"
+                  >
+                    <Navigation class="w-3.5 h-3.5 text-blue-600" />
+                    <span>{{ currentLanguage === 'kh' ? 'ទិសដៅផែនទី' : 'Directions' }}</span>
+                    <ExternalLink class="w-3 h-3 text-slate-400" />
+                  </a>
+                </div>
+
+                <!-- Bottom Floating Active Hospital Overlay -->
+                <div class="absolute bottom-3 inset-x-3 z-10 pointer-events-none">
+                  <div class="pointer-events-auto flex items-center justify-between gap-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-slate-200/90 dark:border-slate-700 shadow-lg">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                      <div
+                        :class="[
+                          'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-xs text-white font-bold',
+                          selectedMapHospital?.category === 'hospital' ? 'bg-blue-600' :
+                          selectedMapHospital?.category === 'clinic' ? 'bg-violet-600' : 'bg-emerald-600'
+                        ]"
+                      >
+                        <HeartPulse v-if="selectedMapHospital?.category === 'hospital'" class="h-4.5 w-4.5" />
+                        <Stethoscope v-else-if="selectedMapHospital?.category === 'clinic'" class="h-4.5 w-4.5" />
+                        <Pill v-else class="h-4.5 w-4.5" />
+                      </div>
+                      <div class="min-w-0">
+                        <div class="truncate text-xs font-black text-slate-900 dark:text-white">
+                          {{ selectedMapHospital?.nameKh || selectedMapHospital?.name }}
+                        </div>
+                        <div class="truncate text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                          <MapPin class="w-3 h-3 text-rose-500 shrink-0" />
+                          <span class="truncate">{{ selectedMapHospital?.addressKh || selectedMapHospital?.address }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <a
+                      :href="directionsUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-50 text-[#0D47A1] hover:bg-blue-100 font-bold text-xs border border-blue-200 transition-colors"
+                    >
+                      <Navigation class="w-3 h-3" />
+                      <span>{{ currentLanguage === 'kh' ? 'នាំផ្លូវ' : 'Directions' }}</span>
+                    </a>
+                  </div>
+                </div>
               </div>
 
-              <!-- Clickable Facility Pins on Map -->
-              <div class="absolute inset-0 z-20 pointer-events-none">
-                <button
-                  v-for="(hosp, idx) in filteredHospitals.slice(0, 12)"
-                  :key="hosp.id"
-                  type="button"
-                  @click="selectedMapHospital = hosp"
-                  :style="{
-                    left: `${18 + (idx * 21) % 68}%`,
-                    top: `${16 + (idx * 29) % 68}%`
-                  }"
-                  :class="[
-                    'pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 group cursor-pointer transition-transform duration-200 hover:scale-125 focus:outline-none z-20',
-                    selectedMapHospital?.id === hosp.id ? 'scale-125 z-30' : ''
-                  ]"
-                  :title="hosp.nameKh || hosp.name"
-                >
-                  <div
+              <!-- Quick Facility Selection Chips Under the Real Map -->
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-bold px-1">
+                  <span>{{ currentLanguage === 'kh' ? 'ចុចជ្រើសរើសមណ្ឌលសុខភាពដើម្បីមើលលើផែនទី៖' : 'Select a facility to view on real map:' }}</span>
+                  <span class="text-[11px] font-medium text-slate-400">{{ filteredHospitals.length }} {{ currentLanguage === 'kh' ? 'ទីតាំង' : 'places' }}</span>
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-1.5 scrollbar-thin">
+                  <button
+                    v-for="hosp in filteredHospitals"
+                    :key="hosp.id"
+                    type="button"
+                    @click="selectedMapHospital = hosp"
                     :class="[
-                      'relative flex h-9 w-9 items-center justify-center rounded-2xl shadow-lg border-2 border-white transition-all',
-                      hosp.category === 'hospital' ? 'bg-blue-600 text-white' :
-                      hosp.category === 'clinic' ? 'bg-violet-600 text-white' :
-                      'bg-emerald-600 text-white',
-                      selectedMapHospital?.id === hosp.id ? 'ring-4 ring-white/50' : ''
+                      'shrink-0 flex items-center gap-2 px-3 py-2 rounded-2xl text-xs font-bold transition-all border text-left',
+                      selectedMapHospital?.id === hosp.id
+                        ? 'bg-[#0D47A1] text-white border-[#0D47A1] shadow-sm ring-2 ring-blue-300 dark:ring-blue-800'
+                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
                     ]"
                   >
-                    <HeartPulse v-if="hosp.category === 'hospital'" class="h-4.5 w-4.5" />
-                    <Stethoscope v-else-if="hosp.category === 'clinic'" class="h-4.5 w-4.5" />
-                    <Pill v-else class="h-4.5 w-4.5" />
-                  </div>
-
-                  <span class="absolute left-1/2 -translate-x-1/2 -top-8 hidden group-hover:block whitespace-nowrap rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-bold text-white shadow-md border border-white/10 z-40">
-                    {{ hosp.nameKh || hosp.name }}
-                  </span>
-                </button>
-              </div>
-
-              <!-- Map Legend -->
-              <div class="relative z-10 flex flex-wrap items-center gap-3 bg-slate-900/85 backdrop-blur-md p-2.5 rounded-2xl border border-white/10 text-[11px] text-white">
-                <span class="flex items-center gap-1.5 font-bold">
-                  <span class="h-2.5 w-2.5 rounded-full bg-blue-500" />
-                  {{ currentLanguage === 'kh' ? 'មន្ទីរពេទ្យ' : 'Hospital' }}
-                </span>
-                <span class="flex items-center gap-1.5 font-bold">
-                  <span class="h-2.5 w-2.5 rounded-full bg-violet-500" />
-                  {{ currentLanguage === 'kh' ? 'គ្លីនិកឯកទេស' : 'Clinic' }}
-                </span>
-                <span class="flex items-center gap-1.5 font-bold">
-                  <span class="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                  {{ currentLanguage === 'kh' ? 'ឱសថស្ថាន' : 'Pharmacy' }}
-                </span>
+                    <div
+                      :class="[
+                        'w-2 h-2 rounded-full shrink-0',
+                        hosp.category === 'hospital' ? 'bg-blue-400' : hosp.category === 'clinic' ? 'bg-violet-400' : 'bg-emerald-400'
+                      ]"
+                    />
+                    <span class="truncate max-w-[150px]">{{ hosp.nameKh || hosp.name }}</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -850,18 +820,28 @@ function getDirectionsUrl(hosp: Hospital) {
               </div>
 
               <!-- Actions -->
-              <div class="grid grid-cols-2 gap-2 pt-3 border-t border-slate-200 dark:border-slate-700/60">
+              <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200 dark:border-slate-700/60">
                 <a
                   :href="`tel:${selectedMapHospital.phone}`"
-                  class="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all active:scale-95 shadow-xs"
+                  class="inline-flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all active:scale-95 shadow-xs"
                 >
                   <PhoneCall class="h-3.5 w-3.5" />
                   <span>{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទ' : 'Call' }}</span>
                 </a>
 
+                <a
+                  :href="directionsUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-xs"
+                >
+                  <Navigation class="h-3.5 w-3.5 text-blue-600" />
+                  <span>{{ currentLanguage === 'kh' ? 'នាំផ្លូវ' : 'Map' }}</span>
+                </a>
+
                 <router-link
                   :to="'/health/' + selectedMapHospital.id"
-                  class="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-xs"
+                  class="inline-flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-xs"
                 >
                   <span>{{ currentLanguage === 'kh' ? 'មើលលម្អិត' : 'Details' }}</span>
                   <ArrowRight class="h-3.5 w-3.5" />
@@ -901,91 +881,491 @@ function getDirectionsUrl(hosp: Hospital) {
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           <!-- Guide 1: Emergency SAMU 119 -->
-          <div class="rounded-2xl border border-rose-100 bg-rose-50/50 dark:border-rose-900/40 dark:bg-rose-950/20 p-5 space-y-3">
+          <div
+            @click="openEmergency"
+            role="button"
+            tabindex="0"
+            @keydown.enter="openEmergency"
+            class="group cursor-pointer rounded-2xl border border-rose-200/80 bg-rose-50/50 hover:bg-rose-50/90 dark:border-rose-900/40 dark:bg-rose-950/20 dark:hover:bg-rose-950/30 p-5 space-y-3.5 transition-all duration-200 hover:shadow-lg hover:shadow-rose-900/5 hover:-translate-y-0.5"
+          >
             <div class="flex items-center justify-between">
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-600 text-white shadow-sm">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-600 text-white shadow-md shadow-rose-600/25 group-hover:scale-110 transition-transform">
                 <Ambulance class="h-5 w-5" />
               </div>
-              <span class="text-xs font-black text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-900/60 px-2.5 py-1 rounded-full">
+              <span class="text-xs font-black text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-900/60 px-2.5 py-1 rounded-full border border-rose-200/70 dark:border-rose-800">
                 Free 119
               </span>
             </div>
-            <h3 class="text-sm font-black text-[#0A2540] dark:text-white">
-              {{ currentLanguage === 'kh' ? '១. សង្គ្រោះបន្ទាន់ (SAMU 119)' : '1. Emergency Care (SAMU 119)' }}
-            </h3>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              {{ currentLanguage === 'kh'
-                ? 'ក្នុងករណីមានគ្រោះថ្នាក់ចរាចរណ៍ ឬជំងឺធ្ងន់ធ្ងរ សូមទាក់ទងលេខ ១១៩ ភ្លាមៗដោយឥតគិតថ្លៃ និងប្រាប់ទីតាំងឱ្យបានច្បាស់លាស់។'
-                : 'For critical trauma, cardiac events, or accidents, call 119 immediately with precise landmarks for free ambulance dispatch.'
-              }}
-            </p>
-            <a
-              href="tel:119"
-              class="inline-flex items-center gap-1.5 text-xs font-black text-rose-600 dark:text-rose-400 hover:underline pt-1"
-            >
-              <span>{{ currentLanguage === 'kh' ? 'ហៅទូរស័ព្ទ ១១៩ ឥឡូវ' : 'Call 119 Hotline' }}</span>
-              <ArrowRight class="w-3.5 h-3.5" />
-            </a>
+            <div>
+              <h3 class="text-sm font-black text-[#0A2540] dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                {{ currentLanguage === 'kh' ? '១. សង្គ្រោះបន្ទាន់ (SAMU 119)' : '1. Emergency Care (SAMU 119)' }}
+              </h3>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-1">
+                {{ currentLanguage === 'kh'
+                  ? 'ក្នុងករណីមានគ្រោះថ្នាក់ចរាចរណ៍ ឬជំងឺធ្ងន់ធ្ងរ សូមទាក់ទងលេខ ១១៩ ភ្លាមៗដោយឥតគិតថ្លៃ និងប្រាប់ទីតាំងឱ្យបានច្បាស់លាស់។'
+                  : 'For critical trauma, cardiac events, or accidents, call 119 immediately with precise landmarks for free ambulance dispatch.'
+                }}
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-1 gap-2">
+              <a
+                href="tel:119"
+                @click.stop
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-xs transition-all active:scale-95"
+              >
+                <PhoneCall class="w-3.5 h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'ហៅ ១១៩' : 'Call 119' }}</span>
+              </a>
+              <span class="inline-flex items-center gap-1 text-xs font-black text-rose-600 dark:text-rose-400 group-hover:underline">
+                <span>{{ currentLanguage === 'kh' ? 'ទំព័រសង្គ្រោះបន្ទាន់' : 'Emergency Center' }}</span>
+                <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+            </div>
           </div>
 
           <!-- Guide 2: NSSF Health Insurance -->
-          <div class="rounded-2xl border border-emerald-100 bg-emerald-50/50 dark:border-emerald-900/40 dark:bg-emerald-950/20 p-5 space-y-3">
+          <div
+            @click="openNssfModal"
+            role="button"
+            tabindex="0"
+            @keydown.enter="openNssfModal"
+            class="group cursor-pointer rounded-2xl border border-emerald-200/80 bg-emerald-50/50 hover:bg-emerald-50/90 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:hover:bg-emerald-950/30 p-5 space-y-3.5 transition-all duration-200 hover:shadow-lg hover:shadow-emerald-900/5 hover:-translate-y-0.5"
+          >
             <div class="flex items-center justify-between">
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/25 group-hover:scale-110 transition-transform">
                 <ShieldCheck class="h-5 w-5" />
               </div>
-              <span class="text-xs font-black text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2.5 py-1 rounded-full">
+              <span class="text-xs font-black text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2.5 py-1 rounded-full border border-emerald-200/70 dark:border-emerald-800">
                 Hotline 1286
               </span>
             </div>
-            <h3 class="text-sm font-black text-[#0A2540] dark:text-white">
-              {{ currentLanguage === 'kh' ? '២. ប័ណ្ណរបបសន្តិសុខសង្គម (ប.ស.ស)' : '2. NSSF Healthcare Card' }}
-            </h3>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              {{ currentLanguage === 'kh'
-                ? 'មន្ទីរពេទ្យរដ្ឋ និងគ្លីនិកដៃគូទទួលពិនិត្យ និងព្យាបាលអ្នកមានប័ណ្ណ ប.ស.ស ដោយឥតគិតថ្លៃ ឬទទួលបានការឧបត្ថម្ភស្របច្បាប់។'
-                : 'Public referral hospitals and certified partner clinics provide free or subsidized treatment for active NSSF cardholders.'
-              }}
-            </p>
-            <a
-              href="tel:1286"
-              class="inline-flex items-center gap-1.5 text-xs font-black text-emerald-600 dark:text-emerald-400 hover:underline pt-1"
-            >
-              <span>{{ currentLanguage === 'kh' ? 'ទាក់ទង ប.ស.ស ១២៨៦' : 'Call NSSF 1286' }}</span>
-              <ArrowRight class="w-3.5 h-3.5" />
-            </a>
+            <div>
+              <h3 class="text-sm font-black text-[#0A2540] dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                {{ currentLanguage === 'kh' ? '២. ប័ណ្ណរបបសន្តិសុខសង្គម (ប.ស.ស)' : '2. NSSF Healthcare Card' }}
+              </h3>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-1">
+                {{ currentLanguage === 'kh'
+                  ? 'មន្ទីរពេទ្យរដ្ឋ និងគ្លីនិកដៃគូទទួលពិនិត្យ និងព្យាបាលអ្នកមានប័ណ្ណ ប.ស.ស ដោយឥតគិតថ្លៃ ឬទទួលបានការឧបត្ថម្ភស្របច្បាប់។'
+                  : 'Public referral hospitals and certified partner clinics provide free or subsidized treatment for active NSSF cardholders.'
+                }}
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-1 gap-2">
+              <button
+                type="button"
+                @click.stop="filterByNssf"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-xs transition-all active:scale-95"
+              >
+                <ShieldCheck class="w-3.5 h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'មើលពេទ្យ ប.ស.ស' : 'NSSF Hospitals' }}</span>
+              </button>
+              <span class="inline-flex items-center gap-1 text-xs font-black text-emerald-600 dark:text-emerald-400 group-hover:underline">
+                <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានលម្អិត' : 'Guide Details' }}</span>
+                <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+            </div>
           </div>
 
           <!-- Guide 3: Patient Documents -->
-          <div class="rounded-2xl border border-blue-100 bg-blue-50/50 dark:border-blue-900/40 dark:bg-blue-950/20 p-5 space-y-3">
+          <div
+            @click="openDocModal"
+            role="button"
+            tabindex="0"
+            @keydown.enter="openDocModal"
+            class="group cursor-pointer rounded-2xl border border-blue-200/80 bg-blue-50/50 hover:bg-blue-50/90 dark:border-blue-900/40 dark:bg-blue-950/20 dark:hover:bg-blue-950/30 p-5 space-y-3.5 transition-all duration-200 hover:shadow-lg hover:shadow-blue-900/5 hover:-translate-y-0.5"
+          >
             <div class="flex items-center justify-between">
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/25 group-hover:scale-110 transition-transform">
                 <FileText class="h-5 w-5" />
               </div>
-              <span class="text-xs font-black text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/60 px-2.5 py-1 rounded-full">
+              <span class="text-xs font-black text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/60 px-2.5 py-1 rounded-full border border-blue-200/70 dark:border-blue-800">
                 Checklist
               </span>
             </div>
-            <h3 class="text-sm font-black text-[#0A2540] dark:text-white">
-              {{ currentLanguage === 'kh' ? '៣. ឯកសារនាំយកពេលទៅពេទ្យ' : '3. Patient Admission Documents' }}
-            </h3>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              {{ currentLanguage === 'kh'
-                ? 'សូមភ្ជាប់មកជាមួយនូវអត្តសញ្ញាណប័ណ្ណ ប័ណ្ណ ប.ស.ស (បើមាន) និងសៀវភៅតាមដានសុខភាព ឬវេជ្ជបញ្ជាចាស់ៗ។'
-                : 'Always bring your National ID card, active NSSF card, and previous prescription records for seamless patient intake.'
-              }}
-            </p>
-            <router-link
-              to="/emergency"
-              class="inline-flex items-center gap-1.5 text-xs font-black text-blue-600 dark:text-blue-400 hover:underline pt-1"
-            >
-              <span>{{ currentLanguage === 'kh' ? 'មជ្ឈមណ្ឌលសង្គ្រោះបន្ទាន់' : 'Emergency Center' }}</span>
-              <ArrowRight class="w-3.5 h-3.5" />
-            </router-link>
+            <div>
+              <h3 class="text-sm font-black text-[#0A2540] dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {{ currentLanguage === 'kh' ? '៣. ឯកសារនាំយកពេលទៅពេទ្យ' : '3. Patient Admission Documents' }}
+              </h3>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-1">
+                {{ currentLanguage === 'kh'
+                  ? 'សូមភ្ជាប់មកជាមួយនូវអត្តសញ្ញាណប័ណ្ណ ប័ណ្ណ ប.ស.ស (បើមាន) និងសៀវភៅតាមដានសុខភាព ឬវេជ្ជបញ្ជាចាស់ៗ។'
+                  : 'Always bring your National ID card, active NSSF card, and previous prescription records for seamless patient intake.'
+                }}
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-1 gap-2">
+              <button
+                type="button"
+                @click.stop="openDocModal"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-xs transition-all active:scale-95"
+              >
+                <FileText class="w-3.5 h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'បើកបញ្ជីឯកសារ' : 'Open Checklist' }}</span>
+              </button>
+              <span class="inline-flex items-center gap-1 text-xs font-black text-blue-600 dark:text-blue-400 group-hover:underline">
+                <span>{{ currentLanguage === 'kh' ? '៦ ឯកសារចាំបាច់' : '6 Key Items' }}</span>
+                <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+            </div>
           </div>
         </div>
       </section>
     </div>
+
+    <!-- MODAL 1: NSSF HEALTHCARE CARD GUIDE MODAL -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-opacity duration-200"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-150"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="isNssfModalOpen"
+          class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs overflow-y-auto"
+          @click.self="isNssfModalOpen = false"
+        >
+          <div class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-6 animate-scaleUp">
+            <!-- Modal Header -->
+            <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-emerald-50/50 dark:bg-emerald-950/20">
+              <div class="flex items-center gap-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
+                  <ShieldCheck class="w-5 h-5" />
+                </span>
+                <div>
+                  <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                    {{ currentLanguage === 'kh' ? 'ការណែនាំអំពីការប្រើប្រាស់ប័ណ្ណ ប.ស.ស' : 'NSSF Healthcare Card User Guide' }}
+                  </h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">
+                    {{ currentLanguage === 'kh' ? 'បេឡាជាតិសន្តិសុខសង្គម — ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ' : 'National Social Security Fund — Healthcare Scheme' }}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                @click="isNssfModalOpen = false"
+                class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <X class="w-5 h-5" />
+              </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6 space-y-5 max-h-[75vh] overflow-y-auto text-xs sm:text-sm">
+              <!-- Benefit Points -->
+              <div class="space-y-3">
+                <h4 class="font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-emerald-500" />
+                  <span>{{ currentLanguage === 'kh' ? 'សិទ្ធិ និងអត្ថប្រយោជន៍ដែលទទួលបាន៖' : 'Benefits & Coverage:' }}</span>
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 space-y-1">
+                    <strong class="font-bold text-emerald-950 dark:text-emerald-200 block text-xs">
+                      {{ currentLanguage === 'kh' ? '១. ពិនិត្យ និងព្យាបាលឥតគិតថ្លៃ' : '1. Free Consultation & Treatment' }}
+                    </strong>
+                    <p class="text-xs text-slate-600 dark:text-slate-300">
+                      {{ currentLanguage === 'kh' ? 'ពិនិត្យជំងឺទូទៅ សម្រាកពេទ្យ វះកាត់ និងថ្នាំពេទ្យតាមកម្រិតកំណត់នៅមន្ទីរពេទ្យរដ្ឋ និងដៃគូ។' : 'General care, in-patient hospitalization, surgery, and prescription drugs.' }}
+                    </p>
+                  </div>
+                  <div class="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 space-y-1">
+                    <strong class="font-bold text-emerald-950 dark:text-emerald-200 block text-xs">
+                      {{ currentLanguage === 'kh' ? '២. សេវាសម្ភព និងសម្រាលកូន' : '2. Maternity & Delivery Care' }}
+                    </strong>
+                    <p class="text-xs text-slate-600 dark:text-slate-300">
+                      {{ currentLanguage === 'kh' ? 'ការពិនិត្យផ្ទៃពោះ សម្រាលកូន និងប្រាក់ឧបត្ថម្ភរាជរដ្ឋាភិបាលសម្រាប់កម្មការិនី។' : 'Free prenatal checks, delivery, and government maternity cash subsidies.' }}
+                    </p>
+                  </div>
+                  <div class="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 space-y-1">
+                    <strong class="font-bold text-emerald-950 dark:text-emerald-200 block text-xs">
+                      {{ currentLanguage === 'kh' ? '៣. សង្គ្រោះបន្ទាន់ និងគ្រោះថ្នាក់' : '3. Emergency & Occupational Injury' }}
+                    </strong>
+                    <p class="text-xs text-slate-600 dark:text-slate-300">
+                      {{ currentLanguage === 'kh' ? 'ការសង្គ្រោះបន្ទាន់ពេលមានគ្រោះថ្នាក់ការងារ ឬគ្រោះថ្នាក់តាមផ្លូវធ្វើដំណើរទៅបំពេញការងារ។' : 'Immediate emergency treatment for work-related accidents and commuting injuries.' }}
+                    </p>
+                  </div>
+                  <div class="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 space-y-1">
+                    <strong class="font-bold text-emerald-950 dark:text-emerald-200 block text-xs">
+                      {{ currentLanguage === 'kh' ? '៤. ការបញ្ជូនអ្នកជំងឺ (Ambulance)' : '4. Emergency Ambulance Dispatch' }}
+                    </strong>
+                    <p class="text-xs text-slate-600 dark:text-slate-300">
+                      {{ currentLanguage === 'kh' ? 'សេវារថយន្តសង្គ្រោះបន្ទាន់បញ្ជូនពីកន្លែងកើតហេតុទៅកាន់មន្ទីរពេទ្យដៃគូដែលនៅជិតបំផុត។' : 'Free ambulance transport to certified referral hospitals during emergencies.' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- How to Use Step by Step -->
+              <div class="space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <h4 class="font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-emerald-500" />
+                  <span>{{ currentLanguage === 'kh' ? 'របៀបប្រើប្រាស់ប័ណ្ណពេលទៅមន្ទីរពេទ្យ៖' : 'How to Access Healthcare with NSSF:' }}</span>
+                </h4>
+                <ol class="space-y-2 text-xs text-slate-600 dark:text-slate-300 list-decimal pl-4 leading-relaxed">
+                  <li>{{ currentLanguage === 'kh' ? 'យកប័ណ្ណ ប.ស.ស (ប័ណ្ណរឹង ឬប័ណ្ណអេឡិចត្រូនិកក្នុង App NSSF Member) ភ្ជាប់ជាមួយអត្តសញ្ញាណប័ណ្ណ។' : 'Present your physical NSSF card or digital e-card on the NSSF Member app along with your National ID.' }}</li>
+                  <li>{{ currentLanguage === 'kh' ? 'បង្ហាញប័ណ្ណនៅបញ្ជរបម្រើសេវា ប.ស.ស នៅផ្នែកចុះឈ្មោះអ្នកជំងឺនៃមន្ទីរពេទ្យដៃគូ។' : 'Show your card at the dedicated NSSF registration counter at the referral hospital.' }}</li>
+                  <li>{{ currentLanguage === 'kh' ? 'ពិនិត្យព្យាបាលតាមវេជ្ជបញ្ជាដោយមិនបាច់បង់ប្រាក់លើសេវាដែលមានចែងក្នុងតារាងឧបត្ថម្ភ។' : 'Receive diagnosis and care without out-of-pocket payment for covered treatments.' }}</li>
+                </ol>
+              </div>
+
+              <!-- Hotline banner -->
+              <div class="p-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
+                <div class="flex items-center gap-3">
+                  <PhoneCall class="w-6 h-6 shrink-0" />
+                  <div>
+                    <div class="font-black text-sm">{{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទទាន់ហេតុការណ៍ ប.ស.ស' : 'NSSF National Hotline' }}</div>
+                    <div class="text-xs text-emerald-100">{{ currentLanguage === 'kh' ? 'ហៅឥតគិតថ្លៃរៀងរាល់ម៉ោងធ្វើការ (ច័ន្ទ - សុក្រ)' : 'Toll-free Mon - Fri 7:30 - 17:00' }}</div>
+                  </div>
+                </div>
+                <a
+                  href="tel:1286"
+                  class="shrink-0 px-4 py-2 rounded-xl bg-white text-emerald-800 font-black text-xs hover:bg-emerald-50 transition-all shadow-sm active:scale-95"
+                >
+                  {{ currentLanguage === 'kh' ? 'ហៅទៅលេខ ១២៨៦' : 'Dial 1286' }}
+                </a>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/50">
+              <span class="text-xs text-slate-500 font-medium">
+                {{ currentLanguage === 'kh' ? 'មានមន្ទីរពេទ្យចំនួន ' + nssfHospitalsCount + ' ទទួលប័ណ្ណ ប.ស.ស' : nssfHospitalsCount + ' facilities accept NSSF' }}
+              </span>
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  @click="isNssfModalOpen = false"
+                  class="flex-1 sm:flex-initial px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800"
+                >
+                  {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
+                </button>
+                <button
+                  type="button"
+                  @click="filterByNssf"
+                  class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all"
+                >
+                  <ShieldCheck class="w-3.5 h-3.5" />
+                  <span>{{ currentLanguage === 'kh' ? 'បង្ហាញមន្ទីរពេទ្យ ប.ស.ស ទាំងអស់' : 'Show All NSSF Hospitals' }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- MODAL 2: PATIENT DOCUMENT CHECKLIST MODAL -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-opacity duration-200"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-150"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="isDocModalOpen"
+          class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs overflow-y-auto"
+          @click.self="isDocModalOpen = false"
+        >
+          <div class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-6 animate-scaleUp">
+            <!-- Modal Header -->
+            <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-blue-50/50 dark:bg-blue-950/20">
+              <div class="flex items-center gap-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-600/30">
+                  <FileText class="w-5 h-5" />
+                </span>
+                <div>
+                  <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                    {{ currentLanguage === 'kh' ? 'បញ្ជីឯកសារចាំបាច់ពេលទៅពិនិត្យ ឬសម្រាកពេទ្យ' : 'Patient Hospital Visit Document Checklist' }}
+                  </h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">
+                    {{ currentLanguage === 'kh' ? 'ចុចធីកលើប្រអប់ដើម្បីផ្ទៀងផ្ទាត់ឯកសារមុនចេញដំណើរ' : 'Check off items as you prepare them before visiting the hospital' }}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                @click="isDocModalOpen = false"
+                class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <X class="w-5 h-5" />
+              </button>
+            </div>
+
+            <!-- Modal Content (Interactive Checklist) -->
+            <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs sm:text-sm">
+              <div class="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900 text-xs text-blue-900 dark:text-blue-200 flex items-start gap-2.5">
+                <BadgeCheck class="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <span>{{ currentLanguage === 'kh' ? 'ការរៀបចំឯកសារបានត្រឹមត្រូវជួយសន្សំពេលវេលាចុះឈ្មោះ និងធានាថាអ្នកទទួលបានអត្ថប្រយោជន៍ព្យាបាលពេញលេញ។' : 'Bringing proper documentation prevents intake delays and guarantees access to full insurance and subsidy coverage.' }}</span>
+              </div>
+
+              <!-- Category A: Identity & Coverage -->
+              <div class="space-y-2.5">
+                <h4 class="font-black text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  {{ currentLanguage === 'kh' ? 'ក. ឯកសារសម្គាល់ខ្លួន និងសិទ្ធិព្យាបាល' : 'A. Identity & Insurance Coverage' }}
+                </h4>
+                <div class="space-y-2">
+                  <!-- Item 1 -->
+                  <div
+                    @click="toggleDoc('idCard')"
+                    role="button"
+                    tabindex="0"
+                    class="flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none"
+                    :class="checkedDocs.idCard ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'"
+                  >
+                    <div
+                      class="h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 border transition-colors"
+                      :class="checkedDocs.idCard ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700'"
+                    >
+                      <Check v-if="checkedDocs.idCard" class="w-3.5 h-3.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <div class="font-black text-xs">{{ currentLanguage === 'kh' ? '១. អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (National ID)' : '1. National ID Card' }}</div>
+                      <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ currentLanguage === 'kh' ? 'ឬលិខិតឆ្លងដែន (Passport) ឬសំបុត្រកំណើតច្បាប់ដើម (សម្រាប់កុមារ)' : 'Or passport / original birth certificate for minors.' }}</div>
+                    </div>
+                  </div>
+
+                  <!-- Item 2 -->
+                  <div
+                    @click="toggleDoc('nssfCard')"
+                    role="button"
+                    tabindex="0"
+                    class="flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none"
+                    :class="checkedDocs.nssfCard ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'"
+                  >
+                    <div
+                      class="h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 border transition-colors"
+                      :class="checkedDocs.nssfCard ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700'"
+                    >
+                      <Check v-if="checkedDocs.nssfCard" class="w-3.5 h-3.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <div class="font-black text-xs">{{ currentLanguage === 'kh' ? '២. ប័ណ្ណរបបសន្តិសុខសង្គម (ប.ស.ស) ឬប័ណ្ណសមធម៌' : '2. NSSF Card or Health Equity Card' }}</div>
+                      <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ currentLanguage === 'kh' ? 'ប័ណ្ណរឹង ឬ App NSSF Member ឬប័ណ្ណមូលនិធិសមធម៌សុខភាព (ប័ណ្ណក្រីក្រ)' : 'Active physical/digital NSSF card or poverty health equity card.' }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category B: Medical History -->
+              <div class="space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <h4 class="font-black text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  {{ currentLanguage === 'kh' ? 'ខ. ប្រវត្តិវេជ្ជសាស្ត្រ និងឱសថ' : 'B. Medical History & Current Prescriptions' }}
+                </h4>
+                <div class="space-y-2">
+                  <!-- Item 3 -->
+                  <div
+                    @click="toggleDoc('healthBook')"
+                    role="button"
+                    tabindex="0"
+                    class="flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none"
+                    :class="checkedDocs.healthBook ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'"
+                  >
+                    <div
+                      class="h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 border transition-colors"
+                      :class="checkedDocs.healthBook ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700'"
+                    >
+                      <Check v-if="checkedDocs.healthBook" class="w-3.5 h-3.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <div class="font-black text-xs">{{ currentLanguage === 'kh' ? '៣. សៀវភៅតាមដានសុខភាព ឬលទ្ធផលពិនិត្យចាស់ៗ' : '3. Medical History & Previous Test Results' }}</div>
+                      <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ currentLanguage === 'kh' ? 'លទ្ធផលពិនិត្យឈាម អេកូ X-Ray ស្កេន CT ឬវេជ្ជបញ្ជាដែលធ្លាប់ព្យាបាលកន្លងមក' : 'Recent blood panels, X-rays, ultrasound reports, or past discharge summaries.' }}</div>
+                    </div>
+                  </div>
+
+                  <!-- Item 4 -->
+                  <div
+                    @click="toggleDoc('medications')"
+                    role="button"
+                    tabindex="0"
+                    class="flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none"
+                    :class="checkedDocs.medications ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'"
+                  >
+                    <div
+                      class="h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 border transition-colors"
+                      :class="checkedDocs.medications ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700'"
+                    >
+                      <Check v-if="checkedDocs.medications" class="w-3.5 h-3.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <div class="font-black text-xs">{{ currentLanguage === 'kh' ? '៤. ថ្នាំពេទ្យដែលកំពុងលេបប្រចាំថ្ងៃ' : '4. Current Medication List & Dosages' }}</div>
+                      <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ currentLanguage === 'kh' ? 'យកកញ្ចប់ថ្នាំជាក់ស្តែងមកជាមួយ (ជាពិសេសថ្នាំលើសសម្ពាធឈាម ទឹកនោមផ្អែម បេះដូង)' : 'Bring actual medication boxes (hypertension, diabetes, heart prescriptions).' }}</div>
+                    </div>
+                  </div>
+
+                  <!-- Item 5 -->
+                  <div
+                    @click="toggleDoc('allergyCard')"
+                    role="button"
+                    tabindex="0"
+                    class="flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none"
+                    :class="checkedDocs.allergyCard ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'"
+                  >
+                    <div
+                      class="h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 border transition-colors"
+                      :class="checkedDocs.allergyCard ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700'"
+                    >
+                      <Check v-if="checkedDocs.allergyCard" class="w-3.5 h-3.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <div class="font-black text-xs">{{ currentLanguage === 'kh' ? '៥. កាតកត់ត្រាប្រតិកម្មថ្នាំ (Allergies Card)' : '5. Drug & Food Allergy Records' }}</div>
+                      <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ currentLanguage === 'kh' ? 'ប្រាប់គ្រូពេទ្យជាមុនប្រសិនបើអ្នកធ្លាប់មានប្រតិកម្មជាមួយថ្នាំ Penicillin ឬថ្នាំស្ពឹក' : 'Crucial: notify triage staff of any allergies to penicillin, anesthesia, or foods.' }}</div>
+                    </div>
+                  </div>
+
+                  <!-- Item 6 -->
+                  <div
+                    @click="toggleDoc('emergencyContact')"
+                    role="button"
+                    tabindex="0"
+                    class="flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none"
+                    :class="checkedDocs.emergencyContact ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'"
+                  >
+                    <div
+                      class="h-5 w-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 border transition-colors"
+                      :class="checkedDocs.emergencyContact ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700'"
+                    >
+                      <Check v-if="checkedDocs.emergencyContact" class="w-3.5 h-3.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <div class="font-black text-xs">{{ currentLanguage === 'kh' ? '៦. លេខទូរស័ព្ទសាច់ញាតិ ឬអាណាព្យាបាលបន្ទាន់' : '6. Emergency Contact Details' }}</div>
+                      <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទសាច់ញាតិជិតស្និទ្ធយ៉ាងតិច ២ នាក់ដែលអាចទំនាក់ទំនងបានគ្រប់ពេល' : 'At least two active telephone numbers of family members or legal guardians.' }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Emergency Note -->
+              <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/60 text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
+                <strong>{{ currentLanguage === 'kh' ? 'ចំណាំសង្គ្រោះបន្ទាន់៖' : 'Emergency Note:' }}</strong>
+                {{ currentLanguage === 'kh' ? ' ក្នុងករណីសង្គ្រោះបន្ទាន់គំរាមកំហែងដល់អាយុជីវិត សូមប្រញាប់ទៅមន្ទីរពេទ្យភ្លាមៗ។ គ្រូពេទ្យនឹងសង្គ្រោះជាបន្ទាន់ ដោយឯកសារអាចបំពេញបន្ថែមពេលក្រោយបាន។' : ' In life-threatening emergencies, proceed to the nearest ER immediately. Triage will stabilize the patient before requesting documents.' }}
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/50">
+              <button
+                type="button"
+                @click="resetDocChecklist"
+                class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 underline font-medium"
+              >
+                {{ currentLanguage === 'kh' ? 'សម្អាតការធីកឡើងវិញ' : 'Reset Checkmarks' }}
+              </button>
+              <button
+                type="button"
+                @click="isDocModalOpen = false"
+                class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
+              >
+                {{ currentLanguage === 'kh' ? 'បានយល់ព្រម & បិទ' : 'Done & Close' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 

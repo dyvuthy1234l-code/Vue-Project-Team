@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ChevronRight, Home, ShieldCheck, MapPin } from 'lucide-vue-next'
-import LocationSelector from '@/components/LocationSelector.vue'
+import { ShieldCheck, MapPin, Landmark } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useLocation } from '@/composables/useLocation'
 
@@ -11,17 +10,21 @@ withDefaults(
     badge?: string
     badgeKh?: string
     bannerImage?: string
+    bannerImageClass?: string
+    imageOpacity?: string
     breadcrumbCurrent?: string
     showLocationSelector?: boolean
     statsText?: string
   }>(),
   {
     showLocationSelector: true,
-    bannerImage: '/images/pillars/government.jpg'
+    bannerImage: '/images/pillars/government.jpg',
+    bannerImageClass: 'object-right md:object-center',
+    imageOpacity: 'opacity-50 sm:opacity-65'
   }
 )
 
-const { t, currentLanguage } = useLanguage()
+const { currentLanguage } = useLanguage()
 const { selectedProvince } = useLocation()
 </script>
 
@@ -35,36 +38,34 @@ const { selectedProvince } = useLocation()
         <img
           :src="bannerImage"
           alt="Banner Illustration"
-          class="w-full h-full object-cover opacity-20 filter contrast-125 scale-105"
+          :class="[
+            'w-full h-full object-cover filter contrast-110 brightness-95 transition-all duration-300',
+            bannerImageClass || 'object-right md:object-center',
+            imageOpacity || 'opacity-50 sm:opacity-65'
+          ]"
         />
-        <!-- Deep Royal Gradient Mask -->
-        <div class="absolute inset-0 bg-gradient-to-r from-[#061838]/95 via-[#0A2E6E]/85 to-[#061838]/90" />
+        <!-- Deep Royal Gradient Mask: keeps left content 100% legible while showing right image clearly -->
+        <div class="absolute inset-0 bg-gradient-to-r from-[#061838] via-[#061838]/85 via-40% sm:via-[#0A2E6E]/60 to-transparent" />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#061838]/60 via-transparent to-[#061838]/20" />
       </div>
 
       <!-- Ambient Glow Orbs -->
       <div class="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl" />
       <div class="pointer-events-none absolute right-1/3 -bottom-24 h-64 w-64 rounded-full bg-emerald-400/15 blur-3xl" />
 
-      <!-- Top Row: Breadcrumb & 25 Provinces Selector -->
-      <div class="relative z-10 flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
-        <!-- Breadcrumb -->
-        <nav class="flex items-center gap-2 text-xs font-semibold text-slate-300" aria-label="Breadcrumb">
-          <router-link to="/" class="inline-flex items-center gap-1.5 hover:text-white transition-colors">
-            <Home class="w-3.5 h-3.5" />
-            <span>{{ t('nav.home') }}</span>
-          </router-link>
-          <ChevronRight class="w-3.5 h-3.5 text-white/40" />
-          <span class="text-white font-bold tracking-wide">
-            {{ breadcrumbCurrent || title }}
-          </span>
-        </nav>
-
-        <!-- 25 Provinces / Municipalities Selector -->
-        <div v-if="showLocationSelector" class="flex items-center gap-2">
+      <!-- Top Row: Active Location Badge (Breadcrumb removed) -->
+      <div v-if="showLocationSelector" class="relative z-10 flex items-center justify-end gap-4 mb-6 pb-4 border-b border-white/10">
+        <!-- Active Global Province Badge -->
+        <div class="flex items-center gap-2">
           <span class="hidden sm:inline text-xs text-blue-200/80 font-medium">
             {{ currentLanguage === 'kh' ? 'ទីតាំងរាជធានី-ខេត្ត:' : 'Active Location:' }}
           </span>
-          <LocationSelector variant="banner" />
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 text-white border border-white/20 backdrop-blur-md shadow-xs text-xs font-bold">
+            <div class="flex items-center justify-center rounded-lg p-1 bg-emerald-400/20 text-emerald-300">
+              <MapPin class="w-3.5 h-3.5 shrink-0" />
+            </div>
+            <span>{{ selectedProvince ? (currentLanguage === 'kh' ? selectedProvince.nameKh : selectedProvince.name) : (currentLanguage === 'kh' ? '២៥ ខេត្ត-ក្រុង' : 'All 25 Provinces') }}</span>
+          </div>
         </div>
       </div>
 

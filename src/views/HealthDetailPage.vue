@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   PhoneCall,
@@ -9,7 +9,6 @@ import {
   CheckCircle,
   ArrowLeft,
   ShieldCheck,
-  ChevronRight,
   Star,
   Building2,
   Stethoscope,
@@ -22,17 +21,20 @@ import {
   Sparkles,
   FileText,
   BadgeCheck,
-  Zap
+  Zap,
+  LocateFixed
 } from 'lucide-vue-next'
 import NotFoundState from '@/components/NotFoundState.vue'
 import ShareButtons from '@/components/ShareButtons.vue'
 import ServiceCard from '@/components/ServiceCard.vue'
 import { useLanguage } from '@/composables/useLanguage'
+import { useLocation } from '@/composables/useLocation'
 import { getHospitalById, getHospitals } from '@/services/dataService'
 import { usePageMeta } from '@/composables/usePageMeta'
 
 const route = useRoute()
 const { t, currentLanguage, localized } = useLanguage()
+const { selectedProvince } = useLocation()
 
 const copiedPhone = ref(false)
 let copyTimeout: ReturnType<typeof setTimeout> | null = null
@@ -54,16 +56,130 @@ const relatedHospitals = computed(() => {
     .slice(0, 3)
 })
 
-const mapEmbedUrl = computed(() => {
-  if (hospital.value?.coordinates?.lat && hospital.value?.coordinates?.lng) {
-    return `https://www.google.com/maps?q=${hospital.value.coordinates.lat},${hospital.value.coordinates.lng}&z=15&output=embed`
-  }
-  return `https://www.google.com/maps?q=Phnom+Penh+Cambodia&z=13&output=embed`
+// Live User GPS Location Tracking & Distance Computation
+const userGpsCoords = ref<{ lat: number; lng: number } | null>(null)
+const isLocating = ref(false)
+const locationStatus = ref<string>('')
+const mapDisplayMode = ref<'directions' | 'pin'>('directions')
+
+// Haversine direct distance calculation
+function getHaversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371
+  const dLat = (lat2 - lat1) * (Math.PI / 180)
+  const dLon = (lon2 - lon1) * (Math.PI / 180)
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return Number((R * c).toFixed(1))
+}
+
+// Effective origin coordinates (GPS coordinate or active province center)
+const effectiveUserCoords = computed(() => {
+  if (userGpsCoords.value) return userGpsCoords.value
+  if (selectedProvince.value?.coordinates) return selectedProvince.value.coordinates
+  return { lat: 11.5564, lng: 104.9282 }
 })
 
+// Distance to current hospital in km
+const distanceToHospital = computed(() => {
+  if (!hospital.value?.coordinates?.lat || !hospital.value?.coordinates?.lng) return null
+  const u = effectiveUserCoords.value
+  if (!u) return null
+  return getHaversineDistanceKm(u.lat, u.lng, hospital.value.coordinates.lat, hospital.value.coordinates.lng)
+})
+
+// Estimated drive travel time (in minutes)
+const estimatedTravelTime = computed(() => {
+  if (!distanceToHospital.value) return null
+  return Math.max(3, Math.round((distanceToHospital.value / 25) * 60))
+})
+
+// Interactive GPS Detector Trigger
+function detectLiveLocation(notifyIfDenied = true) {
+  if (!navigator.geolocation) {
+    if (notifyIfDenied) {
+      locationStatus.value = currentLanguage.value === 'kh'
+        ? 'ឧបករណ៍ ឬកម្មវិធីរុករករបស់អ្នកមិនគាំទ្រ GPS ទេ'
+        : 'Geolocation is not supported by your browser.'
+    }
+    return
+  }
+
+  isLocating.value = true
+  locationStatus.value = currentLanguage.value === 'kh'
+    ? 'កំពុងចាប់ទីតាំង GPS របស់អ្នក...'
+    : 'Locating your GPS coordinates...'
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      isLocating.value = false
+      const lat = pos.coords.latitude
+      const lng = pos.coords.longitude
+      userGpsCoords.value = { lat, lng }
+      mapDisplayMode.value = 'directions'
+      const dist = distanceToHospital.value
+      locationStatus.value = currentLanguage.value === 'kh'
+        ? `បានចាប់ទីតាំងជោគជ័យ! ចម្ងាយទៅមន្ទីរពេទ្យ៖ ~${dist} គ.ម`
+        : `GPS locked! Distance: ~${dist} km`
+    },
+    () => {
+      isLocating.value = false
+      if (notifyIfDenied) {
+        locationStatus.value = currentLanguage.value === 'kh'
+          ? 'សូមចុច Allow Location លើ Browser ដើម្បីឱ្យ Map ចាប់ទីតាំងជាក់ស្តែង'
+          : 'Please allow Location permission in your browser.'
+      }
+    },
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
+  )
+}
+
+onMounted(() => {
+  // Silent GPS detection on page load
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        userGpsCoords.value = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+      },
+      () => {
+        // Fallback silently to selected province
+      },
+      { enableHighAccuracy: false, timeout: 4000, maximumAge: 60000 }
+    )
+  }
+})
+
+// Computed Google Map Embed URL (Direction Route vs Destination Pin)
+const mapEmbedUrl = computed(() => {
+  if (!hospital.value?.coordinates?.lat || !hospital.value?.coordinates?.lng) {
+    return `https://www.google.com/maps?q=Phnom+Penh+Cambodia&z=13&output=embed`
+  }
+
+  const hLat = hospital.value.coordinates.lat
+  const hLng = hospital.value.coordinates.lng
+
+  // If directions mode with user origin:
+  if (mapDisplayMode.value === 'directions' && effectiveUserCoords.value) {
+    const u = effectiveUserCoords.value
+    return `https://maps.google.com/maps?saddr=${u.lat},${u.lng}&daddr=${hLat},${hLng}&hl=km&output=embed`
+  }
+
+  // Hospital Pin Mode
+  return `https://www.google.com/maps?q=${hLat},${hLng}&z=15&output=embed`
+})
+
+// Computed Direct Google Maps Directions Navigation URL
 const directionsUrl = computed(() => {
   if (hospital.value?.coordinates?.lat && hospital.value?.coordinates?.lng) {
-    return `https://www.google.com/maps/dir/?api=1&destination=${hospital.value.coordinates.lat},${hospital.value.coordinates.lng}`
+    const hLat = hospital.value.coordinates.lat
+    const hLng = hospital.value.coordinates.lng
+    if (effectiveUserCoords.value) {
+      const u = effectiveUserCoords.value
+      return `https://www.google.com/maps/dir/?api=1&origin=${u.lat},${u.lng}&destination=${hLat},${hLng}&travelmode=driving`
+    }
+    return `https://www.google.com/maps/dir/?api=1&destination=${hLat},${hLng}&travelmode=driving`
   }
   if (hospital.value?.address) {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospital.value.address)}`
@@ -143,27 +259,14 @@ const checkedCount = computed(() => patientChecklist.value.filter(item => item.c
     <div class="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-gradient-to-b from-blue-100/50 via-teal-50/25 to-transparent dark:from-blue-950/25 dark:via-slate-900/15 dark:to-transparent" />
 
     <div v-if="hospital" class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 space-y-7">
-      <!-- Breadcrumb & Back Link Navigation Row -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <nav class="flex items-center gap-2 text-xs font-bold text-slate-400" aria-label="Breadcrumb">
-          <router-link to="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            {{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}
-          </router-link>
-          <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-          <router-link to="/health" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            {{ currentLanguage === 'kh' ? 'សុខាភិបាល' : 'Healthcare' }}
-          </router-link>
-          <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-          <span class="text-[#0A2458] dark:text-slate-200 truncate max-w-[200px] sm:max-w-xs">
-            {{ localized(hospital.name, hospital.nameKh) }}
-          </span>
-        </nav>
-
+      <!-- Back Link Navigation Row -->
+      <div class="flex items-center justify-between gap-3">
+        <!-- Back Button on Left -->
         <router-link
           to="/health"
-          class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group w-fit"
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500 shadow-2xs transition-all group shrink-0"
         >
-          <ArrowLeft class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+          <ArrowLeft class="w-4 h-4 transition-transform group-hover:-translate-x-1 text-blue-600 dark:text-blue-400" />
           <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ទៅបញ្ជីសុខាភិបាល' : 'Back to Healthcare Directory' }}</span>
         </router-link>
       </div>
@@ -276,6 +379,9 @@ const checkedCount = computed(() => patientChecklist.value.filter(item => item.c
             >
               <Navigation class="h-4 w-4 text-blue-600 dark:text-blue-400" />
               <span>{{ currentLanguage === 'kh' ? 'ទទួលទិសដៅ' : 'Get Directions' }}</span>
+              <span v-if="distanceToHospital" class="text-[11px] font-black text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                ~{{ distanceToHospital }} គ.ម
+              </span>
             </a>
 
             <!-- Share Buttons -->
@@ -501,17 +607,72 @@ const checkedCount = computed(() => patientChecklist.value.filter(item => item.c
             </div>
           </div>
 
-          <!-- Embedded Interactive Google Map Preview Card -->
-          <div class="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-4 py-3">
-              <div class="flex items-center gap-2 text-xs font-black text-[#0A2458] dark:text-white">
-                <MapPin class="h-4 w-4 text-blue-600" />
-                <span>{{ currentLanguage === 'kh' ? 'ផែនទីទីតាំង' : 'Interactive Map' }}</span>
+          <!-- Embedded Interactive Google Map Preview Card with Live Location Detection -->
+          <div class="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 space-y-0">
+            <!-- Map Card Header with GPS Detection Trigger -->
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-xs font-black text-[#0A2458] dark:text-white">
+                  <MapPin class="h-4 w-4 text-red-500 shrink-0" />
+                  <span>{{ currentLanguage === 'kh' ? 'ផែនទី & ផ្លូវធ្វើដំណើរផ្ទាល់' : 'Interactive Map & Route' }}</span>
+                </div>
+
+                <!-- GPS Trigger Button -->
+                <button
+                  @click="detectLiveLocation(true)"
+                  type="button"
+                  :disabled="isLocating"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 border border-blue-200/70 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-all cursor-pointer shadow-2xs shrink-0"
+                >
+                  <LocateFixed class="w-3.5 h-3.5" :class="{ 'animate-spin': isLocating }" />
+                  <span>{{ isLocating ? (currentLanguage === 'kh' ? 'កំពុងចាប់...' : 'Locating...') : (currentLanguage === 'kh' ? 'ចាប់ទីតាំងខ្ញុំ (GPS)' : 'Locate Me') }}</span>
+                </button>
               </div>
-              <span class="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                LIVE
-              </span>
+
+              <!-- Live Distance & Travel Time Status Banner -->
+              <div class="flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/60 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full shrink-0" :class="userGpsCoords ? 'bg-emerald-500 animate-pulse' : 'bg-blue-500'" />
+                  <span class="font-bold text-slate-700 dark:text-slate-200">
+                    <template v-if="distanceToHospital">
+                      {{ currentLanguage === 'kh' ? 'ចម្ងាយពីអ្នក៖' : 'Distance:' }}
+                      <strong class="text-blue-700 dark:text-blue-300 font-black">~{{ distanceToHospital }} គ.ម</strong>
+                      <span class="text-slate-400 text-[11px] ml-1">(~{{ estimatedTravelTime }} {{ currentLanguage === 'kh' ? 'នាទី' : 'mins' }})</span>
+                    </template>
+                    <template v-else>
+                      {{ currentLanguage === 'kh' ? 'ទីតាំង៖ ' + (selectedProvince ? selectedProvince.nameKh : 'ភ្នំពេញ') : 'Active: Phnom Penh' }}
+                    </template>
+                  </span>
+                </div>
+
+                <!-- View Mode Pills (Route vs Pin) -->
+                <div class="flex items-center gap-1 bg-white dark:bg-slate-800 p-1 rounded-xl border border-slate-200/80 dark:border-slate-700 text-[11px] font-bold shrink-0">
+                  <button
+                    @click="mapDisplayMode = 'directions'"
+                    type="button"
+                    class="px-2 py-0.5 rounded-lg transition-colors cursor-pointer"
+                    :class="mapDisplayMode === 'directions' ? 'bg-[#0D47A1] text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'"
+                  >
+                    {{ currentLanguage === 'kh' ? 'បង្ហាញផ្លូវ' : 'Route' }}
+                  </button>
+                  <button
+                    @click="mapDisplayMode = 'pin'"
+                    type="button"
+                    class="px-2 py-0.5 rounded-lg transition-colors cursor-pointer"
+                    :class="mapDisplayMode === 'pin' ? 'bg-[#0D47A1] text-white' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'"
+                  >
+                    {{ currentLanguage === 'kh' ? 'ទីតាំង' : 'Pin' }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Status Feedback Notification if any -->
+              <p v-if="locationStatus" class="text-[11px] text-blue-600 dark:text-blue-300 font-semibold px-1">
+                {{ locationStatus }}
+              </p>
             </div>
+
+            <!-- Iframe Display -->
             <div class="relative aspect-[4/3] w-full bg-slate-100 dark:bg-slate-900">
               <iframe
                 :src="mapEmbedUrl"
@@ -520,6 +681,22 @@ const checkedCount = computed(() => patientChecklist.value.filter(item => item.c
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
               />
+            </div>
+
+            <!-- Footer Action inside Map Card -->
+            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-3 text-xs">
+              <span class="text-[11px] text-slate-400 font-medium truncate max-w-[220px]">
+                {{ userGpsCoords ? (currentLanguage === 'kh' ? 'GPS: ' + userGpsCoords.lat.toFixed(4) + ', ' + userGpsCoords.lng.toFixed(4) : 'GPS: ' + userGpsCoords.lat.toFixed(4) + ', ' + userGpsCoords.lng.toFixed(4)) : (currentLanguage === 'kh' ? 'ចុចចាប់ទីតាំង ដើម្បីគណនាផ្លូវចេញពីកន្លែងអ្នក' : 'Click Locate Me to calculate route from your position') }}
+              </span>
+              <a
+                :href="directionsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-2xs shrink-0 cursor-pointer text-xs"
+              >
+                <span>{{ currentLanguage === 'kh' ? 'បើកផ្លូវពេញ' : 'Navigate' }}</span>
+                <Navigation class="w-3.5 h-3.5" />
+              </a>
             </div>
           </div>
 

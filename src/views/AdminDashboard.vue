@@ -11,7 +11,6 @@ import {
   Briefcase,
   Hospital,
   CheckCircle2,
-  ChevronRight,
   Search
 } from 'lucide-vue-next'
 import { useFeedback, type ServiceReport } from '@/composables/useFeedback'
@@ -61,14 +60,7 @@ function handleSetStatus(reportId: string, status: ServiceReport['status']) {
 
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-khmer">
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs font-semibold text-slate-400" aria-label="Breadcrumb">
-      <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
-        {{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}
-      </router-link>
-      <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-      <span class="text-slate-700 dark:text-slate-200">Admin CMS & Verification</span>
-    </nav>
+
 
     <!-- Header -->
     <div class="bg-gradient-to-r from-[#0A2540] via-[#0D47A1] to-[#1565C0] text-white p-6 sm:p-8 rounded-3xl shadow-lg space-y-3">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import {
   MapPin,
   Phone,
@@ -14,7 +14,8 @@ import {
   Clock,
   PhoneCall,
   Search,
-  CheckCircle2
+  CheckCircle2,
+  Map as MapIcon
 } from 'lucide-vue-next'
 import ServiceHeroBanner from '@/components/ServiceHeroBanner.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -26,8 +27,10 @@ import { useLanguage } from '@/composables/useLanguage'
 import { getLocations } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
+import { useLocation } from '@/composables/useLocation'
 
 const { t, localized, currentLanguage } = useLanguage()
+const { selectedProvince } = useLocation()
 
 usePageMeta({
   title: 'ទីតាំងរដ្ឋបាលសាធារណៈ & ច្រកចេញចូលតែមួយ (OWSO) — CamLife Civic Offices',
@@ -69,6 +72,21 @@ const filteredLocations = computed(() => {
     result = result.filter(l => l.category === activeCategory.value)
   }
 
+  // Location filter (from Global Location Selector in Navbar)
+  if (selectedProvince.value && selectedProvince.value.id !== 'all') {
+    const provName = selectedProvince.value.name.toLowerCase()
+    const provNameKh = selectedProvince.value.nameKh
+      ? selectedProvince.value.nameKh.replace('ខេត្ត', '').replace('រាជធានី', '').trim().toLowerCase()
+      : ''
+    const matched = result.filter(l => {
+      const text = (l.address + ' ' + (l.addressKh || '') + ' ' + l.name + ' ' + (l.nameKh || '')).toLowerCase()
+      return text.includes(provName) || (provNameKh && text.includes(provNameKh))
+    })
+    if (matched.length > 0) {
+      result = matched
+    }
+  }
+
   const query = searchQuery.value.toLowerCase().trim()
   if (query) {
     result = result.filter(l =>
@@ -83,6 +101,12 @@ const filteredLocations = computed(() => {
   }
 
   return result
+})
+
+watch(filteredLocations, (newVal) => {
+  if (newVal.length > 0) {
+    selectedLocation.value = newVal[0]
+  }
 })
 
 const {
@@ -207,7 +231,7 @@ function resetFilters() {
               ? 'bg-[#0D47A1] text-white border-[#0D47A1]'
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'"
           >
-            <span class="inline-flex items-center gap-1.5"><Map class="w-3.5 h-3.5" /> <span>{{ currentLanguage === 'kh' ? 'ផែនទីទីតាំង' : 'Interactive Map' }}</span></span>
+            <span class="inline-flex items-center gap-1.5"><MapIcon class="w-3.5 h-3.5" /> <span>{{ currentLanguage === 'kh' ? 'ផែនទីទីតាំង' : 'Interactive Map' }}</span></span>
           </button>
         </div>
       </div>
@@ -261,63 +285,48 @@ function resetFilters() {
 
     <!-- INTERACTIVE MAP VIEW -->
     <div v-if="viewMode === 'map'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <!-- Interactive Stylized Vector Map -->
+      <!-- Interactive Real Google Maps -->
       <div class="lg:col-span-8 bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-sm relative min-h-[460px] p-4 flex flex-col justify-between">
         <!-- Map Overlay Header -->
-        <div class="flex items-center justify-between z-10">
+        <div class="flex items-center justify-between z-10 pb-3">
           <span class="px-3 py-1 rounded-xl bg-slate-800/90 text-white text-xs font-bold border border-slate-700 backdrop-blur-md flex items-center gap-1.5">
             <Compass class="w-3.5 h-3.5 text-blue-400" />
-            <span>Phnom Penh & Cambodia Civic Map</span>
+            <span>{{ currentLanguage === 'kh' ? `ផែនទី Google Maps ទីតាំងរដ្ឋបាល ${selectedProvince.nameKh}` : `Google Maps: ${selectedProvince.name} Civic Offices` }}</span>
           </span>
           <span class="text-[11px] font-bold text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded-xl">
-            {{ filteredLocations.length }} markers plotted
+            {{ filteredLocations.length }} {{ currentLanguage === 'kh' ? 'ទីតាំង' : 'locations' }}
           </span>
         </div>
 
-        <!-- Stylized Vector Map Canvas with Pins -->
-        <div class="relative my-6 h-80 w-full rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex items-center justify-center overflow-hidden border border-slate-800">
-          <!-- Vector Grid Accents -->
-          <div class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
-
-          <!-- Stylized Road Arteries (SVG) -->
-          <svg class="absolute inset-0 w-full h-full stroke-blue-500/20" fill="none" stroke-width="2">
-            <path d="M 50 200 Q 250 80 500 240 T 900 120" />
-            <path d="M 200 350 Q 400 150 650 100 T 950 300" stroke-dasharray="4 4" />
-            <path d="M 100 80 Q 450 320 800 180" />
-          </svg>
-
-          <!-- Interactive Pins -->
-          <div class="absolute inset-0 p-8 flex flex-wrap items-center justify-around">
-            <button
-              v-for="loc in filteredLocations.slice(0, 10)"
-              :key="loc.id"
-              @click="selectOffice(loc)"
-              type="button"
-              class="group/pin relative m-2 transition-transform hover:scale-125 cursor-pointer focus:outline-hidden"
-              :title="loc.name"
-            >
-              <div
-                class="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg transition-all"
-                :class="selectedLocation?.id === loc.id
-                  ? 'bg-amber-400 text-slate-950 ring-4 ring-amber-400/50 scale-110'
-                  : 'bg-[#0D47A1] text-white hover:bg-blue-600'"
-              >
-                <Building v-if="loc.category === 'Government/OWSO'" class="w-4 h-4" />
-                <Hospital v-else-if="loc.category === 'Hospital'" class="w-4 h-4" />
-                <ShieldAlert v-else-if="loc.category === 'Police Station'" class="w-4 h-4" />
-                <Bus v-else class="w-4 h-4" />
-              </div>
-              <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-md bg-slate-950/90 text-[10px] font-bold text-white border border-slate-800 opacity-0 group-hover/pin:opacity-100 transition-opacity pointer-events-none z-20">
-                {{ localized(loc.name, loc.nameKh) }}
-              </span>
-            </button>
-          </div>
+        <!-- Real Google Maps Iframe -->
+        <div class="relative h-80 w-full rounded-2xl overflow-hidden border border-slate-800 shadow-inner">
+          <iframe
+            :src="`https://maps.google.com/maps?q=${selectedLocation?.coordinates?.lat || selectedProvince.coordinates.lat},${selectedLocation?.coordinates?.lng || selectedProvince.coordinates.lng}&z=14&output=embed`"
+            class="w-full h-full border-0"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+          />
         </div>
 
-        <!-- Map Footer Legend -->
-        <div class="flex flex-wrap items-center gap-4 text-xs font-bold text-slate-400 z-10">
-          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400" /> {{ currentLanguage === 'kh' ? 'ទីតាំងដែលបានជ្រើស' : 'Selected Location' }}</span>
-          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#0D47A1]" /> {{ currentLanguage === 'kh' ? 'ការិយាល័យរដ្ឋបាល' : 'Civic Office' }}</span>
+        <!-- Location Quick-Pick Selector Buttons -->
+        <div class="pt-3 flex flex-wrap items-center gap-2 z-10">
+          <button
+            v-for="loc in filteredLocations.slice(0, 6)"
+            :key="loc.id"
+            @click="selectOffice(loc)"
+            type="button"
+            class="px-2.5 py-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5"
+            :class="selectedLocation?.id === loc.id
+              ? 'bg-amber-400 text-slate-950 border-amber-400'
+              : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'"
+          >
+            <Building v-if="loc.category === 'Government/OWSO'" class="w-3 h-3 text-blue-400" />
+            <Hospital v-else-if="loc.category === 'Hospital'" class="w-3 h-3 text-emerald-400" />
+            <ShieldAlert v-else-if="loc.category === 'Police Station'" class="w-3 h-3 text-rose-400" />
+            <Bus v-else class="w-3 h-3 text-amber-400" />
+            <span class="truncate max-w-[150px]">{{ localized(loc.name, loc.nameKh) }}</span>
+          </button>
         </div>
       </div>
 

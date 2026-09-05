@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import {
   Calendar,
   ArrowLeft,
-  ChevronRight,
   Clock,
   Printer,
   ShieldCheck,
@@ -28,7 +27,7 @@ import { getNewsById, getNews } from '@/services/dataService'
 import { usePageMeta } from '@/composables/usePageMeta'
 
 const route = useRoute()
-const { t, localized, currentLanguage } = useLanguage()
+const { localized, currentLanguage } = useLanguage()
 
 const defaultCategoryImages: Record<string, string> = {
   National: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80',
@@ -96,24 +95,7 @@ function copyLink() {
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-khmer">
     <div v-if="article" class="space-y-6">
 
-      <!-- Breadcrumb Navigation -->
-      <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500 overflow-x-auto whitespace-nowrap" aria-label="Breadcrumb">
-        <router-link to="/" class="hover:text-[#0D47A1] transition-colors">
-          {{ t('nav.home') }}
-        </router-link>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
-        <router-link to="/news" class="hover:text-[#0D47A1] transition-colors">
-          {{ currentLanguage === 'kh' ? 'ព័ត៌មានជាតិ' : 'News' }}
-        </router-link>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
-        <span class="px-2 py-0.5 rounded bg-slate-100 text-[#0D47A1] font-bold text-[11px]">
-          {{ article.category }}
-        </span>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
-        <span class="text-slate-700 truncate max-w-[220px]">
-          {{ localized(article.title, article.titleKh) }}
-        </span>
-      </nav>
+
 
       <!-- Back Link and Article Quick Actions -->
       <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-4">

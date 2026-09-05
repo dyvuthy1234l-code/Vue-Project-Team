@@ -237,10 +237,14 @@ const latestNews = computed(() => news.slice(0, 3))
 const emergencyHighlights = computed(() => emergencyContacts.slice(0, 4))
 
 const nearbyEntries = computed<NearbyEntry[]>(() => {
-  const provName = selectedProvince.value?.name || ''
+  const provName = (selectedProvince.value?.name || '').toLowerCase()
+  const provNameKh = selectedProvince.value?.nameKh
+    ? selectedProvince.value.nameKh.replace('ខេត្ត', '').replace('រាជធានី', '').trim().toLowerCase()
+    : ''
   const isProvMatch = (text: string) => {
-    if (!provName || provName === 'Phnom Penh') return true
-    return text.toLowerCase().includes(provName.toLowerCase())
+    if (!text) return false
+    const t = text.toLowerCase()
+    return t.includes(provName) || (provNameKh && t.includes(provNameKh))
   }
 
   if (activeNearbyTab.value === 'hospitals') {
@@ -393,7 +397,16 @@ function getNearbyIconBg(tab: NearbyTab) {
   return 'bg-cyan-50 text-cyan-600 dark:bg-cyan-950/60 dark:text-cyan-400 ring-cyan-500/20'
 }
 
-watch(selectedProvince, () => {
+watch(selectedProvince, (newProv) => {
+  if (newProv?.coordinates) {
+    activeMapPoint.value = {
+      name: newProv.name,
+      nameKh: newProv.nameKh,
+      address: `រាជធានី-ខេត្ត ${newProv.nameKh}`,
+      addressKh: `រាជធានី-ខេត្ត ${newProv.nameKh}`,
+      coordinates: newProv.coordinates
+    }
+  }
   nextTick(() => {
     const firstPoint = nearbyEntries.value[0]
     if (firstPoint) {

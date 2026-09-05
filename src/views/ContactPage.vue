@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { Mail, MapPin, Phone, Clock, ChevronRight, Headphones } from 'lucide-vue-next'
+import { Mail, MapPin, Phone, Clock, Headphones } from 'lucide-vue-next'
 import SectionHeader from '@/components/SectionHeader.vue'
 import ContactForm from '@/components/ContactForm.vue'
-import { useLanguage } from '@/composables/useLanguage'
 import { usePageMeta } from '@/composables/usePageMeta'
-
-const { t } = useLanguage()
 
 usePageMeta({
   title: 'Contact Us — CamLife',
@@ -15,14 +12,7 @@ usePageMeta({
 
 <template>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs font-semibold text-slate-400" aria-label="Breadcrumb">
-      <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
-        {{ t('nav.home') }}
-      </router-link>
-      <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-      <span class="text-slate-700 dark:text-slate-200">{{ t('nav.contact') }}</span>
-    </nav>
+
 
     <!-- Header -->
     <SectionHeader

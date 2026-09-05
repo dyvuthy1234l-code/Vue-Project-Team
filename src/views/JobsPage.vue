@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
-  MapPin,
   Clock,
   Bookmark,
   BookmarkCheck,
@@ -31,11 +30,12 @@ import { useSavedJobs } from '@/composables/useSavedJobs'
 import { getJobs } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
-import { CAMBODIAN_PROVINCES } from '@/composables/useLocation'
+import { useLocation } from '@/composables/useLocation'
 import type { Job } from '@/types'
 
 const { t, currentLanguage } = useLanguage()
 const { isJobSaved, toggleSaveJob } = useSavedJobs()
+const { selectedProvince } = useLocation()
 
 usePageMeta({
   title: 'ឱកាសការងារចុងក្រោយ — BongThom Style Careers Portal',
@@ -46,7 +46,6 @@ usePageMeta({
 const userPostedJobs = ref<Job[]>([])
 
 onMounted(() => {
-  window.addEventListener('click', onWindowClick)
   try {
     const savedJobsJson = localStorage.getItem('camlife_user_jobs')
     if (savedJobsJson) {
@@ -64,10 +63,6 @@ onMounted(() => {
   } catch (e) {
     console.error('Failed to load job applications', e)
   }
-})
-
-onUnmounted(() => {
-  window.removeEventListener('click', onWindowClick)
 })
 
 // All Jobs List (Combining Mock Data + User Posted Jobs)
@@ -112,57 +107,6 @@ const isQuickLinksOpen = ref(true)
 const isCategoryOpen = ref(true)
 const isCompanyLetterOpen = ref(true)
 const isDateFilterOpen = ref(true)
-
-// 25 Cambodian Provinces Popover Dropdown
-const isLocationDropdownOpen = ref(false)
-const provinceSearchQuery = ref('')
-
-const provinceOptions = computed(() => [
-  {
-    id: 'All',
-    name: 'All Locations (Nationwide)',
-    nameKh: 'ទីតាំងទាំងអស់ (ទូទាំង ២៥ ខេត្ត-ក្រុង)',
-    code: 'KH'
-  },
-  ...CAMBODIAN_PROVINCES
-])
-
-const filteredProvinceOptions = computed(() => {
-  const q = provinceSearchQuery.value.toLowerCase().trim()
-  if (!q) return provinceOptions.value
-  return provinceOptions.value.filter(p =>
-    p.name.toLowerCase().includes(q) ||
-    p.nameKh.toLowerCase().includes(q) ||
-    p.code.toLowerCase().includes(q)
-  )
-})
-
-const selectedProvinceLabel = computed(() => {
-  if (activeLocation.value === 'All') {
-    return currentLanguage.value === 'kh' ? 'ទីតាំងទាំងអស់ (២៥ ខេត្ត-ក្រុង)' : 'All 25 Provinces'
-  }
-  const found = CAMBODIAN_PROVINCES.find(
-    p => p.name.toLowerCase() === activeLocation.value.toLowerCase() || p.id === activeLocation.value
-  )
-  if (found) {
-    return currentLanguage.value === 'kh' ? found.nameKh : found.name
-  }
-  return activeLocation.value
-})
-
-function selectProvince(provName: string) {
-  activeLocation.value = provName === 'All Locations (Nationwide)' ? 'All' : provName
-  isLocationDropdownOpen.value = false
-  provinceSearchQuery.value = ''
-  scrollToResults()
-}
-
-function onWindowClick(e: MouseEvent) {
-  const target = e.target as HTMLElement
-  if (!target.closest('.jobs-location-dropdown-container')) {
-    isLocationDropdownOpen.value = false
-  }
-}
 
 // Alphabet list for Company Starting Letter (A-Z)
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
@@ -315,21 +259,26 @@ const filteredJobs = computed(() => {
       : result.filter(j => j.company.toUpperCase().includes(letter) || j.title.toUpperCase().includes(letter))
   }
 
-  // Location Filter
-  if (activeLocation.value !== 'All') {
-    const targetProvince = CAMBODIAN_PROVINCES.find(
-      p => p.name.toLowerCase() === activeLocation.value.toLowerCase() || p.id === activeLocation.value
-    )
-    const engName = (targetProvince ? targetProvince.name : activeLocation.value).toLowerCase()
-    const khName = targetProvince
-      ? targetProvince.nameKh.replace('ខេត្ត', '').replace('រាជធានី', '').trim().toLowerCase()
+  // Location Filter (from Global Location Selector in Navbar)
+  if (selectedProvince.value && selectedProvince.value.id !== 'all') {
+    const prov = selectedProvince.value
+    const engName = (prov.name || '').toLowerCase()
+    const khName = prov.nameKh
+      ? prov.nameKh.replace('ខេត្ត', '').replace('រាជធានី', '').trim().toLowerCase()
       : ''
 
-    result = result.filter(j => {
+    const matched = result.filter(j => {
       const loc = (j.location || '').toLowerCase()
       if (engName.includes('sihanouk') && loc.includes('sihanouk')) return true
-      return loc.includes(engName) || (khName && loc.includes(khName))
+      return (
+        loc.includes(engName) ||
+        (khName && loc.includes(khName)) ||
+        loc.includes('remote') ||
+        loc.includes('nationwide') ||
+        loc.includes('ទូទាំងប្រទេស')
+      )
     })
+    result = matched
   }
 
   // Quick Links Filter
@@ -573,79 +522,12 @@ function submitPostAd() {
             </button>
           </div>
 
-          <!-- 25 Cambodian Provinces Selector -->
-          <div class="relative jobs-location-dropdown-container px-3 py-1.5 lg:w-72 shrink-0">
-            <button
-              type="button"
-              @click="isLocationDropdownOpen = !isLocationDropdownOpen"
-              class="w-full flex items-center justify-between gap-2 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] transition-colors cursor-pointer select-none"
-            >
-              <div class="flex items-center gap-2 min-w-0">
-                <MapPin class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span class="truncate text-left">{{ selectedProvinceLabel }}</span>
-              </div>
-              <ChevronDown class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': isLocationDropdownOpen }" />
-            </button>
-
-            <!-- Popover Panel -->
-            <transition
-              enter-active-class="transition duration-150 ease-out"
-              enter-from-class="transform scale-95 opacity-0"
-              enter-to-class="transform scale-100 opacity-100"
-              leave-active-class="transition duration-100 ease-in"
-              leave-from-class="transform scale-100 opacity-100"
-              leave-to-class="transform scale-95 opacity-0"
-            >
-              <div
-                v-if="isLocationDropdownOpen"
-                class="absolute left-0 lg:right-0 lg:left-auto top-full mt-2 w-72 sm:w-80 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl z-50 overflow-hidden"
-              >
-                <div class="p-2.5 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-                  <div class="relative">
-                    <Search class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-                    <input
-                      v-model="provinceSearchQuery"
-                      type="text"
-                      :placeholder="currentLanguage === 'kh' ? 'ស្វែងរក ២៥ ខេត្ត-ក្រុង...' : 'Search 25 provinces...'"
-                      class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-hidden font-khmer"
-                      @click.stop
-                    />
-                  </div>
-                </div>
-
-                <div class="max-h-60 overflow-y-auto p-1.5 space-y-0.5 custom-scrollbar">
-                  <button
-                    v-for="prov in filteredProvinceOptions"
-                    :key="prov.id"
-                    type="button"
-                    @click="selectProvince(prov.name)"
-                    class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-left transition-colors cursor-pointer"
-                    :class="[
-                      (activeLocation === 'All' && prov.id === 'All') || (activeLocation === prov.name)
-                        ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 font-black'
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60 font-medium'
-                    ]"
-                  >
-                    <div class="flex items-center gap-2 min-w-0">
-                      <MapPin class="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                      <p class="font-bold truncate">{{ currentLanguage === 'kh' ? prov.nameKh : prov.name }}</p>
-                    </div>
-                    <Check
-                      v-if="(activeLocation === 'All' && prov.id === 'All') || (activeLocation === prov.name)"
-                      class="w-3.5 h-3.5 text-[#0D47A1] dark:text-blue-400"
-                    />
-                  </button>
-                </div>
-              </div>
-            </transition>
-          </div>
-
           <!-- Search Button -->
           <div class="p-1 shrink-0">
             <button
               @click="scrollToResults"
               type="button"
-              class="w-full lg:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 bg-[#003366] hover:bg-[#0A2E6E] text-white rounded-lg font-bold text-xs shadow-xs transition-all cursor-pointer"
+              class="w-full lg:w-auto inline-flex items-center justify-center gap-2 px-6 py-2 bg-[#003366] hover:bg-[#0A2E6E] text-white rounded-lg font-bold text-xs shadow-xs transition-all cursor-pointer"
             >
               <Search class="w-3.5 h-3.5" />
               <span>{{ currentLanguage === 'kh' ? 'ស្វែងរក' : 'Search' }}</span>

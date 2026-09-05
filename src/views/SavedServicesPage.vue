@@ -8,7 +8,6 @@ import {
   Siren,
   Trash2,
   ArrowRight,
-  ChevronRight,
   FileText
 } from 'lucide-vue-next'
 import { useSavedServices } from '@/composables/useSavedServices'
@@ -36,14 +35,7 @@ function getIconForType(type: string) {
 
 <template>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-khmer">
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs font-semibold text-slate-400" aria-label="Breadcrumb">
-      <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
-        {{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}
-      </router-link>
-      <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-      <span class="text-slate-700 dark:text-slate-200">{{ currentLanguage === 'kh' ? 'សេវាដែលបានរក្សាទុក' : 'Saved Services' }}</span>
-    </nav>
+
 
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

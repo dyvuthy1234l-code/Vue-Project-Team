@@ -8,7 +8,6 @@ import {
   UserCheck,
   MapPin,
   ArrowLeft,
-  ChevronRight,
   Printer,
   Bookmark,
   BookmarkCheck,
@@ -70,20 +69,7 @@ function handlePrint() {
 <template>
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-khmer">
     <div v-if="service" class="space-y-8">
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-xs font-semibold text-slate-400" aria-label="Breadcrumb">
-        <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
-          {{ t('nav.home') }}
-        </router-link>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-        <router-link to="/government" class="hover:text-[#0D47A1] dark:hover:text-blue-400 transition-colors">
-          {{ t('nav.government') }}
-        </router-link>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-        <span class="text-slate-700 dark:text-slate-200 truncate max-w-[200px] sm:max-w-xs font-bold">
-          {{ localized(service.title, service.titleKh) }}
-        </span>
-      </nav>
+
 
       <!-- Back & Action Bar -->
       <div class="flex flex-wrap items-center justify-between gap-3">

@@ -9,7 +9,6 @@ import {
   ArrowRight,
   GitCompare,
   RotateCcw,
-  ChevronRight,
   FileText,
   Building2,
   Download,
@@ -24,7 +23,6 @@ import {
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
 import ServiceCompareModal from '@/components/ServiceCompareModal.vue'
-import LocationSelector from '@/components/LocationSelector.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { useLocation } from '@/composables/useLocation'
 import { getGovernmentServices } from '@/services/dataService'
@@ -383,21 +381,17 @@ function triggerDownload(formId: string) {
             <span>{{ currentLanguage === 'kh' ? 'ច្រកចេញចូលតែមួយ បើកបម្រើសេវាធម្មតា (ចន្ទ - សុក្រ)' : 'OWSO Open Mon - Fri' }}</span>
           </div>
 
-          <LocationSelector variant="pill" />
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#0D47A1] border border-blue-200 font-bold text-xs">
+            <MapPin class="w-3.5 h-3.5 text-emerald-600" />
+            <span>{{ currentLanguage === 'kh' ? selectedProvince.nameKh : selectedProvince.name }}</span>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
 
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-xs font-bold text-slate-400" aria-label="Breadcrumb">
-        <router-link to="/" class="hover:text-[#0D47A1] transition-colors">
-          {{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}
-        </router-link>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
-        <span class="text-slate-800 font-black">{{ currentLanguage === 'kh' ? 'សេវារដ្ឋបាលសាធារណៈ' : 'Government Services' }}</span>
-      </nav>
+
 
       <!-- ============================================================
            2. ROYAL CIVIC HERO BANNER & CITIZEN SEARCH CONSOLE
@@ -729,7 +723,10 @@ function triggerDownload(formId: string) {
             </h2>
           </div>
 
-          <LocationSelector variant="pill" />
+          <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-[#0D47A1] border border-blue-200 font-bold text-xs">
+            <MapPin class="w-3.5 h-3.5 text-emerald-600" />
+            <span>{{ currentLanguage === 'kh' ? selectedProvince.nameKh : selectedProvince.name }}</span>
+          </div>
         </div>
 
         <div class="p-5 rounded-2xl bg-blue-50/50 border border-blue-100 flex flex-col md:flex-row md:items-center justify-between gap-4">

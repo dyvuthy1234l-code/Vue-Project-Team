@@ -5,7 +5,6 @@ import {
   LocateFixed,
   X,
   Check,
-  ChevronRight,
   Clock3,
   Copy,
   Flame,
@@ -27,9 +26,8 @@ import {
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useLocation, CAMBODIAN_PROVINCES } from '@/composables/useLocation'
-import { getEmergencyContacts } from '@/services/dataService'
 import { usePageMeta } from '@/composables/usePageMeta'
-import LocationSelector from '@/components/LocationSelector.vue'
+import { getEmergencyContacts } from '@/services/dataService'
 
 const { currentLanguage, localized } = useLanguage()
 
@@ -654,21 +652,17 @@ const firstAidProtocols = [
           <span class="hidden sm:inline text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
             {{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃ ១០០%' : '100% Toll-Free' }}
           </span>
-          <LocationSelector variant="pill" />
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 border border-blue-200/80 dark:border-blue-900 font-bold text-xs">
+            <MapPin class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>{{ currentLanguage === 'kh' ? activeProvince.nameKh : activeProvince.name }}</span>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-xs font-bold text-slate-400" aria-label="Breadcrumb">
-        <router-link to="/" class="hover:text-[#0D47A1] transition-colors">
-          {{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}
-        </router-link>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
-        <span class="text-slate-800 font-black">{{ currentLanguage === 'kh' ? 'មជ្ឈមណ្ឌលសង្គ្រោះបន្ទាន់ជាតិ' : 'Emergency Center' }}</span>
-      </nav>
+
 
       <!-- ============================================================
            2. NEWSPAPER / COMMAND STYLE HERO BANNER
@@ -1123,20 +1117,12 @@ const firstAidProtocols = [
               </button>
             </div>
 
-            <!-- Dropdown of all 25 Provinces -->
+            <!-- Current Active Province Indicator -->
             <div class="flex items-center gap-2 shrink-0">
-              <select
-                v-model="selectedProvince"
-                class="w-full sm:w-auto px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-[#0D47A1] focus:bg-white focus:border-[#0D47A1] outline-none shadow-2xs cursor-pointer"
-              >
-                <option
-                  v-for="prov in allProvincesData"
-                  :key="prov.id"
-                  :value="prov.id"
-                >
-                  {{ prov.nameKh }} ({{ prov.name }})
-                </option>
-              </select>
+              <div class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200 text-xs font-black text-[#0D47A1]">
+                <MapPin class="w-3.5 h-3.5 text-emerald-600" />
+                <span>{{ activeProvince.nameKh }} ({{ activeProvince.name }})</span>
+              </div>
             </div>
           </div>
         </div>

@@ -16,10 +16,14 @@ import {
   Clock,
   DollarSign,
   CheckCircle2,
-  Phone,
   Search,
-  Award
+  Award,
+  X,
+  Eye,
+  Info,
+  ExternalLink
 } from 'lucide-vue-next'
+import type { HomeService } from '@/types'
 import ServiceHeroBanner from '@/components/ServiceHeroBanner.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
@@ -123,6 +127,22 @@ function resetFilters() {
 
 function applyProblem(queryText: string) {
   searchQuery.value = queryText
+}
+
+// Service Detail Modal
+const selectedService = ref<HomeService | null>(null)
+const isDetailModalOpen = ref(false)
+
+function openServiceDetail(service: HomeService) {
+  selectedService.value = service
+  isDetailModalOpen.value = true
+}
+
+function closeServiceDetail() {
+  isDetailModalOpen.value = false
+  setTimeout(() => {
+    selectedService.value = null
+  }, 200)
 }
 </script>
 
@@ -308,7 +328,10 @@ function applyProblem(queryText: string) {
       >
         <div>
           <!-- Service Thumbnail Header -->
-          <div class="relative h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+          <div
+            @click="openServiceDetail(service)"
+            class="relative h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-700 cursor-pointer"
+          >
             <LazyImage
               v-if="service.image"
               :src="service.image"
@@ -332,7 +355,7 @@ function applyProblem(queryText: string) {
               </span>
 
               <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-600 text-white shadow-sm">
-                <CheckCircle2 class="w-3 h-3" />
+                <CheckCircle2 class="w-3.5 h-3.5" />
                 <span>Available Today</span>
               </span>
             </div>
@@ -357,7 +380,10 @@ function applyProblem(queryText: string) {
                 <span class="truncate">{{ service.provider }}</span>
                 <ShieldCheck class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
               </div>
-              <h3 class="text-base font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-1">
+              <h3
+                @click="openServiceDetail(service)"
+                class="text-base font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-1 cursor-pointer"
+              >
                 {{ localized(service.serviceName, service.serviceNameKh) }}
               </h3>
             </div>
@@ -392,25 +418,40 @@ function applyProblem(queryText: string) {
           </div>
         </div>
 
-        <!-- Direct Contact Call Action -->
+        <!-- Direct Contact Call & View Actions -->
         <div class="p-5 pt-0">
           <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center gap-2">
+            <!-- View Detail Button -->
+            <button
+              type="button"
+              @click="openServiceDetail(service)"
+              class="flex-1 py-2.5 px-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/60 hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 font-black text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+            >
+              <Eye class="w-3.5 h-3.5 text-[#0D47A1] dark:text-blue-400" />
+              <span>{{ currentLanguage === 'kh' ? 'មើលលម្អិត' : 'View Detail' }}</span>
+            </button>
+
+            <!-- Call Button -->
             <a
               :href="'tel:' + service.phone"
-              class="flex-1 py-2.5 px-4 rounded-2xl bg-[#0D47A1] hover:bg-blue-700 text-white font-black text-xs flex items-center justify-center gap-2 transition-all shadow-2xs hover:shadow-md cursor-pointer"
+              class="flex-1 py-2.5 px-2.5 rounded-2xl bg-[#0D47A1] hover:bg-blue-700 text-white font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs hover:shadow-md cursor-pointer"
             >
-              <PhoneCall class="w-4 h-4" />
-              <span>{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទហៅជាង' : 'Call Technician' }}</span>
+              <PhoneCall class="w-3.5 h-3.5" />
+              <span>{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទហៅ' : 'Call' }}</span>
             </a>
 
+            <!-- Telegram Button -->
             <a
-              :href="'https://t.me/share/url?url=' + encodeURIComponent('CamLife Service Request: ' + service.serviceName) + '&text=' + encodeURIComponent('សូមទាក់ទងមកខ្ញុំអំពីសេវាកម្ម៖ ' + service.serviceName)"
+              :href="'https://t.me/share/url?url=' + encodeURIComponent('CamLife Service Request: ' + service.serviceName) + '&text=' + encodeURIComponent('សូមទាក់ទងមកខ្ញុំអំពីសេវាកម្ម៖ ' + service.serviceName + ' (' + service.provider + ')')"
               target="_blank"
               rel="noopener noreferrer"
-              class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 text-slate-600 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 border border-slate-200 dark:border-slate-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
-              title="Message / Inquiry"
+              class="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-500 hover:text-white dark:hover:bg-sky-500 dark:hover:text-white text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800/60 flex items-center justify-center transition-all cursor-pointer shadow-2xs group shrink-0"
+              title="Telegram"
+              aria-label="Telegram"
             >
-              <Phone class="w-4 h-4" />
+              <svg class="w-4 h-4 fill-current transition-transform group-hover:scale-110" viewBox="0 0 24 24">
+                <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.672c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.413Z"/>
+              </svg>
             </a>
           </div>
         </div>
@@ -439,5 +480,234 @@ function applyProblem(queryText: string) {
       @prev="prevPage"
       @next="nextPage"
     />
+
+    <!-- Technician / Service Detail Modal -->
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div
+        v-if="isDetailModalOpen && selectedService"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto"
+        @click.self="closeServiceDetail"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-700 overflow-hidden my-6 max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+          <!-- Modal Hero Image Header -->
+          <div class="relative h-56 sm:h-64 w-full shrink-0 overflow-hidden bg-slate-100 dark:bg-slate-700">
+            <LazyImage
+              v-if="selectedService.image"
+              :src="selectedService.image"
+              :alt="localized(selectedService.serviceName, selectedService.serviceNameKh)"
+              img-class="w-full h-full object-cover"
+            />
+            <div
+              v-else
+              class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-700 dark:to-slate-800 text-blue-600"
+            >
+              <Wrench class="w-16 h-16 opacity-50" />
+            </div>
+
+            <!-- Gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
+
+            <!-- Close Button -->
+            <button
+              type="button"
+              @click="closeServiceDetail"
+              class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white flex items-center justify-center transition-all cursor-pointer backdrop-blur-md shadow-md hover:scale-105"
+              aria-label="Close"
+            >
+              <X class="w-5 h-5" />
+            </button>
+
+            <!-- Top Badges -->
+            <div class="absolute top-4 left-4 flex items-center gap-2">
+              <span class="px-3 py-1 rounded-xl bg-blue-600/90 text-white text-xs font-black backdrop-blur-md flex items-center gap-1.5 shadow-sm">
+                <Wrench class="w-3.5 h-3.5" />
+                <span>{{ selectedService.category }}</span>
+              </span>
+              <span class="px-3 py-1 rounded-xl bg-emerald-600/90 text-white text-xs font-black backdrop-blur-md flex items-center gap-1.5 shadow-sm">
+                <CheckCircle2 class="w-3.5 h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'សេវាមានការធានា' : 'Verified Specialist' }}</span>
+              </span>
+            </div>
+
+            <!-- Bottom Overlaid Info on Header -->
+            <div class="absolute bottom-4 left-4 right-4 text-white">
+              <div class="flex items-center gap-1.5 text-xs text-blue-200 font-bold mb-1">
+                <span>{{ selectedService.provider }}</span>
+                <ShieldCheck class="w-4 h-4 text-emerald-400 shrink-0" />
+                <span class="text-white/60">•</span>
+                <span class="flex items-center gap-1">
+                  <MapPin class="w-3.5 h-3.5 text-red-400 shrink-0" />
+                  {{ selectedService.location }}
+                </span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-black leading-snug drop-shadow-sm text-white">
+                {{ localized(selectedService.serviceName, selectedService.serviceNameKh) }}
+              </h2>
+            </div>
+          </div>
+
+          <!-- Modal Body (Scrollable) -->
+          <div class="p-6 space-y-6 overflow-y-auto flex-1">
+            <!-- Key Stats Highlight Grid -->
+            <div class="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-700">
+              <!-- Rating -->
+              <div class="text-center">
+                <p class="text-[11px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
+                  {{ currentLanguage === 'kh' ? 'ពិន្ទុវាយតម្លៃ' : 'Rating' }}
+                </p>
+                <div class="flex items-center justify-center gap-1 mt-1 text-amber-500 font-black text-base">
+                  <Star class="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <span>{{ selectedService.rating.toFixed(1) }}</span>
+                </div>
+                <span class="text-[10px] text-slate-400">({{ selectedService.reviews || 25 }} {{ currentLanguage === 'kh' ? 'ការងារជោគជ័យ' : 'jobs done' }})</span>
+              </div>
+
+              <!-- Price Estimate -->
+              <div class="text-center border-x border-slate-200 dark:border-slate-700 px-2">
+                <p class="text-[11px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
+                  {{ currentLanguage === 'kh' ? 'តម្លៃប៉ាន់ស្មាន' : 'Est. Price' }}
+                </p>
+                <p class="text-emerald-600 dark:text-emerald-400 font-black text-base mt-1">
+                  {{ selectedService.priceEstimate || '$15 - $35' }}
+                </p>
+                <span class="text-[10px] text-slate-400">{{ currentLanguage === 'kh' ? 'តម្លៃសមរម្យ' : 'Standard Rate' }}</span>
+              </div>
+
+              <!-- Response Time -->
+              <div class="text-center">
+                <p class="text-[11px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
+                  {{ currentLanguage === 'kh' ? 'ការឆ្លើយតប' : 'Arrival' }}
+                </p>
+                <p class="text-[#0D47A1] dark:text-blue-400 font-black text-base mt-1">
+                  &lt; 30 {{ currentLanguage === 'kh' ? 'នាទី' : 'min' }}
+                </p>
+                <span class="text-[10px] text-slate-400">{{ currentLanguage === 'kh' ? 'រហ័សទាន់ចិត្ត' : 'Fast Response' }}</span>
+              </div>
+            </div>
+
+            <!-- Detailed Description -->
+            <div class="space-y-2">
+              <h3 class="text-sm font-black text-[#0A2540] dark:text-white flex items-center gap-2">
+                <Info class="w-4 h-4 text-[#0D47A1] dark:text-blue-400" />
+                <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានលម្អិតអំពីសេវាកម្ម' : 'Service Description & Scope' }}</span>
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl border border-slate-200/70 dark:border-slate-700/70">
+                {{ localized(selectedService.description, selectedService.descriptionKh) }}
+              </p>
+            </div>
+
+            <!-- CamLife Trust & Guarantees -->
+            <div class="space-y-2.5">
+              <h3 class="text-sm font-black text-[#0A2540] dark:text-white flex items-center gap-2">
+                <Award class="w-4 h-4 text-amber-500" />
+                <span>{{ currentLanguage === 'kh' ? 'ការធានា និងលក្ខខណ្ឌសុវត្ថិភាព' : 'CamLife Guarantees & Benefits' }}</span>
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div class="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-800/30 text-xs">
+                  <CheckCircle2 class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong class="text-emerald-800 dark:text-emerald-300 font-bold block">{{ currentLanguage === 'kh' ? 'ធានាការងារ ៣០ ថ្ងៃ' : '30-Day Work Warranty' }}</strong>
+                    <span class="text-emerald-700/80 dark:text-emerald-400/80">{{ currentLanguage === 'kh' ? 'ជួសជុលឡើងវិញឥតគិតថ្លៃបើមានបញ្ហា' : 'Free re-service if any issue recurs' }}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-2.5 p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-800/30 text-xs">
+                  <ShieldCheck class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong class="text-blue-800 dark:text-blue-300 font-bold block">{{ currentLanguage === 'kh' ? 'ជាងជំនាញបានផ្ទៀងផ្ទាត់' : 'Verified Specialist' }}</strong>
+                    <span class="text-blue-700/80 dark:text-blue-400/80">{{ currentLanguage === 'kh' ? 'មានបទពិសោធន៍ និងប្រវត្តិស្អាតស្អំ' : 'Background-checked professional' }}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-2.5 p-3 rounded-xl bg-purple-50/70 dark:bg-purple-950/20 border border-purple-200/50 dark:border-purple-800/30 text-xs">
+                  <Clock class="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong class="text-purple-800 dark:text-purple-300 font-bold block">{{ currentLanguage === 'kh' ? 'ម៉ោងបម្រើសេវា' : 'Service Hours' }}</strong>
+                    <span class="text-purple-700/80 dark:text-purple-400/80">{{ currentLanguage === 'kh' ? '7:00 ព្រឹក - 8:00 យប់ (៧ ថ្ងៃក្នុងមួយសប្តាហ៍)' : '7:00 AM - 8:00 PM (Every day)' }}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/30 text-xs">
+                  <DollarSign class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong class="text-amber-800 dark:text-amber-300 font-bold block">{{ currentLanguage === 'kh' ? 'តម្លៃច្បាស់លាស់' : 'Transparent Pricing' }}</strong>
+                    <span class="text-amber-700/80 dark:text-amber-400/80">{{ currentLanguage === 'kh' ? 'ពិនិត្យ និងជូនដំណឹងតម្លៃមុនចាប់ផ្តើម' : 'Clear quote before work begins' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Location & Map Link -->
+            <div class="space-y-2">
+              <h3 class="text-sm font-black text-[#0A2540] dark:text-white flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                  <MapPin class="w-4 h-4 text-red-500" />
+                  <span>{{ currentLanguage === 'kh' ? 'តំបន់បម្រើសេវាកម្ម' : 'Location & Coverage' }}</span>
+                </span>
+                <a
+                  :href="selectedService.coordinates
+                    ? `https://www.google.com/maps/search/?api=1&query=${selectedService.coordinates.lat},${selectedService.coordinates.lng}`
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedService.serviceName + ' ' + selectedService.location)}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-xs font-bold text-[#0D47A1] dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>{{ currentLanguage === 'kh' ? 'មើលលើផែនទី Maps' : 'Open in Maps' }}</span>
+                  <ExternalLink class="w-3.5 h-3.5" />
+                </a>
+              </h3>
+              <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2">
+                  <MapPin class="w-4 h-4 text-red-500 shrink-0" />
+                  <span class="font-bold text-slate-700 dark:text-slate-200">{{ selectedService.location }}</span>
+                </div>
+                <span class="text-slate-400 font-semibold">{{ currentLanguage === 'kh' ? 'សេវាចល័តដល់ទីតាំងលោកអ្នក' : 'Mobile Door-to-Door Service' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Action Footer -->
+          <div class="p-4 sm:p-5 bg-slate-50 dark:bg-slate-700/40 border-t border-slate-200/80 dark:border-slate-700 flex flex-wrap items-center gap-2.5">
+            <a
+              :href="'tel:' + selectedService.phone"
+              class="flex-1 py-3 px-4 rounded-2xl bg-[#0D47A1] hover:bg-blue-700 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer"
+            >
+              <PhoneCall class="w-4 h-4" />
+              <span>{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទហៅជាង (' + selectedService.phone + ')' : 'Call Technician (' + selectedService.phone + ')' }}</span>
+            </a>
+
+            <a
+              :href="'https://t.me/share/url?url=' + encodeURIComponent('CamLife Service Request: ' + selectedService.serviceName) + '&text=' + encodeURIComponent('សូមទាក់ទងមកខ្ញុំអំពីសេវាកម្ម៖ ' + selectedService.serviceName + ' (' + selectedService.provider + ')')"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="py-3 px-4 sm:px-5 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer shrink-0"
+              title="Telegram"
+            >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.672c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.413Z"/>
+              </svg>
+              <span>Telegram</span>
+            </a>
+
+            <button
+              type="button"
+              @click="closeServiceDetail"
+              class="py-3 px-4 rounded-2xl border border-slate-300 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm transition-all cursor-pointer"
+            >
+              {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
