@@ -9,7 +9,6 @@ import {
   Check,
   Search,
   CheckCircle2,
-  DollarSign,
   Award,
   LayoutGrid,
   List,
@@ -17,16 +16,18 @@ import {
   UploadCloud,
   Send,
   X,
-  Calendar,
+  Calendar as CalendarIcon,
   Hash,
   Link as LinkIcon,
   Tag,
   FileSpreadsheet,
   GraduationCap,
-  Briefcase
+  Briefcase,
+  Rss,
+  MessageCircle,
+  Car
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
-import PaginationBar from '@/components/PaginationBar.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { useSavedJobs } from '@/composables/useSavedJobs'
 import { getJobs } from '@/services/dataService'
@@ -49,8 +50,11 @@ const allJobs = getJobs()
 const searchQuery = ref('')
 const activeLocation = ref('All')
 const activeCategory = ref('All')
-const activeQuickLink = ref('all') // 'all' | 'jobs' | 'internships' | 'consultancies' | 'parttime' | 'shortterm'
+const activeQuickLink = ref('all') // 'all' | 'jobs' | 'internships' | 'consultancies' | 'scholarships' | 'procurement' | 'parttime' | 'shortterm' | 'appliedlabour'
 const activeType = ref('All')
+const selectedLetter = ref('')
+const dateFilterType = ref<'posting' | 'close'>('posting')
+const selectedDateDay = ref<number | null>(8)
 const sortBy = ref<'newest' | 'salary' | 'company' | 'deadline'>('newest')
 const viewMode = ref<'list' | 'grid'>('list')
 
@@ -58,6 +62,10 @@ const viewMode = ref<'list' | 'grid'>('list')
 const isRecentSearchOpen = ref(true)
 const isQuickLinksOpen = ref(true)
 const isCategoryOpen = ref(true)
+const isCompanyLetterOpen = ref(true)
+const isDateFilterOpen = ref(true)
+const isKhonnectOpen = ref(true)
+const isRssOpen = ref(true)
 
 // 25 Cambodian Provinces Popover Dropdown
 const isLocationDropdownOpen = ref(false)
@@ -118,73 +126,90 @@ onUnmounted(() => {
   window.removeEventListener('click', onWindowClick)
 })
 
-// Quick Links Menu (BongThom Sidebar Quick Links)
+// Alphabet list for Company Starting Letter
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+function selectLetter(letter: string) {
+  selectedLetter.value = selectedLetter.value === letter ? '' : letter
+  scrollToResults()
+}
+
+// Quick Links Menu (BongThom Sidebar Quick Links matching screenshot)
 const quickLinks = computed(() => [
-  { id: 'all', labelEn: 'All Opportunities', labelKh: 'ឱកាសទាំងអស់', icon: Briefcase },
   { id: 'jobs', labelEn: 'Job Opportunities', labelKh: 'ឱកាសការងារ', icon: Briefcase },
   { id: 'internships', labelEn: 'Internships', labelKh: 'កម្មសិក្សា', icon: GraduationCap },
   { id: 'consultancies', labelEn: 'Consultancies', labelKh: 'ការពិគ្រោះយោបល់', icon: FileSpreadsheet },
   { id: 'scholarships', labelEn: 'Scholarships', labelKh: 'អាហារូបករណ៍', icon: Award },
-  { id: 'parttime', labelEn: 'Part-Time Jobs', labelKh: 'ការងារក្រៅម៉ោង', icon: Clock },
-  { id: 'shortterm', labelEn: 'Short-Term Jobs', labelKh: 'ការងាររយៈពេលខ្លី', icon: Zap }
+  { id: 'procurement', labelEn: 'Procurement Ads', labelKh: 'ការប្រកាសដេញថ្លៃ', icon: FileSpreadsheet },
+  { id: 'parttime', labelEn: 'Part Time Jobs', labelKh: 'ការងារក្រៅម៉ោង', icon: Clock },
+  { id: 'shortterm', labelEn: 'Short Term Jobs', labelKh: 'ការងាររយៈពេលខ្លី', icon: Zap },
+  { id: 'appliedlabour', labelEn: 'Applied Labour Jobs', labelKh: 'ពលកម្មជំនាញ', icon: Briefcase }
 ])
 
-// Categories metadata with count pills (BongThom Career Categories)
+// Categories metadata with count pills (BongThom Career Categories matching screenshot)
 const categories = computed(() => {
   const meta = [
-    { value: 'All', labelKh: 'គ្រប់វិស័យ', labelEn: 'All Categories', countMult: 1 },
-    { value: 'IT', labelKh: 'បច្ចេកវិទ្យា & IT (Information Tech)', labelEn: 'Information Technology / IT', baseCount: 84 },
-    { value: 'Finance', labelKh: 'ធនាគារ & ហិរញ្ញវត្ថុ (Banking/Finance)', labelEn: 'Banking & Finance', baseCount: 62 },
-    { value: 'Education', labelKh: 'អប់រំ/បណ្តុះបណ្តាល (Educate/Train)', labelEn: 'Educate/Train/Teaching', baseCount: 100 },
-    { value: 'Healthcare', labelKh: 'សុខាភិបាល (Healthcare/Medical)', labelEn: 'Healthcare & Medical', baseCount: 45 },
-    { value: 'Hospitality', labelKh: 'ទេសចរណ៍ & សណ្ឋាគារ (Tourism/Hotel)', labelEn: 'Hospitality & Tourism', baseCount: 38 },
-    { value: 'Marketing', labelKh: 'ទីផ្សារ (Marketing/Media)', labelEn: 'Marketing & Media', baseCount: 22 },
-    { value: 'Engineering', labelKh: 'វិស្វកម្ម & សំណង់ (Engineering)', labelEn: 'Engineering & Construction', baseCount: 29 },
-    { value: 'Other', labelKh: 'ផ្សេងៗ (Business Admin / Other)', labelEn: 'Business Administration / Other', baseCount: 136 }
+    { value: 'Other', labelKh: 'Business Administration', labelEn: 'Business Administration', baseCount: 136 },
+    { value: 'Education', labelKh: 'Educate/Train/Teaching', labelEn: 'Educate/Train/Teaching', baseCount: 100 },
+    { value: 'Exec', labelKh: 'Exec. / Management', labelEn: 'Exec. / Management', baseCount: 37 },
+    { value: 'Marketing', labelKh: 'Sales / Marketing', labelEn: 'Sales / Marketing', baseCount: 83 },
+    { value: 'Accounting', labelKh: 'Accounting', labelEn: 'Accounting', baseCount: 68 },
+    { value: 'Finance', labelKh: 'Banking / Finance', labelEn: 'Banking / Finance', baseCount: 66 },
+    { value: 'Agriculture', labelKh: 'Agriculture', labelEn: 'Agriculture', baseCount: 64 }
   ]
 
   return meta.map(cat => {
-    const actualCount = cat.value === 'All'
-      ? allJobs.length
-      : allJobs.filter(j => j.category.toLowerCase() === cat.value.toLowerCase()).length
+    const actualCount = allJobs.filter(j => j.category.toLowerCase() === cat.value.toLowerCase()).length
     const count = (cat.baseCount || 0) + actualCount
     return {
       ...cat,
-      label: currentLanguage.value === 'kh' ? cat.labelKh : cat.labelEn,
+      label: cat.labelEn,
       count
     }
   })
 })
 
-// Generate realistic BongThom Job ID (e.g. #40967) based on job ID hash
+// Khonnect Dummy Listings (Matching screenshot bottom left)
+const khonnectAds = [
+  { id: 1, title: 'Mercedes-Benz C200', location: 'Phnom Penh' },
+  { id: 2, title: 'LEXUS RX350', location: 'Phnom Penh' },
+  { id: 3, title: 'NISSAN ALTIMA 2014 (VIP CAR)', location: 'Phnom Penh' },
+  { id: 4, title: 'Porsche', location: 'Phnom Penh' },
+  { id: 5, title: 'Cadillac Escalade', location: 'Phnom Penh' },
+  { id: 6, title: 'MERCEDES-BENZ C250', location: 'Phnom Penh' },
+  { id: 7, title: 'TESLA MODEL 3', location: 'Phnom Penh' },
+  { id: 8, title: 'Mazda BT-50', location: 'Phnom Penh' }
+]
+
+// Generate realistic BongThom Job ID (e.g. # 67699) matching screenshot
 function getBongThomJobId(job: Job): string {
   let hash = 0
   for (let i = 0; i < job.id.length; i++) {
     hash = (hash << 5) - hash + job.id.charCodeAt(i)
     hash |= 0
   }
-  const idNum = 40000 + (Math.abs(hash) % 1500)
-  return `#${idNum}`
+  const idNum = 67600 + (Math.abs(hash) % 100)
+  return `# 676${(idNum % 100).toString().padStart(2, '0')}`
 }
 
-// Generate realistic BongThom duration remaining (e.g. "25 days left" / "២៥ ថ្ងៃទៀត")
+// Generate realistic BongThom duration remaining (e.g. "2 days" / "២ ថ្ងៃ") matching screenshot
 function getBongThomDaysLeft(job: Job): { daysEn: string; daysKh: string; daysNum: number } {
   let hash = 0
   for (let i = 0; i < job.id.length; i++) {
     hash = (hash << 3) + job.id.charCodeAt(i)
   }
-  const days = 5 + (Math.abs(hash) % 25)
+  const days = 2 + (Math.abs(hash) % 8)
   return {
-    daysEn: `${days} days left`,
-    daysKh: `${days} ថ្ងៃទៀត`,
+    daysEn: `${days} days`,
+    daysKh: `${days} ថ្ងៃ`,
     daysNum: days
   }
 }
 
-// Generate BongThom closing date (e.g. "8-Sep-2026")
+// Generate BongThom closing date (e.g. "18-Sep-2026") matching screenshot
 function getBongThomClosingDate(job: Job): string {
   const dateObj = new Date(job.postedDate)
-  dateObj.setDate(dateObj.getDate() + 30)
+  dateObj.setDate(dateObj.getDate() + 15)
   const monthsEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const monthsKh = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ']
   const m = dateObj.getMonth()
@@ -202,7 +227,7 @@ function selectCategoryFilter(catVal: string) {
 }
 
 function selectQuickLinkFilter(linkId: string) {
-  activeQuickLink.value = linkId
+  activeQuickLink.value = activeQuickLink.value === linkId ? 'all' : linkId
   if (linkId === 'internships') {
     activeType.value = 'Internship'
   } else if (linkId === 'parttime') {
@@ -210,6 +235,11 @@ function selectQuickLinkFilter(linkId: string) {
   } else {
     activeType.value = 'All'
   }
+  scrollToResults()
+}
+
+function selectDateDay(day: number) {
+  selectedDateDay.value = selectedDateDay.value === day ? null : day
   scrollToResults()
 }
 
@@ -224,6 +254,11 @@ function scrollToResults() {
 
 const filteredJobs = computed(() => {
   let result = [...allJobs]
+
+  // Company Starting Letter filter
+  if (selectedLetter.value) {
+    result = result.filter(j => j.company.toUpperCase().startsWith(selectedLetter.value))
+  }
 
   // Location filter
   if (activeLocation.value !== 'All') {
@@ -283,9 +318,6 @@ const {
   currentPage,
   totalPages,
   paginatedItems: paginatedJobs,
-  showingFrom,
-  showingTo,
-  totalItems,
   goToPage,
   nextPage,
   prevPage
@@ -297,7 +329,9 @@ const hasActiveFilters = computed(() => {
     activeLocation.value !== 'All' ||
     activeCategory.value !== 'All' ||
     activeType.value !== 'All' ||
-    activeQuickLink.value !== 'all'
+    activeQuickLink.value !== 'all' ||
+    selectedLetter.value !== '' ||
+    selectedDateDay.value !== null
   )
 })
 
@@ -307,12 +341,12 @@ function resetFilters() {
   activeCategory.value = 'All'
   activeType.value = 'All'
   activeQuickLink.value = 'all'
+  selectedLetter.value = ''
+  selectedDateDay.value = null
   sortBy.value = 'newest'
 }
 
-// ==========================================
-// QUICK APPLY MODAL LOGIC (Easy Application)
-// ==========================================
+// Quick Apply Modal & Ad Modal
 const isApplyModalOpen = ref(false)
 const selectedJobForApply = ref<Job | null>(null)
 const applyForm = ref({
@@ -359,9 +393,6 @@ function submitJobApplication() {
   isApplySubmitted.value = true
 }
 
-// ==========================================
-// POST CLASSIFIED AD MODAL (For Employers)
-// ==========================================
 const isPostAdModalOpen = ref(false)
 const postAdForm = ref({
   companyName: '',
@@ -379,23 +410,23 @@ function submitPostAd() {
 </script>
 
 <template>
-  <div class="bongthom-jobs-portal min-h-screen pb-20 text-[#0A2540] dark:text-white font-khmer bg-slate-100/70 dark:bg-slate-950">
+  <div class="bongthom-jobs-portal min-h-screen pb-20 text-slate-800 dark:text-white font-khmer bg-[#F2F4F7] dark:bg-slate-950">
     
     <!-- ============================================================ -->
-    <!-- 1. BONGTHOM TOP CLASSIFIEDS ANNOUNCEMENT BANNER             -->
+    <!-- 1. BONGTHOM TOP CV REGISTRATION BANNER (EXACT SCREENSHOT TOP) -->
     <!-- ============================================================ -->
-    <div class="bg-gradient-to-r from-[#003366] via-[#0D47A1] to-[#1565C0] text-white py-3 px-4 sm:px-8 shadow-md">
-      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+    <div class="w-full bg-gradient-to-r from-[#003366] via-[#0D47A1] to-[#1565C0] text-white shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
         <div class="flex items-center gap-3">
-          <span class="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center text-amber-300 font-black text-sm shrink-0">
-            📢
-          </span>
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl shrink-0">
+            📄
+          </div>
           <div>
             <p class="text-xs sm:text-sm font-black tracking-wide text-white">
-              {{ currentLanguage === 'kh' ? 'ចុះផ្សាយការងារ និងប្រកាសជ្រើសរើសបុគ្គលិកឥឡូវនេះ !!!' : 'Post classified ads now !!!' }}
+              Register your CV with <span class="text-amber-300">BongThom.com</span> now!! Connect preparation to opportunity
             </p>
             <p class="text-[11px] text-blue-200 font-medium">
-              {{ currentLanguage === 'kh' ? 'ឈានទៅដល់បេក្ខជនរាប់ម៉ឺននាក់ទូទាំងប្រទេសកម្ពុជា' : 'Reach thousands of qualified jobseekers across Cambodia' }}
+              CV Registration Gateway — ស្វែងរកឱកាសការងារកាន់តែលឿន និងទូលំទូលាយ
             </p>
           </div>
         </div>
@@ -405,20 +436,20 @@ function submitPostAd() {
           type="button"
           class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-black shadow-md transition-all cursor-pointer shrink-0"
         >
-          {{ currentLanguage === 'kh' ? 'ចុះផ្សាយការងារឥឡូវនេះ' : 'Post Classified Ad Now' }}
+          {{ currentLanguage === 'kh' ? 'ចុះផ្សាយការងារ / Register Now' : 'Register CV / Post Ad' }}
         </button>
       </div>
     </div>
 
     <!-- Main Container -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 pt-4 space-y-4">
       
-      <!-- Integrated Top Search Bar -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-3 shadow-md border border-slate-200 dark:border-slate-800">
+      <!-- Top Search Bar -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-2.5 shadow-xs border border-slate-200 dark:border-slate-800">
         <div class="flex flex-col lg:flex-row items-stretch lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-slate-100 dark:divide-slate-800 gap-2 lg:gap-0">
           
           <!-- Search Input -->
-          <div class="flex-1 flex items-center px-3 py-2 gap-2.5 min-w-0">
+          <div class="flex-1 flex items-center px-3 py-1.5 gap-2 min-w-0">
             <Search class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
             <input
               v-model="searchQuery"
@@ -437,8 +468,8 @@ function submitPostAd() {
             </button>
           </div>
 
-          <!-- 25 Cambodian Provinces Popover Selector -->
-          <div class="relative jobs-location-dropdown-container px-3 py-2 lg:w-72 shrink-0">
+          <!-- 25 Cambodian Provinces Selector -->
+          <div class="relative jobs-location-dropdown-container px-3 py-1.5 lg:w-72 shrink-0">
             <button
               type="button"
               @click="isLocationDropdownOpen = !isLocationDropdownOpen"
@@ -509,9 +540,9 @@ function submitPostAd() {
             <button
               @click="scrollToResults"
               type="button"
-              class="w-full lg:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#003366] hover:bg-[#0A2E6E] text-white rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
+              class="w-full lg:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 bg-[#003366] hover:bg-[#0A2E6E] text-white rounded-lg font-bold text-xs shadow-xs transition-all cursor-pointer"
             >
-              <Search class="w-4 h-4" />
+              <Search class="w-3.5 h-3.5" />
               <span>{{ currentLanguage === 'kh' ? 'ស្វែងរក' : 'Search' }}</span>
             </button>
           </div>
@@ -522,99 +553,261 @@ function submitPostAd() {
       <!-- ============================================================ -->
       <!-- 2. BONGTHOM TWO-COLUMN PORTAL LAYOUT                         -->
       <!-- ============================================================ -->
-      <div id="bongthom-jobs-feed" class="scroll-mt-24 grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div id="bongthom-jobs-feed" class="scroll-mt-24 grid grid-cols-1 lg:grid-cols-4 gap-4">
         
         <!-- ========================================================== -->
-        <!-- LEFT SIDEBAR: BONGTHOM ACCORDION CARDS                     -->
+        <!-- LEFT SIDEBAR: COMPLETE BONGTHOM ACCORDION STACK             -->
         <!-- ========================================================== -->
-        <aside class="lg:col-span-1 space-y-4">
+        <aside class="lg:col-span-1 space-y-3">
           
           <!-- Card 1: Recent Search History -->
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
             <button
               @click="isRecentSearchOpen = !isRecentSearchOpen"
               type="button"
-              class="w-full flex items-center justify-between p-3.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
+              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
             >
-              <span class="flex items-center gap-2">
-                <Search class="w-4 h-4 text-slate-400" />
-                <span>{{ currentLanguage === 'kh' ? 'ប្រវត្តិស្វែងរកចុងក្រោយ' : 'Recent Search History' }}</span>
+              <span class="flex items-center gap-1.5">
+                <Search class="w-3.5 h-3.5 text-slate-400" />
+                <span>Recent Search History</span>
               </span>
-              <ChevronDown class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isRecentSearchOpen }" />
+              <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isRecentSearchOpen }" />
             </button>
 
-            <div v-if="isRecentSearchOpen" class="p-3.5 text-xs text-slate-400 italic text-center">
-              {{ searchQuery ? `"${searchQuery}"` : (currentLanguage === 'kh' ? 'មិនទាន់មានប្រវត្តិស្វែងរកនៅឡើយទេ' : 'No recent searches have been made') }}
+            <div v-if="isRecentSearchOpen" class="p-3 text-[11px] text-slate-400 italic text-left">
+              {{ searchQuery ? `"${searchQuery}"` : 'No recent searches have been made' }}
             </div>
           </div>
 
-          <!-- Card 2: Quick Links (BongThom Menu) -->
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
+          <!-- Card 2: Quick Links (BongThom Quick Links Menu) -->
+          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
             <button
               @click="isQuickLinksOpen = !isQuickLinksOpen"
               type="button"
-              class="w-full flex items-center justify-between p-3.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
+              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
             >
-              <span class="flex items-center gap-2">
-                <LinkIcon class="w-4 h-4 text-[#0D47A1] dark:text-blue-400" />
-                <span>{{ currentLanguage === 'kh' ? 'តំណភ្ជាប់រហ័ស' : 'Quick Links' }}</span>
+              <span class="flex items-center gap-1.5">
+                <LinkIcon class="w-3.5 h-3.5 text-[#0D47A1] dark:text-blue-400" />
+                <span>Quick Links</span>
               </span>
-              <ChevronDown class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isQuickLinksOpen }" />
+              <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isQuickLinksOpen }" />
             </button>
 
-            <div v-if="isQuickLinksOpen" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+            <div v-if="isQuickLinksOpen" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-[11px]">
               <button
                 v-for="ql in quickLinks"
                 :key="ql.id"
                 @click="selectQuickLinkFilter(ql.id)"
                 type="button"
                 :class="[
-                  'w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors cursor-pointer',
+                  'w-full flex items-center justify-between px-3 py-2 text-left transition-colors cursor-pointer',
                   activeQuickLink === ql.id
                     ? 'bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 font-extrabold'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 font-semibold'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 font-medium'
                 ]"
               >
-                <span>{{ currentLanguage === 'kh' ? ql.labelKh : ql.labelEn }}</span>
-                <Check v-if="activeQuickLink === ql.id" class="w-3.5 h-3.5 text-[#0D47A1] dark:text-blue-400" />
+                <span>{{ ql.labelEn }}</span>
+                <Check v-if="activeQuickLink === ql.id" class="w-3 h-3 text-[#0D47A1] dark:text-blue-400" />
               </button>
             </div>
           </div>
 
-          <!-- Card 3: Career Category (BongThom Categories with Pill Counts) -->
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
+          <!-- Card 3: Career Category (BongThom Pill Badge Counts) -->
+          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
             <button
               @click="isCategoryOpen = !isCategoryOpen"
               type="button"
-              class="w-full flex items-center justify-between p-3.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
+              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
             >
-              <span class="flex items-center gap-2">
-                <Tag class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span>{{ currentLanguage === 'kh' ? 'ប្រភេទវិស័យការងារ' : 'Career Category' }}</span>
+              <span class="flex items-center gap-1.5">
+                <Tag class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Career Category</span>
               </span>
-              <ChevronDown class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isCategoryOpen }" />
+              <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isCategoryOpen }" />
             </button>
 
-            <div v-if="isCategoryOpen" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs max-h-80 overflow-y-auto custom-scrollbar">
+            <div v-if="isCategoryOpen" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-[11px]">
               <button
                 v-for="cat in categories"
                 :key="cat.value"
                 @click="selectCategoryFilter(cat.value)"
                 type="button"
                 :class="[
-                  'w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors cursor-pointer',
+                  'w-full flex items-center justify-between px-3 py-2 text-left transition-colors cursor-pointer',
                   activeCategory === cat.value
                     ? 'bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 font-extrabold'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 font-medium'
                 ]"
               >
-                <span class="truncate pr-2">{{ cat.label }}</span>
-                <!-- BongThom Style Dark Pill Badge Count -->
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-700 text-white dark:bg-slate-700 dark:text-slate-100 shrink-0">
+                <span class="truncate pr-1">{{ cat.label }}</span>
+                <!-- BongThom Dark Count Pill -->
+                <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-slate-600 text-white dark:bg-slate-700 shrink-0">
                   {{ cat.count }}
                 </span>
               </button>
+
+              <button
+                @click="activeCategory = 'All'; scrollToResults()"
+                type="button"
+                class="w-full text-left px-3 py-2 text-[10px] font-black text-[#0D47A1] dark:text-blue-400 hover:underline uppercase tracking-wider bg-slate-50/50 dark:bg-slate-800/30"
+              >
+                List ALL...
+              </button>
             </div>
+          </div>
+
+          <!-- Card 4: Company Starting Letter (A-Z Grid selector) -->
+          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+            <button
+              @click="isCompanyLetterOpen = !isCompanyLetterOpen"
+              type="button"
+              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
+            >
+              <span>Company Starting Letter</span>
+              <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isCompanyLetterOpen }" />
+            </button>
+
+            <div v-if="isCompanyLetterOpen" class="p-2.5">
+              <div class="flex flex-wrap gap-1 text-[11px] font-bold text-[#0D47A1] justify-center">
+                <button
+                  v-for="lettr in alphabet"
+                  :key="lettr"
+                  @click="selectLetter(lettr)"
+                  type="button"
+                  :class="[
+                    'w-5 h-5 flex items-center justify-center rounded-xs transition-colors cursor-pointer text-[11px]',
+                    selectedLetter === lettr
+                      ? 'bg-[#0D47A1] text-white font-black'
+                      : 'hover:bg-blue-50 text-[#0D47A1] hover:underline'
+                  ]"
+                >
+                  {{ lettr }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5: Filter on Date (Posting Date vs Close Date + Mini Calendar) -->
+          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+            <button
+              @click="isDateFilterOpen = !isDateFilterOpen"
+              type="button"
+              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
+            >
+              <span>Filter on Date</span>
+              <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isDateFilterOpen }" />
+            </button>
+
+            <div v-if="isDateFilterOpen" class="p-3 space-y-2.5 text-[11px]">
+              <!-- Radio Options -->
+              <div class="flex items-center justify-around gap-2 font-medium text-slate-700 dark:text-slate-300">
+                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" value="posting" v-model="dateFilterType" class="text-[#0D47A1]" />
+                  <span>Posting Date</span>
+                </label>
+                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" value="close" v-model="dateFilterType" class="text-[#0D47A1]" />
+                  <span>Close Date</span>
+                </label>
+              </div>
+
+              <!-- Mini Calendar Picker Header -->
+              <div class="border border-slate-200 dark:border-slate-800 rounded-lg p-2 bg-slate-50/50 dark:bg-slate-800/30 text-center">
+                <div class="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200 text-[10px] pb-1 border-b border-slate-100 dark:border-slate-800">
+                  <span>‹</span>
+                  <span>September 2026</span>
+                  <span>›</span>
+                </div>
+                <!-- Day Names -->
+                <div class="grid grid-cols-7 gap-1 text-[9px] text-slate-400 font-bold py-1">
+                  <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
+                </div>
+                <!-- Day Numbers Grid -->
+                <div class="grid grid-cols-7 gap-1 text-[10px] font-medium">
+                  <button
+                    v-for="d in 30"
+                    :key="d"
+                    @click="selectDateDay(d)"
+                    type="button"
+                    :class="[
+                      'w-5 h-5 flex items-center justify-center rounded-xs transition-colors mx-auto cursor-pointer',
+                      selectedDateDay === d
+                        ? 'bg-[#0D47A1] text-white font-black'
+                        : d === 8 || d === 15 || d === 20
+                          ? 'text-rose-600 font-bold hover:bg-rose-50'
+                          : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    ]"
+                  >
+                    {{ d }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 6: Khonnect Vehicle/Item Listings -->
+          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+            <button
+              @click="isKhonnectOpen = !isKhonnectOpen"
+              type="button"
+              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
+            >
+              <div class="flex items-center gap-1.5">
+                <Car class="w-3.5 h-3.5 text-blue-600" />
+                <span>Khonnect</span>
+              </div>
+              <span class="text-[9px] px-2 py-0.5 rounded-md bg-[#003366] text-white font-bold">Browse Ads</span>
+            </button>
+
+            <div v-if="isKhonnectOpen" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-[10px]">
+              <div v-for="item in khonnectAds" :key="item.id" class="p-2 flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                <div class="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs shrink-0">
+                  🚗
+                </div>
+                <div class="min-w-0">
+                  <p class="font-bold text-[#0D47A1] dark:text-blue-400 truncate">{{ item.title }}</p>
+                  <p class="text-[9px] text-slate-400">📍 {{ item.location }}</p>
+                </div>
+              </div>
+              <div class="p-2 text-center bg-slate-50/50">
+                <a href="#" class="text-[10px] font-black text-[#0D47A1] hover:underline uppercase">List ALL...</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 7: RSS Feeds -->
+          <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+            <button
+              @click="isRssOpen = !isRssOpen"
+              type="button"
+              class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
+            >
+              <div class="flex items-center gap-1.5">
+                <Rss class="w-3.5 h-3.5 text-amber-500" />
+                <span>RSS Feeds</span>
+              </div>
+              <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isRssOpen }" />
+            </button>
+
+            <div v-if="isRssOpen" class="p-2.5 space-y-1 text-[11px]">
+              <a href="#" class="block text-[#0D47A1] dark:text-blue-400 font-semibold hover:underline">Jobs RSS Feed</a>
+              <a href="#" class="block text-slate-500 font-medium hover:underline text-[10px]">Download RSS Reader</a>
+            </div>
+          </div>
+
+          <!-- Card 8: Telegram Channel Join Banner Ad (Matching screenshot bottom left) -->
+          <div class="bg-gradient-to-r from-sky-600 to-blue-700 rounded-lg p-3 text-white text-center space-y-2 shadow-md">
+            <div class="flex items-center justify-center gap-2">
+              <MessageCircle class="w-5 h-5 text-white" />
+              <span class="font-black text-xs">Telegram Channel for Job Seekers</span>
+            </div>
+            <a
+              href="https://t.me"
+              target="_blank"
+              class="inline-block px-4 py-1.5 bg-white text-sky-800 font-black text-xs rounded-md shadow-xs hover:bg-slate-100 transition-colors uppercase"
+            >
+              Join us on TELEGRAM
+            </a>
           </div>
 
         </aside>
@@ -622,58 +815,56 @@ function submitPostAd() {
         <!-- ========================================================== -->
         <!-- RIGHT MAIN FEED: BONGTHOM LATEST JOBS LIST                 -->
         <!-- ========================================================== -->
-        <main class="lg:col-span-3 space-y-4">
+        <main class="lg:col-span-3 space-y-3">
           
           <!-- Feed Header: "Latest Jobs" + View Switcher + Sort -->
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-wrap items-center justify-between gap-3">
             
-            <div class="flex items-center gap-3">
-              <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                {{ currentLanguage === 'kh' ? 'ឱកាសការងារចុងក្រោយ (Latest Jobs)' : 'Latest Jobs' }}
+            <div class="flex items-center gap-2">
+              <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                Latest Jobs
               </h2>
-              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-[#0D47A1] dark:text-blue-300 font-bold border border-blue-200/80 dark:border-blue-900">
-                {{ filteredJobs.length }} {{ currentLanguage === 'kh' ? 'កន្លែង' : 'Jobs' }}
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-[#0D47A1] dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-900">
+                {{ filteredJobs.length }} Jobs
               </span>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <!-- Reset Filters -->
               <button
                 v-if="hasActiveFilters"
                 @click="resetFilters"
-                class="text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 cursor-pointer"
+                class="text-[11px] font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 cursor-pointer"
                 type="button"
               >
-                {{ currentLanguage === 'kh' ? 'សម្អាតតម្រង' : 'Clear Filters' }}
+                Clear Filters
               </button>
 
-              <!-- View Switcher (List vs Grid) -->
-              <div class="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200/60 dark:border-slate-700">
+              <!-- View Switcher -->
+              <div class="flex items-center p-0.5 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
                 <button
                   @click="viewMode = 'list'"
                   :class="[
-                    'p-1.5 rounded-lg transition-all cursor-pointer',
+                    'p-1 rounded transition-all cursor-pointer',
                     viewMode === 'list'
                       ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-white shadow-2xs font-bold'
-                      : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                      : 'text-slate-400 hover:text-slate-700'
                   ]"
-                  title="List View (BongThom Style)"
                   type="button"
                 >
-                  <List class="w-4 h-4" />
+                  <List class="w-3.5 h-3.5" />
                 </button>
                 <button
                   @click="viewMode = 'grid'"
                   :class="[
-                    'p-1.5 rounded-lg transition-all cursor-pointer',
+                    'p-1 rounded transition-all cursor-pointer',
                     viewMode === 'grid'
                       ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-white shadow-2xs font-bold'
-                      : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                      : 'text-slate-400 hover:text-slate-700'
                   ]"
-                  title="Grid View"
                   type="button"
                 >
-                  <LayoutGrid class="w-4 h-4" />
+                  <LayoutGrid class="w-3.5 h-3.5" />
                 </button>
               </div>
 
@@ -681,120 +872,98 @@ function submitPostAd() {
               <div class="relative">
                 <select
                   v-model="sortBy"
-                  class="bg-slate-50 dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-hidden cursor-pointer shadow-2xs pr-7 appearance-none font-khmer"
+                  class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1 text-[11px] font-bold text-slate-700 dark:text-slate-200 focus:outline-hidden cursor-pointer shadow-2xs pr-6 appearance-none"
                 >
-                  <option value="newest">{{ currentLanguage === 'kh' ? '🆕 ថ្មីៗបំផុត' : 'Newest' }}</option>
-                  <option value="deadline">{{ currentLanguage === 'kh' ? '⏳ ជិតផុតកំណត់' : 'Closing Soon' }}</option>
-                  <option value="salary">{{ currentLanguage === 'kh' ? '💰 ប្រាក់ខែខ្ពស់' : 'Highest Salary' }}</option>
-                  <option value="company">{{ currentLanguage === 'kh' ? '🏢 ក្រុមហ៊ុន A-Z' : 'Company A-Z' }}</option>
+                  <option value="newest">Newest</option>
+                  <option value="deadline">Closing Soon</option>
+                  <option value="salary">Highest Salary</option>
+                  <option value="company">Company A-Z</option>
                 </select>
-                <ChevronDown class="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+                <ChevronDown class="w-3 h-3 text-slate-400 pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
           </div>
 
           <!-- ======================================================== -->
-          <!-- BONGTHOM JOB ROW LIST (EXACT BONGTHOM.COM LAYOUT)       -->
+          <!-- BONGTHOM JOB ROW LIST (EXACT SCREENSHOT MATCH)           -->
           <!-- ======================================================== -->
-          <div v-if="paginatedJobs.length > 0 && viewMode === 'list'" class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl divide-y divide-slate-150 dark:divide-slate-800 overflow-hidden shadow-xs">
+          <div v-if="paginatedJobs.length > 0 && viewMode === 'list'" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg divide-y divide-slate-150 dark:divide-slate-800 overflow-hidden shadow-2xs">
             
             <div
               v-for="job in paginatedJobs"
               :key="job.id"
-              class="group p-4 sm:p-5 hover:bg-blue-50/50 dark:hover:bg-slate-800/60 transition-all duration-150 flex flex-col sm:flex-row items-start justify-between gap-4"
+              class="relative group p-3 sm:p-3.5 hover:bg-blue-50/40 dark:hover:bg-slate-800/50 transition-all duration-150 flex items-start justify-between gap-3"
             >
-              <!-- Left: Square Company Logo Frame + Content -->
-              <div class="flex items-start gap-3.5 min-w-0 flex-1">
+              <!-- Bookmark Ribbon Icon on Top Right Corner of Row -->
+              <button
+                @click.stop="toggleSaveJob(job.id)"
+                class="absolute top-2.5 right-3 text-blue-700 dark:text-blue-400 hover:scale-110 transition-transform cursor-pointer p-0.5"
+                :title="isJobSaved(job.id) ? 'Saved' : 'Save Job'"
+                type="button"
+              >
+                <BookmarkCheck v-if="isJobSaved(job.id)" class="w-4 h-4 fill-current text-[#0D47A1]" />
+                <Bookmark v-else class="w-4 h-4 text-slate-400 hover:text-[#0D47A1]" />
+              </button>
+
+              <!-- Left: Square Company Logo Frame + Details -->
+              <div class="flex items-start gap-3 min-w-0 flex-1 pr-6">
                 
-                <!-- BongThom Square Logo Frame -->
-                <div class="w-14 h-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white p-1 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform overflow-hidden">
+                <!-- BongThom Small Square Logo Frame -->
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-md border border-slate-200 dark:border-slate-700 bg-white p-0.5 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden mt-0.5">
                   <img v-if="job.logo" :src="job.logo" :alt="job.company" class="w-full h-full object-cover" loading="lazy" />
-                  <span v-else class="font-black text-lg text-[#0D47A1] dark:text-blue-400">{{ job.company.charAt(0) }}</span>
+                  <span v-else class="font-black text-sm text-[#0D47A1] dark:text-blue-400">{{ job.company.charAt(0) }}</span>
                 </div>
 
-                <!-- Middle Details -->
-                <div class="space-y-1.5 min-w-0 flex-1">
+                <!-- Content Details -->
+                <div class="space-y-0.5 min-w-0 flex-1">
                   
                   <!-- Clickable Blue Job Title -->
                   <router-link :to="'/jobs/' + job.id" class="inline-block">
-                    <h3 class="text-base sm:text-lg font-black text-[#0D47A1] dark:text-blue-400 group-hover:underline transition-colors leading-snug">
+                    <h3 class="text-xs sm:text-sm font-bold text-[#0D47A1] dark:text-blue-400 group-hover:underline transition-colors leading-snug">
                       {{ job.title }}
                     </h3>
                   </router-link>
 
                   <!-- Company Full Name -->
-                  <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">
+                  <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">
                     {{ job.company }}
                   </p>
 
-                  <!-- BongThom Metadata Line: Job ID | Days Left | Expiry Date | Salary | Location -->
-                  <div class="flex flex-wrap items-center gap-3 text-xs pt-1">
+                  <!-- BongThom Metadata Line: # ID | Duration | Closing Date -->
+                  <div class="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 pt-0.5">
                     
-                    <!-- Job ID Badge (BongThom style: e.g. #40967) -->
-                    <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
+                    <!-- Job ID Badge (BongThom style: e.g. # 67699) -->
+                    <span class="inline-flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-300">
                       <Hash class="w-3 h-3 text-slate-400" />
                       <span>{{ getBongThomJobId(job) }}</span>
                     </span>
 
-                    <!-- Duration Remaining (e.g. 25 days left) -->
-                    <span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-900">
-                      <Clock class="w-3 h-3 text-amber-500" />
-                      <span>{{ currentLanguage === 'kh' ? getBongThomDaysLeft(job).daysKh : getBongThomDaysLeft(job).daysEn }}</span>
+                    <!-- Duration Remaining (e.g. 🕒 2 days) -->
+                    <span class="inline-flex items-center gap-1 font-medium text-slate-600 dark:text-slate-300">
+                      <Clock class="w-3 h-3 text-slate-400" />
+                      <span>{{ getBongThomDaysLeft(job).daysEn }}</span>
                     </span>
 
-                    <!-- Closing Expiry Date (e.g. 8-Sep-2026) -->
-                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-                      <Calendar class="w-3.5 h-3.5 text-slate-400" />
+                    <!-- Closing Expiry Date (e.g. 📅 18-Sep-2026) -->
+                    <span class="inline-flex items-center gap-1 font-medium text-slate-600 dark:text-slate-300">
+                      <CalendarIcon class="w-3 h-3 text-slate-400" />
                       <span>{{ getBongThomClosingDate(job) }}</span>
                     </span>
 
-                    <!-- Salary Pill -->
-                    <span class="inline-flex items-center gap-1 text-[11px] font-black px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-900">
-                      <DollarSign class="w-3 h-3 text-emerald-600" />
-                      <span>{{ job.salary }}</span>
-                    </span>
-
-                    <!-- Location -->
-                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500">
-                      <MapPin class="w-3.5 h-3.5 text-rose-500" />
-                      <span>{{ job.location }}</span>
-                    </span>
+                    <!-- Quick Apply Badge Button -->
+                    <button
+                      @click="openApplyModal(job)"
+                      type="button"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#0D47A1] dark:text-blue-300 text-[10px] font-black hover:bg-blue-100 cursor-pointer ml-auto sm:ml-0"
+                    >
+                      <Zap class="w-3 h-3 text-amber-500" />
+                      <span>Apply</span>
+                    </button>
 
                   </div>
 
                 </div>
-
-              </div>
-
-              <!-- Right: Bookmark, Category Icon & Quick Apply Button -->
-              <div class="w-full sm:w-auto flex items-center sm:items-end justify-between sm:justify-start gap-2.5 shrink-0">
-                
-                <!-- Bookmark Button -->
-                <button
-                  @click.stop="toggleSaveJob(job.id)"
-                  :class="[
-                    'p-2 rounded-xl border transition-all cursor-pointer',
-                    isJobSaved(job.id)
-                      ? 'bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-400 border-blue-200 dark:border-blue-800'
-                      : 'border-slate-200 dark:border-slate-700 text-slate-400 hover:text-[#0D47A1]'
-                  ]"
-                  :title="isJobSaved(job.id) ? 'Saved' : 'Save Job'"
-                  type="button"
-                >
-                  <BookmarkCheck v-if="isJobSaved(job.id)" class="w-4 h-4 fill-current text-[#0D47A1] dark:text-blue-400" />
-                  <Bookmark v-else class="w-4 h-4" />
-                </button>
-
-                <!-- Quick Apply Button -->
-                <button
-                  @click="openApplyModal(job)"
-                  type="button"
-                  class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#003366] hover:bg-[#0A2E6E] text-white rounded-xl text-xs font-black shadow-xs transition-all cursor-pointer"
-                >
-                  <Zap class="w-3.5 h-3.5 text-amber-300" />
-                  <span>{{ currentLanguage === 'kh' ? 'ដាក់ពាក្យរហ័ស' : 'Apply' }}</span>
-                </button>
 
               </div>
 
@@ -805,19 +974,19 @@ function submitPostAd() {
           <!-- ======================================================== -->
           <!-- BONGTHOM JOB GRID VIEW                                   -->
           <!-- ======================================================== -->
-          <div v-else-if="paginatedJobs.length > 0 && viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div v-else-if="paginatedJobs.length > 0 && viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 gap-3">
             
             <div
               v-for="job in paginatedJobs"
               :key="job.id"
-              class="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs hover:shadow-md hover:border-blue-500/40 transition-all duration-200 flex flex-col justify-between"
+              class="group bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs hover:shadow-md hover:border-blue-400 transition-all duration-150 flex flex-col justify-between"
             >
-              <div class="space-y-3">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-12 h-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-white p-1 flex items-center justify-center shrink-0 overflow-hidden">
+              <div class="space-y-2">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-10 h-10 rounded-md border border-slate-200 dark:border-slate-700 bg-white p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
                       <img v-if="job.logo" :src="job.logo" :alt="job.company" class="w-full h-full object-cover" />
-                      <span v-else class="font-black text-[#0D47A1] text-lg">{{ job.company.charAt(0) }}</span>
+                      <span v-else class="font-black text-[#0D47A1] text-base">{{ job.company.charAt(0) }}</span>
                     </div>
                     <div class="min-w-0">
                       <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ job.company }}</p>
@@ -827,46 +996,39 @@ function submitPostAd() {
 
                   <button
                     @click.stop="toggleSaveJob(job.id)"
-                    :class="[
-                      'p-2 rounded-xl border transition-all cursor-pointer',
-                      isJobSaved(job.id) ? 'bg-blue-50 text-[#0D47A1] border-blue-200' : 'border-slate-200 text-slate-400'
-                    ]"
+                    class="text-[#0D47A1] cursor-pointer"
                     type="button"
                   >
                     <BookmarkCheck v-if="isJobSaved(job.id)" class="w-4 h-4 fill-current text-[#0D47A1]" />
-                    <Bookmark v-else class="w-4 h-4" />
+                    <Bookmark v-else class="w-4 h-4 text-slate-400" />
                   </button>
                 </div>
 
                 <div>
                   <router-link :to="'/jobs/' + job.id">
-                    <h3 class="text-sm font-black text-[#0D47A1] dark:text-blue-400 group-hover:underline line-clamp-2 leading-snug">
+                    <h3 class="text-xs font-bold text-[#0D47A1] dark:text-blue-400 group-hover:underline line-clamp-2 leading-snug">
                       {{ job.title }}
                     </h3>
                   </router-link>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2 text-xs pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <span class="text-[11px] font-bold text-amber-700 dark:text-amber-400">
-                    🕒 {{ currentLanguage === 'kh' ? getBongThomDaysLeft(job).daysKh : getBongThomDaysLeft(job).daysEn }}
-                  </span>
-                  <span class="text-[11px] text-slate-500">
-                    📅 {{ getBongThomClosingDate(job) }}
-                  </span>
+                <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800">
+                  <span>🕒 {{ getBongThomDaysLeft(job).daysEn }}</span>
+                  <span>📅 {{ getBongThomClosingDate(job) }}</span>
                 </div>
               </div>
 
-              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                <span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 font-black text-xs border border-emerald-200">
+              <div class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-bold text-[10px]">
                   {{ job.salary }}
                 </span>
 
                 <button
                   @click="openApplyModal(job)"
                   type="button"
-                  class="px-3 py-1.5 bg-[#003366] text-white rounded-xl text-xs font-black cursor-pointer"
+                  class="px-3 py-1 bg-[#003366] text-white rounded text-xs font-bold cursor-pointer"
                 >
-                  {{ currentLanguage === 'kh' ? 'ដាក់ពាក្យ' : 'Apply' }}
+                  Apply
                 </button>
               </div>
 
@@ -875,36 +1037,57 @@ function submitPostAd() {
           </div>
 
           <!-- Empty State -->
-          <div v-else class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-8 sm:p-12 text-center shadow-xs">
+          <div v-else class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-8 text-center shadow-2xs">
             <EmptyState
-              :title="t('jobs.emptyTitle') || (currentLanguage === 'kh' ? 'រកមិនឃើញឱកាសការងារដែលត្រូវនឹងតម្រងស្វែងរករបស់អ្នកទេ' : 'No Career Openings Found')"
-              :subtitle="t('jobs.emptySubtitle') || (currentLanguage === 'kh' ? 'សូមសាកល្បងជ្រើសរើសខេត្ត-ក្រុងផ្សេង ឬកំណត់តម្រងស្វែងរកឡើងវិញ' : 'Try selecting another province, clearing search terms, or resetting filters')"
-              :action-label="currentLanguage === 'kh' ? 'កំណត់តម្រងឡើងវិញ' : 'Reset All Filters'"
+              :title="t('jobs.emptyTitle') || 'No Career Openings Found'"
+              :subtitle="t('jobs.emptySubtitle') || 'Try selecting another category or clearing filters'"
+              action-label="Reset All Filters"
               @action="resetFilters"
             />
           </div>
 
-          <!-- Pagination -->
-          <PaginationBar
-            v-if="totalPages > 1"
-            :current-page="currentPage"
-            :total-pages="totalPages"
-            :showing-from="showingFrom"
-            :showing-to="showingTo"
-            :total-items="totalItems"
-            @page-change="goToPage"
-            @prev="prevPage"
-            @next="nextPage"
-          />
+          <!-- Exact BongThom Pagination matching screenshot bottom: < 1 2 3 4 5 6 7 8 > -->
+          <div v-if="totalPages > 1" class="flex items-center justify-center gap-1 pt-3 pb-6">
+            <button
+              @click="prevPage"
+              :disabled="currentPage === 1"
+              class="w-7 h-7 rounded border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300 disabled:opacity-40 cursor-pointer hover:bg-slate-100"
+              type="button"
+            >
+              &lt;
+            </button>
+
+            <button
+              v-for="p in totalPages"
+              :key="p"
+              @click="goToPage(p)"
+              type="button"
+              :class="[
+                'w-7 h-7 rounded border text-xs font-bold transition-colors cursor-pointer',
+                currentPage === p
+                  ? 'bg-[#0D47A1] text-white border-[#0D47A1]'
+                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+              ]"
+            >
+              {{ p }}
+            </button>
+
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="w-7 h-7 rounded border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300 disabled:opacity-40 cursor-pointer hover:bg-slate-100"
+              type="button"
+            >
+              &gt;
+            </button>
+          </div>
 
         </main>
       </div>
 
     </div>
 
-    <!-- ============================================================ -->
-    <!-- INTERACTIVE QUICK APPLY MODAL (BongThom Easy Apply)          -->
-    <!-- ============================================================ -->
+    <!-- QUICK APPLY MODAL -->
     <transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0"
@@ -918,149 +1101,79 @@ function submitPostAd() {
         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 font-khmer"
         @click.self="closeApplyModal"
       >
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-5 overflow-hidden">
-          
-          <!-- Close Button -->
-          <button
-            @click="closeApplyModal"
-            class="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            type="button"
-          >
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+          <button @click="closeApplyModal" class="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 cursor-pointer" type="button">
             <X class="w-5 h-5" />
           </button>
 
-          <!-- Modal Header -->
-          <div class="space-y-1.5 pr-8">
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[11px] font-black">
-              <Zap class="w-3.5 h-3.5 text-amber-500" />
-              <span>{{ currentLanguage === 'kh' ? 'ការដាក់ពាក្យរហ័ស (BongThom Easy Apply)' : 'Easy Application' }}</span>
+          <div class="space-y-1 pr-6">
+            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-black">
+              <Zap class="w-3 h-3 text-amber-500" />
+              <span>Easy Application</span>
             </div>
-            <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-snug">
+            <h3 class="text-base font-black text-slate-900 dark:text-white leading-snug">
               {{ selectedJobForApply.title }}
             </h3>
-            <p class="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <span>{{ selectedJobForApply.company }}</span>
-              <span>•</span>
-              <span class="text-emerald-600 dark:text-emerald-400">{{ selectedJobForApply.salary }}</span>
+            <p class="text-xs font-bold text-slate-500">
+              {{ selectedJobForApply.company }} • <span class="text-emerald-600">{{ selectedJobForApply.salary }}</span>
             </p>
           </div>
 
-          <!-- Success State -->
-          <div v-if="isApplySubmitted" class="py-8 text-center space-y-4">
-            <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-xs">
-              <CheckCircle2 class="w-8 h-8" />
-            </div>
-            <div class="space-y-1">
-              <h4 class="text-lg font-black text-slate-900 dark:text-white">
-                {{ currentLanguage === 'kh' ? 'ពាក្យសុំរបស់អ្នកត្រូវបានបញ្ជូនជោគជ័យ!' : 'Application Sent Successfully!' }}
-              </h4>
-              <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
-                {{ currentLanguage === 'kh'
-                  ? `ក្រុមការងារ HR របស់ ${selectedJobForApply.company} នឹងទាក់ទងមកលោកអ្នកតាមរយៈទូរស័ព្ទ ឬ Telegram ក្នុងពេលឆាប់ៗ។`
-                  : `The hiring team at ${selectedJobForApply.company} will review your application and contact you soon.`
-                }}
-              </p>
-            </div>
-            <button
-              @click="closeApplyModal"
-              type="button"
-              class="px-6 py-2.5 rounded-xl bg-[#003366] text-white font-black text-xs shadow-md transition-all cursor-pointer"
-            >
-              {{ currentLanguage === 'kh' ? 'បិទផ្ទាំងនេះ' : 'Done' }}
+          <div v-if="isApplySubmitted" class="py-6 text-center space-y-3">
+            <CheckCircle2 class="w-12 h-12 text-emerald-500 mx-auto" />
+            <h4 class="text-base font-black text-slate-900 dark:text-white">
+              Application Sent Successfully!
+            </h4>
+            <p class="text-xs text-slate-500">
+              The hiring team at {{ selectedJobForApply.company }} will review your application and contact you soon.
+            </p>
+            <button @click="closeApplyModal" type="button" class="px-5 py-2 rounded-lg bg-[#003366] text-white font-bold text-xs cursor-pointer">
+              Done
             </button>
           </div>
 
-          <!-- Application Form -->
-          <form v-else @submit.prevent="submitJobApplication" class="space-y-4 text-xs font-khmer">
-            
+          <form v-else @submit.prevent="submitJobApplication" class="space-y-3 text-xs">
             <div class="space-y-1">
-              <label class="font-bold text-slate-700 dark:text-slate-200">
-                {{ currentLanguage === 'kh' ? 'ឈ្មោះពេញរបស់បេក្ខជន *' : 'Full Name *' }}
-              </label>
-              <input
-                v-model="applyForm.fullName"
-                required
-                type="text"
-                :placeholder="currentLanguage === 'kh' ? 'ឧ. សុខ ចាន់ថន' : 'e.g. Sok Chanthon'"
-                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold focus:outline-hidden focus:ring-2 focus:ring-blue-500/20"
-              />
+              <label class="font-bold text-slate-700 dark:text-slate-200">Full Name *</label>
+              <input v-model="applyForm.fullName" required type="text" placeholder="e.g. Sok Chanthon" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-3">
               <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-200">
-                  {{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទ / Telegram *' : 'Phone / Telegram *' }}
-                </label>
-                <input
-                  v-model="applyForm.phone"
-                  required
-                  type="tel"
-                  :placeholder="currentLanguage === 'kh' ? 'ឧ. 012 345 678' : 'e.g. 012 345 678'"
-                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold focus:outline-hidden focus:ring-2 focus:ring-blue-500/20"
-                />
+                <label class="font-bold text-slate-700 dark:text-slate-200">Phone / Telegram *</label>
+                <input v-model="applyForm.phone" required type="tel" placeholder="012 345 678" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
               </div>
-
               <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-200">
-                  {{ currentLanguage === 'kh' ? 'អាសយដ្ឋានអ៊ីមែល' : 'Email Address' }}
-                </label>
-                <input
-                  v-model="applyForm.email"
-                  type="email"
-                  placeholder="name@example.com"
-                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold focus:outline-hidden focus:ring-2 focus:ring-blue-500/20"
-                />
+                <label class="font-bold text-slate-700 dark:text-slate-200">Email</label>
+                <input v-model="applyForm.email" type="email" placeholder="name@example.com" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
               </div>
             </div>
 
-            <!-- CV Upload Input -->
             <div class="space-y-1">
-              <label class="font-bold text-slate-700 dark:text-slate-200">
-                {{ currentLanguage === 'kh' ? 'ភ្ជាប់ឯកសារ CV / Resume (.pdf, .docx) *' : 'Attach CV / Resume (.pdf, .docx) *' }}
-              </label>
-              <div class="relative border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  @change="handleCvFileChange"
-                  class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-                <div class="flex flex-col items-center justify-center gap-1 text-slate-500">
-                  <UploadCloud class="w-6 h-6 text-[#0D47A1] dark:text-blue-400" />
-                  <p v-if="applyForm.cvFileName" class="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                    ✓ {{ applyForm.cvFileName }}
-                  </p>
-                  <p v-else class="text-xs font-medium">
-                    {{ currentLanguage === 'kh' ? 'ចុចទីនេះដើម្បីជ្រើសរើសឯកសារ CV របស់អ្នក' : 'Click or drag CV file here' }}
-                  </p>
+              <label class="font-bold text-slate-700 dark:text-slate-200">Attach CV (.pdf, .docx) *</label>
+              <div class="relative border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-3 text-center">
+                <input type="file" accept=".pdf,.doc,.docx" @change="handleCvFileChange" class="absolute inset-0 opacity-0 cursor-pointer" />
+                <div class="flex items-center justify-center gap-2 text-slate-500">
+                  <UploadCloud class="w-4 h-4 text-[#0D47A1]" />
+                  <span v-if="applyForm.cvFileName" class="text-xs font-bold text-emerald-600">✓ {{ applyForm.cvFileName }}</span>
+                  <span v-else class="text-xs">Click or drag CV file here</span>
                 </div>
               </div>
             </div>
 
-            <div class="pt-2 flex items-center justify-end gap-2">
-              <button
-                @click="closeApplyModal"
-                type="button"
-                class="px-4 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold cursor-pointer"
-              >
-                {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
-              </button>
-              <button
-                type="submit"
-                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#003366] to-[#0D47A1] text-white font-black shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center gap-2"
-              >
-                <Send class="w-3.5 h-3.5" />
-                <span>{{ currentLanguage === 'kh' ? 'ផ្ញើពាក្យសុំការងារ' : 'Submit Application' }}</span>
+            <div class="pt-2 flex justify-end gap-2">
+              <button @click="closeApplyModal" type="button" class="px-4 py-2 text-slate-500 font-bold cursor-pointer">Cancel</button>
+              <button type="submit" class="px-5 py-2 rounded-lg bg-[#003366] text-white font-bold text-xs cursor-pointer flex items-center gap-1.5">
+                <Send class="w-3 h-3" />
+                <span>Submit Application</span>
               </button>
             </div>
-
           </form>
-
         </div>
       </div>
     </transition>
 
-    <!-- POST CLASSIFIED AD MODAL -->
+    <!-- POST AD MODAL -->
     <transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0"
@@ -1074,55 +1187,44 @@ function submitPostAd() {
         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 font-khmer"
         @click.self="isPostAdModalOpen = false"
       >
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-5">
-          <button @click="isPostAdModalOpen = false" class="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-slate-600 transition-colors cursor-pointer" type="button">
+        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+          <button @click="isPostAdModalOpen = false" class="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 cursor-pointer" type="button">
             <X class="w-5 h-5" />
           </button>
 
-          <div class="space-y-1 pr-8">
-            <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-              {{ currentLanguage === 'kh' ? 'ចុះផ្សាយការងារ (BongThom Classified Ads)' : 'Post Classified Ad Now' }}
-            </h3>
-            <p class="text-xs text-slate-500">
-              {{ currentLanguage === 'kh' ? 'ផ្សព្វផ្សាយការងារទៅកាន់បេក្ខជនរាប់ម៉ឺននាក់ទូទាំងប្រទេស' : 'Reach thousands of Cambodian jobseekers' }}
-            </p>
+          <div class="space-y-1">
+            <h3 class="text-base font-black text-slate-900 dark:text-white">Post Classified Ad / Register CV</h3>
+            <p class="text-xs text-slate-500">Reach thousands of Cambodian jobseekers & recruiters</p>
           </div>
 
-          <div v-if="isPostAdSubmitted" class="py-8 text-center space-y-3">
-            <CheckCircle2 class="w-12 h-12 text-emerald-500 mx-auto" />
-            <h4 class="text-base font-black text-slate-900 dark:text-white">
-              {{ currentLanguage === 'kh' ? 'ការចុះផ្សាយត្រូវបានទទួលជោគជ័យ!' : 'Ad Posted Successfully!' }}
-            </h4>
-            <button @click="isPostAdModalOpen = false; isPostAdSubmitted = false" class="px-5 py-2 rounded-xl bg-[#003366] text-white font-bold text-xs cursor-pointer">
-              {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
-            </button>
+          <div v-if="isPostAdSubmitted" class="py-6 text-center space-y-2">
+            <CheckCircle2 class="w-10 h-10 text-emerald-500 mx-auto" />
+            <h4 class="text-sm font-black">Submitted Successfully!</h4>
+            <button @click="isPostAdModalOpen = false; isPostAdSubmitted = false" class="px-4 py-1.5 bg-[#003366] text-white font-bold text-xs rounded cursor-pointer">Close</button>
           </div>
 
-          <form v-else @submit.prevent="submitPostAd" class="space-y-3 text-xs font-khmer">
+          <form v-else @submit.prevent="submitPostAd" class="space-y-3 text-xs">
             <div class="space-y-1">
-              <label class="font-bold text-slate-700 dark:text-slate-200">{{ currentLanguage === 'kh' ? 'ឈ្មោះក្រុមហ៊ុន / ស្ថាប័ន *' : 'Company Name *' }}</label>
-              <input v-model="postAdForm.companyName" required type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
+              <label class="font-bold text-slate-700 dark:text-slate-200">Company Name *</label>
+              <input v-model="postAdForm.companyName" required type="text" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
-
             <div class="space-y-1">
-              <label class="font-bold text-slate-700 dark:text-slate-200">{{ currentLanguage === 'kh' ? 'មុខតំណែង *' : 'Job Title *' }}</label>
-              <input v-model="postAdForm.jobTitle" required type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
+              <label class="font-bold text-slate-700 dark:text-slate-200">Job Title *</label>
+              <input v-model="postAdForm.jobTitle" required type="text" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
-
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-2">
               <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-200">{{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទទាក់ទង *' : 'Contact Phone *' }}</label>
-                <input v-model="postAdForm.contactPhone" required type="tel" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
+                <label class="font-bold text-slate-700 dark:text-slate-200">Contact Phone *</label>
+                <input v-model="postAdForm.contactPhone" required type="tel" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
               </div>
               <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-200">{{ currentLanguage === 'kh' ? 'អ៊ីមែល HR' : 'HR Email' }}</label>
-                <input v-model="postAdForm.email" type="email" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
+                <label class="font-bold text-slate-700 dark:text-slate-200">HR Email</label>
+                <input v-model="postAdForm.email" type="email" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
               </div>
             </div>
-
-            <div class="pt-3 flex justify-end gap-2">
-              <button @click="isPostAdModalOpen = false" type="button" class="px-4 py-2 text-slate-500 font-bold cursor-pointer">{{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}</button>
-              <button type="submit" class="px-6 py-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-black rounded-xl cursor-pointer">{{ currentLanguage === 'kh' ? 'ចុះផ្សាយឥឡូវនេះ' : 'Publish Ad' }}</button>
+            <div class="pt-2 flex justify-end gap-2">
+              <button @click="isPostAdModalOpen = false" type="button" class="px-3 py-1.5 text-slate-500 font-bold cursor-pointer">Cancel</button>
+              <button type="submit" class="px-5 py-1.5 bg-amber-400 text-slate-900 font-black rounded cursor-pointer">Publish</button>
             </div>
           </form>
         </div>
