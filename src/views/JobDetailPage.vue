@@ -14,6 +14,7 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
+  ArrowLeft,
   Mail,
   Globe,
   FileText,
@@ -171,14 +172,28 @@ function submitApplication() {
     
     <div v-if="job" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 space-y-6">
       
-      <!-- Breadcrumb Navigation -->
-      <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500" aria-label="Breadcrumb">
-        <router-link to="/" class="hover:text-[#0D47A1] transition-colors">Home</router-link>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-400" />
-        <router-link to="/jobs" class="hover:text-[#0D47A1] transition-colors">Jobs</router-link>
-        <ChevronRight class="w-3.5 h-3.5 text-slate-400" />
-        <span class="text-slate-800 dark:text-slate-200 font-bold truncate max-w-sm">{{ job.title }}</span>
-      </nav>
+      <!-- Breadcrumb Navigation & Back Button -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-1">
+        <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500 overflow-x-auto whitespace-nowrap" aria-label="Breadcrumb">
+          <router-link to="/" class="hover:text-[#0D47A1] transition-colors">
+            {{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}
+          </router-link>
+          <ChevronRight class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <router-link to="/jobs" class="hover:text-[#0D47A1] transition-colors">
+            {{ currentLanguage === 'kh' ? 'ឱកាសការងារ' : 'Jobs' }}
+          </router-link>
+          <ChevronRight class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <span class="text-slate-800 dark:text-slate-200 font-bold truncate max-w-xs sm:max-w-md">{{ job.title }}</span>
+        </nav>
+
+        <router-link
+          to="/jobs"
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:border-blue-200 shadow-2xs transition-all group w-fit shrink-0"
+        >
+          <ArrowLeft class="w-4 h-4 transition-transform group-hover:-translate-x-1 text-[#0D47A1] dark:text-blue-400" />
+          <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ទៅបញ្ជីការងារ' : 'Back to Jobs' }}</span>
+        </router-link>
+      </div>
 
       <!-- ============================================================ -->
       <!-- 2-COLUMN BONGTHOM JOB DETAIL LAYOUT (EXACT SCREENSHOT MATCH)  -->
