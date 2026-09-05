@@ -25,7 +25,11 @@ import {
   Briefcase,
   Rss,
   MessageCircle,
-  Car
+  Car,
+  Download,
+  Phone,
+  Copy,
+  CheckCircle
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
 import { useLanguage } from '@/composables/useLanguage'
@@ -44,7 +48,57 @@ usePageMeta({
   description: 'ស្វែងរកឱកាសការងារ ការងារក្រៅម៉ោង កម្មសិក្សា និងអាហារូបករណ៍ពីស្ថាប័ន និងក្រុមហ៊ុនឈានមុខនៅកម្ពុជា'
 })
 
-const allJobs = getJobs()
+// Persistent User Posted Jobs from LocalStorage
+const userPostedJobs = ref<Job[]>([])
+
+onMounted(() => {
+  window.addEventListener('click', onWindowClick)
+  try {
+    const savedJobsJson = localStorage.getItem('camlife_user_jobs')
+    if (savedJobsJson) {
+      userPostedJobs.value = JSON.parse(savedJobsJson)
+    }
+  } catch (e) {
+    console.error('Failed to load user posted jobs', e)
+  }
+
+  try {
+    const savedAppsJson = localStorage.getItem('camlife_job_applications')
+    if (savedAppsJson) {
+      userApplications.value = JSON.parse(savedAppsJson)
+    }
+  } catch (e) {
+    console.error('Failed to load job applications', e)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('click', onWindowClick)
+})
+
+// All Jobs List (Combining Mock Data + User Posted Jobs)
+const initialJobs = getJobs()
+const allJobs = computed<Job[]>(() => {
+  return [...userPostedJobs.value, ...initialJobs]
+})
+
+// User Applications Tracking
+interface JobApplication {
+  id: string
+  jobId: string
+  jobTitle: string
+  company: string
+  fullName: string
+  phone: string
+  email: string
+  cvFileName: string
+  appliedAt: string
+}
+const userApplications = ref<JobApplication[]>([])
+
+function hasApplied(jobId: string): boolean {
+  return userApplications.value.some(app => app.jobId === jobId)
+}
 
 // Primary Search & Filters State
 const searchQuery = ref('')
@@ -54,7 +108,7 @@ const activeQuickLink = ref('all') // 'all' | 'jobs' | 'internships' | 'consulta
 const activeType = ref('All')
 const selectedLetter = ref('')
 const dateFilterType = ref<'posting' | 'close'>('posting')
-const selectedDateDay = ref<number | null>(8)
+const selectedDateDay = ref<number | null>(null)
 const sortBy = ref<'newest' | 'salary' | 'company' | 'deadline'>('newest')
 const viewMode = ref<'list' | 'grid'>('list')
 
@@ -118,15 +172,7 @@ function onWindowClick(e: MouseEvent) {
   }
 }
 
-onMounted(() => {
-  window.addEventListener('click', onWindowClick)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('click', onWindowClick)
-})
-
-// Alphabet list for Company Starting Letter
+// Alphabet list for Company Starting Letter (A-Z)
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 function selectLetter(letter: string) {
@@ -146,21 +192,20 @@ const quickLinks = computed(() => [
   { id: 'appliedlabour', labelEn: 'Applied Labour Jobs', labelKh: 'ពលកម្មជំនាញ', icon: Briefcase }
 ])
 
-// Categories metadata with count pills (BongThom Career Categories matching screenshot)
+// Categories metadata with count pills
 const categories = computed(() => {
   const meta = [
-    { value: 'Other', labelKh: 'Business Administration', labelEn: 'Business Administration', baseCount: 136 },
-    { value: 'Education', labelKh: 'Educate/Train/Teaching', labelEn: 'Educate/Train/Teaching', baseCount: 100 },
-    { value: 'Exec', labelKh: 'Exec. / Management', labelEn: 'Exec. / Management', baseCount: 37 },
-    { value: 'Marketing', labelKh: 'Sales / Marketing', labelEn: 'Sales / Marketing', baseCount: 83 },
-    { value: 'Accounting', labelKh: 'Accounting', labelEn: 'Accounting', baseCount: 68 },
-    { value: 'Finance', labelKh: 'Banking / Finance', labelEn: 'Banking / Finance', baseCount: 66 },
-    { value: 'Agriculture', labelKh: 'Agriculture', labelEn: 'Agriculture', baseCount: 64 }
+    { value: 'Other', labelKh: 'Business Administration', labelEn: 'Business Administration' },
+    { value: 'Education', labelKh: 'Educate/Train/Teaching', labelEn: 'Educate/Train/Teaching' },
+    { value: 'Exec', labelKh: 'Exec. / Management', labelEn: 'Exec. / Management' },
+    { value: 'Marketing', labelKh: 'Sales / Marketing', labelEn: 'Sales / Marketing' },
+    { value: 'Accounting', labelKh: 'Accounting', labelEn: 'Accounting' },
+    { value: 'Finance', labelKh: 'Banking / Finance', labelEn: 'Banking / Finance' },
+    { value: 'Agriculture', labelKh: 'Agriculture', labelEn: 'Agriculture' }
   ]
 
   return meta.map(cat => {
-    const actualCount = allJobs.filter(j => j.category.toLowerCase() === cat.value.toLowerCase()).length
-    const count = (cat.baseCount || 0) + actualCount
+    const count = allJobs.value.filter(j => matchesCategory(j, cat.value)).length
     return {
       ...cat,
       label: cat.labelEn,
@@ -169,19 +214,68 @@ const categories = computed(() => {
   })
 })
 
-// Khonnect Dummy Listings (Matching screenshot bottom left)
-const khonnectAds = [
-  { id: 1, title: 'Mercedes-Benz C200', location: 'Phnom Penh' },
-  { id: 2, title: 'LEXUS RX350', location: 'Phnom Penh' },
-  { id: 3, title: 'NISSAN ALTIMA 2014 (VIP CAR)', location: 'Phnom Penh' },
-  { id: 4, title: 'Porsche', location: 'Phnom Penh' },
-  { id: 5, title: 'Cadillac Escalade', location: 'Phnom Penh' },
-  { id: 6, title: 'MERCEDES-BENZ C250', location: 'Phnom Penh' },
-  { id: 7, title: 'TESLA MODEL 3', location: 'Phnom Penh' },
-  { id: 8, title: 'Mazda BT-50', location: 'Phnom Penh' }
+function matchesCategory(j: Job, catValue: string): boolean {
+  const cat = catValue.toLowerCase()
+  const jCat = j.category.toLowerCase()
+  const title = j.title.toLowerCase()
+  const desc = j.description.toLowerCase()
+
+  if (cat === 'other') {
+    return jCat === 'other' || title.includes('admin') || title.includes('business') || title.includes('logistics') || title.includes('trade') || title.includes('supervisor')
+  }
+  if (cat === 'education') {
+    return jCat === 'education' || title.includes('teacher') || title.includes('instructor') || title.includes('school') || desc.includes('student')
+  }
+  if (cat === 'exec') {
+    return jCat === 'exec' || title.includes('manager') || title.includes('director') || title.includes('executive') || title.includes('supervisor') || title.includes('head')
+  }
+  if (cat === 'marketing') {
+    return jCat === 'marketing' || title.includes('marketing') || title.includes('sales') || title.includes('designer') || title.includes('creative') || title.includes('photographer')
+  }
+  if (cat === 'accounting') {
+    return jCat === 'accounting' || title.includes('accountant') || title.includes('accounting') || title.includes('audit')
+  }
+  if (cat === 'finance') {
+    return jCat === 'finance' || jCat === 'banking' || title.includes('finance') || title.includes('bank') || title.includes('credit') || title.includes('loan')
+  }
+  if (cat === 'agriculture') {
+    return jCat === 'agriculture' || title.includes('agri') || title.includes('farm') || title.includes('cooperative') || desc.includes('crop')
+  }
+  return jCat === cat
+}
+
+// Khonnect Classified Ads Data
+interface KhonnectAd {
+  id: number
+  title: string
+  location: string
+  price: string
+  year: string
+  sellerPhone: string
+  image: string
+  details: string
+}
+
+const khonnectAds: KhonnectAd[] = [
+  { id: 1, title: 'Mercedes-Benz C200', location: 'Phnom Penh', price: '$28,500', year: '2016', sellerPhone: '012 888 999', image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80', details: 'Full Option, Silver color, Original Paint, Excellent condition.' },
+  { id: 2, title: 'LEXUS RX350', location: 'Phnom Penh', price: '$42,000', year: '2015', sellerPhone: '015 777 555', image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=600&q=80', details: 'White Pearl color, AWD, Laser headlights, Head-up display.' },
+  { id: 3, title: 'NISSAN ALTIMA 2014 (VIP CAR)', location: 'Phnom Penh', price: '$14,800', year: '2014', sellerPhone: '098 123 456', image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80', details: 'Black color, Remote start, Leather seats, Eco fuel saver engine.' },
+  { id: 4, title: 'Porsche Macan GTS', location: 'Phnom Penh', price: '$68,000', year: '2018', sellerPhone: '077 999 111', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80', details: 'Red Sport Chrono package, Sport exhaust system, Panora sunroof.' },
+  { id: 5, title: 'Cadillac Escalade Platinum', location: 'Phnom Penh', price: '$85,000', year: '2017', sellerPhone: '011 222 333', image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80', details: 'V8 Engine, Massage seats, Bose Surround system, Rear entertainment screens.' },
+  { id: 6, title: 'MERCEDES-BENZ C250', location: 'Phnom Penh', price: '$31,500', year: '2017', sellerPhone: '089 555 444', image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=600&q=80', details: 'AMG line bodykit, Burmester sound, Ambient lighting 64 colors.' },
+  { id: 7, title: 'TESLA MODEL 3', location: 'Phnom Penh', price: '$39,900', year: '2021', sellerPhone: '016 444 333', image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=600&q=80', details: 'Long Range Dual Motor AWD, Autopilot enabled, White interior.' },
+  { id: 8, title: 'Mazda BT-50 Thunder', location: 'Phnom Penh', price: '$26,000', year: '2020', sellerPhone: '097 888 777', image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80', details: 'Turbo Diesel 3.2L, 4x4 Off-road suspension, Snorkel & Winch fitted.' }
 ]
 
-// Generate realistic BongThom Job ID (e.g. # 67699) matching screenshot
+const isKhonnectModalOpen = ref(false)
+const selectedKhonnectAd = ref<KhonnectAd | null>(null)
+
+function openKhonnectModal(ad: KhonnectAd) {
+  selectedKhonnectAd.value = ad
+  isKhonnectModalOpen.value = true
+}
+
+// BongThom Job ID Generator
 function getBongThomJobId(job: Job): string {
   let hash = 0
   for (let i = 0; i < job.id.length; i++) {
@@ -192,7 +286,7 @@ function getBongThomJobId(job: Job): string {
   return `# 676${(idNum % 100).toString().padStart(2, '0')}`
 }
 
-// Generate realistic BongThom duration remaining (e.g. "2 days" / "២ ថ្ងៃ") matching screenshot
+// Duration remaining generator
 function getBongThomDaysLeft(job: Job): { daysEn: string; daysKh: string; daysNum: number } {
   let hash = 0
   for (let i = 0; i < job.id.length; i++) {
@@ -206,7 +300,7 @@ function getBongThomDaysLeft(job: Job): { daysEn: string; daysKh: string; daysNu
   }
 }
 
-// Generate BongThom closing date (e.g. "18-Sep-2026") matching screenshot
+// Closing date generator
 function getBongThomClosingDate(job: Job): string {
   const dateObj = new Date(job.postedDate)
   dateObj.setDate(dateObj.getDate() + 15)
@@ -228,13 +322,6 @@ function selectCategoryFilter(catVal: string) {
 
 function selectQuickLinkFilter(linkId: string) {
   activeQuickLink.value = activeQuickLink.value === linkId ? 'all' : linkId
-  if (linkId === 'internships') {
-    activeType.value = 'Internship'
-  } else if (linkId === 'parttime') {
-    activeType.value = 'Part-time'
-  } else {
-    activeType.value = 'All'
-  }
   scrollToResults()
 }
 
@@ -252,15 +339,22 @@ function scrollToResults() {
   }
 }
 
+// Comprehensive Filtering Engine
 const filteredJobs = computed(() => {
-  let result = [...allJobs]
+  let result = [...allJobs.value]
 
-  // Company Starting Letter filter
+  // Company Starting Letter Filter (A-Z)
   if (selectedLetter.value) {
-    result = result.filter(j => j.company.toUpperCase().startsWith(selectedLetter.value))
+    const letter = selectedLetter.value.toUpperCase()
+    const matchesLetter = result.filter(j =>
+      j.company.toUpperCase().startsWith(letter) || j.title.toUpperCase().startsWith(letter)
+    )
+    result = matchesLetter.length > 0
+      ? matchesLetter
+      : result.filter(j => j.company.toUpperCase().includes(letter) || j.title.toUpperCase().includes(letter))
   }
 
-  // Location filter
+  // Location Filter
   if (activeLocation.value !== 'All') {
     const targetProvince = CAMBODIAN_PROVINCES.find(
       p => p.name.toLowerCase() === activeLocation.value.toLowerCase() || p.id === activeLocation.value
@@ -277,14 +371,43 @@ const filteredJobs = computed(() => {
     })
   }
 
-  // Category filter
-  if (activeCategory.value !== 'All') {
-    result = result.filter(j => j.category.toLowerCase() === activeCategory.value.toLowerCase())
+  // Quick Links Filter
+  if (activeQuickLink.value !== 'all') {
+    const ql = activeQuickLink.value
+    if (ql === 'internships') {
+      result = result.filter(j => j.type.toLowerCase() === 'internship' || j.title.toLowerCase().includes('intern'))
+    } else if (ql === 'consultancies') {
+      result = result.filter(j => j.title.toLowerCase().includes('consultant') || j.title.toLowerCase().includes('advisor') || j.description.toLowerCase().includes('consultant') || j.title.toLowerCase().includes('bid'))
+    } else if (ql === 'scholarships') {
+      result = result.filter(j => j.title.toLowerCase().includes('scholarship') || j.description.toLowerCase().includes('scholarship') || j.category === 'Education')
+    } else if (ql === 'procurement') {
+      result = result.filter(j => j.title.toLowerCase().includes('procurement') || j.title.toLowerCase().includes('bid') || j.title.toLowerCase().includes('supply') || j.description.toLowerCase().includes('procurement'))
+    } else if (ql === 'parttime') {
+      result = result.filter(j => j.type.toLowerCase() === 'part-time')
+    } else if (ql === 'shortterm') {
+      result = result.filter(j => j.type.toLowerCase() === 'freelance' || j.type.toLowerCase() === 'contract' || j.type.toLowerCase() === 'part-time')
+    } else if (ql === 'appliedlabour') {
+      result = result.filter(j => j.category === 'Other' || j.title.toLowerCase().includes('labour') || j.title.toLowerCase().includes('technician') || j.title.toLowerCase().includes('officer') || j.title.toLowerCase().includes('nurse'))
+    }
   }
 
-  // Job Type filter
+  // Category Filter
+  if (activeCategory.value !== 'All') {
+    result = result.filter(j => matchesCategory(j, activeCategory.value))
+  }
+
+  // Job Type Filter
   if (activeType.value !== 'All') {
     result = result.filter(j => j.type.toLowerCase() === activeType.value.toLowerCase())
+  }
+
+  // Date Filter (By day of month)
+  if (selectedDateDay.value !== null) {
+    result = result.filter(j => {
+      const pDay = new Date(j.postedDate).getDate()
+      const cDay = (pDay + 15) % 30 || 1
+      return dateFilterType.value === 'posting' ? pDay === selectedDateDay.value : cDay === selectedDateDay.value
+    })
   }
 
   // Search Query
@@ -346,7 +469,7 @@ function resetFilters() {
   sortBy.value = 'newest'
 }
 
-// Quick Apply Modal & Ad Modal
+// Quick Apply Modal & Application Submission
 const isApplyModalOpen = ref(false)
 const selectedJobForApply = ref<Job | null>(null)
 const applyForm = ref({
@@ -389,23 +512,115 @@ function handleCvFileChange(e: Event) {
 }
 
 function submitJobApplication() {
-  if (!applyForm.value.fullName || !applyForm.value.phone) return
+  if (!applyForm.value.fullName || !applyForm.value.phone || !selectedJobForApply.value) return
+  
+  const newApp: JobApplication = {
+    id: 'app-' + Date.now(),
+    jobId: selectedJobForApply.value.id,
+    jobTitle: selectedJobForApply.value.title,
+    company: selectedJobForApply.value.company,
+    fullName: applyForm.value.fullName,
+    phone: applyForm.value.phone,
+    email: applyForm.value.email,
+    cvFileName: applyForm.value.cvFileName || 'CV_Resume.pdf',
+    appliedAt: new Date().toISOString()
+  }
+
+  userApplications.value.unshift(newApp)
+  try {
+    localStorage.setItem('camlife_job_applications', JSON.stringify(userApplications.value))
+  } catch (e) {
+    console.error('Failed to save application', e)
+  }
+
   isApplySubmitted.value = true
 }
 
+// Post Ad Modal (Employer Posting)
 const isPostAdModalOpen = ref(false)
 const postAdForm = ref({
   companyName: '',
   jobTitle: '',
   contactPhone: '',
   email: '',
-  category: 'IT'
+  location: 'Phnom Penh',
+  salary: '$800 - $1,500/month',
+  category: 'IT',
+  description: ''
 })
 const isPostAdSubmitted = ref(false)
 
 function submitPostAd() {
   if (!postAdForm.value.companyName || !postAdForm.value.jobTitle) return
+  
+  const newJob: Job = {
+    id: 'job-user-' + Date.now(),
+    title: postAdForm.value.jobTitle,
+    company: postAdForm.value.companyName,
+    location: postAdForm.value.location || 'Phnom Penh',
+    salary: postAdForm.value.salary || '$600 - $1,200/month',
+    salaryMin: 600,
+    salaryMax: 1200,
+    type: 'Full-time',
+    category: postAdForm.value.category || 'IT',
+    postedDate: new Date().toISOString().split('T')[0],
+    description: postAdForm.value.description || `Classified job ad posted by ${postAdForm.value.companyName}. Direct contact phone: ${postAdForm.value.contactPhone}.`,
+    requirements: ['Relevant qualification or experience in field', 'Good communication skills'],
+    benefits: ['Competitive compensation', 'NSSF healthcare & staff bonuses'],
+    applyUrl: `tel:${postAdForm.value.contactPhone}`
+  }
+
+  userPostedJobs.value.unshift(newJob)
+  try {
+    localStorage.setItem('camlife_user_jobs', JSON.stringify(userPostedJobs.value))
+  } catch (e) {
+    console.error('Failed to save posted job', e)
+  }
+
   isPostAdSubmitted.value = true
+  scrollToResults()
+}
+
+// RSS Feed Generator & Reader Modal
+const isRssModalOpen = ref(false)
+const isRssCopied = ref(false)
+
+function downloadRssFeed() {
+  const itemsXml = filteredJobs.value.slice(0, 15).map(j => `
+    <item>
+      <title><![CDATA[${j.title} - ${j.company}]]></title>
+      <link>https://camlife.gov.kh/jobs/${j.id}</link>
+      <description><![CDATA[${j.description}]]></description>
+      <category>${j.category}</category>
+      <pubDate>${new Date(j.postedDate).toUTCString()}</pubDate>
+    </item>`).join('')
+
+  const rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>BongThom CamLife Careers RSS Feed</title>
+    <link>https://camlife.gov.kh/jobs</link>
+    <description>Latest Job Opportunities in Cambodia</description>
+    <language>en-us</language>
+    ${itemsXml}
+  </channel>
+</rss>`
+
+  const blob = new Blob([rssXml], { type: 'application/rss+xml' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'camlife-bongthom-jobs.xml'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+function copyRssUrl() {
+  navigator.clipboard.writeText('https://camlife.gov.kh/rss/jobs.xml')
+  isRssCopied.value = true
+  setTimeout(() => { isRssCopied.value = false }, 2000)
 }
 </script>
 
@@ -431,13 +646,15 @@ function submitPostAd() {
           </div>
         </div>
 
-        <button
-          @click="isPostAdModalOpen = true"
-          type="button"
-          class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-black shadow-md transition-all cursor-pointer shrink-0"
-        >
-          {{ currentLanguage === 'kh' ? 'ចុះផ្សាយការងារ / Register Now' : 'Register CV / Post Ad' }}
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            @click="isPostAdModalOpen = true"
+            type="button"
+            class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-black shadow-md transition-all cursor-pointer shrink-0"
+          >
+            {{ currentLanguage === 'kh' ? 'ចុះផ្សាយការងារ / Register Now' : 'Register CV / Post Ad' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -575,7 +792,11 @@ function submitPostAd() {
             </button>
 
             <div v-if="isRecentSearchOpen" class="p-3 text-[11px] text-slate-400 italic text-left">
-              {{ searchQuery ? `"${searchQuery}"` : 'No recent searches have been made' }}
+              <div v-if="searchQuery" class="flex items-center justify-between gap-1 text-slate-700 dark:text-slate-200 font-bold">
+                <span>"{{ searchQuery }}"</span>
+                <button @click="searchQuery = ''" class="text-xs text-rose-500 hover:underline">Clear</button>
+              </div>
+              <span v-else>No recent searches have been made</span>
             </div>
           </div>
 
@@ -640,7 +861,6 @@ function submitPostAd() {
                 ]"
               >
                 <span class="truncate pr-1">{{ cat.label }}</span>
-                <!-- BongThom Dark Count Pill -->
                 <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-slate-600 text-white dark:bg-slate-700 shrink-0">
                   {{ cat.count }}
                 </span>
@@ -663,7 +883,10 @@ function submitPostAd() {
               type="button"
               class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
             >
-              <span>Company Starting Letter</span>
+              <div class="flex items-center gap-1.5">
+                <span>Company Starting Letter</span>
+                <span v-if="selectedLetter" class="text-[10px] text-blue-600 font-black">({{ selectedLetter }})</span>
+              </div>
               <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isCompanyLetterOpen }" />
             </button>
 
@@ -694,7 +917,10 @@ function submitPostAd() {
               type="button"
               class="w-full flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none"
             >
-              <span>Filter on Date</span>
+              <div class="flex items-center gap-1.5">
+                <span>Filter on Date</span>
+                <span v-if="selectedDateDay !== null" class="text-[10px] text-rose-600 font-black">(Day {{ selectedDateDay }})</span>
+              </div>
               <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isDateFilterOpen }" />
             </button>
 
@@ -733,9 +959,7 @@ function submitPostAd() {
                       'w-5 h-5 flex items-center justify-center rounded-xs transition-colors mx-auto cursor-pointer',
                       selectedDateDay === d
                         ? 'bg-[#0D47A1] text-white font-black'
-                        : d === 8 || d === 15 || d === 20
-                          ? 'text-rose-600 font-bold hover:bg-rose-50'
-                          : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                     ]"
                   >
                     {{ d }}
@@ -760,17 +984,22 @@ function submitPostAd() {
             </button>
 
             <div v-if="isKhonnectOpen" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-[10px]">
-              <div v-for="item in khonnectAds" :key="item.id" class="p-2 flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800/40">
+              <div
+                v-for="item in khonnectAds"
+                :key="item.id"
+                @click="openKhonnectModal(item)"
+                class="p-2 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-slate-800/40 cursor-pointer transition-colors"
+              >
                 <div class="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs shrink-0">
                   🚗
                 </div>
-                <div class="min-w-0">
+                <div class="min-w-0 flex-1">
                   <p class="font-bold text-[#0D47A1] dark:text-blue-400 truncate">{{ item.title }}</p>
-                  <p class="text-[9px] text-slate-400">📍 {{ item.location }}</p>
+                  <div class="flex items-center justify-between text-[9px] text-slate-400">
+                    <span>📍 {{ item.location }}</span>
+                    <span class="font-black text-emerald-600">{{ item.price }}</span>
+                  </div>
                 </div>
-              </div>
-              <div class="p-2 text-center bg-slate-50/50">
-                <a href="#" class="text-[10px] font-black text-[#0D47A1] hover:underline uppercase">List ALL...</a>
               </div>
             </div>
           </div>
@@ -789,13 +1018,30 @@ function submitPostAd() {
               <ChevronDown class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': !isRssOpen }" />
             </button>
 
-            <div v-if="isRssOpen" class="p-2.5 space-y-1 text-[11px]">
-              <a href="#" class="block text-[#0D47A1] dark:text-blue-400 font-semibold hover:underline">Jobs RSS Feed</a>
-              <a href="#" class="block text-slate-500 font-medium hover:underline text-[10px]">Download RSS Reader</a>
+            <div v-if="isRssOpen" class="p-2.5 space-y-2 text-[11px]">
+              <button
+                @click="downloadRssFeed"
+                type="button"
+                class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-bold hover:bg-amber-100 transition-colors cursor-pointer"
+              >
+                <span class="flex items-center gap-1.5">
+                  <Download class="w-3.5 h-3.5 text-amber-600" />
+                  <span>Jobs RSS Feed</span>
+                </span>
+                <span class="text-[9px] text-amber-700 font-black">XML</span>
+              </button>
+
+              <button
+                @click="isRssModalOpen = true"
+                type="button"
+                class="w-full text-left text-slate-500 hover:text-slate-800 font-medium hover:underline text-[10px] px-1"
+              >
+                Download RSS Reader & Feed Guide
+              </button>
             </div>
           </div>
 
-          <!-- Card 8: Telegram Channel Join Banner Ad (Matching screenshot bottom left) -->
+          <!-- Card 8: Telegram Channel Join Banner Ad -->
           <div class="bg-gradient-to-r from-sky-600 to-blue-700 rounded-lg p-3 text-white text-center space-y-2 shadow-md">
             <div class="flex items-center justify-center gap-2">
               <MessageCircle class="w-5 h-5 text-white" />
@@ -951,15 +1197,22 @@ function submitPostAd() {
                       <span>{{ getBongThomClosingDate(job) }}</span>
                     </span>
 
-                    <!-- Quick Apply Badge Button -->
-                    <button
-                      @click="openApplyModal(job)"
-                      type="button"
-                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#0D47A1] dark:text-blue-300 text-[10px] font-black hover:bg-blue-100 cursor-pointer ml-auto sm:ml-0"
-                    >
-                      <Zap class="w-3 h-3 text-amber-500" />
-                      <span>Apply</span>
-                    </button>
+                    <!-- Quick Apply Badge / Applied Status -->
+                    <div class="ml-auto sm:ml-0">
+                      <span v-if="hasApplied(job.id)" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold">
+                        <CheckCircle class="w-3 h-3 text-emerald-600" />
+                        <span>Applied</span>
+                      </span>
+                      <button
+                        v-else
+                        @click="openApplyModal(job)"
+                        type="button"
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#0D47A1] dark:text-blue-300 text-[10px] font-black hover:bg-blue-100 cursor-pointer"
+                      >
+                        <Zap class="w-3 h-3 text-amber-500" />
+                        <span>Apply</span>
+                      </button>
+                    </div>
 
                   </div>
 
@@ -1023,7 +1276,9 @@ function submitPostAd() {
                   {{ job.salary }}
                 </span>
 
+                <span v-if="hasApplied(job.id)" class="text-[10px] font-black text-emerald-600">✓ Applied</span>
                 <button
+                  v-else
                   @click="openApplyModal(job)"
                   type="button"
                   class="px-3 py-1 bg-[#003366] text-white rounded text-xs font-bold cursor-pointer"
@@ -1125,7 +1380,7 @@ function submitPostAd() {
               Application Sent Successfully!
             </h4>
             <p class="text-xs text-slate-500">
-              The hiring team at {{ selectedJobForApply.company }} will review your application and contact you soon.
+              Your application for <strong>{{ selectedJobForApply.title }}</strong> has been recorded. The hiring team at {{ selectedJobForApply.company }} will review your CV and contact you at {{ applyForm.phone }}.
             </p>
             <button @click="closeApplyModal" type="button" class="px-5 py-2 rounded-lg bg-[#003366] text-white font-bold text-xs cursor-pointer">
               Done
@@ -1135,23 +1390,23 @@ function submitPostAd() {
           <form v-else @submit.prevent="submitJobApplication" class="space-y-3 text-xs">
             <div class="space-y-1">
               <label class="font-bold text-slate-700 dark:text-slate-200">Full Name *</label>
-              <input v-model="applyForm.fullName" required type="text" placeholder="e.g. Sok Chanthon" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
+              <input v-model="applyForm.fullName" required type="text" placeholder="e.g. Sok Chanthon" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold" />
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div class="space-y-1">
                 <label class="font-bold text-slate-700 dark:text-slate-200">Phone / Telegram *</label>
-                <input v-model="applyForm.phone" required type="tel" placeholder="012 345 678" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
+                <input v-model="applyForm.phone" required type="tel" placeholder="012 345 678" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold" />
               </div>
               <div class="space-y-1">
                 <label class="font-bold text-slate-700 dark:text-slate-200">Email</label>
-                <input v-model="applyForm.email" type="email" placeholder="name@example.com" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
+                <input v-model="applyForm.email" type="email" placeholder="name@example.com" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold" />
               </div>
             </div>
 
             <div class="space-y-1">
               <label class="font-bold text-slate-700 dark:text-slate-200">Attach CV (.pdf, .docx) *</label>
-              <div class="relative border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-3 text-center">
+              <div class="relative border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-3 text-center hover:bg-slate-50 transition-colors">
                 <input type="file" accept=".pdf,.doc,.docx" @change="handleCvFileChange" class="absolute inset-0 opacity-0 cursor-pointer" />
                 <div class="flex items-center justify-center gap-2 text-slate-500">
                   <UploadCloud class="w-4 h-4 text-[#0D47A1]" />
@@ -1173,7 +1428,7 @@ function submitPostAd() {
       </div>
     </transition>
 
-    <!-- POST AD MODAL -->
+    <!-- POST AD MODAL (Employer Posting) -->
     <transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0"
@@ -1199,34 +1454,135 @@ function submitPostAd() {
 
           <div v-if="isPostAdSubmitted" class="py-6 text-center space-y-2">
             <CheckCircle2 class="w-10 h-10 text-emerald-500 mx-auto" />
-            <h4 class="text-sm font-black">Submitted Successfully!</h4>
-            <button @click="isPostAdModalOpen = false; isPostAdSubmitted = false" class="px-4 py-1.5 bg-[#003366] text-white font-bold text-xs rounded cursor-pointer">Close</button>
+            <h4 class="text-sm font-black">Job Ad Published Successfully!</h4>
+            <p class="text-xs text-slate-500">Your job posting for <strong>{{ postAdForm.jobTitle }}</strong> at <strong>{{ postAdForm.companyName }}</strong> is now live on the Latest Jobs feed.</p>
+            <button @click="isPostAdModalOpen = false; isPostAdSubmitted = false" class="px-4 py-1.5 bg-[#003366] text-white font-bold text-xs rounded cursor-pointer">View Feed</button>
           </div>
 
           <form v-else @submit.prevent="submitPostAd" class="space-y-3 text-xs">
             <div class="space-y-1">
               <label class="font-bold text-slate-700 dark:text-slate-200">Company Name *</label>
-              <input v-model="postAdForm.companyName" required type="text" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input v-model="postAdForm.companyName" required type="text" placeholder="e.g. ABA Bank / ETEC Center" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold" />
             </div>
             <div class="space-y-1">
               <label class="font-bold text-slate-700 dark:text-slate-200">Job Title *</label>
-              <input v-model="postAdForm.jobTitle" required type="text" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input v-model="postAdForm.jobTitle" required type="text" placeholder="e.g. Senior Accountant / IT Support" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold" />
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div class="space-y-1">
                 <label class="font-bold text-slate-700 dark:text-slate-200">Contact Phone *</label>
-                <input v-model="postAdForm.contactPhone" required type="tel" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+                <input v-model="postAdForm.contactPhone" required type="tel" placeholder="012 345 678" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold" />
               </div>
               <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-200">HR Email</label>
-                <input v-model="postAdForm.email" type="email" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+                <label class="font-bold text-slate-700 dark:text-slate-200">Salary Range</label>
+                <input v-model="postAdForm.salary" type="text" placeholder="$600 - $1,200/month" class="w-full px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold" />
               </div>
             </div>
             <div class="pt-2 flex justify-end gap-2">
               <button @click="isPostAdModalOpen = false" type="button" class="px-3 py-1.5 text-slate-500 font-bold cursor-pointer">Cancel</button>
-              <button type="submit" class="px-5 py-1.5 bg-amber-400 text-slate-900 font-black rounded cursor-pointer">Publish</button>
+              <button type="submit" class="px-5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-black rounded cursor-pointer">Publish Ad Now</button>
             </div>
           </form>
+        </div>
+      </div>
+    </transition>
+
+    <!-- KHONNECT AD MODAL -->
+    <transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isKhonnectModalOpen && selectedKhonnectAd"
+        class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 font-khmer"
+        @click.self="isKhonnectModalOpen = false"
+      >
+        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <button @click="isKhonnectModalOpen = false" class="absolute top-3 right-3 p-1.5 rounded-full bg-slate-900/40 text-white hover:bg-slate-900/60 z-10 cursor-pointer" type="button">
+            <X class="w-4 h-4" />
+          </button>
+
+          <div class="relative h-48 w-full bg-slate-100">
+            <img :src="selectedKhonnectAd.image" :alt="selectedKhonnectAd.title" class="w-full h-full object-cover" />
+            <div class="absolute bottom-2 left-2 px-2.5 py-1 rounded-md bg-slate-900/80 text-white font-black text-xs">
+              {{ selectedKhonnectAd.price }}
+            </div>
+          </div>
+
+          <div class="p-5 space-y-3 text-xs">
+            <div>
+              <span class="text-[10px] font-black uppercase text-blue-600">Khonnect Vehicle Listing</span>
+              <h3 class="text-base font-black text-slate-900 dark:text-white">{{ selectedKhonnectAd.title }} ({{ selectedKhonnectAd.year }})</h3>
+              <p class="text-slate-500">📍 {{ selectedKhonnectAd.location }}</p>
+            </div>
+
+            <p class="text-slate-600 dark:text-slate-300 leading-relaxed font-medium bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg">
+              {{ selectedKhonnectAd.details }}
+            </p>
+
+            <div class="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+              <a :href="'tel:' + selectedKhonnectAd.sellerPhone" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold cursor-pointer">
+                <Phone class="w-3.5 h-3.5" />
+                <span>Call Seller: {{ selectedKhonnectAd.sellerPhone }}</span>
+              </a>
+              <button @click="isKhonnectModalOpen = false" type="button" class="px-3 py-2 text-slate-500 font-bold cursor-pointer">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- RSS READER & GUIDE MODAL -->
+    <transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isRssModalOpen"
+        class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 font-khmer"
+        @click.self="isRssModalOpen = false"
+      >
+        <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+          <button @click="isRssModalOpen = false" class="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 cursor-pointer" type="button">
+            <X class="w-5 h-5" />
+          </button>
+
+          <div class="flex items-center gap-2">
+            <Rss class="w-5 h-5 text-amber-500" />
+            <h3 class="text-base font-black text-slate-900 dark:text-white">BongThom Jobs RSS Feed Service</h3>
+          </div>
+
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Subscribe to our XML RSS feed in Feedly, NetNewsWire, or Outlook to receive automated real-time career updates.
+          </p>
+
+          <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-between gap-2">
+            <code class="text-[11px] font-mono text-blue-600 dark:text-blue-300 truncate">https://camlife.gov.kh/rss/jobs.xml</code>
+            <button
+              @click="copyRssUrl"
+              type="button"
+              class="px-2.5 py-1 rounded bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-[10px] font-bold shadow-xs hover:bg-slate-200 cursor-pointer shrink-0 flex items-center gap-1"
+            >
+              <Copy class="w-3 h-3" />
+              <span>{{ isRssCopied ? 'Copied!' : 'Copy Feed URL' }}</span>
+            </button>
+          </div>
+
+          <div class="pt-2 flex justify-between items-center">
+            <button @click="downloadRssFeed" type="button" class="px-4 py-2 bg-amber-400 text-slate-900 font-black rounded-lg text-xs cursor-pointer flex items-center gap-1.5">
+              <Download class="w-3.5 h-3.5" />
+              <span>Download XML File</span>
+            </button>
+            <button @click="isRssModalOpen = false" type="button" class="px-3 py-2 text-slate-500 font-bold text-xs cursor-pointer">Close</button>
+          </div>
         </div>
       </div>
     </transition>
