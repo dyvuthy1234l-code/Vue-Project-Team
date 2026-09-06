@@ -26,6 +26,7 @@ import {
   CheckCircle2,
   Plus,
   Trash2,
+  ShieldCheck,
   Check,
   Sparkles,
   MapPin,
@@ -53,7 +54,7 @@ import type { Job, HomeService } from '@/types'
 
 const router = useRouter()
 const { currentLanguage, setLanguage, localized } = useLanguage()
-const { currentUser, logout } = useAuth()
+const { currentUser, login, logout } = useAuth()
 const { reports, updateReportStatus } = useFeedback()
 
 usePageMeta({
@@ -67,6 +68,17 @@ const isAdmin = computed(() => {
   const role = currentUser.value.role || ''
   return role === 'Administrator' || role === 'Admin'
 })
+
+// Quick Demo Login
+function loginAsAdminDemo() {
+  login({
+    name: 'Admin Officer',
+    email: 'admin@camlife.gov.kh',
+    phone: '012 999 888',
+    role: 'Administrator'
+  })
+  showToast(currentLanguage.value === 'kh' ? 'បានចូលគណនី Admin ដោយជោគជ័យ' : 'Signed in as Administrator')
+}
 
 // Navigation Tabs
 type AdminNavTab =
@@ -818,9 +830,17 @@ function handleSignOut() {
         </div>
 
         <div class="space-y-3">
+          <button
+            @click="loginAsAdminDemo"
+            class="w-full py-3.5 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-blue-500/25 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+          >
+            <ShieldCheck class="w-4 h-4 text-blue-200" />
+            <span>{{ currentLanguage === 'kh' ? 'ចូលផ្ទាំងគ្រប់គ្រង Admin (One-Click)' : 'Enter Admin Dashboard (One-Click)' }}</span>
+          </button>
+
           <router-link
             to="/"
-            class="w-full py-3.5 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-blue-500/25 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+            class="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-slate-800 hover:bg-slate-700/80 text-slate-300 font-bold rounded-2xl transition-colors text-xs"
           >
             <ExternalLink class="w-4 h-4" />
             <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ទៅគេហទំព័រសាធារណៈ' : 'Return to Public Website' }}</span>
