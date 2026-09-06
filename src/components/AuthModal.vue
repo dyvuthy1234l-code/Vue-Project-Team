@@ -232,10 +232,12 @@ function loginDemoAdmin() {
         <!-- Modal Brand Header -->
         <div class="p-6 pb-4 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-transparent dark:from-slate-800 dark:via-slate-800 dark:to-slate-800">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-[#0D47A1] text-white flex items-center justify-center shadow-md shadow-blue-900/20 ring-2 ring-blue-500/20">
-              <svg viewBox="0 0 100 70" fill="currentColor" class="w-6 h-6">
-                <path d="M50 4 L53 14 L57 14 L55 20 L60 20 L62 14 L66 14 L66 22 L70 22 L73 17 L76 17 L76 25 L81 26 L81 60 L19 60 L19 26 L24 25 L24 17 L27 17 L30 22 L34 22 L34 14 L38 14 L40 20 L45 20 L43 14 L47 14 Z M50 10 L48 16 L44 16 L46 22 L41 22 L39 16 L36 16 L36 24 L32 24 L30 19 L28 19 L28 27 L22 28 L22 56 L78 56 L78 28 L72 27 L72 19 L70 19 L68 24 L64 24 L64 16 L61 16 L59 22 L54 22 L56 16 L52 16 Z M26 48 H32 V52 H26 Z M36 48 H42 V52 H36 Z M47 48 H53 V52 H47 Z M58 48 H64 V52 H58 Z M68 48 H74 V52 H68 Z" />
-              </svg>
+            <div class="w-11 h-11 rounded-2xl bg-white dark:bg-slate-900 p-1 flex items-center justify-center shadow-md shadow-blue-900/10 ring-2 ring-blue-500/20 border border-slate-200/80 dark:border-slate-700/80 flex-shrink-0">
+              <img
+                src="/logo.png"
+                alt="CamLife Logo"
+                class="w-full h-full object-contain rounded-xl"
+              />
             </div>
             <div>
               <div class="flex items-center gap-2">

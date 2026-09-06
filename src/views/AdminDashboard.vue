@@ -827,8 +827,8 @@ function handleSignOut() {
         <!-- Sidebar Brand Header -->
         <div class="h-16 px-4 flex items-center justify-between border-b border-slate-800/80">
           <div class="flex items-center gap-3 overflow-hidden">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 flex items-center justify-center text-white font-black shadow-md flex-shrink-0">
-              CL
+            <div class="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shadow-md flex-shrink-0">
+              <img src="/logo.png" alt="CamLife" class="w-full h-full object-contain rounded-lg" />
             </div>
             <div v-if="isSidebarOpen" class="flex flex-col min-w-0 transition-opacity">
               <span class="text-base font-black text-white tracking-tight leading-tight">CamLife</span>
