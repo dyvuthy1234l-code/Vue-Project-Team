@@ -13,7 +13,9 @@ import {
   ShieldCheck,
   LogIn,
   UserPlus,
-  Phone
+  Phone,
+  Construction,
+  Clock
 } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import { useLanguage } from '@/composables/useLanguage'
@@ -53,10 +55,13 @@ const passwordStrength = computed(() => {
   return { score: 2, textKh: 'កម្រិតមធ្យម', textEn: 'Medium', color: 'bg-amber-500' }
 })
 
+const isAdminNoticeOpen = ref(false)
+
 function switchTab(tab: 'login' | 'register') {
   authModalTab.value = tab
   errorMessage.value = ''
   successMessage.value = ''
+  isAdminNoticeOpen.value = false
 }
 
 function handleForgotPassword() {
@@ -92,10 +97,12 @@ function handleLogin() {
     const input = loginForm.emailOrPhone.trim().toLowerCase()
     const isAdmin = input.includes('admin') || loginForm.password === 'admin2026'
 
-    const displayName = input.includes('admin')
-      ? 'Admin Officer'
-      : (input.includes('@') ? input.split('@')[0] : 'Sok Vuthy')
+    if (isAdmin) {
+      isAdminNoticeOpen.value = true
+      return
+    }
 
+    const displayName = input.includes('@') ? input.split('@')[0] : 'Sok Vuthy'
     const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1)
 
     successMessage.value = currentLanguage.value === 'kh'
@@ -105,9 +112,9 @@ function handleLogin() {
     setTimeout(() => {
       login({
         name: formattedName,
-        email: input.includes('@') ? input : (isAdmin ? 'admin@camlife.gov.kh' : 'citizen@camlife.kh'),
+        email: input.includes('@') ? input : 'citizen@camlife.kh',
         phone: !input.includes('@') ? input : '012 345 678',
-        role: isAdmin ? 'Administrator' : 'Citizen Member'
+        role: 'Citizen Member'
       })
       successMessage.value = ''
     }, 600)
@@ -189,24 +196,14 @@ function loginDemoCitizen() {
   }, 500)
 }
 
-// Quick Demo Login as Admin
+// Quick Demo Login as Admin - Opens Under Development Notice
 function loginDemoAdmin() {
-  loginForm.emailOrPhone = 'admin@camlife.gov.kh'
-  loginForm.password = 'admin2026'
-  errorMessage.value = ''
-  successMessage.value = currentLanguage.value === 'kh'
-    ? 'ចូលជាអ្នកគ្រប់គ្រង (Admin Officer) ជោគជ័យ! សិទ្ធិ Admin បើកដំណើរការ។'
-    : 'Signed in as Admin Officer! Administrator privileges unlocked.'
+  isAdminNoticeOpen.value = true
+}
 
-  setTimeout(() => {
-    login({
-      name: 'Admin Officer',
-      email: 'admin@camlife.gov.kh',
-      phone: '023 888 999',
-      role: 'Administrator'
-    })
-    successMessage.value = ''
-  }, 500)
+function loginDemoCitizenFromNotice() {
+  isAdminNoticeOpen.value = false
+  loginDemoCitizen()
 }
 </script>
 
@@ -253,7 +250,7 @@ function loginDemoAdmin() {
           </div>
 
           <button
-            @click="closeAuthModal"
+            @click="closeAuthModal(); isAdminNoticeOpen = false"
             class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80 flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Close modal"
             type="button"
@@ -262,8 +259,88 @@ function loginDemoAdmin() {
           </button>
         </div>
 
-        <!-- Tab Switcher (Sign In vs Register) -->
-        <div class="px-6 pt-4">
+        <!-- ============================================================== -->
+        <!-- VIEW A: ADMIN SYSTEM UNDER ACTIVE DEVELOPMENT NOTICE           -->
+        <!-- ============================================================== -->
+        <div v-if="isAdminNoticeOpen" class="p-6 text-center animate-in fade-in zoom-in-95 duration-200">
+          <div class="w-16 h-16 rounded-3xl bg-amber-500/10 text-amber-500 border border-amber-500/30 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/10 ring-4 ring-amber-500/10">
+            <Construction class="w-8 h-8 text-amber-500 animate-bounce" />
+          </div>
+
+          <!-- Status Badge -->
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-300/60 dark:border-amber-700/60 mb-3">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+            <span>{{ currentLanguage === 'kh' ? 'ប្រព័ន្ធស្ថិតក្រោមការអភិវឌ្ឍន៍ • In Development' : 'System Under Development • Version 2.0 In Progress' }}</span>
+          </div>
+
+          <!-- Title -->
+          <h3 class="text-base font-black text-slate-900 dark:text-white mb-2 leading-tight">
+            {{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងរដ្ឋបាល (Admin CMS) មិនទាន់រួចរាល់ទេ' : 'Admin CMS Under Active Development' }}
+          </h3>
+
+          <!-- Description -->
+          <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4 max-w-sm mx-auto">
+            {{ currentLanguage === 'kh'
+              ? 'សូមអភ័យទោស! ផ្ទាំងគ្រប់គ្រងរដ្ឋបាលកណ្តាលមិនទាន់បញ្ចប់ការសរសេរកូដរួចរាល់នៅឡើយទេ ដោយសារក្រុមវិស្វករបច្ចេកវិទ្យាកំពុងរៀបចំប្រព័ន្ធសុវត្ថិភាពទិន្នន័យជាតិ និងការតភ្ជាប់ API ជាមួយក្រសួង-ស្ថាប័ន។ មុខងារនេះនឹងដាក់ឲ្យប្រើប្រាស់ជាផ្លូវការក្នុងពេលឆាប់ៗនេះ!'
+              : 'The central Administration CMS is currently undergoing security hardening, database encryption, and ministry API pipeline setup. Admin privileges are temporarily unavailable in this public build.' }}
+          </p>
+
+          <!-- Roadmap Progress Checklist -->
+          <div class="bg-slate-50 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/80 rounded-2xl p-3.5 mb-5 text-left space-y-2.5">
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
+              <span class="flex items-center gap-2">
+                <CheckCircle2 class="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>{{ currentLanguage === 'kh' ? 'ការរចនាទម្រង់បែបបទ & UI/UX Studio' : 'Form Studio & UI/UX Layouts' }}</span>
+              </span>
+              <span class="text-[10px] text-emerald-600 font-extrabold bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded">100%</span>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
+              <span class="flex items-center gap-2">
+                <Clock class="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span>{{ currentLanguage === 'kh' ? 'ប្រព័ន្ធផ្ទៀងផ្ទាត់សុវត្ថិភាព 2FA & Audit Log' : 'Multi-Factor Auth & Audit Log' }}</span>
+              </span>
+              <span class="text-[10px] text-amber-600 font-extrabold bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded">{{ currentLanguage === 'kh' ? 'កំពុងធ្វើ' : 'In Progress' }}</span>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
+              <span class="flex items-center gap-2">
+                <Clock class="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span>{{ currentLanguage === 'kh' ? 'ការតភ្ជាប់ទិន្នន័យ Database ថ្នាក់ជាតិ' : 'National Database Linkage' }}</span>
+              </span>
+              <span class="text-[10px] text-amber-600 font-extrabold bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded">{{ currentLanguage === 'kh' ? 'កំពុងធ្វើ' : 'In Progress' }}</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <!-- Primary Action: Continue as Citizen -->
+            <button
+              @click="loginDemoCitizenFromNotice"
+              type="button"
+              class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+            >
+              <Sparkles class="w-4 h-4" />
+              <span>{{ currentLanguage === 'kh' ? 'ចូលជាពលរដ្ឋទូទៅសិន (Sok Vuthy)' : 'Continue as Citizen (Sok Vuthy)' }}</span>
+            </button>
+
+            <!-- Secondary Action: Back to Login Options -->
+            <button
+              @click="isAdminNoticeOpen = false"
+              type="button"
+              class="w-full py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold transition-colors cursor-pointer"
+            >
+              {{ currentLanguage === 'kh' ? 'ត្រឡប់ទៅផ្ទាំងចូលគណនីវិញ' : 'Back to Login Options' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- VIEW B: STANDARD AUTH TABS & FORMS                             -->
+        <!-- ============================================================== -->
+        <div v-else>
+          <!-- Tab Switcher (Sign In vs Register) -->
+          <div class="px-6 pt-4">
           <div class="flex rounded-2xl bg-slate-100 dark:bg-slate-700/60 p-1 border border-slate-200/60 dark:border-slate-700">
             <button
               @click="switchTab('login')"
@@ -413,11 +490,16 @@ function loginDemoAdmin() {
               <button
                 @click="loginDemoAdmin"
                 type="button"
-                class="p-2.5 rounded-2xl bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-950/50 border border-purple-200/80 dark:border-purple-800/40 text-left transition-all cursor-pointer group"
+                class="p-2.5 rounded-2xl bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-950/50 border border-purple-200/80 dark:border-purple-800/40 text-left transition-all cursor-pointer group relative overflow-hidden"
               >
-                <div class="flex items-center gap-1.5 text-purple-700 dark:text-purple-300 font-black text-xs">
-                  <ShieldCheck class="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                  <span>{{ currentLanguage === 'kh' ? 'អ្នកគ្រប់គ្រង' : 'Admin' }}</span>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5 text-purple-700 dark:text-purple-300 font-black text-xs">
+                    <ShieldCheck class="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                    <span>{{ currentLanguage === 'kh' ? 'អ្នកគ្រប់គ្រង' : 'Admin' }}</span>
+                  </div>
+                  <span class="px-1.5 py-0.5 rounded text-[8px] font-extrabold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-300/60">
+                    {{ currentLanguage === 'kh' ? 'មិនទាន់រួច' : 'In Dev' }}
+                  </span>
                 </div>
                 <p class="text-[10px] text-purple-600/80 dark:text-purple-400/70 mt-0.5 truncate">
                   Admin Officer
@@ -573,6 +655,7 @@ function loginDemoAdmin() {
             <span v-else>{{ currentLanguage === 'kh' ? 'បង្កើតគណនីឥតគិតថ្លៃ' : 'Create Free Account' }}</span>
           </button>
         </form>
+        </div>
       </div>
     </div>
   </Transition>

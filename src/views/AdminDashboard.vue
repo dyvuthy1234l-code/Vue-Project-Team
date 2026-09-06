@@ -26,16 +26,17 @@ import {
   CheckCircle2,
   Plus,
   Trash2,
-  ShieldCheck,
   Check,
   Sparkles,
   MapPin,
   DollarSign,
   Phone,
   Eye,
-  Wrench
+  Wrench,
+  Construction,
+  Clock
 } from 'lucide-vue-next'
-import { useAuth, type User } from '@/composables/useAuth'
+import { useAuth } from '@/composables/useAuth'
 import { useFeedback } from '@/composables/useFeedback'
 import { useLanguage } from '@/composables/useLanguage'
 import { usePageMeta } from '@/composables/usePageMeta'
@@ -52,7 +53,7 @@ import type { Job, HomeService } from '@/types'
 
 const router = useRouter()
 const { currentLanguage, setLanguage, localized } = useLanguage()
-const { currentUser, login, logout } = useAuth()
+const { currentUser, logout } = useAuth()
 const { reports, updateReportStatus } = useFeedback()
 
 usePageMeta({
@@ -66,18 +67,6 @@ const isAdmin = computed(() => {
   const role = currentUser.value.role || ''
   return role === 'Administrator' || role === 'Admin'
 })
-
-// Quick Demo Login
-function loginAsAdminDemo() {
-  const adminUser: User = {
-    name: 'Admin Officer',
-    email: 'admin@camlife.gov.kh',
-    phone: '012 999 888',
-    role: 'Administrator'
-  }
-  login(adminUser)
-  showToast(currentLanguage.value === 'kh' ? 'បានចូលគណនី Admin ដោយជោគជ័យ' : 'Signed in as Administrator')
-}
 
 // Navigation Tabs
 type AdminNavTab =
@@ -769,36 +758,69 @@ function handleSignOut() {
     <!-- ============================================================== -->
     <!-- ACCESS CONTROL GATE (Shown when guest or citizen visits /admin)-->
     <!-- ============================================================== -->
-    <div v-if="!isAdmin" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-[#0B132B] to-slate-950 text-white">
-      <div class="max-w-md w-full bg-slate-900/90 border border-slate-700/80 rounded-3xl p-8 backdrop-blur-xl shadow-2xl text-center relative overflow-hidden">
+    <div v-if="!isAdmin" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-[#0B132B] to-slate-900 text-white font-khmer">
+      <div class="max-w-lg w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-8 backdrop-blur-xl shadow-2xl text-center relative overflow-hidden">
         <div class="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto mb-6 shadow-inner">
-          <ShieldAlert class="w-8 h-8" />
+        <!-- Real CamLife Logo with badge -->
+        <div class="flex items-center justify-center gap-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-white p-1 shadow-lg flex items-center justify-center">
+            <img src="/logo.png" alt="CamLife" class="w-full h-full object-contain" />
+          </div>
+          <div class="text-left">
+            <h2 class="text-lg font-black text-white leading-tight">CamLife</h2>
+            <span class="text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">Administration Console</span>
+          </div>
         </div>
 
-        <h1 class="text-2xl font-black mb-2 text-white">
-          {{ currentLanguage === 'kh' ? 'តំបន់គ្រប់គ្រងសុវត្ថិភាពខ្ពស់' : 'Restricted Admin Portal' }}
+        <div class="w-16 h-16 rounded-3xl bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto mb-4 shadow-xl ring-8 ring-amber-500/10">
+          <Construction class="w-8 h-8 text-amber-400 animate-bounce" />
+        </div>
+
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-950/60 text-amber-400 border border-amber-700/60 mb-3">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          <span>{{ currentLanguage === 'kh' ? 'ប្រព័ន្ធស្ថិតក្រោមការអភិវឌ្ឍន៍ • Version 2.0 In Progress' : 'System Under Development • Version 2.0 In Progress' }}</span>
+        </div>
+
+        <h1 class="text-2xl font-black mb-3 text-white">
+          {{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងរដ្ឋបាលមិនទាន់រួចរាល់ទេ' : 'Admin CMS Under Construction' }}
         </h1>
-        <p class="text-sm text-slate-400 mb-6 leading-relaxed">
+        <p class="text-xs sm:text-sm text-slate-400 mb-6 leading-relaxed max-w-md mx-auto">
           {{ currentLanguage === 'kh'
-            ? 'ទំព័រនេះសម្រាប់តែអ្នកគ្រប់គ្រង (Administrator) របស់ CamLife ប៉ុណ្ណោះ។ សូមចូលគណនី Admin ដើម្បីចូលប្រើប្រាស់។'
-            : 'Access to the CamLife Admin CMS is reserved for authorized administrators only.' }}
+            ? 'សូមអភ័យទោស! ផ្ទាំងគ្រប់គ្រងទិន្នន័យរដ្ឋបាលកណ្តាល (Admin CMS) មិនទាន់បញ្ចប់ការសរសេរកូដរួចរាល់ជាស្ថាពរនៅឡើយទេ។ ក្រុមការងារបច្ចេកវិទ្យាកំពុងរៀបចំប្រព័ន្ធសុវត្ថិភាពទិន្នន័យជាតិ និងការតភ្ជាប់ API ជាមួយក្រសួង-ស្ថាប័ន។ មុខងារនេះនឹងបើកដំណើរការជាផ្លូវការក្នុងពេលឆាប់ៗនេះ។'
+            : 'The central Administration CMS is currently undergoing security hardening and data pipeline setup by our development team. Admin access is temporarily restricted during this phase.' }}
         </p>
 
-        <div class="space-y-3">
-          <button
-            @click="loginAsAdminDemo"
-            class="w-full py-3.5 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-blue-500/25 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-sm"
-          >
-            <ShieldCheck class="w-5 h-5 text-blue-200" />
-            <span>{{ currentLanguage === 'kh' ? 'ចូលគណនី Admin សាកល្បង (One-Click)' : 'Enter with Admin Demo Login' }}</span>
-          </button>
+        <!-- Development Progress Roadmap -->
+        <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 mb-6 text-left space-y-2.5">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span class="flex items-center gap-2">
+              <CheckCircle2 class="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{{ currentLanguage === 'kh' ? 'UI/UX Admin Studio Layout' : 'Admin Studio Interface' }}</span>
+            </span>
+            <span class="text-[10px] text-emerald-400 font-extrabold bg-emerald-950/80 px-2 py-0.5 rounded">100% រួចរាល់</span>
+          </div>
+          <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span class="flex items-center gap-2">
+              <Clock class="w-4 h-4 text-amber-400 shrink-0" />
+              <span>{{ currentLanguage === 'kh' ? 'ប្រព័ន្ធផ្ទៀងផ្ទាត់ 2FA & Multi-Tenant Audit' : 'Multi-Factor Auth & Audit Log' }}</span>
+            </span>
+            <span class="text-[10px] text-amber-400 font-extrabold bg-amber-950/80 px-2 py-0.5 rounded">{{ currentLanguage === 'kh' ? 'កំពុងធ្វើ' : 'In Progress' }}</span>
+          </div>
+          <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span class="flex items-center gap-2">
+              <Clock class="w-4 h-4 text-amber-400 shrink-0" />
+              <span>{{ currentLanguage === 'kh' ? 'ការតភ្ជាប់ទិន្នន័យ Database ថ្នាក់ជាតិ' : 'National Ministry Database Linkage' }}</span>
+            </span>
+            <span class="text-[10px] text-amber-400 font-extrabold bg-amber-950/80 px-2 py-0.5 rounded">{{ currentLanguage === 'kh' ? 'កំពុងធ្វើ' : 'In Progress' }}</span>
+          </div>
+        </div>
 
+        <div class="space-y-3">
           <router-link
             to="/"
-            class="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-slate-800 hover:bg-slate-700/80 text-slate-300 font-bold rounded-2xl transition-colors text-xs"
+            class="w-full py-3.5 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-blue-500/25 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
           >
             <ExternalLink class="w-4 h-4" />
             <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ទៅគេហទំព័រសាធារណៈ' : 'Return to Public Website' }}</span>
