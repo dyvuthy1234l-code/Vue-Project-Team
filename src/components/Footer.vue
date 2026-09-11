@@ -22,15 +22,18 @@ function scrollToTop() {
 </script>
 
 <template>
-  <footer class="bg-[#0A2540] text-slate-300 pt-12 pb-8 border-t border-slate-800 transition-colors font-khmer">
-    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+  <footer class="bg-[#0A2540] text-slate-300 pt-10 sm:pt-12 pb-20 sm:pb-10 border-t border-slate-800 transition-colors font-khmer">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
 
       <!-- ============================================================
            TOP ROW: EMERGENCY HOTLINE STRIP FOR CITIZENS
       ============================================================= -->
       <div class="p-4 sm:p-6 rounded-3xl bg-white/[.04] border border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <span class="w-3 h-3 rounded-full bg-red-500 animate-ping" />
+          <span class="relative flex h-3 w-3 shrink-0">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+            <span class="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
+          </span>
           <div>
             <h4 class="text-sm sm:text-base font-black text-white">
               {{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទសង្គ្រោះបន្ទាន់ជាតិកម្ពុជា (24/7 National Hotlines)' : 'National Emergency Helplines 24/7' }}
@@ -41,10 +44,10 @@ function scrollToTop() {
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs font-mono font-bold">
+        <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 text-xs font-mono font-bold w-full lg:w-auto">
           <a
             href="tel:117"
-            class="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
+            class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white flex items-center justify-center sm:justify-start gap-1.5 transition-colors shadow-sm w-full sm:w-auto"
           >
             <span class="inline-flex items-center gap-1.5"><ShieldAlert class="w-3.5 h-3.5" /> 117</span>
             <span class="text-[10px] font-sans font-normal opacity-90">{{ currentLanguage === 'kh' ? 'នគរបាល' : 'Police' }}</span>
@@ -52,7 +55,7 @@ function scrollToTop() {
 
           <a
             href="tel:118"
-            class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
+            class="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center sm:justify-start gap-1.5 transition-colors shadow-sm w-full sm:w-auto"
           >
             <span class="inline-flex items-center gap-1.5"><Flame class="w-3.5 h-3.5" /> 118</span>
             <span class="text-[10px] font-sans font-normal opacity-90">{{ currentLanguage === 'kh' ? 'អគ្គិភ័យ' : 'Fire' }}</span>
@@ -60,7 +63,7 @@ function scrollToTop() {
 
           <a
             href="tel:119"
-            class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
+            class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center sm:justify-start gap-1.5 transition-colors shadow-sm w-full sm:w-auto"
           >
             <span class="inline-flex items-center gap-1.5"><Ambulance class="w-3.5 h-3.5" /> 119</span>
             <span class="text-[10px] font-sans font-normal opacity-90">{{ currentLanguage === 'kh' ? 'សង្គ្រោះ' : 'Ambulance' }}</span>
@@ -68,7 +71,7 @@ function scrollToTop() {
 
           <a
             href="tel:1222"
-            class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
+            class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center sm:justify-start gap-1.5 transition-colors shadow-sm w-full sm:w-auto"
           >
             <span class="inline-flex items-center gap-1.5"><PhoneCall class="w-3.5 h-3.5" /> 1222</span>
             <span class="text-[10px] font-sans font-normal opacity-90">{{ currentLanguage === 'kh' ? 'សេវាពលរដ្ឋ' : 'Helpdesk' }}</span>
@@ -77,17 +80,17 @@ function scrollToTop() {
       </div>
 
       <!-- ============================================================
-           MIDDLE GRID: 5 COLUMNS
+           MIDDLE GRID: 5 COLUMNS ON DESKTOP, BALANCED ON MOBILE
       ============================================================= -->
-      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-7 pb-8 border-b border-slate-800/80">
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-7 pb-8 border-b border-slate-800/80">
 
         <!-- Column 1: Brand, Civic Mission & Independence Badge -->
-        <div class="col-span-2 md:col-span-2 lg:col-span-2 space-y-4">
+        <div class="col-span-2 lg:col-span-2 space-y-3.5">
           <router-link to="/" class="inline-flex items-center gap-3 group focus:outline-none">
             <img
               src="/logo.png"
               alt="CamLife Cambodia"
-              class="h-12 w-auto object-contain rounded-xl bg-white/95 p-1 transition-transform duration-200 group-hover:scale-105"
+              class="h-11 sm:h-12 w-auto object-contain rounded-xl bg-white/95 p-1 transition-transform duration-200 group-hover:scale-105"
             />
           </router-link>
 
@@ -98,9 +101,9 @@ function scrollToTop() {
             }}
           </p>
 
-          <div class="pt-2 flex flex-col gap-2 text-slate-400 text-xs">
+          <div class="pt-1 flex flex-col gap-1.5 text-slate-400 text-xs">
             <span class="inline-flex items-center gap-1.5 text-emerald-400 font-bold">
-              <ShieldCheck class="w-4 h-4" />
+              <ShieldCheck class="w-4 h-4 shrink-0" />
               <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានផ្ទៀងផ្ទាត់ផ្លូវការ (Verified Public Data)' : 'Verified Public Information Platform' }}</span>
             </span>
             <span class="text-[11px] text-slate-500">
@@ -135,7 +138,7 @@ function scrollToTop() {
             </li>
             <li>
               <router-link to="/government/birth-certificate" class="hover:text-white transition-colors">
-                {{ currentLanguage === 'kh' ? 'សំបុត្រកំណើត / សំបុត្រអាពាហ៍ពិពាហ៍' : 'Birth Certificate' }}
+                {{ currentLanguage === 'kh' ? 'សំបុត្រកំណើត / អាពាហ៍ពិពាហ៍' : 'Birth Certificate' }}
               </router-link>
             </li>
             <li>
@@ -169,7 +172,7 @@ function scrollToTop() {
             </li>
             <li>
               <router-link to="/transport" class="hover:text-white transition-colors">
-                {{ currentLanguage === 'kh' ? 'ខ្សែរថយន្តក្រុងរាជធានី (City Bus)' : 'City Bus & Transport' }}
+                {{ currentLanguage === 'kh' ? 'ខ្សែរថយន្តក្រុងរាជធានី' : 'City Bus & Transport' }}
               </router-link>
             </li>
             <li>
@@ -179,7 +182,7 @@ function scrollToTop() {
             </li>
             <li>
               <router-link to="/saved-services" class="hover:text-white transition-colors">
-                {{ currentLanguage === 'kh' ? 'សេវាដែលបានរក្សាទុក (Saved)' : 'My Saved Services' }}
+                {{ currentLanguage === 'kh' ? 'សេវាដែលបានរក្សាទុក' : 'My Saved Services' }}
               </router-link>
             </li>
             <li>
@@ -190,8 +193,8 @@ function scrollToTop() {
           </ul>
         </div>
 
-        <!-- Column 4: Contact, Support & Citizen Charter -->
-        <div class="space-y-3">
+        <!-- Column 4: Contact, Support & Citizen Charter (Spans full width col-span-2 on mobile) -->
+        <div class="col-span-2 lg:col-span-1 space-y-3 pt-4 lg:pt-0 border-t border-slate-800/80 lg:border-t-0">
           <h3 class="text-xs font-black uppercase tracking-wider text-white">
             {{ currentLanguage === 'kh' ? 'ទំនាក់ទំនង & មតិពលរដ្ឋ' : 'Contact & Feedback' }}
           </h3>
@@ -206,9 +209,9 @@ function scrollToTop() {
             </li>
             <li class="flex items-center gap-2">
               <Phone class="w-4 h-4 text-emerald-400 shrink-0" />
-              <a href="tel:+85523888999" class="hover:text-white transition-colors">+855 23 888 999</a>
+              <a href="tel:+85523888999" class="hover:text-white transition-colors font-mono">+855 23 888 999</a>
             </li>
-            <li class="pt-2">
+            <li class="pt-1">
               <router-link to="/contact" class="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 font-bold">
                 <span>{{ currentLanguage === 'kh' ? 'ប្រអប់ផ្ញើមតិ និងសំណើជំនួយ' : 'Submit Feedback or Report' }}</span>
                 <span>→</span>
@@ -244,12 +247,12 @@ function scrollToTop() {
       <!-- ============================================================
            BOTTOM ROW: COPYRIGHT, CITIZEN RIGHTS & ACCESSIBILITY
       ============================================================= -->
-      <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 text-center sm:text-left">
         <p>
           © {{ currentYear }} <strong>CamLife</strong> — Independent Citizen Information & Public Services Platform. Built for the People of Cambodia.
         </p>
 
-        <div class="flex flex-wrap items-center gap-4">
+        <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           <router-link to="/about" class="hover:text-slate-200 transition-colors">
             {{ currentLanguage === 'kh' ? 'អំពី CamLife' : 'About Platform' }}
           </router-link>
