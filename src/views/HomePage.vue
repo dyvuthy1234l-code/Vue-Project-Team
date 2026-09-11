@@ -717,9 +717,9 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div class="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.15fr_0.85fr] xl:grid-cols-[1.2fr_1fr]">
+        <div class="grid gap-3 sm:gap-4 p-3 sm:p-5 lg:grid-cols-[1.15fr_0.85fr] xl:grid-cols-[1.2fr_1fr]">
           <!-- Map Embed Frame -->
-          <div class="relative h-[380px] sm:h-[430px] lg:h-[470px] overflow-hidden rounded-2xl bg-slate-100 shadow-inner dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
+          <div class="relative h-[290px] sm:h-[430px] lg:h-[470px] overflow-hidden rounded-2xl bg-slate-100 shadow-inner dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
             <iframe
               :key="mapEmbedUrl"
               :src="mapEmbedUrl"
@@ -729,8 +729,8 @@ onUnmounted(() => {
               referrerpolicy="no-referrer-when-downgrade"
             />
 
-            <!-- Top Floating Active Facility Card (Modern Frosted Glass) -->
-            <div class="absolute left-3 top-3 right-3 sm:right-auto sm:max-w-md rounded-2xl border border-white/90 bg-white/95 p-3 sm:p-3.5 shadow-xl shadow-slate-950/10 backdrop-blur-md dark:border-slate-700/90 dark:bg-slate-900/95 font-khmer">
+            <!-- Top Floating Active Facility Card (Only on sm+ screen so mobile map remains 100% visible and uncluttered) -->
+            <div class="hidden sm:block absolute left-3 top-3 max-w-md rounded-2xl border border-white/90 bg-white/95 p-3.5 shadow-xl shadow-slate-950/10 backdrop-blur-md dark:border-slate-700/90 dark:bg-slate-900/95 font-khmer">
               <div class="flex items-center gap-3">
                 <span :class="['flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 shadow-xs', getNearbyIconBg(activeNearbyTab)]">
                   <component :is="getNearbyIcon(activeNearbyTab)" class="h-5 w-5" />
@@ -753,23 +753,21 @@ onUnmounted(() => {
             </div>
 
             <!-- Bottom Floating Action Bar -->
-            <div class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 font-khmer">
+            <div class="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex items-center justify-between gap-2 font-khmer">
               <a
                 :href="mapDirectionsUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-4 py-2 sm:py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-950/25 transition duration-150 active:scale-95"
+                class="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-3 sm:px-4 py-1.5 sm:py-2.5 text-[11px] sm:text-xs font-bold text-white shadow-lg shadow-blue-950/25 transition duration-150 active:scale-95"
               >
-                <MapPin class="h-4 w-4 shrink-0 text-amber-300" />
-                <span>{{ currentLanguage === 'kh' ? 'ទទួលទិសដៅលើ Google Maps' : 'Get Directions (Google Maps)' }}</span>
-                <ExternalLink class="h-3.5 w-3.5 opacity-80" />
+                <MapPin class="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-amber-300" />
+                <span>{{ currentLanguage === 'kh' ? 'មើលលើ Google Maps' : 'Open in Google Maps' }}</span>
+                <ExternalLink class="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-80" />
               </a>
 
-              <div class="flex items-center gap-2">
-                <span class="rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 shadow-sm">
-                  GPS: {{ activeMapPoint.coordinates.lat.toFixed(4) }}, {{ activeMapPoint.coordinates.lng.toFixed(4) }}
-                </span>
-              </div>
+              <span class="hidden sm:inline-block rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 shadow-sm">
+                GPS: {{ activeMapPoint.coordinates.lat.toFixed(4) }}, {{ activeMapPoint.coordinates.lng.toFixed(4) }}
+              </span>
             </div>
           </div>
 
