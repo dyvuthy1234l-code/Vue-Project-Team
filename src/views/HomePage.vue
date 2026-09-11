@@ -1185,62 +1185,62 @@ onUnmounted(() => {
       <!-- ============================================================
            6. PUBLIC JOBS & NEWS BULLETINS SPLIT SECTION
       ============================================================= -->
-      <section class="scroll-reveal mt-5 grid gap-5 lg:grid-cols-2">
+      <section class="scroll-reveal mt-5 grid gap-4 sm:gap-5 lg:grid-cols-2">
         <!-- Verified Job Opportunities -->
-        <div class="section-card rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 sm:p-7 flex flex-col justify-between">
+        <div class="section-card rounded-3xl bg-white p-4 sm:p-6 lg:p-7 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 flex flex-col justify-between overflow-hidden min-w-0">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
-              <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 ring-1 ring-violet-500/20 dark:bg-violet-950/60 dark:text-violet-300">
-                  <Briefcase class="h-5 w-5" />
+            <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 sm:pb-4 dark:border-slate-700 min-w-0">
+              <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div class="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 ring-1 ring-violet-500/20 dark:bg-violet-950/60 dark:text-violet-300">
+                  <Briefcase class="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
-                <div>
-                  <h2 class="text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+                <div class="min-w-0">
+                  <h2 class="text-sm sm:text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer truncate">
                     {{ currentLanguage === 'kh' ? 'ឱកាសការងារសាធារណៈ & ឯកជន' : 'Public & Career Opportunities' }}
                   </h2>
-                  <p class="text-[11px] text-slate-400 font-medium font-khmer">
+                  <p class="text-[10.5px] sm:text-[11px] text-slate-400 font-medium font-khmer truncate">
                     {{ currentLanguage === 'kh' ? 'ការងារពីក្រុមហ៊ុន និងស្ថាប័នផ្ទៀងផ្ទាត់' : 'Verified vacancies with clear salary details' }}
                   </p>
                 </div>
               </div>
               <router-link
                 to="/jobs"
-                class="inline-flex items-center gap-1 text-xs font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 font-khmer"
+                class="inline-flex items-center gap-1 text-xs font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 font-khmer shrink-0"
               >
-                {{ currentLanguage === 'kh' ? 'មើលការងារទាំងអស់' : 'View all jobs' }}
+                <span>{{ currentLanguage === 'kh' ? 'មើលទាំងអស់' : 'View all' }}</span>
                 <ArrowRight class="h-3.5 w-3.5" />
               </router-link>
             </div>
 
-            <div class="mt-4 space-y-3">
+            <div class="mt-3.5 sm:mt-4 space-y-2.5 sm:space-y-3">
               <router-link
                 v-for="job in latestJobs"
                 :key="job.id"
                 :to="`/jobs/${job.id}`"
-                class="stagger-card group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md dark:border-slate-700/60 dark:bg-slate-800/40 dark:hover:bg-slate-800"
+                class="stagger-card group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md dark:border-slate-700/60 dark:bg-slate-800/40 dark:hover:bg-slate-800 min-w-0"
               >
-                <div class="flex items-center gap-3 min-w-0">
-                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-100/70 text-violet-700 font-bold text-sm shadow-xs dark:bg-violet-950/60 dark:text-violet-300 group-hover:scale-105 transition-transform">
-                    <Building2 class="h-5 w-5" />
+                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                  <div class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-violet-100/70 text-violet-700 font-bold text-sm shadow-xs dark:bg-violet-950/60 dark:text-violet-300 group-hover:scale-105 transition-transform">
+                    <Building2 class="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                   </div>
-                  <div class="min-w-0 font-khmer">
+                  <div class="min-w-0 flex-1 font-khmer">
                     <p class="truncate text-xs sm:text-sm font-black text-[#0A2458] group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-300 transition-colors">
                       {{ job.title }}
                     </p>
-                    <p class="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-                      <span class="font-bold text-slate-700 dark:text-slate-300">{{ job.company }}</span>
+                    <p class="mt-0.5 flex items-center gap-1 text-[10.5px] sm:text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                      <span class="font-bold text-slate-700 dark:text-slate-300 truncate">{{ job.company }}</span>
                       <span class="text-slate-300 dark:text-slate-600">·</span>
-                      <MapPin class="h-3 w-3 text-slate-400" />
+                      <MapPin class="h-3 w-3 shrink-0 text-slate-400" />
                       <span class="truncate">{{ job.location }}</span>
                     </p>
                   </div>
                 </div>
 
-                <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0">
-                  <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-950/50 dark:text-emerald-300">
+                <div class="flex items-center sm:flex-col sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 pt-1.5 sm:pt-0 border-t border-slate-200/50 sm:border-t-0">
+                  <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-0.5 text-[11px] sm:text-xs font-black text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-950/50 dark:text-emerald-300">
                     {{ job.salary }}
                   </span>
-                  <span class="rounded-md bg-slate-200/70 px-2 py-0.5 text-[9px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                  <span class="rounded-md bg-slate-200/70 px-1.5 py-0.5 text-[8.5px] sm:text-[9px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                     {{ job.type }}
                   </span>
                 </div>
@@ -1250,47 +1250,47 @@ onUnmounted(() => {
         </div>
 
         <!-- Official Bulletins & News -->
-        <div class="section-card rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 sm:p-7 flex flex-col justify-between">
+        <div class="section-card rounded-3xl bg-white p-4 sm:p-6 lg:p-7 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 flex flex-col justify-between overflow-hidden min-w-0">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
-              <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-950/60 dark:text-rose-300">
-                  <Newspaper class="h-5 w-5" />
+            <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 sm:pb-4 dark:border-slate-700 min-w-0">
+              <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div class="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-950/60 dark:text-rose-300">
+                  <Newspaper class="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
-                <div>
-                  <h2 class="text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+                <div class="min-w-0">
+                  <h2 class="text-sm sm:text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer truncate">
                     {{ currentLanguage === 'kh' ? 'សេចក្តីជូនដំណឹង និងព័ត៌មានជាតិ' : 'Official Bulletins & Advisories' }}
                   </h2>
-                  <p class="text-[11px] text-slate-400 font-medium font-khmer">
+                  <p class="text-[10.5px] sm:text-[11px] text-slate-400 font-medium font-khmer truncate">
                     {{ currentLanguage === 'kh' ? 'ព័ត៌មានសុខភាព សង្គម និងការអភិវឌ្ឍ' : 'Verified public interest notices' }}
                   </p>
                 </div>
               </div>
               <router-link
                 to="/news"
-                class="inline-flex items-center gap-1 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 font-khmer"
+                class="inline-flex items-center gap-1 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 font-khmer shrink-0"
               >
-                {{ currentLanguage === 'kh' ? 'មើលទាំងអស់' : 'View all news' }}
+                <span>{{ currentLanguage === 'kh' ? 'មើលទាំងអស់' : 'View all' }}</span>
                 <ArrowRight class="h-3.5 w-3.5" />
               </router-link>
             </div>
 
-            <div class="mt-4 space-y-3">
+            <div class="mt-3.5 sm:mt-4 space-y-2.5 sm:space-y-3">
               <router-link
                 v-for="item in latestNews"
                 :key="item.id"
                 :to="`/news/${item.id}`"
-                class="stagger-card group flex items-center gap-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-white hover:shadow-md dark:border-slate-700/60 dark:bg-slate-800/40 dark:hover:bg-slate-800"
+                class="stagger-card group flex items-center gap-2.5 sm:gap-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 p-2.5 sm:p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-white hover:shadow-md dark:border-slate-700/60 dark:bg-slate-800/40 dark:hover:bg-slate-800 min-w-0"
               >
-                <div class="flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 shadow-xs dark:bg-slate-700">
+                <div class="flex h-14 w-18 sm:h-16 sm:w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 shadow-xs dark:bg-slate-700">
                   <img v-if="item.image" :src="item.image" :alt="item.title" class="h-full w-full object-cover transition duration-300 group-hover:scale-110">
-                  <Newspaper v-else class="h-6 w-6 text-rose-400" />
+                  <Newspaper v-else class="h-5 w-5 text-rose-400" />
                 </div>
                 <div class="min-w-0 flex-1 font-khmer">
                   <p class="line-clamp-2 text-xs sm:text-sm font-black text-[#0A2458] group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 transition-colors leading-snug">
                     {{ localized(item.title, item.titleKh) }}
                   </p>
-                  <p class="mt-1.5 flex items-center gap-2 text-[10px] text-slate-400">
+                  <p class="mt-1 flex items-center gap-2 text-[10px] text-slate-400">
                     <span class="rounded-full bg-rose-50 px-2 py-0.5 font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
                       {{ item.category }}
                     </span>
@@ -1300,7 +1300,7 @@ onUnmounted(() => {
                     </span>
                   </p>
                 </div>
-                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-slate-300 shadow-2xs transition-all group-hover:translate-x-1 group-hover:bg-rose-50 group-hover:text-rose-600 dark:bg-slate-700">
+                <div class="hidden sm:flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-slate-300 shadow-2xs transition-all group-hover:translate-x-1 group-hover:bg-rose-50 group-hover:text-rose-600 dark:bg-slate-700">
                   <ChevronRight class="h-4 w-4" />
                 </div>
               </router-link>
@@ -1312,99 +1312,99 @@ onUnmounted(() => {
       <!-- ============================================================
            7. 3-STEP CITIZEN GUIDE & SERVICE CHARTER
       ============================================================= -->
-      <section class="section-card scroll-reveal mt-5 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 sm:p-8">
+      <section class="section-card scroll-reveal mt-5 rounded-3xl bg-white p-4 sm:p-6 lg:p-8 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 overflow-hidden">
         <div class="text-center max-w-xl mx-auto">
           <div class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300 font-khmer">
             <Sparkles class="h-3.5 w-3.5 text-amber-500" />
-            <span>{{ currentLanguage === 'kh' ? 'ងាយស្រួល ៤ ជំហានសម្រាប់ប្រជាពលរដ្ឋ' : '3-Step Citizen Action Guide' }}</span>
+            <span>{{ currentLanguage === 'kh' ? 'ងាយស្រួល ៣ ជំហានសម្រាប់ប្រជាពលរដ្ឋ' : '3-Step Citizen Action Guide' }}</span>
           </div>
-          <h2 class="mt-3 text-lg sm:text-2xl font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+          <h2 class="mt-2.5 sm:mt-3 text-base sm:text-2xl font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
             {{ currentLanguage === 'kh' ? 'របៀបប្រើប្រាស់ CamLife ឱ្យមានប្រសិទ្ធភាព' : 'How CamLife Serves Every Citizen' }}
           </h2>
-          <p class="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-khmer">
+          <p class="mt-1 sm:mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-khmer">
             {{ currentLanguage === 'kh' ? 'ស្វែងរក ផ្ទៀងផ្ទាត់ និងសម្រេចកិច្ចការប្រចាំថ្ងៃរបស់អ្នកយ៉ាងរលូន' : 'Search, prepare required documents, and complete tasks with confidence' }}
           </p>
         </div>
 
-        <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 font-khmer">
+        <div class="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 font-khmer">
           <!-- Step 1 -->
           <router-link
             to="/government"
-            class="stagger-card group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-gradient-to-b from-blue-50/40 via-white to-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
+            class="stagger-card group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-slate-100 bg-gradient-to-b from-blue-50/40 via-white to-white p-4 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
           >
             <div>
               <div class="flex items-center justify-between">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-[#0D47A1] ring-2 ring-blue-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-blue-950 dark:text-blue-300">
-                  <Search class="h-6 w-6" />
+                <div class="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-blue-100 text-[#0D47A1] ring-2 ring-blue-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-blue-950 dark:text-blue-300">
+                  <Search class="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-xs font-black text-[#0D47A1] dark:bg-blue-950/60 dark:text-blue-300 font-mono">
+                <span class="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-blue-50 text-xs font-black text-[#0D47A1] dark:bg-blue-950/60 dark:text-blue-300 font-mono">
                   01
                 </span>
               </div>
-              <h3 class="mt-4 text-sm font-extrabold text-[#0A2458] group-hover:text-[#0D47A1] dark:text-white dark:group-hover:text-blue-300 transition-colors font-khmer">
+              <h3 class="mt-3 sm:mt-4 text-xs sm:text-sm font-extrabold text-[#0A2458] group-hover:text-[#0D47A1] dark:text-white dark:group-hover:text-blue-300 transition-colors font-khmer">
                 {{ currentLanguage === 'kh' ? '១. ស្វែងរកសេវា ឬបញ្ហាដែលចង់ដោះស្រាយ' : '1. Search Service or Need' }}
               </h3>
-              <p class="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
+              <p class="mt-1.5 sm:mt-2 text-[11px] sm:text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
                 {{ currentLanguage === 'kh' ? 'វាយបញ្ចូលពាក្យគន្លឹះដើម្បីស្វែងរកមន្ទីរពេទ្យ សេវាសាធារណៈ ការងារ ឬលេខសង្គ្រោះបន្ទាន់ដែលអ្នកត្រូវការ។' : 'Use Smart Search to quickly find verified procedures, clinics, or crisis helplines.' }}
               </p>
             </div>
-            <div class="mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-[#0D47A1] dark:text-blue-400">
+            <div class="mt-4 sm:mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-[#0D47A1] dark:text-blue-400">
               <span>{{ currentLanguage === 'kh' ? 'ស្វែងរកសេវាឥឡូវនេះ' : 'Search Services Now' }}</span>
-              <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight class="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </router-link>
 
           <!-- Step 2 -->
           <router-link
             to="/government/national-id-card"
-            class="stagger-card group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-gradient-to-b from-emerald-50/40 via-white to-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
+            class="stagger-card group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-slate-100 bg-gradient-to-b from-emerald-50/40 via-white to-white p-4 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
           >
             <div>
               <div class="flex items-center justify-between">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 ring-2 ring-emerald-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-emerald-950 dark:text-emerald-300">
-                  <CheckSquare class="h-6 w-6" />
+                <div class="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 ring-2 ring-emerald-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-emerald-950 dark:text-emerald-300">
+                  <CheckSquare class="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-xs font-black text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300 font-mono">
+                <span class="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-emerald-50 text-xs font-black text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300 font-mono">
                   02
                 </span>
               </div>
-              <h3 class="mt-4 text-sm font-extrabold text-[#0A2458] group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-300 transition-colors font-khmer">
+              <h3 class="mt-3 sm:mt-4 text-xs sm:text-sm font-extrabold text-[#0A2458] group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-300 transition-colors font-khmer">
                 {{ currentLanguage === 'kh' ? '២. ពិនិត្យបញ្ជីឯកសារ & ថ្លៃសេវា' : '2. Check Document Checklist' }}
               </h3>
-              <p class="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
+              <p class="mt-1.5 sm:mt-2 text-[11px] sm:text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ប្រើប្រាស់ Interactive Checklist ដើម្បីផ្ទៀងផ្ទាត់ឯកសារដែលអ្នកមាន និងដឹងពីថ្លៃសេវាផ្លូវការច្បាស់លាស់។' : 'Use interactive checklists to prepare all papers before visiting administrative offices.' }}
               </p>
             </div>
-            <div class="mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <div class="mt-4 sm:mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
               <span>{{ currentLanguage === 'kh' ? 'សាកល្បងពិនិត្យឯកសារ' : 'Try Document Checklist' }}</span>
-              <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight class="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </router-link>
 
           <!-- Step 3 -->
           <router-link
             to="/locations"
-            class="stagger-card col-span-2 md:col-span-1 group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-gradient-to-b from-violet-50/40 via-white to-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
+            class="stagger-card group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-slate-100 bg-gradient-to-b from-violet-50/40 via-white to-white p-4 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
           >
             <div>
               <div class="flex items-center justify-between">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-600 ring-2 ring-violet-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-violet-950 dark:text-violet-300">
-                  <BadgeCheck class="h-6 w-6" />
+                <div class="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-600 ring-2 ring-violet-500/20 shadow-xs transition-transform duration-200 group-hover:scale-110 dark:bg-violet-950 dark:text-violet-300">
+                  <BadgeCheck class="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-50 text-xs font-black text-violet-600 dark:bg-violet-950/60 dark:text-violet-300 font-mono">
+                <span class="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-violet-50 text-xs font-black text-violet-600 dark:bg-violet-950/60 dark:text-violet-300 font-mono">
                   03
                 </span>
               </div>
-              <h3 class="mt-4 text-sm font-extrabold text-[#0A2458] group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-300 transition-colors font-khmer">
+              <h3 class="mt-3 sm:mt-4 text-xs sm:text-sm font-extrabold text-[#0A2458] group-hover:text-violet-600 dark:text-white dark:group-hover:text-violet-300 transition-colors font-khmer">
                 {{ currentLanguage === 'kh' ? '៣. ទៅកាន់ការិយាល័យ & បំពេញកិច្ចការ' : '3. Complete with Confidence' }}
               </h3>
-              <p class="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
+              <p class="mt-1.5 sm:mt-2 text-[11px] sm:text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ទៅកាន់ការិយាល័យច្រកចេញចូលតែមួយ ឬទាក់ទងលេខផ្ទាល់ ដើម្បីសម្រេចកិច្ចការរបស់អ្នកដោយរលូន។' : 'Follow office maps, submit required papers, and complete your tasks smoothly.' }}
               </p>
             </div>
-            <div class="mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-violet-600 dark:text-violet-400">
+            <div class="mt-4 sm:mt-5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-violet-600 dark:text-violet-400">
               <span>{{ currentLanguage === 'kh' ? 'រុករកទីតាំងការិយាល័យ' : 'Explore Public Offices' }}</span>
-              <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight class="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </router-link>
         </div>
