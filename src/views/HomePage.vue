@@ -192,6 +192,19 @@ const quickAccess = [
     hover: 'hover:border-cyan-300 dark:hover:border-cyan-700'
   },
   {
+    label: 'Public Offices',
+    labelKh: 'ការិយាល័យរដ្ឋ',
+    description: 'OWSO & One-Window',
+    descriptionKh: 'ច្រកចេញចូលតែមួយ',
+    route: '/locations',
+    icon: MapPin,
+    image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=400&q=80',
+    color: 'text-pink-600',
+    bg: 'bg-pink-50 dark:bg-pink-950/40',
+    accent: 'bg-pink-500',
+    hover: 'hover:border-pink-300 dark:hover:border-pink-700'
+  },
+  {
     label: 'Public News',
     labelKh: 'សេចក្តីជូនដំណឹង',
     description: 'Official Bulletins',
@@ -575,40 +588,39 @@ onUnmounted(() => {
       </section>
 
       <!-- ============================================================
-           2. 7 CITIZEN SERVICE ESSENTIAL PILLARS
+           2. 8 CITIZEN SERVICE ESSENTIAL PILLARS
       ============================================================= -->
       <section class="section-card scroll-reveal mt-5 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(31,64,122,.06)] ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
-        <div class="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-blue-50/75 via-white to-transparent px-5 py-4 dark:border-slate-700 dark:from-blue-950/20 dark:via-slate-800">
-          <div class="flex items-center gap-3">
-            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0D47A1] text-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-blue-50/75 via-white to-transparent px-4 sm:px-5 py-3.5 sm:py-4 dark:border-slate-700 dark:from-blue-950/20 dark:via-slate-800">
+          <div class="flex items-center gap-2.5 sm:gap-3">
+            <div class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-[#0D47A1] text-white shadow-sm shrink-0">
               <Sparkles class="h-4 w-4" />
             </div>
             <div>
-              <h2 class="text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
-                {{ currentLanguage === 'kh' ? 'សេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃ (7 Core Pillars)' : '7 Essential Citizen Pillars' }}
+              <h2 class="text-sm sm:text-base font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
+                {{ currentLanguage === 'kh' ? 'សេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃ (8 Core Pillars)' : '8 Essential Citizen Pillars' }}
               </h2>
-              <p class="text-[11px] font-medium text-slate-400 font-khmer">
+              <p class="text-[10px] sm:text-[11px] font-medium text-slate-400 font-khmer">
                 {{ currentLanguage === 'kh' ? 'សេវាកម្មសំខាន់ៗដែលបម្រើដល់ពលរដ្ឋដោយផ្ទាល់' : 'Direct access to verified civic, healthcare, and daily services' }}
               </p>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 p-3.5 sm:p-4 sm:grid-cols-4 lg:grid-cols-7">
+        <div class="grid grid-cols-2 gap-2.5 sm:gap-3.5 p-3 sm:p-4 sm:grid-cols-4 lg:grid-cols-8">
           <router-link
-            v-for="(item, idx) in quickAccess"
+            v-for="item in quickAccess"
             :key="item.label"
             :to="item.route"
             :class="[
               'stagger-card group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-hover dark:border-slate-700 dark:bg-slate-800',
-              item.hover,
-              idx === 6 ? 'col-span-2 sm:col-span-1' : ''
+              item.hover
             ]"
           >
             <span :class="['absolute inset-x-0 top-0 h-1 z-10 opacity-0 transition-opacity group-hover:opacity-100', item.accent]" />
             
             <!-- Clear Representative Image Banner with Icon Badge Overlay -->
-            <div class="relative h-28 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+            <div class="relative h-24 sm:h-28 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
               <LazyImage
                 :src="item.image"
                 :alt="currentLanguage === 'kh' ? item.labelKh : item.label"
@@ -617,23 +629,23 @@ onUnmounted(() => {
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent pointer-events-none" />
               
               <!-- Floating Icon Badge -->
-              <div :class="['absolute bottom-2 left-2 flex h-8 w-8 items-center justify-center rounded-xl shadow-md backdrop-blur-xs transition duration-300 group-hover:scale-110 border border-white/50 dark:border-slate-600', item.bg]">
-                <component :is="item.icon" :class="['h-4 w-4', item.color]" />
+              <div :class="['absolute bottom-2 left-2 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl shadow-md backdrop-blur-xs transition duration-300 group-hover:scale-110 border border-white/60 dark:border-slate-600', item.bg]">
+                <component :is="item.icon" :class="['h-3.5 w-3.5 sm:h-4 sm:w-4', item.color]" />
               </div>
 
               <!-- Action Arrow Badge -->
-              <div class="absolute top-2 right-2 rounded-full bg-black/40 backdrop-blur-xs p-1 text-white opacity-80 group-hover:opacity-100 group-hover:bg-[#0D47A1] transition-all">
+              <div class="absolute top-2 right-2 rounded-full bg-black/40 backdrop-blur-xs p-1 text-white opacity-70 group-hover:opacity-100 group-hover:bg-[#0D47A1] transition-all">
                 <ChevronRight class="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
               </div>
             </div>
 
             <!-- Content Area -->
-            <div class="p-3 text-center flex-1 flex flex-col justify-between">
+            <div class="p-2.5 sm:p-3 text-center flex-1 flex flex-col justify-center">
               <div>
                 <p class="text-xs font-black tracking-tight text-[#0A2458] dark:text-white font-khmer line-clamp-1 group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors">
                   {{ currentLanguage === 'kh' ? item.labelKh : item.label }}
                 </p>
-                <p class="mt-1 text-[10.5px] font-medium text-slate-500 dark:text-slate-400 font-khmer line-clamp-1">
+                <p class="mt-0.5 sm:mt-1 text-[10px] sm:text-[10.5px] font-medium text-slate-500 dark:text-slate-400 font-khmer line-clamp-1">
                   {{ currentLanguage === 'kh' ? item.descriptionKh : item.description }}
                 </p>
               </div>
