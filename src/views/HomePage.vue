@@ -904,34 +904,35 @@ onUnmounted(() => {
           </div>
 
           <!-- Emergency Hotlines Grid -->
-          <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
             <a
               v-for="contact in emergencyHighlights"
               :key="contact.id"
               :href="`tel:${contact.number}`"
               :title="currentLanguage === 'kh' ? `ចុចដើម្បីហៅ ${contact.number}` : `Call ${contact.number}`"
-              :class="['stagger-card group relative overflow-hidden rounded-2xl border p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl backdrop-blur-md bg-slate-950/75 shadow-md border-white/15', emergencyTone(contact.id)]"
+              :class="['stagger-card group relative overflow-hidden rounded-2xl border p-3 sm:p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl backdrop-blur-md bg-slate-950/75 shadow-md border-white/15', emergencyTone(contact.id)]"
             >
-              <div class="relative flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3 min-w-0">
-                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/[.12] text-amber-300 ring-1 ring-white/10 group-hover:scale-105 transition-transform">
-                    <component :is="emergencyIcon(contact.id)" class="h-5 w-5" />
+              <!-- Phone layout: stacked, Laptop: horizontal -->
+              <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                  <div class="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-white/[.12] text-amber-300 ring-1 ring-white/10 group-hover:scale-105 transition-transform">
+                    <component :is="emergencyIcon(contact.id)" class="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div class="min-w-0">
-                    <p :class="['text-2xl sm:text-3xl font-black leading-none tracking-tight font-mono', emergencyNumberTone(contact.id)]">
+                    <p :class="['text-xl sm:text-3xl font-black leading-none tracking-tight font-mono', emergencyNumberTone(contact.id)]">
                       {{ contact.number }}
                     </p>
-                    <p class="mt-1 truncate text-xs font-bold text-slate-200 font-khmer">
+                    <p class="mt-1 truncate text-[10px] sm:text-xs font-bold text-slate-200 font-khmer">
                       {{ localized(contact.name, contact.nameKh) }}
                     </p>
                   </div>
                 </div>
 
                 <!-- Green Glowing Call Trigger Button -->
-                <div class="relative ml-auto flex shrink-0 items-center justify-center">
+                <div class="relative flex shrink-0 items-center justify-center sm:ml-auto">
                   <span class="absolute -inset-1 rounded-full bg-emerald-500/40 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
-                  <div class="relative flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md shadow-emerald-950/40 ring-2 ring-emerald-400/40 transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-400 group-hover:shadow-[0_0_18px_rgba(52,211,153,0.7)]">
-                    <PhoneCall class="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                  <div class="relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md shadow-emerald-950/40 ring-2 ring-emerald-400/40 transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-400 group-hover:shadow-[0_0_18px_rgba(52,211,153,0.7)]">
+                    <PhoneCall class="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:rotate-12" />
                   </div>
                 </div>
               </div>
@@ -944,7 +945,7 @@ onUnmounted(() => {
               <AlertTriangle class="w-4 h-4" />
               <span>{{ currentLanguage === 'kh' ? 'គោលការណ៍ណែនាំពេលមានអាសន្ន (Emergency Protocol):' : 'What to do in an emergency:' }}</span>
             </p>
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs text-slate-300">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-300">
               <div class="flex items-center gap-2">
                 <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-[10px]">1</span>
                 <span>{{ currentLanguage === 'kh' ? 'រក្សាភាពស្ងប់ស្ងៀម' : '1. Stay calm' }}</span>
@@ -996,7 +997,7 @@ onUnmounted(() => {
           </router-link>
         </div>
 
-        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <router-link
             v-for="service in popularServices"
             :key="service.id"
@@ -1180,7 +1181,7 @@ onUnmounted(() => {
           </p>
         </div>
 
-        <div class="mt-8 grid gap-4 md:grid-cols-3 font-khmer">
+        <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 font-khmer">
           <!-- Step 1 -->
           <router-link
             to="/government"
