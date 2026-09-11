@@ -485,29 +485,29 @@ onUnmounted(() => {
       <!-- ============================================================
            1. CIVIC HERO SECTION: BRANDING, SEARCH & TRUST SIGNALS
       ============================================================= -->
-      <section class="hero-card scroll-reveal relative min-h-[490px] overflow-hidden rounded-b-3xl bg-white dark:bg-slate-900 sm:min-h-[520px] lg:min-h-[550px]">
+      <section class="hero-card scroll-reveal relative min-h-[440px] overflow-hidden rounded-b-3xl bg-white dark:bg-slate-900 sm:min-h-[520px] lg:min-h-[550px]">
         <img
           :src="heroIllustration"
           alt="Phnom Penh skyline and Cambodian monument"
-          class="hero-illustration-mask pointer-events-none absolute right-0 top-0 hidden h-full w-[78%] sm:w-[74%] md:block md:w-[70%] lg:w-[72%] xl:w-[68%] 2xl:w-[64%] object-cover object-right-top dark:opacity-85"
+          class="hero-illustration-mask pointer-events-none absolute right-0 top-0 block h-full w-[88%] sm:w-[74%] md:w-[70%] lg:w-[72%] xl:w-[68%] 2xl:w-[64%] object-cover object-right-top opacity-20 sm:opacity-50 md:opacity-85 dark:opacity-40"
         />
-        <div class="pointer-events-none absolute inset-y-0 left-0 hidden w-[50%] bg-gradient-to-r from-white via-white/90 to-transparent dark:from-slate-900 dark:via-slate-900/90 dark:to-transparent lg:block z-[5]" />
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-white via-white/85 sm:via-white/70 to-transparent dark:from-slate-900 dark:via-slate-900/85 sm:dark:via-slate-900/70 dark:to-transparent z-[5]" />
 
-        <div class="relative z-10 flex min-h-[490px] sm:min-h-[520px] lg:min-h-[550px] flex-col justify-center max-w-2xl px-4 py-8 sm:px-7 sm:py-10 lg:px-8">
+        <div class="relative z-10 flex min-h-[440px] sm:min-h-[520px] lg:min-h-[550px] flex-col justify-center max-w-2xl px-4 py-6 sm:px-7 sm:py-10 lg:px-8">
           <!-- Citizen Badge -->
-          <div class="inline-flex w-fit items-center gap-2 rounded-full bg-blue-50 px-3.5 py-1.5 text-xs font-bold text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300 font-khmer">
-            <Landmark class="w-4 h-4 text-[#D4AF37] shrink-0" />
-            <span>{{ currentLanguage === 'kh' ? 'ថ្នាលសេវាសាធារណៈសម្រាប់ពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}</span>
+          <div class="inline-flex w-fit items-center gap-1.5 sm:gap-2 rounded-full bg-blue-50/90 dark:bg-blue-950/60 px-3 py-1 sm:px-3.5 sm:py-1.5 text-[11px] sm:text-xs font-bold text-[#0D47A1] dark:text-blue-300 ring-1 ring-blue-500/20 font-khmer shadow-2xs backdrop-blur-xs">
+            <Landmark class="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+            <span class="truncate">{{ currentLanguage === 'kh' ? 'ថ្នាលសេវាសាធារណៈសម្រាប់ពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}</span>
           </div>
 
           <!-- Main Hero Title -->
-          <h1 class="mt-4 text-3xl font-black tracking-normal text-[#0A2458] dark:text-white sm:text-5xl lg:text-[3.25rem] leading-[1.2] sm:leading-[1.18] font-khmer">
+          <h1 class="mt-3 sm:mt-4 text-2xl sm:text-5xl lg:text-[3.25rem] font-black tracking-tight text-[#0A2458] dark:text-white leading-[1.25] sm:leading-[1.18] font-khmer">
             {{ currentLanguage === 'kh' ? 'អ្វីៗដែលអ្នកត្រូវការ សម្រាប់ជីវិតនៅកម្ពុជា' : 'Everything You Need For Life in' }}
             <span class="text-[#1456E5]">{{ currentLanguage === 'kh' ? '' : ' Cambodia' }}</span>
           </h1>
 
           <!-- Subtitle -->
-          <p class="mt-3.5 text-sm sm:text-base text-slate-600 dark:text-slate-300 font-khmer leading-relaxed max-w-xl">
+          <p class="mt-2 sm:mt-3.5 text-xs sm:text-base text-slate-500 dark:text-slate-300 font-khmer leading-relaxed max-w-xl">
             {{ currentLanguage === 'kh'
               ? 'ស្វែងរក យល់ដឹង រៀបចំឯកសារ និងទៅប្រើប្រាស់សេវាសាធារណៈ សុខាភិបាល ការងារ និងការសង្គ្រោះបន្ទាន់យ៉ាងងាយស្រួល។'
               : 'Search, understand procedures, prepare documents, and access civic, healthcare, transit, and emergency services with ease.'
@@ -515,57 +515,60 @@ onUnmounted(() => {
           </p>
 
           <!-- Main Search Box -->
-          <form class="mt-6 flex rounded-2xl bg-white p-2 shadow-[0_16px_36px_rgba(15,54,120,.13)] ring-1 ring-slate-200/90 dark:bg-slate-800 dark:ring-slate-700" @submit.prevent="submitSearch">
+          <form class="mt-4 sm:mt-6 flex items-center rounded-2xl bg-white p-1.5 sm:p-2 shadow-[0_12px_36px_rgba(15,54,120,.12)] ring-1 ring-slate-200/90 dark:bg-slate-800 dark:ring-slate-700" @submit.prevent="submitSearch">
             <div class="relative min-w-0 flex-1">
-              <Search class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#0D47A1] dark:text-blue-400" />
+              <Search class="absolute left-3.5 sm:left-4 top-1/2 h-4 w-4 sm:h-5 sm:w-5 -translate-y-1/2 text-[#0D47A1] dark:text-blue-400" />
               <input
                 v-model="searchQuery"
-                class="w-full rounded-xl border-0 bg-transparent py-3.5 pl-12 pr-2 text-xs sm:text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white font-khmer"
-                :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកសេវារដ្ឋ, មន្ទីរពេទ្យ, ការងារ, ប័ណ្ណបើកបរ...' : 'Search public services, hospitals, jobs, driver license...'"
+                class="w-full rounded-xl border-0 bg-transparent py-2.5 sm:py-3.5 pl-10 sm:pl-12 pr-2 text-xs sm:text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white font-khmer"
+                :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកសេវារដ្ឋ, មន្ទីរពេទ្យ, ការងារ...' : 'Search services, hospitals, jobs...'"
                 aria-label="Search CamLife Services"
               />
             </div>
             <button
               type="submit"
-              class="rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-5 sm:px-7 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-600/20 transition active:scale-98 font-khmer"
+              class="rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-4 sm:px-7 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-600/20 transition active:scale-98 font-khmer shrink-0 flex items-center gap-1.5"
             >
-              {{ currentLanguage === 'kh' ? 'ស្វែងរក' : 'Search' }}
+              <Search class="w-3.5 h-3.5 sm:hidden" />
+              <span>{{ currentLanguage === 'kh' ? 'ស្វែងរក' : 'Search' }}</span>
             </button>
           </form>
 
-          <!-- Popular Searches Pills -->
-          <div class="mt-5 flex flex-wrap items-center gap-2">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 font-khmer">{{ currentLanguage === 'kh' ? 'ពេញនិយម:' : 'Popular:' }}</span>
-            <button
-              v-for="term in popularSearches"
-              :key="term.label"
-              type="button"
-              class="rounded-xl border border-slate-200 bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-[#1456E5] hover:bg-blue-50 hover:text-[#1456E5] dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:bg-slate-700 font-khmer"
-              @click="usePopularSearch(term.query)"
-            >
-              {{ term.label }}
-            </button>
+          <!-- Popular Searches Pills (Clean Horizontal Scroll on Mobile) -->
+          <div class="mt-3.5 sm:mt-5 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none font-khmer">
+            <span class="text-xs font-bold text-slate-400 dark:text-slate-400 shrink-0">{{ currentLanguage === 'kh' ? 'ពេញនិយម:' : 'Popular:' }}</span>
+            <div class="flex items-center gap-1.5 flex-nowrap shrink-0">
+              <button
+                v-for="term in popularSearches"
+                :key="term.label"
+                type="button"
+                class="whitespace-nowrap rounded-xl border border-slate-200/90 bg-white/90 px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-[#1456E5] hover:bg-blue-50 hover:text-[#1456E5] dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:bg-slate-700 cursor-pointer shrink-0"
+                @click="usePopularSearch(term.query)"
+              >
+                {{ term.label }}
+              </button>
+            </div>
           </div>
 
-          <!-- Trust Signals Row -->
-          <div class="mt-6 flex flex-wrap items-center gap-4 sm:gap-6 border-t border-slate-100 pt-4 dark:border-slate-800/80 font-khmer">
-            <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
-                <CheckCircle2 class="h-3.5 w-3.5" />
+          <!-- Trust Signals Row (Clean Mini-Card Grid on Mobile) -->
+          <div class="mt-4 sm:mt-6 grid grid-cols-3 gap-1.5 sm:flex sm:flex-wrap sm:items-center sm:gap-6 border-t border-slate-100 pt-3.5 sm:pt-4 dark:border-slate-800/80 font-khmer">
+            <div class="flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-2 p-1.5 sm:p-0 rounded-xl bg-slate-50/60 sm:bg-transparent dark:bg-slate-800/40 sm:dark:bg-transparent">
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 shrink-0">
+                <CheckCircle2 class="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               </span>
-              <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានផ្ទៀងផ្ទាត់ផ្លូវការ' : 'Verified Public Information' }}</span>
+              <span class="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 leading-tight">{{ currentLanguage === 'kh' ? 'ព័ត៌មានផ្លូវការ' : 'Verified Info' }}</span>
             </div>
-            <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[#0D47A1] dark:bg-blue-950/60 dark:text-blue-400">
-                <ShieldCheck class="h-3.5 w-3.5" />
+            <div class="flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-2 p-1.5 sm:p-0 rounded-xl bg-slate-50/60 sm:bg-transparent dark:bg-slate-800/40 sm:dark:bg-transparent">
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[#0D47A1] dark:bg-blue-950/60 dark:text-blue-400 shrink-0">
+                <ShieldCheck class="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               </span>
-              <span>{{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃសម្រាប់ពលរដ្ឋ' : '100% Free & Open Access' }}</span>
+              <span class="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 leading-tight">{{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃ ១០០%' : '100% Free' }}</span>
             </div>
-            <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400">
-                <Siren class="h-3.5 w-3.5" />
+            <div class="flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-2 p-1.5 sm:p-0 rounded-xl bg-slate-50/60 sm:bg-transparent dark:bg-slate-800/40 sm:dark:bg-transparent">
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400 shrink-0">
+                <Siren class="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               </span>
-              <span>{{ currentLanguage === 'kh' ? 'សង្គ្រោះបន្ទាន់ ២៤/៧' : '24/7 Citizen Emergency' }}</span>
+              <span class="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 leading-tight">{{ currentLanguage === 'kh' ? 'សង្គ្រោះ ២៤/៧' : '24/7 Emergency' }}</span>
             </div>
           </div>
         </div>

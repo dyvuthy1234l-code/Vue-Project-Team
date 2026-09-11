@@ -211,7 +211,10 @@ onUnmounted(() => {
             class="flex items-center gap-1 hover:text-red-300 transition-colors"
             title="Police Hotline 117"
           >
-            <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-ping" />
+            <span class="relative flex h-2 w-2 items-center justify-center">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-400" />
+            </span>
             <span class="inline-flex items-center gap-1 text-red-300"><ShieldAlert class="w-3 h-3" /> 117</span>
           </a>
 
@@ -420,10 +423,10 @@ onUnmounted(() => {
         <!-- RIGHT CONTROLS: LOCATION, ACCESSIBILITY, SAVED SERVICES, AUTH -->
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
 
-          <!-- Mobile-only search button (visible on mobile < md) -->
+          <!-- Mobile-only search button (visible on tablet sm to md) -->
           <button
             @click="isSearchModalOpen = true"
-            class="md:hidden p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 transition-colors"
+            class="hidden sm:flex md:hidden p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 transition-colors"
             type="button"
             aria-label="Open search dialog"
           >
@@ -438,7 +441,7 @@ onUnmounted(() => {
             <button
               @click="setLanguage('kh')"
               :class="[
-                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 font-khmer',
+                'px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 font-khmer',
                 currentLanguage === 'kh'
                   ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -451,7 +454,7 @@ onUnmounted(() => {
             <button
               @click="setLanguage('en')"
               :class="[
-                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1',
+                'px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1',
                 currentLanguage === 'en'
                   ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -463,10 +466,10 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <!-- Saved Services Indicator -->
+          <!-- Saved Services Indicator (Accessible in drawer on mobile) -->
           <router-link
             to="/saved-services"
-            class="relative p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 transition-colors"
+            class="hidden sm:inline-flex relative p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 transition-colors"
             :title="currentLanguage === 'kh' ? 'សេវាដែលបានរក្សាទុក' : 'Saved Services'"
           >
             <Bookmark class="w-4 h-4" />
