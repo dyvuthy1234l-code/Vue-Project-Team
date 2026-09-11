@@ -195,11 +195,11 @@ onUnmounted(() => {
         <div class="flex items-center gap-2 truncate font-khmer">
           <Landmark class="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
           <span class="font-bold tracking-tight truncate hidden sm:inline">
-            {{ currentLanguage === 'kh' ? 'វិបផតថលសេវាសាធារណៈសម្រាប់ប្រជាពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}
+            {{ currentLanguage === 'kh' ? 'ថ្នាលសេវាសាធារណៈសម្រាប់ប្រជាពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}
           </span>
           <span class="inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[9px] font-extrabold bg-blue-500/20 text-blue-200 border border-blue-400/30">
             <ShieldCheck class="w-3 h-3 text-emerald-400" />
-            <span>{{ currentLanguage === 'kh' ? 'វេទិកាឯករាជ្យ' : 'Citizen Platform' }}</span>
+            <span>{{ currentLanguage === 'kh' ? 'វេទិកាប្រជាពលរដ្ឋ' : 'Citizen Platform' }}</span>
           </span>
         </div>
 

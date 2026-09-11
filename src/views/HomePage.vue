@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Clock3,
+  ExternalLink,
   FileText,
   Flame,
   HeartPulse,
@@ -72,7 +73,7 @@ interface NearbyEntry extends Omit<MapPoint, 'coordinates'> {
 }
 
 usePageMeta({
-  title: 'CamLife — វិបផតថលសេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃសម្រាប់ពលរដ្ឋកម្ពុជា',
+  title: 'CamLife — ថ្នាលសេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃសម្រាប់ពលរដ្ឋកម្ពុជា',
   description: 'ស្វែងរកសេវាសាធារណៈ សុខាភិបាល ឱកាសការងារ ការដឹកជញ្ជូន និងជំនួយបន្ទាន់ ២៤/៧ នៅកម្ពុជា'
 })
 
@@ -103,11 +104,11 @@ const activeMapPoint = ref<MapPoint>({
 
 // 5 Essential Civic Service Categories for Nearby Services
 const nearbyTabs = [
-  { id: 'hospitals' as const, labelEn: 'Hospitals', labelKh: 'មន្ទីរពេទ្យ', icon: Hospital, badge: '24/7' },
-  { id: 'police' as const, labelEn: 'Police & Security', labelKh: 'ប៉ុស្តិ៍នគរបាល', icon: ShieldAlert, badge: '117' },
-  { id: 'owso' as const, labelEn: 'OWSO & Sangkat', labelKh: 'ច្រកចេញចូលតែមួយ', icon: Landmark, badge: 'Civic' },
-  { id: 'transport' as const, labelEn: 'Bus & Transit', labelKh: 'ចំណតឡានក្រុង', icon: Bus, badge: '1,500៛' },
-  { id: 'services' as const, labelEn: 'Home Repairs', labelKh: 'សេវាជាងបន្ទាន់', icon: Wrench, badge: 'Repairs' }
+  { id: 'hospitals' as const, labelEn: 'Hospitals', labelKh: 'មន្ទីរពេទ្យ', icon: Hospital, badgeEn: '24/7', badgeKh: '២៤/៧' },
+  { id: 'police' as const, labelEn: 'Police & Security', labelKh: 'ប៉ុស្តិ៍នគរបាល', icon: ShieldAlert, badgeEn: '117', badgeKh: '១១៧' },
+  { id: 'owso' as const, labelEn: 'OWSO & Sangkat', labelKh: 'ច្រកចេញចូលតែមួយ', icon: Landmark, badgeEn: 'Civic', badgeKh: 'រដ្ឋបាល' },
+  { id: 'transport' as const, labelEn: 'Bus & Transit', labelKh: 'ចំណតឡានក្រុង', icon: Bus, badgeEn: '1,500 KHR', badgeKh: '១,៥០០៛' },
+  { id: 'services' as const, labelEn: 'Home Repairs', labelKh: 'សេវាជាងបន្ទាន់', icon: Wrench, badgeEn: 'Repairs', badgeKh: 'ជាងជួសជុល' }
 ]
 
 // 7 Citizen Essential Service Pillars
@@ -496,7 +497,7 @@ onUnmounted(() => {
           <!-- Citizen Badge -->
           <div class="inline-flex w-fit items-center gap-2 rounded-full bg-blue-50 px-3.5 py-1.5 text-xs font-bold text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300 font-khmer">
             <Landmark class="w-4 h-4 text-[#D4AF37] shrink-0" />
-            <span>{{ currentLanguage === 'kh' ? 'វិបផតថលសេវាសាធារណៈសម្រាប់ពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}</span>
+            <span>{{ currentLanguage === 'kh' ? 'ថ្នាលសេវាសាធារណៈសម្រាប់ពលរដ្ឋកម្ពុជា' : 'Cambodia Public Citizen & Life Services Platform' }}</span>
           </div>
 
           <!-- Main Hero Title -->
@@ -638,9 +639,10 @@ onUnmounted(() => {
            3. INTERACTIVE CITIZEN LIVE MAP & NEARBY SERVICES
       ============================================================= -->
       <section class="section-card scroll-reveal mt-5 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(31,64,122,.07)] ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
-        <div class="flex flex-col justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 via-white to-transparent px-5 py-4 dark:border-slate-700 dark:from-blue-950/20 dark:via-slate-800 lg:flex-row lg:items-center">
-          <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0D47A1] text-white shadow-md shadow-blue-950/20">
+        <!-- Section Header & Filter Tabs -->
+        <div class="flex flex-col justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/80 via-white to-transparent px-5 py-4.5 dark:border-slate-700 dark:from-blue-950/25 dark:via-slate-800 xl:flex-row xl:items-center">
+          <div class="flex items-center gap-3.5">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0D47A1] text-white shadow-md shadow-blue-950/20">
               <LocateFixed class="h-5 w-5 animate-pulse" />
             </div>
             <div>
@@ -648,57 +650,57 @@ onUnmounted(() => {
                 <h2 class="text-base sm:text-lg font-black tracking-tight text-[#0A2458] dark:text-white font-khmer">
                   {{ currentLanguage === 'kh' ? 'ស្វែងរកសេវាកម្មជិតអ្នក (Nearby Services)' : 'Find Essential Services Near You' }}
                 </h2>
-                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 text-[9px] font-black text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/20">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 px-2.5 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/20">
                   <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
                   LIVE MAP
                 </span>
               </div>
-              <div class="mt-0.5 flex items-center gap-2 font-khmer">
-                <span class="text-xs text-slate-500 dark:text-slate-400">
+              <div class="mt-0.5 flex flex-wrap items-center gap-2 font-khmer text-xs">
+                <span class="text-slate-500 dark:text-slate-400">
                   {{ currentLanguage === 'kh' ? 'ទីតាំងបច្ចុប្បន្ន:' : 'Active Location:' }}
-                  <strong class="text-[#0D47A1] dark:text-blue-400 font-black">{{ currentLanguage === 'kh' ? selectedProvince.nameKh : selectedProvince.name }}</strong>
+                  <strong class="text-[#0D47A1] dark:text-blue-400 font-black ml-1">{{ currentLanguage === 'kh' ? selectedProvince.nameKh : selectedProvince.name }}</strong>
                 </span>
-                <span class="text-slate-300 dark:text-slate-600">·</span>
-                <span class="text-[11px] text-slate-400">
+                <span class="text-slate-300 dark:text-slate-600 hidden sm:inline">·</span>
+                <span class="text-[11px] text-slate-400 hidden sm:inline">
                   {{ currentLanguage === 'kh' ? 'ចុចលើទីតាំងដើម្បីមើលលើផែនទីភ្លាមៗ' : 'Click any facility to preview on map' }}
                 </span>
               </div>
             </div>
           </div>
 
-          <!-- 5 Essential Civic Filter Tabs -->
-          <div class="flex flex-wrap gap-1.5 rounded-2xl bg-slate-100/90 p-1.5 dark:bg-slate-700/60 font-khmer">
+          <!-- 5 Essential Civic Filter Tabs with Horizontal Scroll -->
+          <div class="flex items-center gap-2 overflow-x-auto rounded-2xl bg-slate-100/90 p-1.5 dark:bg-slate-700/60 font-khmer scrollbar-none">
             <button
               v-for="tab in nearbyTabs"
               :key="tab.id"
               type="button"
               :class="[
-                'inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all duration-200',
+                'inline-flex items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-bold transition-all duration-200 cursor-pointer',
                 activeNearbyTab === tab.id
-                  ? 'bg-white text-[#0D47A1] shadow-sm dark:bg-slate-800 dark:text-blue-300 font-black scale-102 ring-1 ring-blue-500/20'
-                  : 'text-slate-600 hover:text-[#0D47A1] dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-800/50'
+                  ? 'bg-white text-[#0D47A1] shadow-md dark:bg-slate-800 dark:text-blue-300 font-black ring-1 ring-blue-500/20 scale-[1.02]'
+                  : 'text-slate-600 hover:text-[#0D47A1] dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-800/60'
               ]"
               @click="setNearbyTab(tab.id)"
             >
-              <component :is="tab.icon" class="h-3.5 w-3.5 shrink-0" />
+              <component :is="tab.icon" class="h-4 w-4 shrink-0" />
               <span>{{ currentLanguage === 'kh' ? tab.labelKh : tab.labelEn }}</span>
               <span
                 :class="[
-                  'text-[9px] font-black px-1.5 py-0.2 rounded-md',
+                  'text-[10px] font-bold px-2 py-0.5 rounded-md transition-colors',
                   activeNearbyTab === tab.id
                     ? 'bg-blue-100 text-[#0D47A1] dark:bg-blue-950 dark:text-blue-300'
-                    : 'bg-slate-200/70 text-slate-500 dark:bg-slate-600 dark:text-slate-300'
+                    : 'bg-slate-200/80 text-slate-600 dark:bg-slate-600 dark:text-slate-300'
                 ]"
               >
-                {{ tab.badge }}
+                {{ currentLanguage === 'kh' ? tab.badgeKh : tab.badgeEn }}
               </span>
             </button>
           </div>
         </div>
 
-        <div class="grid gap-0 p-4 lg:grid-cols-[1.15fr_.85fr]">
+        <div class="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.15fr_0.85fr] xl:grid-cols-[1.2fr_1fr]">
           <!-- Map Embed Frame -->
-          <div class="relative h-[280px] sm:h-[310px] lg:h-[325px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
+          <div class="relative h-[380px] sm:h-[430px] lg:h-[470px] overflow-hidden rounded-2xl bg-slate-100 shadow-inner dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
             <iframe
               :key="mapEmbedUrl"
               :src="mapEmbedUrl"
@@ -708,22 +710,23 @@ onUnmounted(() => {
               referrerpolicy="no-referrer-when-downgrade"
             />
 
-            <!-- Top Active Location Floating Card -->
-            <div class="absolute left-2.5 top-2.5 max-w-[85%] rounded-xl border border-white/90 bg-white/95 p-2 sm:p-2.5 shadow-lg backdrop-blur dark:border-slate-600/90 dark:bg-slate-800/95 font-khmer">
-              <div class="flex items-start gap-2.5">
-                <span :class="['flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ring-1', getNearbyIconBg(activeNearbyTab)]">
-                  <component :is="getNearbyIcon(activeNearbyTab)" class="h-3.5 w-3.5" />
+            <!-- Top Floating Active Facility Card (Modern Frosted Glass) -->
+            <div class="absolute left-3 top-3 right-3 sm:right-auto sm:max-w-md rounded-2xl border border-white/90 bg-white/95 p-3 sm:p-3.5 shadow-xl shadow-slate-950/10 backdrop-blur-md dark:border-slate-700/90 dark:bg-slate-900/95 font-khmer">
+              <div class="flex items-center gap-3">
+                <span :class="['flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 shadow-xs', getNearbyIconBg(activeNearbyTab)]">
+                  <component :is="getNearbyIcon(activeNearbyTab)" class="h-5 w-5" />
                 </span>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-2">
                     <p class="truncate text-xs sm:text-sm font-black text-[#0A2540] dark:text-white">
                       {{ localized(activeMapPoint.name, activeMapPoint.nameKh) }}
                     </p>
-                    <span class="rounded bg-blue-100 dark:bg-blue-950/70 px-1.5 py-0.2 text-[9px] font-black text-blue-700 dark:text-blue-300 shrink-0">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-950/80 px-2 py-0.5 text-[9px] font-bold text-blue-700 dark:text-blue-300 shrink-0">
+                      <span class="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
                       {{ currentLanguage === 'kh' ? 'ទីតាំងជ្រើសរើស' : 'Selected' }}
                     </span>
                   </div>
-                  <p class="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-300">
+                  <p class="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
                     {{ localized(activeMapPoint.address, activeMapPoint.addressKh) }}
                   </p>
                 </div>
@@ -731,56 +734,61 @@ onUnmounted(() => {
             </div>
 
             <!-- Bottom Floating Action Bar -->
-            <div class="absolute bottom-2.5 left-2.5 right-2.5 flex flex-wrap items-center justify-between gap-1.5 font-khmer">
+            <div class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 font-khmer">
               <a
                 :href="mapDirectionsUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-3 py-1.5 sm:px-3.5 sm:py-2 text-[11px] sm:text-xs font-black text-white shadow-md transition duration-150 active:scale-98"
+                class="inline-flex items-center gap-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-4 py-2 sm:py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-950/25 transition duration-150 active:scale-95"
               >
-                <MapPin class="h-4 w-4" />
+                <MapPin class="h-4 w-4 shrink-0 text-amber-300" />
                 <span>{{ currentLanguage === 'kh' ? 'ទទួលទិសដៅលើ Google Maps' : 'Get Directions (Google Maps)' }}</span>
+                <ExternalLink class="h-3.5 w-3.5 opacity-80" />
               </a>
 
               <div class="flex items-center gap-2">
-                <span class="hidden sm:inline-block rounded-lg sm:rounded-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur px-2.5 py-1.5 text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 shadow-xs">
+                <span class="rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 shadow-sm">
                   GPS: {{ activeMapPoint.coordinates.lat.toFixed(4) }}, {{ activeMapPoint.coordinates.lng.toFixed(4) }}
                 </span>
               </div>
             </div>
           </div>
 
-          <!-- Recommended Places List -->
-          <div class="bg-slate-50/70 p-3 dark:bg-slate-900/40 lg:ml-4 lg:rounded-2xl flex flex-col justify-between h-[280px] sm:h-[310px] lg:h-[325px] mt-3 lg:mt-0">
+          <!-- Facilities List Area -->
+          <div class="bg-slate-50/80 dark:bg-slate-900/50 p-3.5 sm:p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-[380px] sm:h-[430px] lg:h-[470px]">
             <div class="min-h-0 flex-1 flex flex-col">
-              <div class="flex items-center justify-between px-2 py-1 text-[11px] font-black uppercase tracking-wider text-slate-400 font-khmer">
-                <span>{{ currentLanguage === 'kh' ? 'ទីតាំងផ្ទៀងផ្ទាត់ក្នុងរាជធានី-ខេត្ត' : 'Verified Facilities Near You' }}</span>
-                <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ nearbyEntries.length }} ទីតាំង</span>
+              <div class="flex items-center justify-between pb-2.5 border-b border-slate-200/70 dark:border-slate-700/60 font-khmer">
+                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">
+                  {{ currentLanguage === 'kh' ? 'ទីតាំងផ្ទៀងផ្ទាត់ក្នុងរាជធានី-ខេត្ត' : 'Verified Facilities Near You' }}
+                </span>
+                <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-md border border-blue-200/50 dark:border-blue-800/50">
+                  {{ nearbyEntries.length }} ទីតាំង
+                </span>
               </div>
 
-              <!-- List Cards -->
-              <div class="mt-1.5 space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-0">
+              <!-- List Cards with Comfortable Spacing and Scroll -->
+              <div class="mt-2.5 space-y-2.5 overflow-y-auto pr-1 flex-1 min-h-0">
                 <button
                   v-for="entry in nearbyEntries"
                   :key="entry.id"
                   type="button"
                   :class="[
-                    'group relative flex w-full items-center gap-2.5 rounded-xl border p-2 text-left transition-all duration-200 cursor-pointer',
+                    'group relative flex w-full items-center gap-3 rounded-2xl border p-3 sm:p-3.5 text-left transition-all duration-200 cursor-pointer',
                     selectedEntryId === entry.id
-                      ? 'border-[#0D47A1] bg-white shadow-md ring-2 ring-[#0D47A1]/20 dark:bg-slate-800 dark:border-blue-400'
-                      : 'border-slate-200/70 bg-white/70 hover:border-blue-200 hover:bg-white hover:shadow-xs dark:border-slate-700/60 dark:bg-slate-800/60 dark:hover:bg-slate-800'
+                      ? 'border-2 border-[#0D47A1] bg-white shadow-md ring-2 ring-[#0D47A1]/15 dark:bg-slate-800 dark:border-blue-400'
+                      : 'border-slate-200/80 bg-white/85 hover:border-blue-200 hover:bg-white hover:shadow-xs dark:border-slate-700/70 dark:bg-slate-800/70 dark:hover:bg-slate-800'
                   ]"
                   @click="selectMapEntry(entry)"
                 >
-                  <!-- Active Pin Indicator Ribbon -->
+                  <!-- Active Indicator Ribbon -->
                   <span
                     v-if="selectedEntryId === entry.id"
-                    class="absolute -left-1 top-3 bottom-3 w-1.5 rounded-r bg-[#0D47A1] dark:bg-blue-400"
+                    class="absolute left-0 top-3 bottom-3 w-1 rounded-r-md bg-[#0D47A1] dark:bg-blue-400"
                   />
 
                   <!-- Icon Badge -->
                   <div :class="['flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-xs ring-1 transition-transform group-hover:scale-105', getNearbyIconBg(activeNearbyTab)]">
-                    <component :is="getNearbyIcon(activeNearbyTab)" class="h-4 w-4" />
+                    <component :is="getNearbyIcon(activeNearbyTab)" class="h-5 w-5" />
                   </div>
 
                   <!-- Details -->
@@ -791,30 +799,31 @@ onUnmounted(() => {
                       </p>
                       <span
                         v-if="selectedEntryId === entry.id"
-                        class="hidden sm:inline-flex items-center gap-1 rounded bg-emerald-100 dark:bg-emerald-950/80 px-1.5 py-0.2 text-[9px] font-black text-emerald-700 dark:text-emerald-300"
+                        class="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 text-[9px] font-black text-emerald-700 dark:text-emerald-300 shrink-0"
                       >
                         <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
                         {{ currentLanguage === 'kh' ? 'កំពុងមើល' : 'Active' }}
                       </span>
                     </div>
 
-                    <p class="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
-                      {{ localized(entry.address, entry.addressKh) }}
+                    <p class="mt-1 truncate text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                      <MapPin class="h-3 w-3 shrink-0 text-slate-400" />
+                      <span class="truncate">{{ localized(entry.address, entry.addressKh) }}</span>
                     </p>
 
-                    <div class="mt-1 flex flex-wrap items-center gap-1.5">
-                      <span class="inline-block rounded-lg bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                    <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                      <span class="inline-block rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-100/80 dark:border-blue-900/50">
                         {{ entry.meta }}
                       </span>
                     </div>
                   </div>
 
                   <!-- Actions (1-Tap Call & Route) -->
-                  <div class="flex items-center gap-1.5 shrink-0">
+                  <div class="flex items-center gap-1.5 shrink-0 pl-1">
                     <a
                       v-if="entry.phone"
                       :href="`tel:${entry.phone}`"
-                      class="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition shadow-xs dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                      class="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition shadow-xs dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
                       :title="currentLanguage === 'kh' ? `ហៅទូរស័ព្ទ ${entry.phone}` : `Call ${entry.phone}`"
                       @click.stop
                     >
@@ -823,7 +832,7 @@ onUnmounted(() => {
 
                     <router-link
                       :to="entry.route"
-                      class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:text-[#0D47A1] hover:border-blue-300 transition dark:border-slate-700 dark:bg-slate-800"
+                      class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#0D47A1] hover:bg-white hover:border-blue-300 transition dark:border-slate-700 dark:bg-slate-800"
                       :title="currentLanguage === 'kh' ? 'មើលព័ត៌មានលម្អិត' : 'View details'"
                       @click.stop
                     >
@@ -835,15 +844,15 @@ onUnmounted(() => {
             </div>
 
             <!-- Footer of List Area -->
-            <div class="mt-3 flex items-center justify-between border-t border-slate-200/80 px-2 pt-3 dark:border-slate-700 font-khmer">
+            <div class="mt-3 flex items-center justify-between border-t border-slate-200/70 pt-3 dark:border-slate-700/60 font-khmer">
               <router-link
                 :to="activeNearbyTab === 'hospitals' ? '/health' : activeNearbyTab === 'transport' ? '/transport' : activeNearbyTab === 'services' ? '/home-services' : '/locations'"
-                class="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-3.5 py-2 text-xs font-bold text-[#0D47A1] transition hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300"
+                class="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-3.5 py-2 text-xs font-bold text-[#0D47A1] transition hover:bg-blue-100 hover:text-blue-900 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-950/70"
               >
                 <span>{{ currentLanguage === 'kh' ? 'មើលសេវាកម្មទាំងអស់ក្នុងប្រភេទនេះ' : 'Explore All in this category' }}</span>
                 <ArrowRight class="h-3.5 w-3.5" />
               </router-link>
-              <span class="text-xs font-semibold text-slate-400">{{ nearbyEntries.length }} ទីតាំង</span>
+              <span class="text-xs font-semibold text-slate-400 font-mono">{{ nearbyEntries.length }} ទីតាំង</span>
             </div>
           </div>
         </div>
@@ -852,9 +861,21 @@ onUnmounted(() => {
       <!-- ============================================================
            4. EMERGENCY 24/7 CENTER & CRISIS PROTOCOL
       ============================================================= -->
-      <section class="emergency-card scroll-reveal relative mt-5 overflow-hidden rounded-3xl bg-[#070B18] p-6 text-white shadow-[0_16px_34px_rgba(12,16,34,.22)] sm:p-8">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_79%_40%,rgba(225,36,42,.38),transparent_24%),radial-gradient(circle_at_70%_120%,rgba(150,21,58,.27),transparent_34%),linear-gradient(105deg,#070B18,rgba(17,17,35,.97))]" />
-        <div class="relative">
+      <section class="emergency-card scroll-reveal relative mt-5 overflow-hidden rounded-3xl p-6 text-white shadow-[0_16px_34px_rgba(12,16,34,.22)] sm:p-8">
+        <!-- Background Image & Atmospheric Emergency Overlay -->
+        <div class="absolute inset-0 z-0 overflow-hidden">
+          <img
+            src="/images/pillars/emergency-bg.jpg"
+            alt="Cambodian Emergency Response: Ambulance & Police"
+            class="h-full w-full object-cover object-center filter brightness-[0.75] contrast-[1.08] scale-100 transition-transform duration-700"
+          />
+          <!-- Subtle vignette that preserves ambulance and police vehicle clarity -->
+          <div class="absolute inset-0 bg-gradient-to-t from-[#070B18]/95 via-[#070B18]/55 to-[#070B18]/40" />
+          <div class="absolute inset-0 bg-gradient-to-r from-[#070B18]/85 via-transparent to-[#070B18]/60" />
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_60%,rgba(225,36,42,.22),transparent_40%),radial-gradient(circle_at_75%_60%,rgba(13,71,161,.22),transparent_40%)]" />
+        </div>
+
+        <div class="relative z-10">
           <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div class="flex items-center gap-3">
               <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/20 text-red-300 ring-1 ring-red-400/30">
@@ -889,7 +910,7 @@ onUnmounted(() => {
               :key="contact.id"
               :href="`tel:${contact.number}`"
               :title="currentLanguage === 'kh' ? `ចុចដើម្បីហៅ ${contact.number}` : `Call ${contact.number}`"
-              :class="['stagger-card group relative overflow-hidden rounded-2xl border p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-lg', emergencyTone(contact.id)]"
+              :class="['stagger-card group relative overflow-hidden rounded-2xl border p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl backdrop-blur-md bg-slate-950/75 shadow-md border-white/15', emergencyTone(contact.id)]"
             >
               <div class="relative flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3 min-w-0">
@@ -918,7 +939,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Emergency Protocol Guidance Checklist -->
-          <div class="mt-6 rounded-2xl bg-white/[.06] border border-white/10 p-4 font-khmer">
+          <div class="mt-6 rounded-2xl bg-slate-950/80 backdrop-blur-md border border-white/15 p-4 font-khmer shadow-md">
             <p class="text-xs font-bold text-amber-300 flex items-center gap-1.5 mb-2">
               <AlertTriangle class="w-4 h-4" />
               <span>{{ currentLanguage === 'kh' ? 'គោលការណ៍ណែនាំពេលមានអាសន្ន (Emergency Protocol):' : 'What to do in an emergency:' }}</span>

@@ -93,7 +93,7 @@ function scrollToTop() {
 
           <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm">
             {{ currentLanguage === 'kh'
-              ? 'វិបផតថលសេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃសម្រាប់ប្រជាពលរដ្ឋកម្ពុជា។ ជួយឱ្យប្រជាពលរដ្ឋស្វែងរក យល់ដឹង រៀបចំឯកសារ និងប្រើប្រាស់សេវារដ្ឋ សុខាភិបាល ការងារ និងការសង្គ្រោះបន្ទាន់យ៉ាងងាយស្រួល។'
+              ? 'ថ្នាលសេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃសម្រាប់ប្រជាពលរដ្ឋកម្ពុជា។ ជួយឱ្យប្រជាពលរដ្ឋស្វែងរក យល់ដឹង រៀបចំឯកសារ និងប្រើប្រាស់សេវារដ្ឋ សុខាភិបាល ការងារ និងការសង្គ្រោះបន្ទាន់យ៉ាងងាយស្រួល។'
               : 'Independent Cambodian citizen life-services platform providing verified public procedures, emergency helplines, healthcare directory, civic guides, and career opportunities.'
             }}
           </p>
