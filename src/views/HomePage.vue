@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import {
   Ambulance,
   ArrowRight,
+  ArrowUpRight,
   BadgeCheck,
   Banknote,
   Bell,
@@ -237,12 +238,31 @@ const serviceThemes = [
   { icon: Building2, color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/50', border: 'hover:border-rose-300 dark:hover:border-rose-600', ring: 'ring-rose-500/20' }
 ]
 
+const formatShortDuration = (time: string, timeKh: string, lang: string) => {
+  if (lang === 'kh') {
+    if (timeKh && timeKh.includes('១៥')) return '១៥-៣០ ថ្ងៃ'
+    if (timeKh && timeKh.includes('២០')) return '២០ ថ្ងៃធ្វើការ'
+    if ((timeKh && timeKh.includes('ក្នុងថ្ងៃ')) || (time && time.toLowerCase().includes('same day'))) return 'ក្នុងថ្ងៃតែមួយ'
+    if (timeKh && (timeKh.includes('៣ ដល់ ៥') || timeKh.includes('៣-៥'))) return '៣-៥ ថ្ងៃ'
+    return (timeKh || '').split('(')[0].trim()
+  }
+  if (time && time.includes('15 to 30')) return '15-30 Days'
+  if (time && time.includes('20 business')) return '20 Days'
+  if (time && time.toLowerCase().includes('same day')) return 'Same Day'
+  if (time && time.includes('3 to 5')) return '3-5 Days'
+  return (time || '').split('(')[0].trim()
+}
+
 const popularServices = computed(() => governmentServices.slice(0, 6).map((service, index) => {
   const theme = serviceThemes[index % serviceThemes.length]
   return {
     ...service,
     theme,
-    shortTitle: service.title.replace('Cambodian ', '').replace(' (Khmer Identity Card)', '')
+    shortTitle: service.title
+      .replace('Cambodian ', '')
+      .replace(' (Khmer Identity Card)', '')
+      .replace('Official ', '')
+      .replace(' Registration', '')
   }
 }))
 
@@ -1092,10 +1112,11 @@ onUnmounted(() => {
       <!-- ============================================================
            5. POPULAR CIVIC & ADMINISTRATIVE PROCEDURES
       ============================================================= -->
-      <section class="section-card scroll-reveal mt-5 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700 sm:p-8">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
+      <section class="section-card scroll-reveal mt-5 rounded-3xl bg-white p-4 sm:p-6 lg:p-8 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
+        <!-- Section Header -->
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
           <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300">
+            <div class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#0D47A1] ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300">
               <Landmark class="h-5 w-5" />
             </div>
             <div>
@@ -1112,48 +1133,50 @@ onUnmounted(() => {
           </div>
           <router-link
             to="/government"
-            class="inline-flex w-fit items-center gap-1.5 rounded-xl bg-blue-50 px-4 py-2 text-xs font-bold text-[#0D47A1] transition hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300 font-khmer"
+            class="inline-flex w-fit items-center gap-1.5 rounded-xl bg-blue-50 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-bold text-[#0D47A1] transition hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300 font-khmer shrink-0"
           >
             <span>{{ currentLanguage === 'kh' ? 'មើលសេវាទាំងអស់' : 'View all civic guides' }}</span>
             <ArrowRight class="h-3.5 w-3.5" />
           </router-link>
         </div>
 
-        <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <!-- 6 Cards Grid (Clean 2-Column on Mobile, 3 on Tablet, 6 on Desktop) -->
+        <div class="mt-4 sm:mt-6 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
           <router-link
             v-for="service in popularServices"
             :key="service.id"
             :to="`/government/${service.id}`"
-            :class="[
-              'stagger-card group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-800/60 dark:hover:bg-slate-800',
-              service.theme.border
-            ]"
+            class="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-3 sm:p-4 transition-all duration-200 hover:-translate-y-1 hover:border-blue-400 hover:shadow-md dark:border-slate-700/80 dark:bg-slate-800 dark:hover:border-blue-500 shadow-2xs cursor-pointer"
           >
             <div>
+              <!-- Top Row: Icon + Subtle Action Arrow Button -->
               <div class="flex items-center justify-between">
-                <div :class="['flex h-11 w-11 items-center justify-center rounded-xl shadow-xs transition-transform duration-200 group-hover:scale-110 ring-1', service.theme.bg, service.theme.color, service.theme.ring]">
+                <div :class="['flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl shadow-xs transition-transform duration-200 group-hover:scale-105 ring-1', service.theme.bg, service.theme.color, service.theme.ring]">
                   <component :is="service.theme.icon" class="h-5 w-5" />
                 </div>
-                <span class="rounded-md bg-white/80 px-2 py-0.5 text-[10px] font-bold text-slate-500 shadow-2xs border border-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">
-                  {{ service.category }}
-                </span>
+                <div class="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-slate-100 text-slate-400 group-hover:bg-[#0D47A1] group-hover:text-white dark:bg-slate-700 dark:text-slate-300 transition-colors">
+                  <ArrowUpRight class="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                </div>
               </div>
 
-              <h3 class="mt-3.5 text-xs sm:text-sm font-extrabold text-[#0A2458] group-hover:text-[#0D47A1] dark:text-white line-clamp-2 leading-snug font-khmer min-h-[2.4rem]">
+              <!-- Title -->
+              <h3 class="mt-2.5 sm:mt-3 text-xs sm:text-sm font-extrabold text-[#0A2458] group-hover:text-[#0D47A1] dark:text-white dark:group-hover:text-blue-300 line-clamp-2 leading-snug font-khmer min-h-[2.4rem] flex items-center">
                 {{ localized(service.shortTitle, service.titleKh) }}
               </h3>
 
-              <p class="mt-1.5 text-[11px] text-slate-400 flex items-center gap-1.5 font-khmer">
-                <Clock3 class="h-3 w-3 shrink-0 text-slate-400" />
-                <span class="truncate">{{ localized(service.processingTime, service.processingTimeKh) }}</span>
-              </p>
+              <!-- Duration Pill -->
+              <div class="mt-1.5 flex items-center gap-1 font-khmer">
+                <span class="inline-flex items-center gap-1 rounded-md bg-slate-100/90 dark:bg-slate-700/60 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[10.5px] font-semibold text-slate-600 dark:text-slate-300">
+                  <Clock3 class="h-3 w-3 shrink-0 text-slate-400" />
+                  <span class="truncate">{{ formatShortDuration(service.processingTime, service.processingTimeKh, currentLanguage) }}</span>
+                </span>
+              </div>
             </div>
 
-            <div class="mt-4 flex items-center justify-between border-t border-slate-100/90 pt-3 text-[11px] font-bold text-[#0D47A1] dark:text-blue-400 font-khmer">
-              <span>{{ currentLanguage === 'kh' ? 'ពិនិត្យឯកសារ & ថ្លៃសេវា' : 'View Guide' }}</span>
-              <div class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-[#0D47A1] transition-transform duration-200 group-hover:translate-x-1 group-hover:bg-[#0D47A1] group-hover:text-white dark:bg-blue-950/60 dark:text-blue-300">
-                <ArrowRight class="h-3 w-3" />
-              </div>
+            <!-- Card Footer: View Guide & Subtle Arrow -->
+            <div class="mt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700/60 pt-2 text-[10.5px] sm:text-xs font-bold text-[#0D47A1] dark:text-blue-400 font-khmer">
+              <span>{{ currentLanguage === 'kh' ? 'ពិនិត្យនីតិវិធី' : 'View Guide' }}</span>
+              <ArrowRight class="h-3 w-3 group-hover:translate-x-1 transition-transform" />
             </div>
           </router-link>
         </div>
