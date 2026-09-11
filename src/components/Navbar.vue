@@ -724,7 +724,12 @@ onUnmounted(() => {
                 v-for="service in serviceLinks"
                 :key="service.path"
                 @click="navigateTo(service.path)"
-                class="w-full flex items-center gap-3 p-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-[#0D47A1] dark:hover:text-blue-400 text-left transition-colors"
+                :class="[
+                  'w-full flex items-center gap-3 p-2 rounded-xl text-xs font-semibold text-left transition-colors cursor-pointer',
+                  isActive(service.path)
+                    ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 ring-1 ring-blue-200 dark:ring-blue-900'
+                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-[#0D47A1] dark:hover:text-blue-400'
+                ]"
                 type="button"
               >
                 <div class="relative w-9 h-9 rounded-lg overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">

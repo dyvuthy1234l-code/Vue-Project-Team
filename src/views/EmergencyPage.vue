@@ -631,28 +631,31 @@ const firstAidProtocols = [
 </script>
 
 <template>
-  <div class="emergency-portal bg-[#F8FAFC] min-h-screen pb-16 font-khmer text-slate-800 space-y-8">
+  <div class="emergency-portal bg-[#F8FAFC] min-h-screen pb-24 sm:pb-16 font-khmer text-slate-800 space-y-6 sm:space-y-8">
 
     <!-- ============================================================
          1. CRITICAL DISPATCH COMMAND HEADER (Active Emergency Masthead)
          ============================================================ -->
     <div class="bg-white border-b border-slate-200 shadow-xs">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 text-xs">
         <!-- Live Alert Status -->
-        <div class="flex items-center gap-2 font-bold">
-          <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping" />
-          <span class="text-slate-900">{{ currentLanguage === 'kh' ? 'ប្រព័ន្ធបញ្ជាការសង្គ្រោះបន្ទាន់ជាតិកម្ពុជា' : 'Cambodia National Emergency Response Command' }}</span>
-          <span class="text-slate-300">|</span>
-          <span class="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-            {{ currentLanguage === 'kh' ? '● បណ្តាញ ១១៧, ១១៨, ១១៩ ដំណើរការធម្មតា ២៤/៧' : 'All Hotlines Active 24/7' }}
+        <div class="flex items-center gap-2 font-bold min-w-0">
+          <span class="relative flex h-2.5 w-2.5 shrink-0">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span class="text-slate-900 truncate">{{ currentLanguage === 'kh' ? 'ប្រព័ន្ធបញ្ជាការសង្គ្រោះបន្ទាន់ជាតិ' : 'Cambodia National Emergency Response' }}</span>
+          <span class="text-slate-300 hidden sm:inline">|</span>
+          <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[11px] shrink-0">
+            {{ currentLanguage === 'kh' ? '● ១១៧, ១១៨, ១១៩ ដំណើរការ ២៤/៧' : 'All Hotlines Active 24/7' }}
           </span>
         </div>
 
-        <div class="flex items-center gap-3 font-bold text-slate-500">
-          <span class="hidden sm:inline text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+        <div class="flex items-center gap-2 font-bold text-slate-500 shrink-0">
+          <span class="hidden sm:inline text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 text-[11px]">
             {{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃ ១០០%' : '100% Toll-Free' }}
           </span>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 border border-blue-200/80 dark:border-blue-900 font-bold text-xs">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 border border-blue-200/80 dark:border-blue-900 font-bold text-xs">
             <MapPin class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>{{ currentLanguage === 'kh' ? activeProvince.nameKh : activeProvince.name }}</span>
           </div>
@@ -660,22 +663,20 @@ const firstAidProtocols = [
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-
-
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
 
       <!-- ============================================================
            2. NEWSPAPER / COMMAND STYLE HERO BANNER
            ============================================================ -->
-      <section class="relative overflow-hidden rounded-3xl bg-white border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div class="space-y-3 max-w-2xl">
-            <div class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3.5 py-1 text-xs font-black text-rose-700 border border-rose-200">
+      <section class="relative overflow-hidden rounded-3xl bg-white border border-slate-200/90 shadow-sm p-4 sm:p-7 lg:p-8 space-y-5 sm:space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-6">
+          <div class="space-y-2.5 sm:space-y-3 max-w-2xl">
+            <div class="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1 text-xs font-black text-rose-700 border border-rose-200">
               <Radio class="w-3.5 h-3.5 text-rose-600 animate-pulse" />
               <span>{{ currentLanguage === 'kh' ? 'ខ្សែទូរស័ព្ទសង្គ្រោះបន្ទាន់ផ្លូវការទូទាំងប្រទេស ២៤/៧' : 'Official National 24/7 Emergency Dispatch' }}</span>
             </div>
 
-            <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-snug">
+            <h1 class="text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-snug">
               {{ currentLanguage === 'kh' ? 'ជំនួយ និងលេខទូរស័ព្ទសង្គ្រោះបន្ទាន់ជាតិ' : 'National Emergency Hotlines & Rescue Services' }}
             </h1>
 
@@ -688,43 +689,41 @@ const firstAidProtocols = [
           </div>
 
           <!-- Quick Stats Indicators -->
-          <div class="grid grid-cols-3 gap-3 shrink-0">
-            <div class="p-3.5 bg-blue-50/80 rounded-2xl border border-blue-100 text-center space-y-1">
-              <PhoneCall class="w-5 h-5 text-[#0D47A1] mx-auto" />
-              <p class="text-[10px] font-bold text-slate-500 uppercase">{{ currentLanguage === 'kh' ? 'ការហៅ' : 'Dialing' }}</p>
-              <p class="text-xs font-black text-[#0D47A1]">{{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃ' : 'Free' }}</p>
+          <div class="grid grid-cols-3 gap-2 sm:gap-3 shrink-0">
+            <div class="p-2.5 sm:p-3.5 bg-blue-50/80 rounded-2xl border border-blue-100 text-center space-y-0.5 sm:space-y-1">
+              <PhoneCall class="w-4 h-4 sm:w-5 sm:h-5 text-[#0D47A1] mx-auto" />
+              <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase">{{ currentLanguage === 'kh' ? 'ការហៅ' : 'Dialing' }}</p>
+              <p class="text-[11px] sm:text-xs font-black text-[#0D47A1]">{{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃ' : 'Free' }}</p>
             </div>
 
-            <div class="p-3.5 bg-amber-50/80 rounded-2xl border border-amber-100 text-center space-y-1">
-              <Clock3 class="w-5 h-5 text-amber-600 mx-auto" />
-              <p class="text-[10px] font-bold text-slate-500 uppercase">{{ currentLanguage === 'kh' ? 'ម៉ោងបម្រើ' : 'Hours' }}</p>
-              <p class="text-xs font-black text-amber-900">២៤ ម៉ោង</p>
+            <div class="p-2.5 sm:p-3.5 bg-amber-50/80 rounded-2xl border border-amber-100 text-center space-y-0.5 sm:space-y-1">
+              <Clock3 class="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 mx-auto" />
+              <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase">{{ currentLanguage === 'kh' ? 'ម៉ោងបម្រើ' : 'Hours' }}</p>
+              <p class="text-[11px] sm:text-xs font-black text-amber-900">២៤ ម៉ោង</p>
             </div>
 
-            <div class="p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-100 text-center space-y-1">
-              <ShieldCheck class="w-5 h-5 text-emerald-600 mx-auto" />
-              <p class="text-[10px] font-bold text-slate-500 uppercase">{{ currentLanguage === 'kh' ? 'ការឆ្លើយតប' : 'Response' }}</p>
-              <p class="text-xs font-black text-emerald-900">៣-៥ នាទី</p>
+            <div class="p-2.5 sm:p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-100 text-center space-y-0.5 sm:space-y-1">
+              <ShieldCheck class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 mx-auto" />
+              <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase">{{ currentLanguage === 'kh' ? 'ការឆ្លើយតប' : 'Response' }}</p>
+              <p class="text-[11px] sm:text-xs font-black text-emerald-900">៣-៥ នាទី</p>
             </div>
           </div>
         </div>
 
-        <!-- ============================================================
-             FAST EMERGENCY TRIAGE BUTTONS ("តើអ្នកត្រូវការជំនួយអ្វីឥឡូវនេះ?")
-             ============================================================ -->
-        <div class="pt-4 border-t border-slate-100 space-y-3">
+        <!-- FAST EMERGENCY TRIAGE BUTTONS -->
+        <div class="pt-3 sm:pt-4 border-t border-slate-100 space-y-2.5 sm:space-y-3">
           <p class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
             <Sparkles class="w-3.5 h-3.5 text-[#0D47A1]" />
-            <span>{{ currentLanguage === 'kh' ? 'តើអ្នកកំពុងជួបបញ្ហាបន្ទាន់អ្វី? (ចុចដើម្បីជ្រើសរើសជំនួយលឿន)' : 'What is your emergency? (Click for immediate assistance)' }}</span>
+            <span>{{ currentLanguage === 'kh' ? 'តើអ្នកកំពុងជួបបញ្ហាបន្ទាន់អ្វី? (ចុចជ្រើសរើសជំនួយលឿន)' : 'What is your emergency? (Quick Triage)' }}</span>
           </p>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
             <button
               @click="setTriage('traffic')"
               type="button"
-              :class="['p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5', activeTriage === 'traffic' ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-slate-50 hover:bg-blue-50 border-slate-200 text-slate-800']"
+              :class="['p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2 sm:gap-2.5 active:scale-97', activeTriage === 'traffic' ? 'bg-blue-600 text-white border-blue-600 shadow-sm ring-2 ring-blue-300' : 'bg-slate-50 hover:bg-blue-50/60 border-slate-200 text-slate-800']"
             >
-              <AlertTriangle class="w-5 h-5 text-rose-500 shrink-0" />
+              <AlertTriangle class="w-4 h-4 sm:w-5 sm:h-5 text-rose-500 shrink-0" />
               <div class="min-w-0">
                 <p class="font-black text-xs truncate">{{ currentLanguage === 'kh' ? 'គ្រោះថ្នាក់ចរាចរណ៍' : 'Road Accident' }}</p>
                 <p :class="['text-[10px] truncate', activeTriage === 'traffic' ? 'text-blue-100' : 'text-slate-500']">ហៅ 117 ឬ 119</p>
@@ -734,9 +733,9 @@ const firstAidProtocols = [
             <button
               @click="setTriage('fire')"
               type="button"
-              :class="['p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5', activeTriage === 'fire' ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-slate-50 hover:bg-amber-50 border-slate-200 text-slate-800']"
+              :class="['p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2 sm:gap-2.5 active:scale-97', activeTriage === 'fire' ? 'bg-amber-600 text-white border-amber-600 shadow-sm ring-2 ring-amber-300' : 'bg-slate-50 hover:bg-amber-50/60 border-slate-200 text-slate-800']"
             >
-              <Flame class="w-5 h-5 text-amber-500 shrink-0" />
+              <Flame class="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 shrink-0" />
               <div class="min-w-0">
                 <p class="font-black text-xs truncate">{{ currentLanguage === 'kh' ? 'អគ្គីភ័យ / ផ្សែង' : 'Fire Incident' }}</p>
                 <p :class="['text-[10px] truncate', activeTriage === 'fire' ? 'text-amber-100' : 'text-slate-500']">ហៅពន្លត់ភ្លើង 118</p>
@@ -746,9 +745,9 @@ const firstAidProtocols = [
             <button
               @click="setTriage('medical')"
               type="button"
-              :class="['p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5', activeTriage === 'medical' ? 'bg-rose-600 text-white border-rose-600 shadow-sm' : 'bg-slate-50 hover:bg-rose-50 border-slate-200 text-slate-800']"
+              :class="['p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2 sm:gap-2.5 active:scale-97', activeTriage === 'medical' ? 'bg-rose-600 text-white border-rose-600 shadow-sm ring-2 ring-rose-300' : 'bg-slate-50 hover:bg-rose-50/60 border-slate-200 text-slate-800']"
             >
-              <Ambulance class="w-5 h-5 text-emerald-500 shrink-0" />
+              <Ambulance class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 shrink-0" />
               <div class="min-w-0">
                 <p class="font-black text-xs truncate">{{ currentLanguage === 'kh' ? 'សន្លប់ / ឈឺធ្ងន់' : 'Medical Trauma' }}</p>
                 <p :class="['text-[10px] truncate', activeTriage === 'medical' ? 'text-rose-100' : 'text-slate-500']">ហៅរថយន្តសង្គ្រោះ 119</p>
@@ -758,9 +757,9 @@ const firstAidProtocols = [
             <button
               @click="setTriage('police')"
               type="button"
-              :class="['p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5', activeTriage === 'police' ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-slate-50 hover:bg-indigo-50 border-slate-200 text-slate-800']"
+              :class="['p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2 sm:gap-2.5 active:scale-97', activeTriage === 'police' ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm ring-2 ring-indigo-300' : 'bg-slate-50 hover:bg-indigo-50/60 border-slate-200 text-slate-800']"
             >
-              <ShieldAlert class="w-5 h-5 text-indigo-500 shrink-0" />
+              <ShieldAlert class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-500 shrink-0" />
               <div class="min-w-0">
                 <p class="font-black text-xs truncate">{{ currentLanguage === 'kh' ? 'ចោរកម្ម / អំពើហិង្សា' : 'Crime & Assault' }}</p>
                 <p :class="['text-[10px] truncate', activeTriage === 'police' ? 'text-indigo-100' : 'text-slate-500']">ហៅនគរបាល 117</p>
@@ -771,16 +770,16 @@ const firstAidProtocols = [
       </section>
 
       <!-- Urgent Important Instruction Notice -->
-      <section class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 sm:p-5 shadow-xs flex items-start gap-3.5">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-sm mt-0.5 animate-pulse">
-          <AlertTriangle class="h-5 w-5" />
+      <section class="rounded-2xl border border-rose-200 bg-rose-50/80 p-3.5 sm:p-5 shadow-xs flex items-start gap-3 sm:gap-3.5">
+        <div class="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-sm mt-0.5 animate-pulse">
+          <AlertTriangle class="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
-        <div class="space-y-1">
-          <div class="flex items-center gap-2">
-            <h2 class="text-sm font-black text-rose-950">
+        <div class="space-y-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 class="text-xs sm:text-sm font-black text-rose-950">
               {{ currentLanguage === 'kh' ? 'សេចក្តីណែនាំបន្ទាន់ពេលហៅសុំជំនួយ៖' : 'Emergency Calling Rules:' }}
             </h2>
-            <span class="px-2 py-0.5 rounded-full bg-rose-200 text-rose-900 text-[10px] font-bold">
+            <span class="px-2 py-0.5 rounded-full bg-rose-200 text-rose-900 text-[10px] font-bold shrink-0">
               {{ currentLanguage === 'kh' ? 'សូមអានមុនពេលហៅ' : 'Critical' }}
             </span>
           </div>
@@ -797,37 +796,40 @@ const firstAidProtocols = [
            3. TOP 3 NATIONAL SPEED DIAL COMMAND TERMINALS (117, 118, 119)
            ============================================================ -->
       <section class="space-y-4">
-        <div class="flex items-center justify-between pb-1 border-b-2 border-[#0D47A1]">
-          <div class="flex items-center gap-2 text-base font-black text-slate-900">
-            <Flame class="w-5 h-5 text-rose-600" />
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-1.5 border-b-2 border-[#0D47A1] gap-1.5">
+          <div class="flex items-center gap-2 text-sm sm:text-base font-black text-slate-900">
+            <Flame class="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 shrink-0" />
             <span>{{ currentLanguage === 'kh' ? '៣ ខ្សែទូរស័ព្ទសង្គ្រោះបន្ទាន់ជាតិចម្បង (ហៅឥតគិតថ្លៃ)' : 'Primary 3-Digit National Hotlines (100% Free)' }}</span>
           </div>
-          <span class="px-2.5 py-1 rounded-full bg-rose-600 text-white text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-xs">
-            <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+          <span class="inline-flex items-center gap-1.5 self-start sm:self-auto px-2.5 py-1 rounded-full bg-rose-600 text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
+            <span class="relative flex h-1.5 w-1.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+            </span>
             <span>24/7 SPEED DIAL</span>
           </span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
 
           <!-- 117 POLICE -->
-          <div class="bg-white rounded-3xl border-2 border-blue-300 p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-4 relative overflow-hidden group">
-            <div class="space-y-3">
+          <div class="bg-white rounded-3xl border-2 border-blue-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
+            <div class="space-y-2.5 sm:space-y-3">
               <div class="flex items-center justify-between">
-                <span class="px-3 py-1 rounded-xl bg-blue-100 text-[#0D47A1] text-xs font-black uppercase">
+                <span class="px-2.5 sm:px-3 py-1 rounded-xl bg-blue-100 text-[#0D47A1] text-xs font-black uppercase">
                   <span class="inline-flex items-center gap-1.5"><ShieldAlert class="w-3.5 h-3.5" /> នគរបាលជាតិ</span>
                 </span>
                 <span class="text-[10px] font-bold text-slate-400">ឆ្លើយតប: ៣-៥ នាទី</span>
               </div>
 
               <div>
-                <h3 class="text-xl font-black text-slate-900">Cambodia National Police</h3>
+                <h3 class="text-lg sm:text-xl font-black text-slate-900">Cambodia National Police</h3>
                 <p class="text-xs text-slate-500">បទល្មើស ចោរកម្ម អំពើហិង្សា និងសន្តិសុខសាធារណៈ</p>
               </div>
 
               <!-- Giant 117 Button -->
-              <div class="py-4 bg-blue-50/60 rounded-2xl border border-blue-100 flex items-center justify-center">
-                <span class="text-6xl font-black text-[#0D47A1] font-mono tracking-tighter group-hover:scale-105 transition-transform">
+              <div class="py-2.5 sm:py-4 bg-blue-50/60 rounded-2xl border border-blue-100 flex items-center justify-center">
+                <span class="text-4xl sm:text-6xl font-black text-[#0D47A1] font-mono tracking-tighter group-hover:scale-105 transition-transform">
                   117
                 </span>
               </div>
@@ -838,10 +840,10 @@ const firstAidProtocols = [
               </div>
             </div>
 
-            <div class="space-y-2 pt-3 border-t border-slate-100">
+            <div class="space-y-2 pt-2.5 sm:pt-3 border-t border-slate-100">
               <a
                 href="tel:117"
-                class="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm transition-all shadow-md active:scale-98 cursor-pointer"
+                class="w-full flex items-center justify-center gap-2 py-3 sm:py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm transition-all shadow-md active:scale-98 cursor-pointer"
               >
                 <PhoneCall class="w-4 h-4" />
                 <span>ចុចហៅ 117 ឥឡូវនេះ (ឥតគិតថ្លៃ)</span>
@@ -850,7 +852,7 @@ const firstAidProtocols = [
               <button
                 @click="copyToClipboard('117')"
                 type="button"
-                class="w-full py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                class="w-full py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-98"
               >
                 <Check v-if="copiedNumber === '117'" class="w-3.5 h-3.5 text-emerald-600" />
                 <Copy v-else class="w-3.5 h-3.5" />
@@ -860,23 +862,23 @@ const firstAidProtocols = [
           </div>
 
           <!-- 118 FIRE -->
-          <div class="bg-white rounded-3xl border-2 border-amber-300 p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-4 relative overflow-hidden group">
-            <div class="space-y-3">
+          <div class="bg-white rounded-3xl border-2 border-amber-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
+            <div class="space-y-2.5 sm:space-y-3">
               <div class="flex items-center justify-between">
-                <span class="px-3 py-1 rounded-xl bg-amber-100 text-amber-900 text-xs font-black uppercase">
+                <span class="px-2.5 sm:px-3 py-1 rounded-xl bg-amber-100 text-amber-900 text-xs font-black uppercase">
                   <span class="inline-flex items-center gap-1.5"><Flame class="w-3.5 h-3.5" /> ពន្លត់អគ្គីភ័យ & សង្គ្រោះ</span>
                 </span>
                 <span class="text-[10px] font-bold text-slate-400">ឆ្លើយតប: បន្ទាន់</span>
               </div>
 
               <div>
-                <h3 class="text-xl font-black text-slate-900">Fire & Disaster Rescue</h3>
+                <h3 class="text-lg sm:text-xl font-black text-slate-900">Fire & Disaster Rescue</h3>
                 <p class="text-xs text-slate-500">អគ្គីភ័យ ឆេះផ្ទះ ជាប់គាំង និងគ្រោះមហន្តរាយ</p>
               </div>
 
               <!-- Giant 118 Button -->
-              <div class="py-4 bg-amber-50/60 rounded-2xl border border-amber-100 flex items-center justify-center">
-                <span class="text-6xl font-black text-amber-600 font-mono tracking-tighter group-hover:scale-105 transition-transform">
+              <div class="py-2.5 sm:py-4 bg-amber-50/60 rounded-2xl border border-amber-100 flex items-center justify-center">
+                <span class="text-4xl sm:text-6xl font-black text-amber-600 font-mono tracking-tighter group-hover:scale-105 transition-transform">
                   118
                 </span>
               </div>
@@ -887,7 +889,7 @@ const firstAidProtocols = [
               </div>
             </div>
 
-            <div class="space-y-2 pt-3 border-t border-slate-100">
+            <div class="space-y-2 pt-2.5 sm:pt-3 border-t border-slate-100">
               <a
                 href="tel:118"
                 class="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm transition-all shadow-md active:scale-98 cursor-pointer"
@@ -899,7 +901,7 @@ const firstAidProtocols = [
               <button
                 @click="copyToClipboard('118')"
                 type="button"
-                class="w-full py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                class="w-full py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-98"
               >
                 <Check v-if="copiedNumber === '118'" class="w-3.5 h-3.5 text-emerald-600" />
                 <Copy v-else class="w-3.5 h-3.5" />
@@ -909,23 +911,23 @@ const firstAidProtocols = [
           </div>
 
           <!-- 119 AMBULANCE SAMU -->
-          <div class="bg-white rounded-3xl border-2 border-rose-300 p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-4 relative overflow-hidden group">
-            <div class="space-y-3">
+          <div class="bg-white rounded-3xl border-2 border-rose-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
+            <div class="space-y-2.5 sm:space-y-3">
               <div class="flex items-center justify-between">
-                <span class="px-3 py-1 rounded-xl bg-rose-100 text-rose-900 text-xs font-black uppercase">
+                <span class="px-2.5 sm:px-3 py-1 rounded-xl bg-rose-100 text-rose-900 text-xs font-black uppercase">
                   <span class="inline-flex items-center gap-1.5"><Ambulance class="w-3.5 h-3.5" /> សង្គ្រោះវេជ្ជសាស្ត្រ SAMU</span>
                 </span>
                 <span class="text-[10px] font-bold text-slate-400">២៤ ម៉ោង / ៧ ថ្ងៃ</span>
               </div>
 
               <div>
-                <h3 class="text-xl font-black text-slate-900">SAMU Emergency Ambulance</h3>
+                <h3 class="text-lg sm:text-xl font-black text-slate-900">SAMU Emergency Ambulance</h3>
                 <p class="text-xs text-slate-500">រថយន្តសង្គ្រោះបន្ទាន់ជាតិ និងបញ្ជូនអ្នកជំងឺ</p>
               </div>
 
               <!-- Giant 119 Button -->
-              <div class="py-4 bg-rose-50/60 rounded-2xl border border-rose-100 flex items-center justify-center">
-                <span class="text-6xl font-black text-rose-600 font-mono tracking-tighter group-hover:scale-105 transition-transform">
+              <div class="py-2.5 sm:py-4 bg-rose-50/60 rounded-2xl border border-rose-100 flex items-center justify-center">
+                <span class="text-4xl sm:text-6xl font-black text-rose-600 font-mono tracking-tighter group-hover:scale-105 transition-transform">
                   119
                 </span>
               </div>
@@ -936,7 +938,7 @@ const firstAidProtocols = [
               </div>
             </div>
 
-            <div class="space-y-2 pt-3 border-t border-slate-100">
+            <div class="space-y-2 pt-2.5 sm:pt-3 border-t border-slate-100">
               <a
                 href="tel:119"
                 class="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-sm transition-all shadow-md active:scale-98 cursor-pointer"
@@ -948,7 +950,7 @@ const firstAidProtocols = [
               <button
                 @click="copyToClipboard('119')"
                 type="button"
-                class="w-full py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                class="w-full py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-98"
               >
                 <Check v-if="copiedNumber === '119'" class="w-3.5 h-3.5 text-emerald-600" />
                 <Copy v-else class="w-3.5 h-3.5" />
@@ -963,35 +965,37 @@ const firstAidProtocols = [
       <!-- ============================================================
            4. 4-STEP CITIZEN EMERGENCY PROTOCOL
            ============================================================ -->
-      <section class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs space-y-4">
+      <section class="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-6 shadow-xs space-y-3 sm:space-y-4">
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-          <div class="space-y-1">
+          <div class="space-y-0.5 sm:space-y-1">
             <span class="text-xs font-black text-[#0D47A1] uppercase tracking-wider flex items-center gap-1.5">
               <ShieldCheck class="w-4 h-4 text-[#0D47A1]" />
               <span>{{ currentLanguage === 'kh' ? 'ការណែនាំសុវត្ថិភាព' : 'Safety Protocol' }}</span>
             </span>
-            <h2 class="text-base sm:text-lg font-black text-slate-900">
+            <h2 class="text-sm sm:text-lg font-black text-slate-900">
               {{ currentLanguage === 'kh' ? '៤ ជំហានសំខាន់ៗពេលទូរស័ព្ទសុំជំនួយបន្ទាន់' : '4 Steps When Calling for Help' }}
             </h2>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           <div
             v-for="item in emergencySteps"
             :key="item.step"
-            class="p-3 sm:p-4 rounded-2xl border border-slate-200/90 bg-slate-50 space-y-1.5 sm:space-y-2.5"
+            class="p-3 sm:p-4 rounded-2xl border border-slate-200/90 bg-slate-50 space-y-1.5 sm:space-y-2.5 flex flex-col justify-between"
           >
-            <div class="flex items-center justify-between">
-              <div :class="['w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-xs', item.bg, item.color]">
-                <component :is="item.icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+            <div class="space-y-1.5 sm:space-y-2">
+              <div class="flex items-center justify-between">
+                <div :class="['w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-xs', item.bg, item.color]">
+                  <component :is="item.icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                </div>
+                <span class="text-[10px] sm:text-xs font-black text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200 font-mono">
+                  {{ item.step }}
+                </span>
               </div>
-              <span class="text-[10px] sm:text-xs font-black text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200">
-                {{ item.step }}
-              </span>
+              <h3 class="font-black text-xs sm:text-sm text-slate-900 leading-snug">{{ item.title }}</h3>
             </div>
-            <h3 class="font-black text-xs sm:text-sm text-slate-900">{{ item.title }}</h3>
-            <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 sm:line-clamp-none">{{ item.desc }}</p>
+            <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-3 sm:line-clamp-none">{{ item.desc }}</p>
           </div>
         </div>
       </section>
@@ -999,7 +1003,7 @@ const firstAidProtocols = [
       <!-- ============================================================
            5. SEARCH & FILTER PANEL FOR ALL OTHER HELPLINES
            ============================================================ -->
-      <section class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs space-y-3">
+      <section class="bg-white rounded-2xl border border-slate-200/90 p-3.5 sm:p-4 shadow-xs space-y-3">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div class="relative w-full sm:w-80">
             <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -1007,8 +1011,16 @@ const firstAidProtocols = [
               v-model="searchQuery"
               type="text"
               :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកលេខបន្ទាន់ (115, កុមារ, EDC, ទេសចរណ៍...)' : 'Search hotline (115, ChildSafe, EDC...)'"
-              class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs font-bold focus:outline-hidden focus:ring-2 focus:ring-[#0D47A1]"
+              class="w-full pl-9 pr-8 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs font-bold focus:outline-hidden focus:ring-2 focus:ring-[#0D47A1]"
             />
+            <button
+              v-if="searchQuery"
+              @click="searchQuery = ''"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+              title="សម្អាត"
+            >
+              <X class="w-3.5 h-3.5" />
+            </button>
           </div>
 
           <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto scrollbar-none">
@@ -1017,7 +1029,7 @@ const firstAidProtocols = [
               :key="cat.id"
               @click="selectedCategory = cat.id"
               type="button"
-              :class="['px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer', selectedCategory === cat.id ? 'bg-[#0D47A1] text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200']"
+              :class="['px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 active:scale-95', selectedCategory === cat.id ? 'bg-[#0D47A1] text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200']"
             >
               {{ cat.label }}
             </button>
@@ -1026,51 +1038,53 @@ const firstAidProtocols = [
       </section>
 
       <!-- Specialized Contacts Grid -->
-      <section class="space-y-4">
+      <section class="space-y-3 sm:space-y-4">
         <div class="flex items-center justify-between">
-          <h2 class="text-base font-black text-slate-900 flex items-center gap-2">
+          <h2 class="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
             <Phone class="w-4 h-4 text-[#0D47A1]" />
             <span>{{ currentLanguage === 'kh' ? 'ខ្សែទូរស័ព្ទជំនួយសាធារណៈ និងជំនួយសង្គម' : 'Specialized Citizen Helplines' }}</span>
           </h2>
           <span class="text-xs font-bold text-slate-400">{{ filteredContacts.length }} លេខទូរស័ព្ទ</span>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <div
             v-for="contact in filteredContacts"
             :key="contact.id"
-            class="bg-white rounded-2xl border border-slate-200/90 p-3 sm:p-4 shadow-2xs hover:shadow-card-hover transition-all flex flex-col justify-between space-y-2 sm:space-y-3"
+            class="bg-white rounded-2xl border border-slate-200/90 p-3.5 sm:p-4 shadow-2xs hover:shadow-card-hover transition-all flex flex-col justify-between space-y-2.5 sm:space-y-3"
           >
             <div class="space-y-2">
-              <div class="flex items-center justify-between">
-                <span :class="['px-2 py-0.5 rounded-md text-[10px] font-black uppercase', getContactBadge(contact.id).bg]">
+              <div class="flex items-center justify-between gap-2 min-w-0">
+                <span :class="['px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase truncate max-w-[65%]', getContactBadge(contact.id).bg]">
                   {{ getContactBadge(contact.id).text }}
                 </span>
-                <span class="text-lg font-black text-[#0D47A1] font-mono">{{ contact.number }}</span>
+                <span class="text-base sm:text-lg font-black text-[#0D47A1] font-mono shrink-0">{{ contact.number }}</span>
               </div>
 
-              <h3 class="font-black text-sm text-slate-900 leading-snug">
-                {{ localized(contact.name, contact.nameKh) }}
-              </h3>
+              <div>
+                <h3 class="font-black text-sm text-slate-900 leading-snug">
+                  {{ localized(contact.name, contact.nameKh) }}
+                </h3>
 
-              <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                {{ localized(contact.description, contact.descriptionKh) }}
-              </p>
+                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mt-1">
+                  {{ localized(contact.description, contact.descriptionKh) }}
+                </p>
+              </div>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div class="pt-2.5 border-t border-slate-100 flex items-center gap-2">
               <a
                 :href="'tel:' + contact.number"
-                class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                class="flex-1 py-2 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
               >
                 <PhoneCall class="w-3.5 h-3.5" />
-                <span>ហៅ {{ contact.number }}</span>
+                <span>{{ currentLanguage === 'kh' ? 'ហៅ ' + contact.number : 'Call ' + contact.number }}</span>
               </a>
 
               <button
                 @click="copyToClipboard(contact.number)"
-                class="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-xs font-bold transition-colors cursor-pointer"
-                title="ចម្លងលេខ"
+                class="p-2 sm:p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 active:scale-95 text-slate-600 text-xs font-bold transition-all cursor-pointer shrink-0"
+                :title="currentLanguage === 'kh' ? 'ចម្លងលេខ' : 'Copy Number'"
               >
                 <Check v-if="copiedNumber === contact.number" class="w-3.5 h-3.5 text-emerald-600" />
                 <Copy v-else class="w-3.5 h-3.5" />
@@ -1083,14 +1097,14 @@ const firstAidProtocols = [
       <!-- ============================================================
            6. PROVINCIAL EMERGENCY HOTLINES (រាជធានី-ខេត្តទាំង ២៥ + ប្រព័ន្ធស្វែងរក)
            ============================================================ -->
-      <section class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
+      <section class="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-7 lg:p-8 shadow-xs space-y-5 sm:space-y-6">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div class="space-y-1">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-black border border-blue-200">
               <Building2 class="w-3.5 h-3.5 text-[#0D47A1]" />
               <span>{{ currentLanguage === 'kh' ? 'រាជធានី-ខេត្តទាំង ២៥ នៃព្រះរាជាណាចក្រកម្ពុជា' : 'All 25 Cambodian Provinces & Municipalities' }}</span>
             </div>
-            <h2 class="text-lg sm:text-xl font-black text-slate-900">
+            <h2 class="text-base sm:text-xl font-black text-slate-900">
               {{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទសង្គ្រោះបន្ទាន់ប្រចាំរាជធានី-ខេត្តទាំង ២៥' : '25 Provincial Emergency Command Hotlines' }}
             </h2>
             <p class="text-xs text-slate-500">ស្វែងរក ឬជ្រើសរើសខេត្តក្រុង ដើម្បីមើលលេខទូរស័ព្ទស្នងការដ្ឋាននគរបាល មន្ទីរពេទ្យបង្អែកខេត្ត និងកាកបាទក្រហម</p>
@@ -1099,7 +1113,7 @@ const firstAidProtocols = [
           <!-- Quick Actions: Search Input & Province Dropdown -->
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <!-- Search Bar for Provinces -->
-            <div class="relative min-w-[240px]">
+            <div class="relative min-w-[220px] sm:min-w-[240px]">
               <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 v-model="provinceSearchQuery"
@@ -1110,7 +1124,7 @@ const firstAidProtocols = [
               <button
                 v-if="provinceSearchQuery"
                 @click="provinceSearchQuery = ''"
-                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                 title="សម្អាត"
               >
                 <X class="w-3.5 h-3.5" />
@@ -1119,7 +1133,7 @@ const firstAidProtocols = [
 
             <!-- Current Active Province Indicator -->
             <div class="flex items-center gap-2 shrink-0">
-              <div class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200 text-xs font-black text-[#0D47A1]">
+              <div class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 border border-blue-200 text-xs font-black text-[#0D47A1]">
                 <MapPin class="w-3.5 h-3.5 text-emerald-600" />
                 <span>{{ activeProvince.nameKh }} ({{ activeProvince.name }})</span>
               </div>
@@ -1127,7 +1141,7 @@ const firstAidProtocols = [
           </div>
         </div>
 
-        <!-- Province Quick Selection Tags (Filtered by Search Query if entered) -->
+        <!-- Province Quick Selection Tags (Smooth Horizontal Scroll on Mobile) -->
         <div class="space-y-2">
           <div class="flex items-center justify-between text-xs text-slate-500 font-bold">
             <span>{{ provinceSearchQuery ? `លទ្ធផលស្វែងរក (${filteredProvinces.length} ខេត្តក្រុង)` : 'ចុចជ្រើសរើសខេត្តក្រុងរហ័ស (Quick Select)：' }}</span>
@@ -1136,13 +1150,13 @@ const firstAidProtocols = [
             </span>
           </div>
 
-          <div class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1 pb-1">
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none sm:flex-wrap sm:max-h-28 pr-1">
             <button
               v-for="p in filteredProvinces"
               :key="p.id"
               @click="selectProvince(p.id)"
               :class="[
-                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border',
+                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border shrink-0 whitespace-nowrap active:scale-95 cursor-pointer',
                 selectedProvince === p.id
                   ? 'bg-[#0D47A1] text-white border-[#0D47A1] shadow-xs'
                   : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
@@ -1158,49 +1172,52 @@ const firstAidProtocols = [
         </div>
 
         <!-- Active Selected Province Display Banner & Action Hotlines -->
-        <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 border border-blue-100 p-5 space-y-4">
+        <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 border border-blue-100 p-3.5 sm:p-5 space-y-3.5 sm:space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-blue-100/80">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-xs">
+              <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-xs shrink-0">
                 {{ activeProvince.code }}
               </div>
-              <div>
-                <h3 class="font-black text-base text-slate-900 flex items-center gap-2">
+              <div class="min-w-0">
+                <h3 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2 flex-wrap">
                   <span>{{ activeProvince.nameKh }}</span>
                   <span class="text-slate-400 font-normal text-xs">({{ activeProvince.name }})</span>
                 </h3>
                 <p class="text-xs text-slate-500 font-medium">លេខទំនាក់ទំនងបន្ទាន់ផ្លូវការប្រចាំតំបន់ ២៤ម៉ោង</p>
               </div>
             </div>
-            <div class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-white px-3 py-1 rounded-full border border-emerald-200 shadow-2xs self-start sm:self-auto">
-              <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+            <div class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-white px-3 py-1 rounded-full border border-emerald-200 shadow-2xs self-start sm:self-auto shrink-0">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
               <span>ប្រចាំការ ២៤/៧</span>
             </div>
           </div>
 
           <!-- 3-Column Hotlines: Police Commissariat, Referral Hospital, Red Cross -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
             <!-- 1. Police Dispatch -->
-            <div class="p-4 rounded-xl bg-white border border-blue-100 shadow-xs flex flex-col justify-between gap-3">
+            <div class="p-3.5 sm:p-4 rounded-xl bg-white border border-blue-100 shadow-xs flex flex-col justify-between gap-2.5 sm:gap-3">
               <div class="space-y-1">
                 <div class="flex items-center justify-between">
                   <span class="text-[10px] font-black uppercase text-blue-700 tracking-wider">ស្នងការដ្ឋាននគរបាលខេត្ត</span>
                   <ShieldAlert class="w-4 h-4 text-blue-600" />
                 </div>
                 <h4 class="font-black text-xs text-slate-800">បញ្ជាការដ្ឋាននគរបាល {{ activeProvince.nameKh }}</h4>
-                <p class="text-lg font-mono font-black text-[#0D47A1]">{{ activeProvince.police }}</p>
+                <p class="text-base sm:text-lg font-mono font-black text-[#0D47A1]">{{ activeProvince.police }}</p>
               </div>
               <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
                 <a
                   :href="'tel:' + activeProvince.police"
-                  class="flex-1 py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                  class="flex-1 py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs active:scale-98 cursor-pointer"
                 >
                   <PhoneCall class="w-3.5 h-3.5" />
                   <span>ហៅបន្ទាន់</span>
                 </a>
                 <button
                   @click="copyToClipboard(activeProvince.police)"
-                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors active:scale-95 shrink-0 cursor-pointer"
                   :title="copiedNumber === activeProvince.police ? 'បានចម្លង!' : 'ចម្លងលេខ'"
                 >
                   <Check v-if="copiedNumber === activeProvince.police" class="w-3.5 h-3.5 text-emerald-600" />
@@ -1210,26 +1227,26 @@ const firstAidProtocols = [
             </div>
 
             <!-- 2. Provincial Hospital Emergency -->
-            <div class="p-4 rounded-xl bg-white border border-rose-100 shadow-xs flex flex-col justify-between gap-3">
+            <div class="p-3.5 sm:p-4 rounded-xl bg-white border border-rose-100 shadow-xs flex flex-col justify-between gap-2.5 sm:gap-3">
               <div class="space-y-1">
                 <div class="flex items-center justify-between">
                   <span class="text-[10px] font-black uppercase text-rose-700 tracking-wider">ផ្នែកសង្គ្រោះបន្ទាន់មន្ទីរពេទ្យ</span>
                   <Hospital class="w-4 h-4 text-rose-600" />
                 </div>
                 <h4 class="font-black text-xs text-slate-800 truncate" :title="activeProvince.hospitalName">{{ activeProvince.hospitalName }}</h4>
-                <p class="text-lg font-mono font-black text-rose-600">{{ activeProvince.hospital }}</p>
+                <p class="text-base sm:text-lg font-mono font-black text-rose-600">{{ activeProvince.hospital }}</p>
               </div>
               <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
                 <a
                   :href="'tel:' + activeProvince.hospital"
-                  class="flex-1 py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                  class="flex-1 py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs active:scale-98 cursor-pointer"
                 >
                   <PhoneCall class="w-3.5 h-3.5" />
                   <span>ហៅបន្ទាន់</span>
                 </a>
                 <button
                   @click="copyToClipboard(activeProvince.hospital)"
-                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors active:scale-95 shrink-0 cursor-pointer"
                   :title="copiedNumber === activeProvince.hospital ? 'បានចម្លង!' : 'ចម្លងលេខ'"
                 >
                   <Check v-if="copiedNumber === activeProvince.hospital" class="w-3.5 h-3.5 text-emerald-600" />
@@ -1239,26 +1256,26 @@ const firstAidProtocols = [
             </div>
 
             <!-- 3. Red Cross / Humanitarian Aid -->
-            <div class="p-4 rounded-xl bg-white border border-emerald-100 shadow-xs flex flex-col justify-between gap-3">
+            <div class="p-3.5 sm:p-4 rounded-xl bg-white border border-emerald-100 shadow-xs flex flex-col justify-between gap-2.5 sm:gap-3">
               <div class="space-y-1">
                 <div class="flex items-center justify-between">
                   <span class="text-[10px] font-black uppercase text-emerald-700 tracking-wider">កាកបាទក្រហម / ជំនួយសង្គ្រោះ</span>
                   <HeartPulse class="w-4 h-4 text-emerald-600" />
                 </div>
                 <h4 class="font-black text-xs text-slate-800">កាកបាទក្រហមកម្ពុជា សាខា{{ activeProvince.nameKh }}</h4>
-                <p class="text-lg font-mono font-black text-emerald-700">{{ activeProvince.redCross }}</p>
+                <p class="text-base sm:text-lg font-mono font-black text-emerald-700">{{ activeProvince.redCross }}</p>
               </div>
               <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
                 <a
                   :href="'tel:' + activeProvince.redCross"
-                  class="flex-1 py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                  class="flex-1 py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs active:scale-98 cursor-pointer"
                 >
                   <PhoneCall class="w-3.5 h-3.5" />
                   <span>ហៅបន្ទាន់</span>
                 </a>
                 <button
                   @click="copyToClipboard(activeProvince.redCross)"
-                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+                  class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors active:scale-95 shrink-0 cursor-pointer"
                   :title="copiedNumber === activeProvince.redCross ? 'បានចម្លង!' : 'ចម្លងលេខ'"
                 >
                   <Check v-if="copiedNumber === activeProvince.redCross" class="w-3.5 h-3.5 text-emerald-600" />
@@ -1345,13 +1362,13 @@ const firstAidProtocols = [
           </div>
 
           <!-- Category Filter Tabs Matching Authentic HomePage -->
-          <div class="flex flex-wrap gap-1.5 rounded-2xl bg-slate-100/90 p-1.5 font-khmer">
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none sm:flex-wrap rounded-2xl bg-slate-100/90 p-1.5 font-khmer">
             <button
               v-for="tab in emergencyMapTabs"
               :key="tab.id"
               type="button"
               :class="[
-                'inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer select-none',
+                'inline-flex items-center gap-2 rounded-xl px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer select-none shrink-0 whitespace-nowrap',
                 activeMapFilter === tab.id
                   ? 'bg-white text-[#0D47A1] shadow-sm font-black ring-1 ring-blue-500/20 scale-102'
                   : 'text-slate-600 hover:text-[#0D47A1] hover:bg-white/60'
@@ -1397,10 +1414,10 @@ const firstAidProtocols = [
             />
 
             <!-- Top Active Location Floating Card -->
-            <div class="absolute left-3 top-3 max-w-[88%] rounded-2xl border border-white/90 bg-white/95 p-3 shadow-xl backdrop-blur">
-              <div class="flex items-start gap-2.5">
-                <span :class="['flex h-8 w-8 shrink-0 items-center justify-center rounded-xl shadow-xs', getStationIconBg(selectedStation.type)]">
-                  <component :is="getStationIcon(selectedStation.type)" class="h-4 w-4" />
+            <div class="absolute left-2.5 sm:left-3 top-2.5 sm:top-3 max-w-[94%] sm:max-w-[88%] rounded-2xl border border-white/90 bg-white/95 p-2 sm:p-3 shadow-xl backdrop-blur">
+              <div class="flex items-start gap-2 sm:gap-2.5">
+                <span :class="['flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-xl shadow-xs', getStationIconBg(selectedStation.type)]">
+                  <component :is="getStationIcon(selectedStation.type)" class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </span>
                 <div class="min-w-0">
                   <div class="flex items-center gap-1.5">
