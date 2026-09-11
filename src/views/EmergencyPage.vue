@@ -1333,42 +1333,42 @@ const firstAidProtocols = [
            ============================================================ -->
       <section class="overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(31,64,122,.07)] ring-1 ring-slate-100 border border-slate-200/90">
         <!-- Header & Category Filter Tabs -->
-        <div class="flex flex-col justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 via-white to-transparent px-6 py-4 lg:flex-row lg:items-center">
-          <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0D47A1] text-white shadow-md shadow-blue-950/20">
-              <LocateFixed class="h-5 w-5 animate-pulse" />
+        <div class="flex flex-col justify-between gap-3.5 sm:gap-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 via-white to-transparent p-4 sm:p-6 lg:flex-row lg:items-center">
+          <div class="flex items-center gap-2.5 sm:gap-3">
+            <div class="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0D47A1] text-white shadow-md shadow-blue-950/20">
+              <LocateFixed class="h-4.5 w-4.5 sm:h-5 sm:w-5 animate-pulse" />
             </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h2 class="text-base sm:text-lg font-black tracking-tight text-[#0A2458]">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 class="text-sm sm:text-lg font-black tracking-tight text-[#0A2458]">
                   {{ currentLanguage === 'kh' ? 'ផែនទីស្ថានីយសង្គ្រោះបន្ទាន់ & មន្ទីរពេទ្យជិតបំផុត' : 'Emergency Stations & Nearby Trauma Centers' }}
                 </h2>
-                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black text-emerald-700 ring-1 ring-emerald-500/20">
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black text-emerald-700 ring-1 ring-emerald-500/20 shrink-0">
                   <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
                   LIVE REAL MAP
                 </span>
               </div>
               <div class="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
                 <span>
-                  {{ currentLanguage === 'kh' ? 'ទីតាំងបច្ចុប្បន្ន:' : 'Active Location:' }}
+                  {{ currentLanguage === 'kh' ? 'ទីតាំង:' : 'Location:' }}
                   <strong class="text-[#0D47A1] font-black">{{ currentLanguage === 'kh' ? activeProvince.nameKh : activeProvince.name }}</strong>
                 </span>
-                <span class="text-slate-300">·</span>
-                <span class="text-[11px] text-slate-400 font-bold">
+                <span class="hidden sm:inline text-slate-300">·</span>
+                <span class="hidden sm:inline text-[11px] text-slate-400 font-bold">
                   {{ currentLanguage === 'kh' ? 'ផែនទីផ្កាយរណបពិតជាក់ស្តែង (Google Maps)' : 'Live Interactive Google Map Navigation' }}
                 </span>
               </div>
             </div>
           </div>
 
-          <!-- Category Filter Tabs Matching Authentic HomePage -->
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none sm:flex-wrap rounded-2xl bg-slate-100/90 p-1.5 font-khmer">
+          <!-- Category Filter Tabs (Swipeable on Mobile) -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 sm:pb-0 scrollbar-none sm:flex-wrap rounded-2xl bg-slate-100/90 p-1.5 font-khmer -mx-1 sm:mx-0 px-1 sm:px-1.5">
             <button
               v-for="tab in emergencyMapTabs"
               :key="tab.id"
               type="button"
               :class="[
-                'inline-flex items-center gap-2 rounded-xl px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer select-none shrink-0 whitespace-nowrap',
+                'inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer select-none shrink-0 whitespace-nowrap active:scale-95',
                 activeMapFilter === tab.id
                   ? 'bg-white text-[#0D47A1] shadow-sm font-black ring-1 ring-blue-500/20 scale-102'
                   : 'text-slate-600 hover:text-[#0D47A1] hover:bg-white/60'
@@ -1400,63 +1400,157 @@ const firstAidProtocols = [
           </div>
         </div>
 
-        <!-- Real Map & Stations Grid (Matching HomePage Layout) -->
-        <div class="grid gap-0 p-4 lg:grid-cols-[1.2fr_.8fr]">
-          <!-- Real Google Map Embed Frame -->
-          <div class="relative h-[280px] sm:h-[310px] lg:h-[325px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner border border-slate-200/80">
-            <iframe
-              :key="mapEmbedUrl"
-              :src="mapEmbedUrl"
-              title="CamLife Emergency Real Map"
-              class="absolute inset-0 h-full w-full border-0"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            />
+        <!-- Real Map & Stations Grid (Side-by-Side on Desktop, App-Style Stack on Mobile) -->
+        <div class="grid gap-3 sm:gap-4 p-3 sm:p-5 lg:grid-cols-[1.15fr_0.85fr] xl:grid-cols-[1.2fr_1fr]">
+          <!-- Left Column: Map Frame + Mobile Swipe Carousel -->
+          <div class="flex flex-col min-w-0">
+            <!-- Real Google Map Embed Frame -->
+            <div class="relative h-[250px] sm:h-[320px] lg:h-[400px] overflow-hidden rounded-2xl bg-blue-50 shadow-inner border border-slate-200/80">
+              <iframe
+                :key="mapEmbedUrl"
+                :src="mapEmbedUrl"
+                title="CamLife Emergency Real Map"
+                class="absolute inset-0 h-full w-full border-0"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              />
 
-            <!-- Top Active Location Floating Card -->
-            <div class="absolute left-2.5 sm:left-3 top-2.5 sm:top-3 max-w-[94%] sm:max-w-[88%] rounded-2xl border border-white/90 bg-white/95 p-2 sm:p-3 shadow-xl backdrop-blur">
-              <div class="flex items-start gap-2 sm:gap-2.5">
-                <span :class="['flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-xl shadow-xs', getStationIconBg(selectedStation.type)]">
-                  <component :is="getStationIcon(selectedStation.type)" class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <!-- Top Floating Active Location Card (Compact chip on mobile, full card on sm+) -->
+              <div class="sm:hidden absolute left-2.5 top-2.5 max-w-[85%] rounded-xl border border-white/90 bg-white/95 px-2.5 py-1 text-xs font-black text-slate-800 shadow-md backdrop-blur flex items-center gap-1.5">
+                <span :class="['flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-white shadow-2xs', getStationIconBg(selectedStation.type)]">
+                  <component :is="getStationIcon(selectedStation.type)" class="h-3 w-3" />
                 </span>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <p class="truncate text-xs sm:text-sm font-black text-[#0A2540]">
-                      {{ currentLanguage === 'kh' ? selectedStation.nameKh : selectedStation.name }}
+                <span class="truncate text-[11px]">{{ currentLanguage === 'kh' ? selectedStation.nameKh : selectedStation.name }}</span>
+              </div>
+
+              <div class="hidden sm:block absolute left-3 top-3 max-w-md rounded-2xl border border-white/90 bg-white/95 p-3 shadow-xl backdrop-blur">
+                <div class="flex items-start gap-2.5">
+                  <span :class="['flex h-8 w-8 shrink-0 items-center justify-center rounded-xl shadow-xs', getStationIconBg(selectedStation.type)]">
+                    <component :is="getStationIcon(selectedStation.type)" class="h-4 w-4" />
+                  </span>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                      <p class="truncate text-xs sm:text-sm font-black text-[#0A2540]">
+                        {{ currentLanguage === 'kh' ? selectedStation.nameKh : selectedStation.name }}
+                      </p>
+                      <span class="rounded bg-blue-100 px-1.5 py-0.5 text-[9px] font-black text-blue-700 shrink-0">
+                        {{ currentLanguage === 'kh' ? 'កំពុងជ្រើសរើស' : 'Selected' }}
+                      </span>
+                    </div>
+                    <p class="mt-0.5 truncate text-[11px] text-slate-500">
+                      {{ currentLanguage === 'kh' ? selectedStation.addressKh : selectedStation.address }}
                     </p>
-                    <span class="rounded bg-blue-100 px-1.5 py-0.5 text-[9px] font-black text-blue-700 shrink-0">
-                      {{ currentLanguage === 'kh' ? 'កំពុងជ្រើសរើស' : 'Selected' }}
-                    </span>
                   </div>
-                  <p class="mt-0.5 truncate text-[11px] text-slate-500">
-                    {{ currentLanguage === 'kh' ? selectedStation.addressKh : selectedStation.address }}
-                  </p>
                 </div>
               </div>
-            </div>
 
-            <!-- Bottom Floating Action Bar -->
-            <div class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2">
-              <a
-                :href="mapDirectionsUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-4 py-2.5 text-xs font-black text-white shadow-lg transition duration-150 active:scale-98"
-              >
-                <MapPin class="h-4 w-4" />
-                <span>{{ currentLanguage === 'kh' ? 'ទទួលទិសដៅលើ Google Maps' : 'Get Directions (Google Maps)' }}</span>
-              </a>
+              <!-- Bottom Floating Action Bar -->
+              <div class="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex items-center justify-between gap-2">
+                <a
+                  :href="mapDirectionsUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-black text-white shadow-lg transition duration-150 active:scale-95"
+                >
+                  <MapPin class="h-3.5 w-3.5 shrink-0 text-amber-300" />
+                  <span>{{ currentLanguage === 'kh' ? 'មើលលើ Google Maps' : 'Open in Google Maps' }}</span>
+                </a>
 
-              <div class="flex items-center gap-2">
-                <span class="hidden sm:inline-block rounded-xl bg-white/95 backdrop-blur px-3 py-2 text-[11px] font-bold text-slate-700 border border-slate-200 shadow-sm font-mono">
+                <span class="hidden sm:inline-block rounded-xl bg-white/95 backdrop-blur px-3 py-1.5 text-[11px] font-bold text-slate-700 border border-slate-200 shadow-sm font-mono">
                   GPS: {{ selectedStation.coordinates.lat.toFixed(4) }}, {{ selectedStation.coordinates.lng.toFixed(4) }}
                 </span>
               </div>
             </div>
+
+            <!-- Mobile-Only App Style Horizontal Snap Carousel (< lg) -->
+            <div class="lg:hidden mt-3 min-w-0 font-khmer">
+              <div class="flex items-center justify-between mb-2 px-0.5">
+                <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <span>{{ currentLanguage === 'kh' ? 'ស្ថានីយសង្គ្រោះបន្ទាន់ផ្ទៀងផ្ទាត់' : 'Verified Emergency Stations' }}</span>
+                  <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 font-mono">
+                    {{ filteredMapStations.length }}
+                  </span>
+                </span>
+                <span class="text-[11px] text-slate-400">
+                  👉 {{ currentLanguage === 'kh' ? 'អូសឆ្វេង-ស្តាំ' : 'Swipe cards' }}
+                </span>
+              </div>
+
+              <!-- Horizontal Snap Track -->
+              <div class="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pb-2 scrollbar-none -mx-1 px-1">
+                <div
+                  v-for="station in filteredMapStations"
+                  :key="station.id"
+                  role="button"
+                  tabindex="0"
+                  :class="[
+                    'w-[84vw] max-w-[320px] shrink-0 snap-center rounded-2xl border p-3 text-left transition-all duration-150 cursor-pointer shadow-sm relative flex flex-col justify-between bg-white outline-hidden',
+                    selectedStation.id === station.id
+                      ? 'border-2 border-[#0D47A1] ring-2 ring-[#0D47A1]/15'
+                      : 'border-slate-200/90 hover:border-blue-200'
+                  ]"
+                  @click="selectStation(station)"
+                  @keydown.enter="selectStation(station)"
+                >
+                  <!-- Card Top: Icon, Title, Distance -->
+                  <div class="flex items-start gap-2.5">
+                    <div :class="['flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-xs ring-1 mt-0.5', getStationIconBg(station.type)]">
+                      <component :is="getStationIcon(station.type)" class="h-5 w-5" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center justify-between gap-1.5">
+                        <h4 class="truncate text-xs font-black text-slate-900">
+                          {{ currentLanguage === 'kh' ? station.nameKh : station.name }}
+                        </h4>
+                        <span class="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700 shrink-0 font-mono">
+                          {{ station.distance }}
+                        </span>
+                      </div>
+                      <p class="mt-0.5 truncate text-[11px] text-slate-500">
+                        {{ currentLanguage === 'kh' ? station.addressKh : station.address }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Card Bottom: Meta info + 1-Tap Call and Route Buttons -->
+                  <div class="mt-2.5 flex items-center justify-between gap-2 border-t border-slate-100 pt-2 font-khmer">
+                    <div class="flex items-center gap-1.5 min-w-0">
+                      <span class="font-mono font-black text-[10px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 shrink-0">
+                        {{ station.phone }}
+                      </span>
+                      <span class="text-[10px] text-emerald-700 font-bold truncate">
+                        {{ currentLanguage === 'kh' ? station.openHoursKh : station.openHours }}
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 shrink-0">
+                      <a
+                        :href="'tel:' + station.phone"
+                        @click.stop
+                        class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-[11px] flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
+                      >
+                        <PhoneCall class="w-3 h-3" />
+                        <span>{{ currentLanguage === 'kh' ? 'ហៅ' : 'Call' }}</span>
+                      </a>
+                      <a
+                        :href="mapDirectionsUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        @click.stop
+                        class="p-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 active:scale-95 text-blue-600 shadow-2xs transition-colors cursor-pointer"
+                        title="Google Maps"
+                      >
+                        <Navigation class="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Stations List Panel -->
-          <div class="bg-slate-50/70 p-3 lg:ml-4 lg:rounded-2xl flex flex-col justify-between h-[280px] sm:h-[310px] lg:h-[325px] mt-3 lg:mt-0">
+          <!-- Desktop-Only Stations List Panel (hidden on mobile < lg, side-by-side on desktop) -->
+          <div class="hidden lg:flex bg-slate-50/70 p-3.5 rounded-2xl flex-col justify-between h-[400px]">
             <div class="min-h-0 flex-1 flex flex-col">
               <div class="flex items-center justify-between px-2 py-1 text-[11px] font-black uppercase tracking-wider text-slate-400">
                 <span>{{ currentLanguage === 'kh' ? 'ស្ថានីយសង្គ្រោះបន្ទាន់ផ្ទៀងផ្ទាត់' : 'Verified Emergency Stations' }}</span>
@@ -1470,7 +1564,7 @@ const firstAidProtocols = [
                   :key="station.id"
                   type="button"
                   :class="[
-                    'group relative flex w-full items-center gap-2.5 rounded-xl border p-2 text-left transition-all duration-200 cursor-pointer',
+                    'group relative flex w-full items-center gap-2.5 rounded-xl border p-2.5 text-left transition-all duration-200 cursor-pointer',
                     selectedStation.id === station.id
                       ? 'border-[#0D47A1] bg-white shadow-md ring-2 ring-[#0D47A1]/20'
                       : 'border-slate-200/70 bg-white/80 hover:border-blue-200 hover:bg-white hover:shadow-xs'
@@ -1484,8 +1578,8 @@ const firstAidProtocols = [
                   />
 
                   <!-- Icon Badge -->
-                  <div :class="['flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-xs ring-1 transition-transform group-hover:scale-105', getStationIconBg(station.type)]">
-                    <component :is="getStationIcon(station.type)" class="h-5 w-5" />
+                  <div :class="['flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-xs ring-1 transition-transform group-hover:scale-105', getStationIconBg(station.type)]">
+                    <component :is="getStationIcon(station.type)" class="h-4.5 w-4.5" />
                   </div>
 
                   <!-- Details -->
@@ -1494,7 +1588,7 @@ const firstAidProtocols = [
                       <h4 class="truncate text-xs font-black text-slate-900">
                         {{ currentLanguage === 'kh' ? station.nameKh : station.name }}
                       </h4>
-                      <span class="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700 shrink-0">
+                      <span class="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700 shrink-0 font-mono">
                         {{ station.distance }}
                       </span>
                     </div>
@@ -1519,7 +1613,7 @@ const firstAidProtocols = [
             <div class="pt-3 border-t border-slate-200/80 flex items-center gap-2">
               <a
                 :href="'tel:' + selectedStation.phone"
-                class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
+                class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 transition-colors shadow-xs cursor-pointer"
               >
                 <PhoneCall class="w-3.5 h-3.5" />
                 <span>{{ currentLanguage === 'kh' ? 'ហៅទូរស័ព្ទទៅកាន់ស្ថានីយនេះ' : 'Call Station Now' }}</span>
@@ -1529,7 +1623,7 @@ const firstAidProtocols = [
                 :href="mapDirectionsUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-blue-600 transition-colors shadow-2xs flex items-center justify-center"
+                class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-blue-600 transition-colors shadow-2xs flex items-center justify-center cursor-pointer"
                 title="Google Maps"
               >
                 <Navigation class="w-4 h-4" />
