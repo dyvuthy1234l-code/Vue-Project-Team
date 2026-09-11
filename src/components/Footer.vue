@@ -79,10 +79,10 @@ function scrollToTop() {
       <!-- ============================================================
            MIDDLE GRID: 5 COLUMNS
       ============================================================= -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-7 pb-8 border-b border-slate-800/80">
+      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-7 pb-8 border-b border-slate-800/80">
 
         <!-- Column 1: Brand, Civic Mission & Independence Badge -->
-        <div class="lg:col-span-2 space-y-4">
+        <div class="col-span-2 md:col-span-2 lg:col-span-2 space-y-4">
           <router-link to="/" class="inline-flex items-center gap-3 group focus:outline-none">
             <img
               src="/logo.png"

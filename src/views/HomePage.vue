@@ -591,12 +591,16 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3.5 p-4 sm:grid-cols-4 lg:grid-cols-7">
+        <div class="grid grid-cols-2 gap-3 p-3.5 sm:p-4 sm:grid-cols-4 lg:grid-cols-7">
           <router-link
-            v-for="item in quickAccess"
+            v-for="(item, idx) in quickAccess"
             :key="item.label"
             :to="item.route"
-            :class="['stagger-card group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-hover dark:border-slate-700 dark:bg-slate-800', item.hover]"
+            :class="[
+              'stagger-card group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-hover dark:border-slate-700 dark:bg-slate-800',
+              item.hover,
+              idx === 6 ? 'col-span-2 sm:col-span-1' : ''
+            ]"
           >
             <span :class="['absolute inset-x-0 top-0 h-1 z-10 opacity-0 transition-opacity group-hover:opacity-100', item.accent]" />
             
@@ -1239,7 +1243,7 @@ onUnmounted(() => {
           <!-- Step 3 -->
           <router-link
             to="/locations"
-            class="stagger-card group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-gradient-to-b from-violet-50/40 via-white to-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
+            class="stagger-card col-span-2 md:col-span-1 group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-gradient-to-b from-violet-50/40 via-white to-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-800"
           >
             <div>
               <div class="flex items-center justify-between">

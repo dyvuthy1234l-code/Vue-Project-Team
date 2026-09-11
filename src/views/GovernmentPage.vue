@@ -519,25 +519,25 @@ function triggerDownload(formId: string) {
           <span class="text-xs text-slate-500 font-semibold hidden sm:inline">ចុចលើប្រភេទសេវាដើម្បីត្រងបញ្ជី</span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div
             v-for="pillar in lifeEventPillars"
             :key="pillar.id"
             @click="selectPillar(pillar)"
-            class="p-5 rounded-2xl bg-white border border-slate-200/90 hover:border-blue-300 shadow-xs hover:shadow-md transition-all cursor-pointer group space-y-3"
+            class="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/90 hover:border-blue-300 shadow-xs hover:shadow-md transition-all cursor-pointer group space-y-2 sm:space-y-3"
           >
-            <div :class="['w-10 h-10 rounded-xl flex items-center justify-center border font-bold shadow-2xs group-hover:scale-105 transition-transform', pillar.color]">
-              <component :is="pillar.icon" class="w-5 h-5" />
+            <div :class="['w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border font-bold shadow-2xs group-hover:scale-105 transition-transform', pillar.color]">
+              <component :is="pillar.icon" class="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h3 class="font-black text-sm text-slate-900 group-hover:text-[#0D47A1] transition-colors">
+              <h3 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-[#0D47A1] transition-colors">
                 {{ currentLanguage === 'kh' ? pillar.nameKh : pillar.name }}
               </h3>
-              <p class="text-xs text-slate-500 leading-relaxed mt-1">
+              <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
                 {{ pillar.descKh }}
               </p>
             </div>
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-black text-[#0D47A1]">
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] sm:text-xs font-black text-[#0D47A1]">
               <span>មើលសេវា</span>
               <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -548,25 +548,25 @@ function triggerDownload(formId: string) {
       <!-- ============================================================
            4. STANDARD 4-STEP CITIZEN PROCEDURE (នីតិវិធី ៤ ជំហាន)
            ============================================================ -->
-      <section class="rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
+      <section class="rounded-3xl bg-white border border-slate-200/90 p-5 sm:p-8 shadow-xs space-y-5 sm:space-y-6">
         <div class="space-y-1">
           <span class="text-xs font-black text-[#0D47A1] uppercase tracking-wider">នីតិវិធីស្តង់ដារជាតិ</span>
           <h2 class="text-lg sm:text-xl font-black text-slate-900">៤ ជំហានងាយៗក្នុងការស្នើសុំសេវារដ្ឋបាលសាធារណៈ</h2>
           <p class="text-xs text-slate-500">ការណែនាំពីរបៀបរៀបចំ និងដាក់ពាក្យស្នើសុំប្រកបដោយទំនុកចិត្ត និងតម្លាភាព</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div
             v-for="st in standardSteps"
             :key="st.step"
-            class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 relative"
+            class="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 sm:space-y-2 relative"
           >
             <div class="flex items-center justify-between">
-              <span class="text-2xl font-mono font-black text-[#0D47A1]/80">{{ st.step }}</span>
-              <span class="w-6 h-6 rounded-full bg-blue-100 text-[#0D47A1] flex items-center justify-center font-bold text-xs">✓</span>
+              <span class="text-xl sm:text-2xl font-mono font-black text-[#0D47A1]/80">{{ st.step }}</span>
+              <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-100 text-[#0D47A1] flex items-center justify-center font-bold text-[10px] sm:text-xs">✓</span>
             </div>
-            <h4 class="font-black text-sm text-slate-900">{{ st.titleKh }}</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">{{ st.descKh }}</p>
+            <h4 class="font-black text-xs sm:text-sm text-slate-900">{{ st.titleKh }}</h4>
+            <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 sm:line-clamp-none">{{ st.descKh }}</p>
           </div>
         </div>
       </section>
@@ -622,16 +622,16 @@ function triggerDownload(formId: string) {
         </div>
 
         <!-- 4-Column Professional Clean Grid -->
-        <div v-if="filteredServices.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div v-if="filteredServices.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           <router-link
             v-for="service in filteredServices"
             :key="service.id"
             :to="'/government/' + service.id"
-            class="group bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
+            class="group bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
           >
             <div>
               <!-- Document Photo Banner -->
-              <div class="relative h-44 w-full overflow-hidden bg-slate-100">
+              <div class="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-100">
                 <img
                   :src="service.image"
                   :alt="localized(service.title, service.titleKh)"
@@ -643,55 +643,55 @@ function triggerDownload(formId: string) {
                 <!-- Badge -->
                 <span
                   v-if="popularItemsMeta[service.id]"
-                  :class="['absolute top-3 right-3 px-2.5 py-1 rounded-lg text-[10px] font-black border uppercase shadow-xs backdrop-blur-md', popularItemsMeta[service.id].badgeColor]"
+                  :class="['absolute top-2 right-2 sm:top-3 sm:right-3 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[9px] sm:text-[10px] font-black border uppercase shadow-xs backdrop-blur-md', popularItemsMeta[service.id].badgeColor]"
                 >
                   {{ currentLanguage === 'kh' ? popularItemsMeta[service.id].badgeKh : popularItemsMeta[service.id].badge }}
                 </span>
 
                 <!-- Category -->
-                <span class="absolute bottom-3 left-3 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-900/85 text-white backdrop-blur-md">
+                <span class="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-slate-900/85 text-white backdrop-blur-md">
                   {{ service.category }}
                 </span>
               </div>
 
               <!-- Content -->
-              <div class="p-5 space-y-2.5">
-                <span class="text-[10px] font-bold text-blue-700 block truncate">
+              <div class="p-3 sm:p-5 space-y-1.5 sm:space-y-2.5">
+                <span class="text-[9px] sm:text-[10px] font-bold text-blue-700 block truncate">
                   {{ popularItemsMeta[service.id]?.ministryKh || 'រាជរដ្ឋាភិបាលកម្ពុជា' }}
                 </span>
 
-                <h3 class="text-base font-black text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-1">
+                <h3 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-2 min-h-[2rem]">
                   {{ service.titleKh }}
                 </h3>
 
-                <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">
+                <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 hidden sm:block">
                   {{ localized(service.description, service.descriptionKh) }}
                 </p>
 
                 <!-- Micro Checklist Tag -->
-                <div class="pt-2 flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
-                  <FileText class="w-3.5 h-3.5 text-[#0D47A1]" />
-                  <span>តម្រូវ {{ popularItemsMeta[service.id]?.docsCount || 4 }} ឯកសារចម្បង</span>
+                <div class="pt-1.5 sm:pt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-600 font-bold">
+                  <FileText class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] shrink-0" />
+                  <span class="truncate">តម្រូវ {{ popularItemsMeta[service.id]?.docsCount || 4 }} ឯកសារ</span>
                 </div>
               </div>
             </div>
 
             <!-- Footer Details -->
-            <div class="px-5 pb-5 pt-0">
-              <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
-                <span class="flex items-center gap-1 text-slate-500">
-                  <Clock class="w-3.5 h-3.5 text-[#0D47A1]" />
-                  <span>{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.daysKh || localized(service.processingTime, service.processingTimeKh)) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
+            <div class="px-3 pb-3 sm:px-5 sm:pb-5 pt-0">
+              <div class="pt-2 sm:pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] sm:text-xs font-bold gap-1">
+                <span class="flex items-center gap-1 text-slate-500 truncate">
+                  <Clock class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] shrink-0" />
+                  <span class="truncate">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.daysKh || localized(service.processingTime, service.processingTimeKh)) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
                 </span>
 
-                <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-black border border-emerald-200">
+                <span class="w-fit px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-50 text-emerald-700 font-black border border-emerald-200 text-[10px] sm:text-xs">
                   {{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.priceKh || localized(service.fee, service.feeKh)) : (popularItemsMeta[service.id]?.price || service.fee) }}
                 </span>
               </div>
 
-              <div class="mt-3 flex items-center justify-between text-xs font-bold text-[#0D47A1] group-hover:translate-x-1 transition-transform">
-                <span>{{ currentLanguage === 'kh' ? 'មើលមគ្គុទ្ទេសក៍ & ឯកសារ' : 'View Guide' }}</span>
-                <ArrowRight class="w-3.5 h-3.5" />
+              <div class="mt-2 sm:mt-3 flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#0D47A1] group-hover:translate-x-1 transition-transform">
+                <span>{{ currentLanguage === 'kh' ? 'មើលមគ្គុទ្ទេសក៍' : 'View Guide' }}</span>
+                <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
             </div>
           </router-link>

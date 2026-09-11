@@ -19,7 +19,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-[#F8FAFC] text-[#0F172A] antialiased selection:bg-blue-100 selection:text-[#0D47A1] transition-colors duration-200">
+  <div class="min-h-screen flex flex-col bg-[#F8FAFC] text-[#0F172A] antialiased selection:bg-blue-100 selection:text-[#0D47A1] transition-colors duration-200 overflow-x-hidden w-full">
     <Navbar v-if="!isAdminRoute" />
     <main class="flex-1 flex flex-col">
       <router-view v-slot="{ Component }">

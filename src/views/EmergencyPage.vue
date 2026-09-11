@@ -976,22 +976,22 @@ const firstAidProtocols = [
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div
             v-for="item in emergencySteps"
             :key="item.step"
-            class="p-4 rounded-2xl border border-slate-200/90 bg-slate-50 space-y-2.5"
+            class="p-3 sm:p-4 rounded-2xl border border-slate-200/90 bg-slate-50 space-y-1.5 sm:space-y-2.5"
           >
             <div class="flex items-center justify-between">
-              <div :class="['w-9 h-9 rounded-xl flex items-center justify-center shadow-xs', item.bg, item.color]">
-                <component :is="item.icon" class="w-4.5 h-4.5" />
+              <div :class="['w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-xs', item.bg, item.color]">
+                <component :is="item.icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </div>
-              <span class="text-xs font-black text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+              <span class="text-[10px] sm:text-xs font-black text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200">
                 {{ item.step }}
               </span>
             </div>
-            <h3 class="font-black text-sm text-slate-900">{{ item.title }}</h3>
-            <p class="text-xs text-slate-500 leading-relaxed">{{ item.desc }}</p>
+            <h3 class="font-black text-xs sm:text-sm text-slate-900">{{ item.title }}</h3>
+            <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 sm:line-clamp-none">{{ item.desc }}</p>
           </div>
         </div>
       </section>
@@ -1035,11 +1035,11 @@ const firstAidProtocols = [
           <span class="text-xs font-bold text-slate-400">{{ filteredContacts.length }} លេខទូរស័ព្ទ</span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <div
             v-for="contact in filteredContacts"
             :key="contact.id"
-            class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3"
+            class="bg-white rounded-2xl border border-slate-200/90 p-3 sm:p-4 shadow-2xs hover:shadow-card-hover transition-all flex flex-col justify-between space-y-2 sm:space-y-3"
           >
             <div class="space-y-2">
               <div class="flex items-center justify-between">
