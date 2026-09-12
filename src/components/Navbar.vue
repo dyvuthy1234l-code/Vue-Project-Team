@@ -23,7 +23,8 @@ import {
   ShieldAlert,
   Flame,
   Ambulance,
-  PhoneCall
+  PhoneCall,
+  House
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useAuth } from '@/composables/useAuth'
@@ -628,10 +629,10 @@ onUnmounted(() => {
     >
       <aside
         v-if="isMobileDrawerOpen"
-        class="fixed top-0 right-0 bottom-0 w-84 max-w-[88vw] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-50 flex flex-col justify-between overflow-y-auto lg:hidden"
+        class="fixed top-0 right-0 bottom-0 w-[90vw] sm:w-96 max-w-[400px] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-50 flex flex-col justify-between overflow-y-auto lg:hidden"
       >
         <!-- Drawer Header -->
-        <div class="p-5 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
+        <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
           <router-link to="/" @click="isMobileDrawerOpen = false" class="flex items-center gap-2">
             <img
               src="/logo.png"
@@ -642,7 +643,7 @@ onUnmounted(() => {
 
           <button
             @click="isMobileDrawerOpen = false"
-            class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
             aria-label="Close menu"
             type="button"
           >
@@ -651,17 +652,17 @@ onUnmounted(() => {
         </div>
 
         <!-- Drawer Body Navigation Links -->
-        <div class="p-4 flex-1 space-y-1 overflow-y-auto font-khmer">
+        <div class="p-3.5 sm:p-4 flex-1 space-y-1.5 overflow-y-auto font-khmer">
           <!-- Location selector & Language for mobile -->
           <div class="pb-3 mb-2 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <LocationSelector class="w-full" />
             </div>
             <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/90 dark:border-slate-700 shrink-0">
               <button
                 @click="setLanguage('kh')"
                 :class="[
-                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all font-khmer',
+                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all font-khmer cursor-pointer',
                   currentLanguage === 'kh'
                     ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -673,7 +674,7 @@ onUnmounted(() => {
               <button
                 @click="setLanguage('en')"
                 :class="[
-                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all',
+                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer',
                   currentLanguage === 'en'
                     ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -685,17 +686,52 @@ onUnmounted(() => {
             </div>
           </div>
 
+          <!-- Quick SOS Emergency Dials for Mobile -->
+          <div class="mb-2.5 p-2 rounded-xl bg-red-50/70 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 flex items-center justify-between gap-1 text-[11px] font-bold">
+            <span class="text-red-700 dark:text-red-300 font-black flex items-center gap-1 pl-1 shrink-0">
+              <ShieldAlert class="w-3.5 h-3.5 text-red-600 animate-pulse" />
+              <span>{{ currentLanguage === 'kh' ? 'លេខបន្ទាន់:' : 'SOS:' }}</span>
+            </span>
+            <div class="flex items-center gap-1.5 shrink-0 font-mono text-[11px]">
+              <a href="tel:117" class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 text-red-600 border border-red-200/80 shadow-2xs hover:bg-red-50 font-black flex items-center gap-1">
+                <span>117</span>
+              </a>
+              <a href="tel:118" class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 text-amber-600 border border-amber-200/80 shadow-2xs hover:bg-amber-50 font-black flex items-center gap-1">
+                <span>118</span>
+              </a>
+              <a href="tel:119" class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 text-emerald-600 border border-emerald-200/80 shadow-2xs hover:bg-emerald-50 font-black flex items-center gap-1">
+                <span>119</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Mobile In-Drawer Search Button -->
+          <button
+            @click="isSearchModalOpen = true; isMobileDrawerOpen = false"
+            class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 border border-slate-200/90 dark:border-slate-700 mb-2 transition-all cursor-pointer group"
+            type="button"
+          >
+            <span class="flex items-center gap-2">
+              <Search class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 group-hover:scale-105 transition-transform" />
+              <span class="text-slate-400 dark:text-slate-400 text-xs font-normal">
+                {{ currentLanguage === 'kh' ? 'ស្វែងរកសេវា ឬព័ត៌មាន...' : 'Search services or news...' }}
+              </span>
+            </span>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white dark:bg-slate-700 text-slate-400 border border-slate-200 dark:border-slate-600 font-mono">⌘K</span>
+          </button>
+
           <!-- Home -->
           <button
             @click="navigateTo('/')"
             :class="[
-              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer',
               isActive('/')
-                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 font-black ring-1 ring-blue-500/20'
                 : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
             ]"
             type="button"
           >
+            <House class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
             <span>{{ t('nav.home') }}</span>
           </button>
 
@@ -704,43 +740,80 @@ onUnmounted(() => {
             <button
               @click="isMobileServicesExpanded = !isMobileServicesExpanded"
               :class="[
-                'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+                'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer',
                 isServicesActive()
-                  ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                  ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 font-black ring-1 ring-blue-500/20'
                   : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
               ]"
               type="button"
             >
-              <span>{{ t('nav.services') }}</span>
-              <ChevronDown
-                class="w-4 h-4 transition-transform text-slate-400"
-                :class="isMobileServicesExpanded ? 'rotate-180' : ''"
-              />
+              <div class="flex items-center gap-3 min-w-0">
+                <Building2 class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
+                <span class="truncate">{{ t('nav.services') }}</span>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100/80 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300">
+                  {{ currentLanguage === 'kh' ? '៨ សេវា' : '8 Services' }}
+                </span>
+                <ChevronDown
+                  class="w-4 h-4 transition-transform duration-200 text-slate-400"
+                  :class="isMobileServicesExpanded ? 'rotate-180 text-[#0D47A1]' : ''"
+                />
+              </div>
             </button>
 
-            <!-- Submenu -->
-            <div v-if="isMobileServicesExpanded" class="pl-3 pr-1 py-1 space-y-1 border-l-2 border-slate-100 dark:border-slate-700 ml-3 my-1">
+            <!-- Submenu (Modern App Card Well) -->
+            <div
+              v-if="isMobileServicesExpanded"
+              class="rounded-2xl bg-slate-50/80 dark:bg-slate-900/40 p-2 space-y-1.5 border border-slate-100 dark:border-slate-800 my-1 animate-fadeIn"
+            >
               <button
                 v-for="service in serviceLinks"
                 :key="service.path"
                 @click="navigateTo(service.path)"
                 :class="[
-                  'w-full flex items-center gap-3 p-2 rounded-xl text-xs font-semibold text-left transition-colors cursor-pointer',
+                  'w-full flex items-center gap-2.5 sm:gap-3 p-2 sm:p-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer active:scale-[0.98]',
                   isActive(service.path)
-                    ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 ring-1 ring-blue-200 dark:ring-blue-900'
-                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-[#0D47A1] dark:hover:text-blue-400'
+                    ? 'bg-white dark:bg-slate-800 shadow-sm border-2 border-[#0D47A1] dark:border-blue-500 ring-2 ring-[#0D47A1]/10'
+                    : 'bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 hover:border-blue-200 hover:bg-white'
                 ]"
                 type="button"
               >
-                <div class="relative w-9 h-9 rounded-lg overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
-                  <img :src="service.image" :alt="service.label" class="w-full h-full object-cover" loading="lazy" />
-                  <div :class="['absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded flex items-center justify-center border border-white dark:border-slate-800', service.bg]">
-                    <component :is="service.icon" :class="['w-2.5 h-2.5', service.color]" />
+                <!-- Thumbnail Image with Icon Badge -->
+                <div class="relative w-11 h-11 rounded-xl overflow-hidden shrink-0 border border-slate-200/90 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 shadow-2xs">
+                  <img
+                    :src="service.image"
+                    :alt="service.label"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div :class="['absolute -bottom-1 -right-1 w-5 h-5 rounded-md flex items-center justify-center border-1.5 border-white dark:border-slate-800 shadow-2xs', service.bg]">
+                    <component :is="service.icon" :class="['w-3 h-3', service.color]" />
                   </div>
                 </div>
+
+                <!-- Labels -->
                 <div class="flex-1 min-w-0 font-khmer">
-                  <p class="font-bold text-xs truncate">{{ currentLanguage === 'kh' ? service.labelKh : service.label }}</p>
-                  <p class="text-[10px] text-slate-400 truncate">{{ currentLanguage === 'kh' ? service.label : service.labelKh }}</p>
+                  <p :class="['text-xs font-black truncate leading-snug', isActive(service.path) ? 'text-[#0D47A1] dark:text-blue-300' : 'text-slate-800 dark:text-white']">
+                    {{ currentLanguage === 'kh' ? service.labelKh : service.label }}
+                  </p>
+                  <p class="text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                    {{ currentLanguage === 'kh' ? service.label : service.labelKh }}
+                  </p>
+                </div>
+
+                <!-- Right Indicator: Active Pill or Chevron -->
+                <div class="shrink-0 flex items-center">
+                  <span
+                    v-if="isActive(service.path)"
+                    class="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300 text-[10px] font-black border border-blue-200/60"
+                  >
+                    {{ currentLanguage === 'kh' ? 'សកម្ម' : 'Active' }}
+                  </span>
+                  <ChevronRight
+                    v-else
+                    class="w-4 h-4 text-slate-300 dark:text-slate-500"
+                  />
                 </div>
               </button>
             </div>
@@ -750,13 +823,14 @@ onUnmounted(() => {
           <button
             @click="navigateTo('/government')"
             :class="[
-              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer',
               isActive('/government')
-                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 font-black ring-1 ring-blue-500/20'
                 : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
             ]"
             type="button"
           >
+            <Landmark class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
             <span>{{ t('nav.government') }}</span>
           </button>
 
@@ -764,13 +838,14 @@ onUnmounted(() => {
           <button
             @click="navigateTo('/jobs')"
             :class="[
-              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer',
               isActive('/jobs')
-                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 font-black ring-1 ring-blue-500/20'
                 : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
             ]"
             type="button"
           >
+            <Briefcase class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
             <span>{{ t('nav.jobs') }}</span>
           </button>
 
@@ -778,13 +853,14 @@ onUnmounted(() => {
           <button
             @click="navigateTo('/news')"
             :class="[
-              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer',
               isActive('/news')
-                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 font-black ring-1 ring-blue-500/20'
                 : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
             ]"
             type="button"
           >
+            <Newspaper class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
             <span>{{ t('nav.news') }}</span>
           </button>
 
@@ -792,18 +868,18 @@ onUnmounted(() => {
           <button
             @click="navigateTo('/saved-services')"
             :class="[
-              'w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors',
+              'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer',
               isActive('/saved-services')
-                ? 'bg-blue-50 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-400'
+                ? 'bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 font-black ring-1 ring-blue-500/20'
                 : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
             ]"
             type="button"
           >
-            <span class="flex items-center gap-2">
-              <Bookmark class="w-4 h-4 text-[#0D47A1]" />
+            <span class="flex items-center gap-3">
+              <Bookmark class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 shrink-0" />
               <span>{{ currentLanguage === 'kh' ? 'សេវាដែលបានរក្សាទុក' : 'Saved Services' }}</span>
             </span>
-            <span v-if="savedCount > 0" class="px-2 py-0.5 text-xs font-bold rounded-full bg-blue-100 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300">
+            <span v-if="savedCount > 0" class="px-2 py-0.5 text-xs font-bold rounded-full bg-blue-100 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300 font-mono">
               {{ savedCount }}
             </span>
           </button>
