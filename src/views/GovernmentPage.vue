@@ -113,111 +113,152 @@ const quickPills = [
 const popularItemsMeta: Record<string, {
   ministry: string
   ministryKh: string
+  shortMinistryKh?: string
+  shortMinistry?: string
   badge: string
   badgeKh: string
   badgeColor: string
   price: string
   priceKh: string
+  shortPriceKh?: string
   days: string
   daysKh: string
+  shortDaysKh?: string
   docsCount: number
 }> = {
   'national-id-card': {
     ministry: 'Ministry of Interior (GDI)',
     ministryKh: 'ក្រសួងមហាផ្ទៃ • អគ្គនាយកដ្ឋានអត្តសញ្ញាណកម្ម',
-    badge: 'Most Essential',
-    badgeKh: 'សេវាចាំបាច់បំផុត',
+    shortMinistryKh: 'ក្រសួងមហាផ្ទៃ',
+    shortMinistry: 'Ministry of Interior',
+    badge: 'Essential',
+    badgeKh: 'ចាំបាច់បំផុត',
     badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     price: 'Free',
     priceKh: 'ឥតគិតថ្លៃ',
+    shortPriceKh: 'ឥតគិតថ្លៃ',
     days: '15-30 days',
     daysKh: '១៥-៣០ ថ្ងៃធ្វើការ',
+    shortDaysKh: '១៥-៣០ ថ្ងៃ',
     docsCount: 4
   },
   'passport': {
     ministry: 'General Department of Identification',
     ministryKh: 'ក្រសួងមហាផ្ទៃ • អគ្គនាយកដ្ឋានអត្តសញ្ញាណកម្ម',
+    shortMinistryKh: 'ក្រសួងមហាផ្ទៃ',
+    shortMinistry: 'Ministry of Interior',
     badge: 'Official',
     badgeKh: 'លិខិតអន្តរជាតិ',
     badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
     price: '$50 (Standard)',
     priceKh: '$៥០ (ស្តង់ដារ)',
+    shortPriceKh: '$៥០',
     days: '7-21 days',
     daysKh: '៧-២១ ថ្ងៃធ្វើការ',
+    shortDaysKh: '៧-២១ ថ្ងៃ',
     docsCount: 5
   },
   'drivers-license': {
     ministry: 'Ministry of Public Works and Transport',
     ministryKh: 'ក្រសួងសាធារណការ និងដឹកជញ្ជូន',
+    shortMinistryKh: 'ក្រសួងសាធារណការ',
+    shortMinistry: 'MPWT',
     badge: 'Popular',
     badgeKh: 'ពេញនិយម',
     badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     price: '$20 / 80,000 Riel',
     priceKh: '$២០ (៨០,០០០ រៀល)',
+    shortPriceKh: '$២០',
     days: '7-14 days',
     daysKh: '៧-១៤ ថ្ងៃធ្វើការ',
+    shortDaysKh: '៧-១៤ ថ្ងៃ',
     docsCount: 4
   },
   'birth-certificate': {
     ministry: 'Sangkat / Khan Civil Status Office',
     ministryKh: 'រដ្ឋបាលសង្កាត់/ឃុំ • ការិយាល័យអត្រានុកូលដ្ឋាន',
+    shortMinistryKh: 'រដ្ឋបាលសង្កាត់/ឃុំ',
+    shortMinistry: 'Sangkat / Khan',
     badge: 'Free of Charge',
-    badgeKh: 'ឥតគិតថ្លៃ ៣០ថ្ងៃដំបូង',
+    badgeKh: 'ឥតគិតថ្លៃ',
     badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     price: 'Free',
     priceKh: 'ឥតគិតថ្លៃ',
+    shortPriceKh: 'ឥតគិតថ្លៃ',
     days: '3-14 days',
     daysKh: '៣-១៤ ថ្ងៃធ្វើការ',
+    shortDaysKh: '៣-១៤ ថ្ងៃ',
     docsCount: 3
   },
   'family-book': {
     ministry: 'National Police Commissariat',
     ministryKh: 'ប៉ុស្តិ៍នគរបាលរដ្ឋបាលឃុំ/សង្កាត់',
+    shortMinistryKh: 'ប៉ុស្តិ៍នគរបាល',
+    shortMinistry: 'National Police',
     badge: 'Civic Record',
     badgeKh: 'កម្រងគ្រួសារ',
     badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     price: '$5',
     priceKh: '$៥ (២០,០០០ រៀល)',
+    shortPriceKh: '$៥',
     days: '3-7 days',
     daysKh: '៣-៧ ថ្ងៃធ្វើការ',
+    shortDaysKh: '៣-៧ ថ្ងៃ',
     docsCount: 3
   },
   'marriage-certificate': {
     ministry: 'Sangkat / Commune Hall',
     ministryKh: 'សាលាសង្កាត់/ឃុំ នៃទីលំនៅអចិន្ត្រៃយ៍',
+    shortMinistryKh: 'សាលាសង្កាត់/ឃុំ',
+    shortMinistry: 'Commune Hall',
     badge: 'Civil Status',
     badgeKh: 'អត្រានុកូលដ្ឋាន',
     badgeColor: 'bg-rose-50 text-rose-700 border-rose-200',
     price: '$5',
     priceKh: '$៥ (២០,០០០ រៀល)',
+    shortPriceKh: '$៥',
     days: '3-7 days',
     daysKh: '៣-៧ ថ្ងៃធ្វើការ',
+    shortDaysKh: '៣-៧ ថ្ងៃ',
     docsCount: 4
   },
   'business-registration': {
     ministry: 'Ministry of Commerce & CamDX Portal',
     ministryKh: 'ក្រសួងពាណិជ្ជកម្ម • ប្រព័ន្ធ CamDX',
+    shortMinistryKh: 'ក្រសួងពាណិជ្ជកម្ម',
+    shortMinistry: 'Commerce (CamDX)',
     badge: 'Single Portal',
-    badgeKh: 'តាមប្រព័ន្ធ CamDX',
+    badgeKh: 'តាម CamDX',
     badgeColor: 'bg-teal-50 text-teal-700 border-teal-200',
     price: '$80',
     priceKh: '$៨០ (ផ្លូវការ)',
+    shortPriceKh: '$៨០',
     days: '7-15 days',
     daysKh: '៧-១៥ ថ្ងៃធ្វើការ',
+    shortDaysKh: '៧-១៥ ថ្ងៃ',
     docsCount: 5
   },
   'land-title': {
     ministry: 'Ministry of Land Management (MLMUPC)',
     ministryKh: 'ក្រសួងរៀបចំដែនដី នគរូបនីយកម្ម និងសំណង់',
+    shortMinistryKh: 'ក្រសួងរៀបចំដែនដី',
+    shortMinistry: 'MLMUPC',
     badge: 'Property',
-    badgeKh: 'កម្មសិទ្ធិអចលនទ្រព្យ',
+    badgeKh: 'កម្មសិទ្ធិដីធ្លី',
     badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
     price: '$100 (Official fee)',
     priceKh: '$១០០ (កម្រៃរដ្ឋ)',
+    shortPriceKh: '$១០០',
     days: '15-30 days',
     daysKh: '១៥-៣០ ថ្ងៃធ្វើការ',
+    shortDaysKh: '១៥-៣០ ថ្ងៃ',
     docsCount: 6
   }
+}
+
+const getCategoryKh = (category: string) => {
+  const pill = quickPills.find(p => p.category === category)
+  return pill ? pill.labelKh : category
 }
 
 // 4 Standard Citizen Steps
@@ -636,47 +677,47 @@ function triggerDownload(formId: string) {
            5. OFFICIAL SERVICES DIRECTORY (GRID OF CIVIC SERVICES)
            ============================================================ -->
       <div id="services-grid-section" class="space-y-6 scroll-mt-24">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3 border-b border-slate-200">
           <div>
             <div class="flex items-center gap-2">
               <h2 class="text-xl sm:text-2xl font-black text-slate-900">
                 {{ currentLanguage === 'kh' ? 'សេវារដ្ឋបាលសាធារណៈផ្លូវការ' : 'Official Public Services' }}
               </h2>
-              <span class="px-3 py-0.5 rounded-full bg-blue-50 text-[#0D47A1] font-black text-xs border border-blue-200">
-                {{ filteredServices.length }} សេវា
+              <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0D47A1] font-black text-xs border border-blue-200">
+                {{ filteredServices.length }} {{ currentLanguage === 'kh' ? 'សេវា' : 'Services' }}
               </span>
             </div>
-            <p class="text-xs text-slate-500 mt-0.5">
-              ជ្រើសរើសសេវាដើម្បីពិនិត្យមើលលក្ខខណ្ឌតម្រូវ នីតិវិធីមួយជំហានម្តងៗ និងទាញយកទម្រង់ពាក្យ
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+              {{ currentLanguage === 'kh' ? 'ជ្រើសរើសសេវាដើម្បីពិនិត្យមើលលក្ខខណ្ឌតម្រូវ នីតិវិធីមួយជំហានម្តងៗ និងទាញយកទម្រង់ពាក្យ' : 'Select a service to review requirements, step-by-step procedures, and download forms.' }}
             </p>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
             <button
               v-if="searchQuery || activeCategory !== 'All'"
               @click="resetFilters"
-              class="px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              class="px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs shrink-0"
               type="button"
             >
               <RotateCcw class="w-3.5 h-3.5" />
-              <span>កំណត់ឡើងវិញ</span>
+              <span>{{ currentLanguage === 'kh' ? 'កំណត់ឡើងវិញ' : 'Reset' }}</span>
             </button>
 
             <button
               @click="isCompareOpen = true"
-              class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
               type="button"
             >
               <GitCompare class="w-3.5 h-3.5 text-[#0D47A1]" />
-              <span>ប្រៀបធៀបសេវា</span>
+              <span>{{ currentLanguage === 'kh' ? 'ប្រៀបធៀបសេវា' : 'Compare' }}</span>
             </button>
 
             <button
               @click="resetFilters"
-              class="px-4 py-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-black transition-all cursor-pointer flex items-center gap-1 shadow-xs"
+              class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 shadow-xs"
               type="button"
             >
-              <span>មើលទាំងអស់</span>
+              <span>{{ currentLanguage === 'kh' ? 'មើលទាំងអស់' : 'View All' }}</span>
               <ArrowRight class="w-3.5 h-3.5" />
             </button>
           </div>
@@ -699,30 +740,31 @@ function triggerDownload(formId: string) {
                   @error="($event.target as HTMLImageElement).src = '/images/pillars/government.jpg'"
                   class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                 />
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent pointer-events-none" />
 
                 <!-- Badge -->
                 <span
                   v-if="popularItemsMeta[service.id]"
-                  :class="['absolute top-2 right-2 sm:top-3 sm:right-3 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[9px] sm:text-[10px] font-black border uppercase shadow-xs backdrop-blur-md', popularItemsMeta[service.id].badgeColor]"
+                  :class="['absolute top-2 right-2 sm:top-3 sm:right-3 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[9px] sm:text-[10px] font-black border uppercase shadow-xs backdrop-blur-md whitespace-nowrap', popularItemsMeta[service.id].badgeColor]"
                 >
                   {{ currentLanguage === 'kh' ? popularItemsMeta[service.id].badgeKh : popularItemsMeta[service.id].badge }}
                 </span>
 
                 <!-- Category -->
-                <span class="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-slate-900/85 text-white backdrop-blur-md">
-                  {{ service.category }}
+                <span class="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-md">
+                  {{ currentLanguage === 'kh' ? getCategoryKh(service.category) : service.category }}
                 </span>
               </div>
 
               <!-- Content -->
               <div class="p-3 sm:p-5 space-y-1.5 sm:space-y-2.5">
-                <span class="text-[9px] sm:text-[10px] font-bold text-blue-700 block truncate">
-                  {{ popularItemsMeta[service.id]?.ministryKh || 'រាជរដ្ឋាភិបាលកម្ពុជា' }}
+                <span class="text-[9px] sm:text-[10px] font-bold text-[#0D47A1] block truncate tracking-tight">
+                  <span class="sm:hidden">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.shortMinistryKh || popularItemsMeta[service.id]?.ministryKh || 'រាជរដ្ឋាភិបាល') : (popularItemsMeta[service.id]?.shortMinistry || popularItemsMeta[service.id]?.ministry || 'Government') }}</span>
+                  <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.ministryKh || 'រាជរដ្ឋាភិបាលកម្ពុជា') : (popularItemsMeta[service.id]?.ministry || 'Royal Government of Cambodia') }}</span>
                 </span>
 
-                <h3 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-2 min-h-[2rem]">
-                  {{ service.titleKh }}
+                <h3 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-2 min-h-[2.4rem] sm:min-h-[3rem]">
+                  {{ localized(service.title, service.titleKh) }}
                 </h3>
 
                 <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 hidden sm:block">
@@ -730,29 +772,33 @@ function triggerDownload(formId: string) {
                 </p>
 
                 <!-- Micro Checklist Tag -->
-                <div class="pt-1.5 sm:pt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-600 font-bold">
+                <div class="pt-1 sm:pt-1.5 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-600 font-bold">
                   <FileText class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] shrink-0" />
-                  <span class="truncate">តម្រូវ {{ popularItemsMeta[service.id]?.docsCount || 4 }} ឯកសារ</span>
+                  <span class="truncate">
+                    {{ currentLanguage === 'kh' ? `តម្រូវ ${popularItemsMeta[service.id]?.docsCount || 4} ឯកសារ` : `${popularItemsMeta[service.id]?.docsCount || 4} required docs` }}
+                  </span>
                 </div>
               </div>
             </div>
 
             <!-- Footer Details -->
             <div class="px-3 pb-3 sm:px-5 sm:pb-5 pt-0">
-              <div class="pt-2 sm:pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] sm:text-xs font-bold gap-1">
-                <span class="flex items-center gap-1 text-slate-500 truncate">
+              <div class="pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs font-bold gap-1">
+                <span class="flex items-center gap-1 text-slate-500 truncate min-w-0">
                   <Clock class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] shrink-0" />
-                  <span class="truncate">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.daysKh || localized(service.processingTime, service.processingTimeKh)) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
+                  <span class="truncate sm:hidden">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.shortDaysKh || popularItemsMeta[service.id]?.daysKh) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
+                  <span class="truncate hidden sm:inline">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.daysKh || localized(service.processingTime, service.processingTimeKh)) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
                 </span>
 
-                <span class="w-fit px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-50 text-emerald-700 font-black border border-emerald-200 text-[10px] sm:text-xs">
-                  {{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.priceKh || localized(service.fee, service.feeKh)) : (popularItemsMeta[service.id]?.price || service.fee) }}
+                <span class="shrink-0 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-50 text-emerald-700 font-black border border-emerald-200 text-[10px] sm:text-xs whitespace-nowrap">
+                  <span class="sm:hidden">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.shortPriceKh || popularItemsMeta[service.id]?.priceKh) : (popularItemsMeta[service.id]?.price || service.fee) }}</span>
+                  <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.priceKh || localized(service.fee, service.feeKh)) : (popularItemsMeta[service.id]?.price || service.fee) }}</span>
                 </span>
               </div>
 
-              <div class="mt-2 sm:mt-3 flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#0D47A1] group-hover:translate-x-1 transition-transform">
+              <div class="mt-2 sm:mt-3 py-1 sm:py-1.5 px-2 bg-slate-50 group-hover:bg-[#0D47A1] rounded-xl transition-all duration-200 flex items-center justify-between text-[10px] sm:text-xs font-bold text-slate-700 group-hover:text-white">
                 <span>{{ currentLanguage === 'kh' ? 'មើលមគ្គុទ្ទេសក៍' : 'View Guide' }}</span>
-                <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </router-link>
