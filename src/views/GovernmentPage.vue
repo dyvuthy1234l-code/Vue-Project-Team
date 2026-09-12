@@ -50,11 +50,11 @@ const lifeEventPillars = [
     id: 'civil-id',
     name: 'Civil Status & ID',
     nameKh: 'អត្តសញ្ញាណ និងអត្រានុកូលដ្ឋាន',
-    badgeKh: '៤ សេវាស្នូល',
-    descKh: 'អត្តសញ្ញាណប័ណ្ណ, សំបុត្រកំណើត, សៀវភៅគ្រួសារ, សំបុត្រអាពាហ៍ពិពាហ៍',
-    items: ['អត្តសញ្ញាណប័ណ្ណ', 'សំបុត្រកំណើត', 'សៀវភៅគ្រួសារ', 'អាពាហ៍ពិពាហ៍'],
+    badgeKh: '៥ សេវាស្នូល',
+    descKh: 'អត្តសញ្ញាណប័ណ្ណ, លិខិតឆ្លងដែន, សំបុត្រកំណើត, សៀវភៅគ្រួសារ',
+    items: ['អត្តសញ្ញាណប័ណ្ណ', 'លិខិតឆ្លងដែន', 'សំបុត្រកំណើត', 'សៀវភៅគ្រួសារ'],
     icon: BadgeCheck,
-    categories: ['ID Card', 'Birth Certificate', 'Family Book', 'Marriage Certificate'],
+    categories: ['ID Card', 'Passport', 'Birth Certificate', 'Family Book', 'Marriage Certificate'],
     gradient: 'from-blue-600 to-[#0D47A1]',
     tagBg: 'bg-blue-50 text-[#0D47A1]'
   },
@@ -113,145 +113,109 @@ const quickPills = [
 const popularItemsMeta: Record<string, {
   ministry: string
   ministryKh: string
-  shortMinistryKh?: string
-  shortMinistry?: string
   badge: string
   badgeKh: string
   badgeColor: string
   price: string
   priceKh: string
-  shortPriceKh?: string
   days: string
   daysKh: string
-  shortDaysKh?: string
   docsCount: number
 }> = {
   'national-id-card': {
     ministry: 'Ministry of Interior (GDI)',
     ministryKh: 'ក្រសួងមហាផ្ទៃ • អគ្គនាយកដ្ឋានអត្តសញ្ញាណកម្ម',
-    shortMinistryKh: 'ក្រសួងមហាផ្ទៃ',
-    shortMinistry: 'Ministry of Interior',
-    badge: 'Essential',
-    badgeKh: 'ចាំបាច់បំផុត',
+    badge: 'Most Essential',
+    badgeKh: 'សេវាចាំបាច់បំផុត',
     badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     price: 'Free',
     priceKh: 'ឥតគិតថ្លៃ',
-    shortPriceKh: 'ឥតគិតថ្លៃ',
     days: '15-30 days',
     daysKh: '១៥-៣០ ថ្ងៃធ្វើការ',
-    shortDaysKh: '១៥-៣០ ថ្ងៃ',
     docsCount: 4
   },
   'passport': {
     ministry: 'General Department of Identification',
     ministryKh: 'ក្រសួងមហាផ្ទៃ • អគ្គនាយកដ្ឋានអត្តសញ្ញាណកម្ម',
-    shortMinistryKh: 'ក្រសួងមហាផ្ទៃ',
-    shortMinistry: 'Ministry of Interior',
     badge: 'Official',
     badgeKh: 'លិខិតអន្តរជាតិ',
     badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
     price: '$50 (Standard)',
     priceKh: '$៥០ (ស្តង់ដារ)',
-    shortPriceKh: '$៥០',
     days: '7-21 days',
     daysKh: '៧-២១ ថ្ងៃធ្វើការ',
-    shortDaysKh: '៧-២១ ថ្ងៃ',
     docsCount: 5
   },
   'drivers-license': {
     ministry: 'Ministry of Public Works and Transport',
     ministryKh: 'ក្រសួងសាធារណការ និងដឹកជញ្ជូន',
-    shortMinistryKh: 'ក្រសួងសាធារណការ',
-    shortMinistry: 'MPWT',
     badge: 'Popular',
     badgeKh: 'ពេញនិយម',
     badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     price: '$20 / 80,000 Riel',
     priceKh: '$២០ (៨០,០០០ រៀល)',
-    shortPriceKh: '$២០',
     days: '7-14 days',
     daysKh: '៧-១៤ ថ្ងៃធ្វើការ',
-    shortDaysKh: '៧-១៤ ថ្ងៃ',
     docsCount: 4
   },
   'birth-certificate': {
     ministry: 'Sangkat / Khan Civil Status Office',
     ministryKh: 'រដ្ឋបាលសង្កាត់/ឃុំ • ការិយាល័យអត្រានុកូលដ្ឋាន',
-    shortMinistryKh: 'រដ្ឋបាលសង្កាត់/ឃុំ',
-    shortMinistry: 'Sangkat / Khan',
     badge: 'Free of Charge',
-    badgeKh: 'ឥតគិតថ្លៃ',
+    badgeKh: 'ឥតគិតថ្លៃ ៣០ថ្ងៃដំបូង',
     badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     price: 'Free',
     priceKh: 'ឥតគិតថ្លៃ',
-    shortPriceKh: 'ឥតគិតថ្លៃ',
     days: '3-14 days',
     daysKh: '៣-១៤ ថ្ងៃធ្វើការ',
-    shortDaysKh: '៣-១៤ ថ្ងៃ',
     docsCount: 3
   },
   'family-book': {
     ministry: 'National Police Commissariat',
     ministryKh: 'ប៉ុស្តិ៍នគរបាលរដ្ឋបាលឃុំ/សង្កាត់',
-    shortMinistryKh: 'ប៉ុស្តិ៍នគរបាល',
-    shortMinistry: 'National Police',
     badge: 'Civic Record',
     badgeKh: 'កម្រងគ្រួសារ',
     badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     price: '$5',
     priceKh: '$៥ (២០,០០០ រៀល)',
-    shortPriceKh: '$៥',
     days: '3-7 days',
     daysKh: '៣-៧ ថ្ងៃធ្វើការ',
-    shortDaysKh: '៣-៧ ថ្ងៃ',
     docsCount: 3
   },
   'marriage-certificate': {
     ministry: 'Sangkat / Commune Hall',
     ministryKh: 'សាលាសង្កាត់/ឃុំ នៃទីលំនៅអចិន្ត្រៃយ៍',
-    shortMinistryKh: 'សាលាសង្កាត់/ឃុំ',
-    shortMinistry: 'Commune Hall',
     badge: 'Civil Status',
     badgeKh: 'អត្រានុកូលដ្ឋាន',
     badgeColor: 'bg-rose-50 text-rose-700 border-rose-200',
     price: '$5',
     priceKh: '$៥ (២០,០០០ រៀល)',
-    shortPriceKh: '$៥',
     days: '3-7 days',
     daysKh: '៣-៧ ថ្ងៃធ្វើការ',
-    shortDaysKh: '៣-៧ ថ្ងៃ',
     docsCount: 4
   },
   'business-registration': {
     ministry: 'Ministry of Commerce & CamDX Portal',
     ministryKh: 'ក្រសួងពាណិជ្ជកម្ម • ប្រព័ន្ធ CamDX',
-    shortMinistryKh: 'ក្រសួងពាណិជ្ជកម្ម',
-    shortMinistry: 'Commerce (CamDX)',
     badge: 'Single Portal',
-    badgeKh: 'តាម CamDX',
+    badgeKh: 'តាមប្រព័ន្ធ CamDX',
     badgeColor: 'bg-teal-50 text-teal-700 border-teal-200',
     price: '$80',
     priceKh: '$៨០ (ផ្លូវការ)',
-    shortPriceKh: '$៨០',
     days: '7-15 days',
     daysKh: '៧-១៥ ថ្ងៃធ្វើការ',
-    shortDaysKh: '៧-១៥ ថ្ងៃ',
     docsCount: 5
   },
   'land-title': {
     ministry: 'Ministry of Land Management (MLMUPC)',
     ministryKh: 'ក្រសួងរៀបចំដែនដី នគរូបនីយកម្ម និងសំណង់',
-    shortMinistryKh: 'ក្រសួងរៀបចំដែនដី',
-    shortMinistry: 'MLMUPC',
     badge: 'Property',
-    badgeKh: 'កម្មសិទ្ធិដីធ្លី',
+    badgeKh: 'កម្មសិទ្ធិអចលនទ្រព្យ',
     badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
     price: '$100 (Official fee)',
     priceKh: '$១០០ (កម្រៃរដ្ឋ)',
-    shortPriceKh: '$១០០',
     days: '15-30 days',
     daysKh: '១៥-៣០ ថ្ងៃធ្វើការ',
-    shortDaysKh: '១៥-៣០ ថ្ងៃ',
     docsCount: 6
   }
 }
@@ -694,7 +658,7 @@ function triggerDownload(formId: string) {
 
           <div class="flex items-center gap-2 w-full sm:w-auto">
             <button
-              v-if="searchQuery || activeCategory !== 'All'"
+              v-if="searchQuery || activeCategory !== 'All' || activePillarId !== null"
               @click="resetFilters"
               class="px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs shrink-0"
               type="button"
@@ -721,6 +685,29 @@ function triggerDownload(formId: string) {
               <ArrowRight class="w-3.5 h-3.5" />
             </button>
           </div>
+        </div>
+
+        <!-- Active Filter Indicator Banner -->
+        <div
+          v-if="activePillarId || activeCategory !== 'All' || searchQuery"
+          class="p-3 rounded-2xl bg-blue-50 border border-blue-200 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-[#0D47A1]"
+        >
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span>{{ currentLanguage === 'kh' ? `កំពុងបង្ហាញ ${filteredServices.length} ក្នុងចំណោម ៨ សេវា` : `Showing ${filteredServices.length} of 8 services` }}</span>
+            <span v-if="activePillarId" class="px-2 py-0.5 rounded-lg bg-white border border-blue-200 text-slate-700 text-[11px]">
+              {{ lifeEventPillars.find(p => p.id === activePillarId)?.nameKh }}
+            </span>
+            <span v-if="activeCategory !== 'All'" class="px-2 py-0.5 rounded-lg bg-white border border-blue-200 text-slate-700 text-[11px]">
+              {{ getCategoryKh(activeCategory) }}
+            </span>
+          </div>
+          <button
+            @click="resetFilters"
+            class="px-3 py-1 rounded-lg bg-[#0D47A1] text-white hover:bg-blue-800 text-xs font-black transition-colors cursor-pointer"
+            type="button"
+          >
+            {{ currentLanguage === 'kh' ? '🔄 បង្ហាញសេវាទាំងអស់ (៨)' : '🔄 Show All (8)' }}
+          </button>
         </div>
 
         <!-- 4-Column Professional Clean Grid -->
@@ -758,16 +745,15 @@ function triggerDownload(formId: string) {
 
               <!-- Content -->
               <div class="p-3 sm:p-5 space-y-1.5 sm:space-y-2.5">
-                <span class="text-[9px] sm:text-[10px] font-bold text-[#0D47A1] block truncate tracking-tight">
-                  <span class="sm:hidden">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.shortMinistryKh || popularItemsMeta[service.id]?.ministryKh || 'រាជរដ្ឋាភិបាល') : (popularItemsMeta[service.id]?.shortMinistry || popularItemsMeta[service.id]?.ministry || 'Government') }}</span>
-                  <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.ministryKh || 'រាជរដ្ឋាភិបាលកម្ពុជា') : (popularItemsMeta[service.id]?.ministry || 'Royal Government of Cambodia') }}</span>
+                <span class="text-[9px] sm:text-[10px] font-bold text-blue-700 block truncate">
+                  {{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.ministryKh || 'រាជរដ្ឋាភិបាលកម្ពុជា') : (popularItemsMeta[service.id]?.ministry || 'Royal Government of Cambodia') }}
                 </span>
 
-                <h3 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-2 min-h-[2.4rem] sm:min-h-[3rem]">
+                <h3 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]">
                   {{ localized(service.title, service.titleKh) }}
                 </h3>
 
-                <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 hidden sm:block">
+                <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2">
                   {{ localized(service.description, service.descriptionKh) }}
                 </p>
 
@@ -783,22 +769,20 @@ function triggerDownload(formId: string) {
 
             <!-- Footer Details -->
             <div class="px-3 pb-3 sm:px-5 sm:pb-5 pt-0">
-              <div class="pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs font-bold gap-1">
+              <div class="pt-2 sm:pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] sm:text-xs font-bold gap-1">
                 <span class="flex items-center gap-1 text-slate-500 truncate min-w-0">
                   <Clock class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] shrink-0" />
-                  <span class="truncate sm:hidden">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.shortDaysKh || popularItemsMeta[service.id]?.daysKh) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
-                  <span class="truncate hidden sm:inline">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.daysKh || localized(service.processingTime, service.processingTimeKh)) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
+                  <span class="truncate">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.daysKh || localized(service.processingTime, service.processingTimeKh)) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
                 </span>
 
-                <span class="shrink-0 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-50 text-emerald-700 font-black border border-emerald-200 text-[10px] sm:text-xs whitespace-nowrap">
-                  <span class="sm:hidden">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.shortPriceKh || popularItemsMeta[service.id]?.priceKh) : (popularItemsMeta[service.id]?.price || service.fee) }}</span>
-                  <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.priceKh || localized(service.fee, service.feeKh)) : (popularItemsMeta[service.id]?.price || service.fee) }}</span>
+                <span class="w-fit px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-50 text-emerald-700 font-black border border-emerald-200 text-[10px] sm:text-xs">
+                  {{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.priceKh || localized(service.fee, service.feeKh)) : (popularItemsMeta[service.id]?.price || service.fee) }}
                 </span>
               </div>
 
-              <div class="mt-2 sm:mt-3 py-1 sm:py-1.5 px-2 bg-slate-50 group-hover:bg-[#0D47A1] rounded-xl transition-all duration-200 flex items-center justify-between text-[10px] sm:text-xs font-bold text-slate-700 group-hover:text-white">
+              <div class="mt-2 sm:mt-3 flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#0D47A1] group-hover:translate-x-1 transition-transform">
                 <span>{{ currentLanguage === 'kh' ? 'មើលមគ្គុទ្ទេសក៍' : 'View Guide' }}</span>
-                <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
             </div>
           </router-link>
