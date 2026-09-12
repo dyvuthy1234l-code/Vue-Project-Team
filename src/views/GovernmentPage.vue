@@ -39,47 +39,60 @@ usePageMeta({
 const allServices = getGovernmentServices()
 const searchQuery = ref('')
 const activeCategory = ref('All')
+const activePillarId = ref<string | null>(null)
 const isCompareOpen = ref(false)
 const expandedFaq = ref<number | null>(null)
 const downloadedFormId = ref<string | null>(null)
 
-// 4 Civic Life-Event Pillars
+// 4 Civic Life-Event Pillars (សសរស្ដម្ភសេវាពលរដ្ឋ ៤ វិស័យ)
 const lifeEventPillars = [
   {
     id: 'civil-id',
     name: 'Civil Status & ID',
-    nameKh: 'អត្តសញ្ញាណ & អត្រានុកូលដ្ឋាន',
-    descKh: 'អត្តសញ្ញាណប័ណ្ណ, សំបុត្រកំណើត, សៀវភៅគ្រួសារ, អាពាហ៍ពិពាហ៍',
+    nameKh: 'អត្តសញ្ញាណ និងអត្រានុកូលដ្ឋាន',
+    badgeKh: '៤ សេវាស្នូល',
+    descKh: 'អត្តសញ្ញាណប័ណ្ណ, សំបុត្រកំណើត, សៀវភៅគ្រួសារ, សំបុត្រអាពាហ៍ពិពាហ៍',
+    items: ['អត្តសញ្ញាណប័ណ្ណ', 'សំបុត្រកំណើត', 'សៀវភៅគ្រួសារ', 'អាពាហ៍ពិពាហ៍'],
     icon: BadgeCheck,
     categories: ['ID Card', 'Birth Certificate', 'Family Book', 'Marriage Certificate'],
-    color: 'bg-blue-50 text-blue-700 border-blue-200'
+    gradient: 'from-blue-600 to-[#0D47A1]',
+    tagBg: 'bg-blue-50 text-[#0D47A1]'
   },
   {
     id: 'transport',
     name: 'Transport & Driver',
-    nameKh: 'យានយន្ត & ប័ណ្ណបើកបរ',
-    descKh: 'ប័ណ្ណបើកបរជាតិ, ផ្ទេរកម្មសិទ្ធិយានយន្ត, ឆៀកត្រួតពិនិត្យលក្ខណៈបច្ចេកទេស',
+    nameKh: 'យានយន្ត និងប័ណ្ណបើកបរ',
+    badgeKh: 'សេវាពេញនិយម',
+    descKh: 'ប័ណ្ណបើកបរជាតិ, ផ្ទេរកម្មសិទ្ធិយានយន្ត, ត្រួតពិនិត្យបច្ចេកទេស (ឆៀក)',
+    items: ['ប័ណ្ណបើកបរជាតិ', 'ផ្ទេរកម្មសិទ្ធិយានយន្ត', 'ឆៀកបច្ចេកទេស'],
     icon: Car,
     categories: ["Driver's License"],
-    color: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+    gradient: 'from-emerald-500 to-teal-700',
+    tagBg: 'bg-emerald-50 text-emerald-700'
   },
   {
     id: 'business',
     name: 'Business & Trade',
-    nameKh: 'ពាណិជ្ជកម្ម & ចុះបញ្ជីអាជីវកម្ម',
-    descKh: 'ចុះបញ្ជីក្រុមហ៊ុនតាម CamDX, ប័ណ្ណប៉ាតង់, ពន្ធដារ និងអាជ្ញាប័ណ្ណ',
+    nameKh: 'ពាណិជ្ជកម្ម និងចុះបញ្ជីអាជីវកម្ម',
+    badgeKh: 'តាម CamDX',
+    descKh: 'ចុះបញ្ជីក្រុមហ៊ុនតាម CamDX, ប័ណ្ណប៉ាតង់, ពន្ធដារ និងអាជ្ញាប័ណ្ណអាជីវកម្ម',
+    items: ['ចុះបញ្ជីក្រុមហ៊ុន', 'ប័ណ្ណប៉ាតង់ពន្ធដារ', 'អាជ្ញាប័ណ្ណអាជីវកម្ម'],
     icon: Briefcase,
     categories: ['Business Registration'],
-    color: 'bg-teal-50 text-teal-700 border-teal-200'
+    gradient: 'from-indigo-500 to-indigo-800',
+    tagBg: 'bg-indigo-50 text-indigo-700'
   },
   {
     id: 'land',
     name: 'Land & Property',
-    nameKh: 'ដីធ្លី & អចលនទ្រព្យ',
-    descKh: 'ផ្ទេរកម្មសិទ្ធិប្លង់រឹង, លិខិតអនុញ្ញាតសាងសង់, បំបែកក្បាលដី',
+    nameKh: 'ដីធ្លី និងអចលនទ្រព្យ',
+    badgeKh: 'កម្មសិទ្ធិស្របច្បាប់',
+    descKh: 'ផ្ទេរកម្មសិទ្ធិប្លង់រឹង, លិខិតអនុញ្ញាតសាងសង់, បំបែកក្បាលដីធ្លី',
+    items: ['ផ្ទេរប្លង់រឹង', 'លិខិតអនុញ្ញាតសាងសង់', 'បំបែកក្បាលដី'],
     icon: Home,
     categories: ['Land Title'],
-    color: 'bg-amber-50 text-amber-800 border-amber-200'
+    gradient: 'from-amber-500 to-amber-700',
+    tagBg: 'bg-amber-50 text-amber-800'
   }
 ]
 
@@ -294,7 +307,12 @@ const governmentFaqs = [
 const filteredServices = computed(() => {
   let result = allServices
 
-  if (activeCategory.value !== 'All') {
+  if (activePillarId.value) {
+    const p = lifeEventPillars.find(item => item.id === activePillarId.value)
+    if (p) {
+      result = result.filter(s => p.categories.includes(s.category))
+    }
+  } else if (activeCategory.value !== 'All') {
     result = result.filter(s => s.category === activeCategory.value)
   }
 
@@ -313,15 +331,18 @@ const filteredServices = computed(() => {
 })
 
 function selectPill(cat: string) {
+  activePillarId.value = null
   activeCategory.value = cat
   scrollToServices()
 }
 
 function selectPillar(pillar: typeof lifeEventPillars[0]) {
-  if (pillar.categories.length === 1) {
-    activeCategory.value = pillar.categories[0]
+  if (activePillarId.value === pillar.id) {
+    activePillarId.value = null
+    activeCategory.value = 'All'
   } else {
-    activeCategory.value = pillar.categories[0]
+    activePillarId.value = pillar.id
+    activeCategory.value = 'All'
   }
   scrollToServices()
 }
@@ -333,6 +354,7 @@ function handleSearch() {
 function resetFilters() {
   searchQuery.value = ''
   activeCategory.value = 'All'
+  activePillarId.value = null
 }
 
 function scrollToServices() {
@@ -509,38 +531,76 @@ function triggerDownload(formId: string) {
       </section>
 
       <!-- ============================================================
-           3. CITIZEN LIFE-EVENT PILLARS (៤ សសរស្តម្ភសេវាពលរដ្ឋ)
+           3. CITIZEN LIFE-EVENT PILLARS (៤ សសរស្ដម្ភសេវាពលរដ្ឋ)
            ============================================================ -->
-      <section class="space-y-4">
+      <section class="space-y-3 sm:space-y-4 font-khmer">
         <div class="flex items-center justify-between">
           <div>
-            <span class="text-xs font-black text-[#0D47A1] uppercase tracking-wider">ចំណាត់ថ្នាក់តាមតម្រូវការជីវិត</span>
-            <h2 class="text-lg sm:text-xl font-black text-slate-900">សសរស្តម្ភសេវារដ្ឋបាលសាធារណៈ ៤ ប្រភេទ</h2>
+            <span class="text-[11px] sm:text-xs font-black text-[#0D47A1] uppercase tracking-wider">
+              {{ currentLanguage === 'kh' ? 'វិស័យសេវាសាធារណៈស្នូល' : 'Core Public Service Pillars' }}
+            </span>
+            <h2 class="text-base sm:text-xl font-black text-slate-900 tracking-tight mt-0.5">
+              {{ currentLanguage === 'kh' ? 'សសរស្ដម្ភសេវារដ្ឋបាលសាធារណៈទាំង ៤ វិស័យ' : '4 Core Pillars of Public Civic Administration' }}
+            </h2>
           </div>
-          <span class="text-xs text-slate-500 font-semibold hidden sm:inline">ចុចលើប្រភេទសេវាដើម្បីត្រងបញ្ជី</span>
+          <span class="text-xs text-slate-500 font-semibold hidden sm:inline">
+            {{ currentLanguage === 'kh' ? 'ចុចលើវិស័យដើម្បីត្រងបញ្ជីសេវា' : 'Click pillar to filter services' }}
+          </span>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           <div
             v-for="pillar in lifeEventPillars"
             :key="pillar.id"
             @click="selectPillar(pillar)"
-            class="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/90 hover:border-blue-300 shadow-xs hover:shadow-md transition-all cursor-pointer group space-y-2 sm:space-y-3"
+            :class="[
+              'p-3 sm:p-5 rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between relative active:scale-[0.98]',
+              activePillarId === pillar.id
+                ? 'bg-white border-2 border-[#0D47A1] ring-2 ring-[#0D47A1]/15 shadow-md'
+                : 'bg-white border border-slate-200/90 hover:border-blue-300 shadow-xs hover:shadow-md'
+            ]"
           >
-            <div :class="['w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border font-bold shadow-2xs group-hover:scale-105 transition-transform', pillar.color]">
-              <component :is="pillar.icon" class="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
             <div>
-              <h3 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-[#0D47A1] transition-colors">
+              <!-- Top Row: Icon + Badge -->
+              <div class="flex items-center justify-between gap-1.5 mb-2 sm:mb-2.5">
+                <div :class="['w-8 h-8 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold text-white shadow-sm bg-gradient-to-br', pillar.gradient]">
+                  <component :is="pillar.icon" class="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+                <span
+                  v-if="activePillarId === pillar.id"
+                  class="px-1.5 py-0.5 rounded-md bg-[#0D47A1] text-white text-[9px] font-black shrink-0"
+                >
+                  {{ currentLanguage === 'kh' ? 'សកម្ម' : 'Active' }}
+                </span>
+                <span
+                  v-else
+                  :class="['px-1.5 py-0.5 rounded-md text-[9px] font-bold shrink-0 truncate max-w-[85px] sm:max-w-none', pillar.tagBg]"
+                >
+                  {{ currentLanguage === 'kh' ? pillar.badgeKh : pillar.name }}
+                </span>
+              </div>
+
+              <!-- Title -->
+              <h3 :class="['font-black text-xs sm:text-sm leading-snug', activePillarId === pillar.id ? 'text-[#0D47A1]' : 'text-slate-900']">
                 {{ currentLanguage === 'kh' ? pillar.nameKh : pillar.name }}
               </h3>
-              <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
-                {{ pillar.descKh }}
-              </p>
+
+              <!-- Clean items tags (no broken compound words across lines!) -->
+              <div class="mt-2 flex flex-wrap gap-1">
+                <span
+                  v-for="(item, i) in pillar.items"
+                  :key="i"
+                  class="inline-block px-1.5 py-0.5 rounded bg-slate-100/90 text-slate-600 text-[9px] sm:text-[10px] font-medium leading-tight shrink-0"
+                >
+                  {{ item }}
+                </span>
+              </div>
             </div>
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] sm:text-xs font-black text-[#0D47A1]">
-              <span>មើលសេវា</span>
-              <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+
+            <!-- Bottom Action -->
+            <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs font-black text-[#0D47A1]">
+              <span>{{ activePillarId === pillar.id ? (currentLanguage === 'kh' ? 'កំពុងមើល' : 'Viewing') : (currentLanguage === 'kh' ? 'មើលសេវា' : 'View Services') }}</span>
+              <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </div>
           </div>
         </div>
