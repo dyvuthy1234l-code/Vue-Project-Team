@@ -528,15 +528,15 @@ function resetDocChecklist() {
 
         <!-- VIEW 1: MODERN CARDS GRID -->
         <div v-if="viewMode === 'grid' && paginatedHospitals.length > 0" class="space-y-6">
-          <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div
               v-for="hospital in paginatedHospitals"
               :key="hospital.id"
-              class="group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
+              class="group bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 <!-- High-Resolution Cover Image Banner -->
-                <div class="relative h-32 sm:h-48 md:h-52 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+                <div class="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
                   <img
                     :src="hospital.image"
                     :alt="hospital.nameKh || hospital.name"
@@ -547,29 +547,29 @@ function resetDocChecklist() {
                   <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
 
                   <!-- Top-Left Rating & Reviews -->
-                  <div class="absolute top-2 left-2 sm:top-3 sm:left-3 inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-black bg-slate-900/85 text-amber-300 backdrop-blur-md shadow-xs border border-white/10">
-                    <span class="inline-flex items-center gap-0.5 sm:gap-1"><Star class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-400 fill-amber-400" /> {{ hospital.rating }}</span>
-                    <span class="text-[9px] sm:text-[10px] text-slate-300 hidden xs:inline">({{ hospital.reviews }})</span>
+                  <div class="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-black bg-slate-900/85 text-amber-300 backdrop-blur-md shadow-xs border border-white/10">
+                    <span class="inline-flex items-center gap-1"><Star class="w-3 h-3 text-amber-400 fill-amber-400" /> {{ hospital.rating }}</span>
+                    <span class="text-[10px] text-slate-300">({{ hospital.reviews }})</span>
                   </div>
 
                   <!-- Top-Right Badges: Ownership & NSSF in a clean row -->
-                  <div class="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1 sm:gap-1.5">
+                  <div class="absolute top-3 right-3 flex items-center gap-1.5">
                     <!-- Ownership Badge -->
                     <span
-                      class="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black border uppercase shadow-sm backdrop-blur-md"
+                      class="px-2.5 py-1 rounded-xl text-[10px] font-black border uppercase shadow-sm backdrop-blur-md"
                       :class="hospital.ownership === 'public'
                         ? 'bg-blue-600/90 text-white border-blue-400/50'
                         : 'bg-violet-600/90 text-white border-violet-400/50'"
                     >
-                      <span class="inline-flex items-center gap-1"><component :is="hospital.ownership === 'public' ? Building2 : HospitalIcon" class="w-2.5 h-2.5 sm:w-3 sm:h-3" /> <span class="hidden xs:inline">{{ hospital.ownership === 'public' ? (currentLanguage === 'kh' ? 'រដ្ឋ' : 'Public') : (currentLanguage === 'kh' ? 'ឯកជន' : 'Private') }}</span></span>
+                      <span class="inline-flex items-center gap-1"><component :is="hospital.ownership === 'public' ? Building2 : HospitalIcon" class="w-3 h-3" /> <span>{{ hospital.ownership === 'public' ? (currentLanguage === 'kh' ? 'រដ្ឋ' : 'Public') : (currentLanguage === 'kh' ? 'ឯកជន' : 'Private') }}</span></span>
                     </span>
 
                     <!-- NSSF Acceptance Badge -->
                     <span
                       v-if="hospital.acceptsNssf"
-                      class="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black bg-emerald-600/95 text-white border border-emerald-300/50 shadow-sm backdrop-blur-md flex items-center gap-0.5 sm:gap-1"
+                      class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600/95 text-white border border-emerald-300/50 shadow-sm backdrop-blur-md flex items-center gap-1"
                     >
-                      <ShieldCheck class="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      <ShieldCheck class="w-3 h-3" />
                       <span>{{ currentLanguage === 'kh' ? 'ប.ស.ស' : 'NSSF' }}</span>
                     </span>
                   </div>
@@ -577,68 +577,67 @@ function resetDocChecklist() {
                   <!-- Bottom-Right 24/7 Live Dot -->
                   <div
                     v-if="hospital.openingHours && (hospital.openingHours.includes('24') || hospital.openingHours === '24/7')"
-                    class="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-black bg-emerald-950/85 text-emerald-300 border border-emerald-500/40 backdrop-blur-md"
+                    class="absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-emerald-950/85 text-emerald-300 border border-emerald-500/40 backdrop-blur-md"
                   >
-                    <span class="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
+                    <span class="relative flex h-2 w-2">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-500"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
                     <span>24/7</span>
                   </div>
                 </div>
 
                 <!-- Card Content -->
-                <div class="p-2.5 sm:p-5 space-y-1.5 sm:space-y-3">
+                <div class="p-5 space-y-3">
                   <div>
-                    <h3 class="text-xs sm:text-base font-black text-[#0A2540] dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-1">
+                    <h3 class="text-base font-black text-[#0A2540] dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-1">
                       {{ hospital.nameKh || hospital.name }}
                     </h3>
-                    <p class="text-[10px] sm:text-xs text-slate-400 font-semibold mt-0.5 line-clamp-1">
+                    <p class="text-xs text-slate-400 font-semibold mt-0.5 line-clamp-1">
                       {{ hospital.name }}
                     </p>
                   </div>
 
                   <!-- Address & Location Pin -->
-                  <div class="flex items-start gap-1 text-[10px] sm:text-xs text-slate-600 dark:text-slate-300">
-                    <MapPin class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-500 shrink-0 mt-0.5" />
+                  <div class="flex items-start gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                    <MapPin class="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
                     <span class="line-clamp-1 font-medium">{{ hospital.addressKh || hospital.address }}</span>
                   </div>
 
                   <!-- Description -->
-                  <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 hidden sm:block">
+                  <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">
                     {{ localized(hospital.description, hospital.descriptionKh) }}
                   </p>
 
                   <!-- Department / Service Chips -->
-                  <div class="flex flex-wrap gap-1 pt-0.5 sm:pt-1">
+                  <div class="flex flex-wrap gap-1.5 pt-1">
                     <span
-                      v-for="svc in hospital.services.slice(0, 2)"
+                      v-for="svc in hospital.services.slice(0, 3)"
                       :key="svc"
-                      class="px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 border border-blue-100 dark:border-blue-900 truncate max-w-[80px] sm:max-w-none"
+                      class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 border border-blue-100 dark:border-blue-900"
                     >
                       {{ svc }}
                     </span>
                     <span
-                      v-if="hospital.services.length > 2"
-                      class="px-1 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold text-slate-400"
+                      v-if="hospital.services.length > 3"
+                      class="px-1.5 py-0.5 rounded-lg text-[10px] font-bold text-slate-400"
                     >
-                      +{{ hospital.services.length - 2 }}
+                      +{{ hospital.services.length - 3 }}
                     </span>
                   </div>
                 </div>
               </div>
 
               <!-- Card Action Bar -->
-              <div class="p-2.5 sm:p-5 pt-0">
-                <div class="pt-2 sm:pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-1 sm:gap-2">
+              <div class="p-5 pt-0">
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-2">
                   <!-- Direct Call Button -->
                   <a
                     :href="'tel:' + hospital.phone"
-                    class="p-2 sm:py-2 sm:px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 text-xs font-black border border-emerald-200 dark:border-emerald-800 transition-colors shrink-0 flex items-center justify-center"
-                    :title="currentLanguage === 'kh' ? 'ទូរស័ព្ទ' : 'Call'"
+                    class="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 text-xs font-black border border-emerald-200 dark:border-emerald-800 transition-colors"
                   >
                     <PhoneCall class="w-3.5 h-3.5" />
-                    <span class="hidden md:inline ml-1.5">{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទ' : 'Call' }}</span>
+                    <span>{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទ' : 'Call' }}</span>
                   </a>
 
                   <!-- Google Maps Directions -->
@@ -646,19 +645,19 @@ function resetDocChecklist() {
                     :href="getDirectionsUrl(hospital)"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors shrink-0 flex items-center justify-center"
+                    class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
                     :title="currentLanguage === 'kh' ? 'នាំផ្លូវតាម Google Maps' : 'Directions'"
                   >
-                    <Navigation class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
+                    <Navigation class="w-4 h-4 text-blue-600" />
                   </a>
 
                   <!-- View Details Link -->
                   <router-link
                     :to="'/health/' + hospital.id"
-                    class="flex-1 inline-flex items-center justify-center gap-1 py-2 px-2 sm:px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-xs font-black transition-colors shadow-2xs truncate"
+                    class="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black transition-colors shadow-2xs"
                   >
-                    <span class="truncate">{{ currentLanguage === 'kh' ? 'មើលលម្អិត' : 'Details' }}</span>
-                    <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 hidden sm:inline" />
+                    <span>{{ currentLanguage === 'kh' ? 'មើលលម្អិត' : 'Details' }}</span>
+                    <ArrowRight class="w-3.5 h-3.5" />
                   </router-link>
                 </div>
               </div>
