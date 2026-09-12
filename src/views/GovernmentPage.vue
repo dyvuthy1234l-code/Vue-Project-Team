@@ -357,46 +357,45 @@ function triggerDownload(formId: string) {
 </script>
 
 <template>
-  <div class="gov-portal bg-[#F8FAFC] min-h-screen pb-16 font-khmer text-slate-800 space-y-10">
+  <div class="gov-portal bg-[#F8FAFC] min-h-screen pb-16 font-khmer text-slate-800 space-y-6 sm:space-y-10">
 
     <!-- ============================================================
          1. OFFICIAL STATE MASTHEAD & VERIFICATION HEADER
          ============================================================ -->
     <div class="bg-white border-b border-slate-200 shadow-xs">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div class="flex items-center gap-2 font-bold">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0D47A1] border border-blue-200 font-black">
-            <span class="inline-flex items-center gap-1.5"><Landmark class="w-3.5 h-3.5 text-[#D4AF37]" /> <span>ព្រះរាជាណាចក្រកម្ពុជា</span></span>
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 text-xs">
+        <div class="flex items-center justify-between sm:justify-start gap-2 font-bold">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-[#0D47A1] border border-blue-200/80 font-black text-[11px] sm:text-xs shrink-0">
+            <Landmark class="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+            <span>ព្រះរាជាណាចក្រកម្ពុជា</span>
             <span class="text-slate-300">|</span>
-            <span class="text-[11px] font-normal">ជាតិ សាសនា ព្រះមហាក្សត្រ</span>
+            <span class="font-normal text-slate-600">ជាតិ សាសនា ព្រះមហាក្សត្រ</span>
           </span>
-          <span class="hidden md:inline text-slate-500 font-medium">
+          <span class="hidden md:inline text-slate-500 font-medium text-xs">
             ច្រកសេវារដ្ឋបាលសាធារណៈផ្លូវការ (OWSO Civic Portal)
           </span>
         </div>
 
-        <div class="flex items-center gap-3 font-bold text-slate-600">
-          <div class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 text-[11px]">
-            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-            <span>{{ currentLanguage === 'kh' ? 'ច្រកចេញចូលតែមួយ បើកបម្រើសេវាធម្មតា (ចន្ទ - សុក្រ)' : 'OWSO Open Mon - Fri' }}</span>
+        <div class="flex items-center justify-between sm:justify-end gap-2 font-bold text-slate-600">
+          <div class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 text-[10px] sm:text-[11px] truncate">
+            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+            <span class="truncate">{{ currentLanguage === 'kh' ? 'ច្រកចេញចូលតែមួយ បើកបម្រើសេវា (ចន្ទ - សុក្រ)' : 'OWSO Open Mon - Fri' }}</span>
           </div>
 
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#0D47A1] border border-blue-200 font-bold text-xs">
-            <MapPin class="w-3.5 h-3.5 text-emerald-600" />
+          <div class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-blue-50 text-[#0D47A1] border border-blue-200 font-bold text-[11px] sm:text-xs shrink-0">
+            <MapPin class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
             <span>{{ currentLanguage === 'kh' ? selectedProvince.nameKh : selectedProvince.name }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-
-
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6 sm:space-y-10">
 
       <!-- ============================================================
            2. ROYAL CIVIC HERO BANNER & CITIZEN SEARCH CONSOLE
            ============================================================ -->
-      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0A2540] via-[#0D3B66] to-[#0D47A1] text-white p-6 sm:p-10 shadow-xl border border-blue-900/40">
+      <section class="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0A2540] via-[#0D3B66] to-[#0D47A1] text-white p-4 sm:p-8 lg:p-10 shadow-xl border border-blue-900/40">
         <!-- Subtle Palace Silhouette Overlay -->
         <div class="absolute inset-0 z-0 opacity-15 mix-blend-luminosity pointer-events-none">
           <img
@@ -407,16 +406,16 @@ function triggerDownload(formId: string) {
         </div>
         <div class="absolute inset-0 bg-gradient-to-r from-[#0A2540] via-[#0A2540]/90 to-transparent pointer-events-none z-0" />
 
-        <div class="relative z-10 space-y-6 max-w-4xl">
+        <div class="relative z-10 space-y-4 sm:space-y-6 max-w-4xl">
           <!-- Official Portal Pill -->
-          <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1 text-xs font-black text-white border border-white/20 backdrop-blur-md">
-            <ShieldCheck class="w-4 h-4 text-emerald-400" />
-            <span>{{ currentLanguage === 'kh' ? 'ច្រកសេវារដ្ឋបាលសាធារណៈផ្លូវការ • ធានាតម្លៃ និងនីតិវិធីកំណត់ដោយរដ្ឋ ១០០%' : 'Official Public Citizen Administration Portal • 100% Regulated Fees' }}</span>
+          <div class="inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] sm:text-xs font-black text-white border border-white/20 backdrop-blur-md max-w-full">
+            <ShieldCheck class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
+            <span class="truncate">{{ currentLanguage === 'kh' ? 'ច្រកសេវារដ្ឋបាលសាធារណៈផ្លូវការ • ធានាតម្លៃរដ្ឋ ១០០%' : 'Official Citizen Portal • 100% Regulated Fees' }}</span>
           </div>
 
           <!-- Main Title -->
-          <div class="space-y-2">
-            <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-snug">
+          <div class="space-y-1.5 sm:space-y-2">
+            <h1 class="text-xl sm:text-3xl lg:text-5xl font-black text-white tracking-tight leading-snug">
               {{ currentLanguage === 'kh' ? 'មគ្គុទ្ទេសក៍សេវារដ្ឋបាលសាធារណៈ' : 'National Public Civic Services Guide' }}
             </h1>
             <p class="text-xs sm:text-sm text-blue-100/90 font-normal leading-relaxed max-w-2xl">
@@ -429,45 +428,48 @@ function triggerDownload(formId: string) {
 
           <!-- Citizen Search Console -->
           <form @submit.prevent="handleSearch" class="relative max-w-2xl">
-            <div class="relative flex items-center bg-white rounded-2xl shadow-xl p-1.5 focus-within:ring-4 focus-within:ring-blue-400/30 transition-all">
-              <Search class="w-5 h-5 text-slate-400 ml-3 shrink-0" />
+            <div class="relative flex items-center bg-white rounded-2xl shadow-xl p-1 sm:p-1.5 focus-within:ring-4 focus-within:ring-blue-400/30 transition-all">
+              <Search class="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 ml-2.5 sm:ml-3 shrink-0" />
               <input
                 v-model="searchQuery"
                 type="text"
                 @keyup.enter="handleSearch"
-                :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកសេវា (ឧ. លិខិតឆ្លងដែន, អត្តសញ្ញាណប័ណ្ណ, ប័ណ្ណបើកបរ, សំបុត្រកំណើត...)' : 'Search services (e.g. Passport, ID Card, Driver License...)'"
-                class="w-full px-3 py-2.5 text-xs sm:text-sm font-bold bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកសេវា ឬឯកសារ (លិខិតឆ្លងដែន, ប័ណ្ណបើកបរ...)' : 'Search services (e.g. Passport, License...)'"
+                class="w-full px-2 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-bold bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none"
               />
               <button
                 v-if="searchQuery"
                 @click="searchQuery = ''; scrollToServices()"
                 type="button"
-                class="px-2.5 py-1 text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer"
+                class="px-2 py-1 text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 ✕
               </button>
               <button
                 type="submit"
-                class="px-6 py-2.5 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white font-black text-xs transition-all shadow-md cursor-pointer shrink-0"
+                class="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] active:scale-95 text-white font-black text-xs transition-all shadow-md cursor-pointer shrink-0"
               >
                 {{ currentLanguage === 'kh' ? 'ស្វែងរក' : 'Search' }}
               </button>
             </div>
           </form>
 
-          <!-- Quick Service Filter Pills -->
-          <div class="space-y-2">
-            <span class="text-[11px] font-bold text-blue-200">សេវាដែលប្រជាពលរដ្ឋស្វែងរកញឹកញាប់បំផុត៖</span>
-            <div class="flex flex-wrap gap-1.5">
+          <!-- Quick Service Filter Pills (Smooth Horizontal Swipe on Mobile, Wrap on Desktop) -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-[11px] font-bold text-blue-200">
+              <span>{{ currentLanguage === 'kh' ? 'សេវាដែលប្រជាពលរដ្ឋស្វែងរកញឹកញាប់បំផុត៖' : 'Most Popular Citizen Services:' }}</span>
+              <span class="sm:hidden text-[10px] text-blue-300 font-normal">👉 អូសឆ្វេង-ស្តាំ</span>
+            </div>
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 sm:pb-0 scrollbar-none sm:flex-wrap -mx-1 px-1">
               <button
                 v-for="pill in quickPills"
                 :key="pill.id"
                 @click="selectPill(pill.category)"
                 type="button"
                 :class="[
-                  'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shadow-2xs',
+                  'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shadow-2xs shrink-0 whitespace-nowrap active:scale-95',
                   activeCategory === pill.category
-                    ? 'bg-white text-[#0D47A1] border-white font-black shadow-md scale-105'
+                    ? 'bg-white text-[#0D47A1] border-white font-black shadow-md scale-102'
                     : 'bg-white/10 hover:bg-white/20 text-white border-white/15 backdrop-blur-xs'
                 ]"
               >
@@ -476,33 +478,32 @@ function triggerDownload(formId: string) {
             </div>
           </div>
 
-          <!-- Strip Stats & Hotline 1222 -->
-          <div class="pt-4 border-t border-white/15 flex flex-wrap items-center justify-between gap-4 text-xs text-blue-100">
-            <div class="flex flex-wrap items-center gap-4 sm:gap-6 font-bold">
-              <span class="flex items-center gap-1.5">
-                <CheckCircle2 class="w-4 h-4 text-emerald-400" />
-                <span>៨ សេវាសាធារណៈស្នូល</span>
-              </span>
-              <span class="flex items-center gap-1.5">
-                <CheckCircle2 class="w-4 h-4 text-emerald-400" />
-                <span>២៥ រាជធានី-ខេត្ត</span>
-              </span>
-              <span class="flex items-center gap-1.5">
-                <CheckCircle2 class="w-4 h-4 text-emerald-400" />
-                <span>តម្លៃសេវាកំណត់ដោយរដ្ឋ</span>
-              </span>
+          <!-- Trust Checkmarks Grid -->
+          <div class="grid grid-cols-3 gap-1.5 py-2 px-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10 text-center font-bold text-[10px] sm:text-xs text-blue-100">
+            <div class="flex items-center justify-center gap-1">
+              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span class="truncate">៨ សេវាស្នូល</span>
             </div>
+            <div class="flex items-center justify-center gap-1 border-x border-white/15 px-1">
+              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span class="truncate">២៥ រាជធានី-ខេត្ត</span>
+            </div>
+            <div class="flex items-center justify-center gap-1">
+              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span class="truncate">តម្លៃរដ្ឋ ១០០%</span>
+            </div>
+          </div>
 
-            <div class="flex items-center gap-2 font-bold">
-              <span class="text-blue-200">ខ្សែទូរស័ព្ទជំនួយពលរដ្ឋ:</span>
-              <a
-                href="tel:1222"
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black transition-all shadow-xs"
-              >
-                <Headphones class="w-3.5 h-3.5" />
-                <span>1222 (Free Call)</span>
-              </a>
-            </div>
+          <!-- Hotline 1222 Strip -->
+          <div class="pt-2 border-t border-white/15 flex items-center justify-between gap-2 text-xs text-blue-100">
+            <span class="text-blue-200 text-[11px] font-medium truncate">{{ currentLanguage === 'kh' ? 'ខ្សែទូរស័ព្ទជំនួយពលរដ្ឋ៖' : 'Citizen Helpdesk:' }}</span>
+            <a
+              href="tel:1222"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black text-xs transition-all shadow-xs shrink-0 cursor-pointer"
+            >
+              <Headphones class="w-3.5 h-3.5" />
+              <span>1222 (Free Call)</span>
+            </a>
           </div>
         </div>
       </section>
