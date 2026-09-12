@@ -277,6 +277,7 @@ const nearbyEntries = computed<NearbyEntry[]>(() => {
     : ''
   const isProvMatch = (text: string) => {
     if (!text) return false
+    if (!selectedProvince.value || selectedProvince.value.id === 'all') return true
     const t = text.toLowerCase()
     return t.includes(provName) || (provNameKh && t.includes(provNameKh))
   }

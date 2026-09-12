@@ -22,7 +22,8 @@ import {
   FileSpreadsheet,
   GraduationCap,
   Briefcase,
-  CheckCircle
+  CheckCircle,
+  MapPin
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
 import { useLanguage } from '@/composables/useLanguage'
@@ -35,7 +36,7 @@ import type { Job } from '@/types'
 
 const { t, currentLanguage } = useLanguage()
 const { isJobSaved, toggleSaveJob } = useSavedJobs()
-const { selectedProvince } = useLocation()
+const { selectedProvince, setProvince } = useLocation()
 
 usePageMeta({
   title: 'ឱកាសការងារចុងក្រោយ — BongThom Style Careers Portal',
@@ -364,7 +365,8 @@ const hasActiveFilters = computed(() => {
     activeType.value !== 'All' ||
     activeQuickLink.value !== 'all' ||
     selectedLetter.value !== '' ||
-    selectedDateDay.value !== null
+    selectedDateDay.value !== null ||
+    (selectedProvince.value && selectedProvince.value.id !== 'all')
   )
 })
 
@@ -377,6 +379,7 @@ function resetFilters() {
   selectedLetter.value = ''
   selectedDateDay.value = null
   sortBy.value = 'newest'
+  setProvince('all')
 }
 
 // Quick Apply Modal & Application Submission
@@ -746,6 +749,24 @@ function submitPostAd() {
         <!-- ========================================================== -->
         <main class="lg:col-span-3 space-y-3">
           
+          <!-- Active Province Filter Alert Banner -->
+          <div
+            v-if="selectedProvince && selectedProvince.id !== 'all'"
+            class="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-900 dark:text-amber-200 shadow-2xs"
+          >
+            <div class="flex items-center gap-2">
+              <MapPin class="w-4 h-4 text-amber-600 shrink-0" />
+              <span>{{ currentLanguage === 'kh' ? `កំពុងត្រងតាមទីតាំង៖ ${selectedProvince.nameKh} (មាន ${filteredJobs.length} ការងារ)` : `Filtered by province: ${selectedProvince.name} (${filteredJobs.length} jobs)` }}</span>
+            </div>
+            <button
+              @click="setProvince('all')"
+              class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 text-[#0D47A1] dark:text-blue-400 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-slate-700 text-xs font-black transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
+              type="button"
+            >
+              <span>{{ currentLanguage === 'kh' ? '🔄 បង្ហាញការងារទូទាំងប្រទេស' : '🔄 Show All Jobs Nationwide' }}</span>
+            </button>
+          </div>
+
           <!-- Feed Header: "Latest Jobs" + View Switcher + Sort -->
           <div class="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-wrap items-center justify-between gap-3">
             

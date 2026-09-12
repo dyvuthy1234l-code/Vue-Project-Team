@@ -515,7 +515,7 @@ watch(selectedProvince, (newProvId) => {
 watch(
   () => globalProvince.value?.id,
   (newId) => {
-    if (newId && newId !== selectedProvince.value) {
+    if (newId && newId !== 'all' && newId !== selectedProvince.value) {
       selectedProvince.value = newId
     }
   },

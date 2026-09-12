@@ -36,7 +36,7 @@ import type { Hospital } from '@/types'
 const router = useRouter()
 
 const { t, currentLanguage, localized } = useLanguage()
-const { selectedProvince } = useLocation()
+const { selectedProvince, setProvince } = useLocation()
 
 usePageMeta({
   title: 'សេវាសុខាភិបាល និងមន្ទីរពេទ្យ — CamLife Healthcare Directory',
@@ -201,6 +201,7 @@ function resetFilters() {
   activePill.value = 'all'
   activeLocation.value = 'All'
   sortBy.value = 'rating'
+  setProvince('all')
 }
 
 function scrollToResults() {
@@ -435,7 +436,7 @@ function resetDocChecklist() {
           <div class="flex flex-wrap items-center gap-2.5">
             <!-- Reset Button if filtered -->
             <button
-              v-if="searchQuery || activePill !== 'all' || activeLocation !== 'All'"
+              v-if="searchQuery || activePill !== 'all' || activeLocation !== 'All' || (selectedProvince && selectedProvince.id !== 'all')"
               @click="resetFilters"
               class="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
               type="button"
@@ -490,6 +491,24 @@ function resetDocChecklist() {
               </button>
             </div>
           </div>
+        </div>
+
+        <!-- Active Province Filter Alert Banner -->
+        <div
+          v-if="selectedProvince && selectedProvince.id !== 'all'"
+          class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-900 dark:text-amber-200 shadow-xs"
+        >
+          <div class="flex items-center gap-2">
+            <MapPin class="w-4 h-4 text-amber-600 shrink-0" />
+            <span>{{ currentLanguage === 'kh' ? `កំពុងត្រងតាមទីតាំង៖ ${selectedProvince.nameKh} (មាន ${filteredHospitals.length} មណ្ឌលសុខភាព)` : `Filtered by province: ${selectedProvince.name} (${filteredHospitals.length} facilities)` }}</span>
+          </div>
+          <button
+            @click="setProvince('all')"
+            class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-[#0D47A1] dark:text-blue-400 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-slate-700 text-xs font-black transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
+            type="button"
+          >
+            <span>{{ currentLanguage === 'kh' ? '🔄 បង្ហាញទូទាំងប្រទេស' : '🔄 Show All Provinces' }}</span>
+          </button>
         </div>
 
         <!-- VIEW 1: MODERN CARDS GRID -->

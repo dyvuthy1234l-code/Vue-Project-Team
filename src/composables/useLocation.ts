@@ -36,13 +36,24 @@ export const CAMBODIAN_PROVINCES: ProvinceLocation[] = [
   { id: 'tboung-khmum', name: 'Tboung Khmum', nameKh: 'ខេត្តត្បូងឃ្មុំ', code: 'TBK', coordinates: { lat: 11.9056, lng: 105.6568 } }
 ]
 
+export const ALL_CAMBODIA_LOCATION: ProvinceLocation = {
+  id: 'all',
+  name: 'All Cambodia',
+  nameKh: 'ទូទាំងប្រទេស',
+  code: 'ALL',
+  coordinates: { lat: 12.5657, lng: 104.9910 }
+}
+
 const currentProvinceId = ref<string>(
-  localStorage.getItem('camlife-selected-location') || 'phnom-penh'
+  localStorage.getItem('camlife-selected-location') || 'all'
 )
 
 export function useLocation() {
   const selectedProvince = computed(() => {
-    return CAMBODIAN_PROVINCES.find(p => p.id === currentProvinceId.value) || CAMBODIAN_PROVINCES[0]
+    if (currentProvinceId.value === 'all') {
+      return ALL_CAMBODIA_LOCATION
+    }
+    return CAMBODIAN_PROVINCES.find(p => p.id === currentProvinceId.value) || ALL_CAMBODIA_LOCATION
   })
 
   function setProvince(id: string) {
@@ -50,10 +61,16 @@ export function useLocation() {
     localStorage.setItem('camlife-selected-location', id)
   }
 
+  function resetToAll() {
+    setProvince('all')
+  }
+
   return {
     provinces: CAMBODIAN_PROVINCES,
+    allLocation: ALL_CAMBODIA_LOCATION,
     currentProvinceId,
     selectedProvince,
-    setProvince
+    setProvince,
+    resetToAll
   }
 }
