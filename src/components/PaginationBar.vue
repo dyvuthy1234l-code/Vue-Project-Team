@@ -2,13 +2,20 @@
 import { computed } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
-const props = defineProps<{
-  currentPage: number
-  totalPages: number
-  showingFrom: number
-  showingTo: number
-  totalItems: number
-}>()
+const props = withDefaults(
+  defineProps<{
+    currentPage: number
+    totalPages: number
+    showingFrom?: number
+    showingTo?: number
+    totalItems?: number
+  }>(),
+  {
+    showingFrom: 0,
+    showingTo: 0,
+    totalItems: 0
+  }
+)
 
 const emit = defineEmits<{
   (e: 'pageChange', page: number): void
@@ -56,13 +63,7 @@ const visiblePages = computed(() => {
 </script>
 
 <template>
-  <div v-if="totalPages > 1" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-100 dark:border-slate-800">
-    <!-- Info count -->
-    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
-      Showing <span class="font-bold text-[#0A2540] dark:text-white">{{ showingFrom }}–{{ showingTo }}</span>
-      of <span class="font-bold text-[#0A2540] dark:text-white">{{ totalItems }}</span> results
-    </p>
-
+  <div v-if="totalPages > 1" class="flex items-center justify-center pt-6 border-t border-slate-100 dark:border-slate-800">
     <!-- Controls -->
     <div class="flex items-center gap-1.5">
       <!-- Previous Page -->
