@@ -269,7 +269,7 @@ function resetDocChecklist() {
 </script>
 
 <template>
-  <div class="health-page-container min-h-screen pb-16 text-[#0A2540] dark:text-white font-khmer">
+  <div class="health-page-container min-h-screen pb-24 sm:pb-16 text-[#0A2540] dark:text-white font-khmer">
     <!-- Ambient Background Glow -->
     <div class="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-gradient-to-b from-blue-100/50 via-teal-50/30 to-transparent dark:from-blue-950/25 dark:via-teal-950/15 dark:to-transparent" />
 
@@ -300,13 +300,16 @@ function resetDocChecklist() {
           <!-- Main Banner Header Content -->
           <div class="max-w-3xl space-y-3.5">
             <!-- Authority Badges -->
-            <div class="flex flex-wrap items-center gap-2.5">
-              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-black backdrop-blur-md shadow-xs">
-                <span class="relative flex h-2 w-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-[11px] sm:text-xs font-bold backdrop-blur-md shadow-xs max-w-full">
+                <span class="relative flex h-2 w-2 shrink-0">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span class="inline-flex items-center gap-1.5"><Landmark class="w-3.5 h-3.5 text-[#D4AF37]" /> <span>ព្រះរាជាណាចក្រកម្ពុជា • {{ currentLanguage === 'kh' ? 'បញ្ជីរាយនាមសុខាភិបាលផ្លូវការ' : 'Verified Cambodian Healthcare Directory' }}</span></span>
+                <span class="inline-flex items-center gap-1.5 truncate">
+                  <Landmark class="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+                  <span class="truncate">ព្រះរាជាណាចក្រកម្ពុជា • {{ currentLanguage === 'kh' ? 'បញ្ជីសុខាភិបាលផ្លូវការ' : 'Official Healthcare Directory' }}</span>
+                </span>
               </div>
 
               <div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] font-bold text-white/90 backdrop-blur-xs">
@@ -333,78 +336,78 @@ function resetDocChecklist() {
 
           <!-- Ultra-Clean Search Console (Input + Enter Key + Clear + Search Button) -->
           <div class="max-w-2xl pt-1">
-            <form @submit.prevent="handleSearch" class="relative flex items-center bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-white/20 p-1.5 focus-within:ring-4 focus-within:ring-blue-400/20 transition-all">
-              <div class="pl-3.5 text-slate-400">
-                <Search class="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <form @submit.prevent="handleSearch" class="relative flex items-center bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-white/20 p-1 sm:p-1.5 focus-within:ring-4 focus-within:ring-blue-400/20 transition-all">
+              <div class="pl-3 sm:pl-3.5 text-slate-400">
+                <Search class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <input
                 v-model="searchQuery"
                 type="text"
                 @keyup.enter="handleSearch"
-                :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកមន្ទីរពេទ្យ គ្លីនិក ឯកទេស (ឧ. កាល់ម៉ែត, ព្រះកុសុមៈ, បេះដូង, សម្ភព, ICU, ប.ស.ស...)' : 'Search hospitals, clinics, specialties (e.g. Calmette, Kossamak, Cardiology, ICU, NSSF...)'"
-                class="w-full px-3 py-2.5 text-xs sm:text-sm font-bold bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden font-khmer"
+                :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកមន្ទីរពេទ្យ គ្លីនិក ឬឯកទេស...' : 'Search hospitals, clinics, specialties...'"
+                class="w-full px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-bold bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden font-khmer"
               />
               <button
                 v-if="searchQuery"
                 @click="searchQuery = ''; scrollToResults()"
                 type="button"
-                class="px-2.5 py-1 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                class="px-2 py-1 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
               >
                 ✕
               </button>
               <button
                 type="submit"
-                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-500 hover:to-teal-500 text-white font-black text-xs transition-all shadow-md cursor-pointer shrink-0"
+                class="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-500 hover:to-teal-500 text-white font-black text-xs transition-all shadow-md cursor-pointer shrink-0"
               >
                 {{ currentLanguage === 'kh' ? 'ស្វែងរក' : 'Search' }}
               </button>
             </form>
           </div>
 
-          <!-- Sleek Quick Filter Chips (Natural Horizontal Wrap) -->
-          <div class="flex flex-wrap items-center gap-2 pt-1">
+          <!-- Sleek Quick Filter Chips (Horizontal Scroll on Mobile, Wrap on Desktop) -->
+          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 sm:flex-wrap -mx-1 px-1">
             <button
               v-for="chip in quickChips"
               :key="chip.id"
               @click="selectQuickPill(chip.id)"
               type="button"
-              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shadow-2xs select-none"
+              class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shadow-2xs select-none shrink-0"
               :class="activePill === chip.id
-                ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white border-blue-400 shadow-md scale-105 ring-2 ring-teal-400/30 font-black'
+                ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white border-blue-400 shadow-md scale-102 ring-2 ring-teal-400/30 font-black'
                 : 'bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white border-white/10 backdrop-blur-xs'"
             >
               <component :is="chip.icon" class="w-3.5 h-3.5 shrink-0" />
-              <span>{{ currentLanguage === 'kh' ? chip.labelKh : chip.label }}</span>
+              <span class="whitespace-nowrap">{{ currentLanguage === 'kh' ? chip.labelKh : chip.label }}</span>
             </button>
           </div>
 
           <!-- Bottom Healthcare Stats & SAMU 119 Hotline Strip -->
-          <div class="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-300">
-            <div class="flex flex-wrap items-center gap-4 sm:gap-6">
-              <span class="flex items-center gap-2">
-                <CheckCircle2 class="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{{ allHospitals.length }} {{ currentLanguage === 'kh' ? 'មណ្ឌលសុខភាពផ្លូវការ' : 'Verified Facilities' }}</span>
+          <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 text-xs text-slate-300">
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-6">
+              <span class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+                <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
+                <span>{{ allHospitals.length }} {{ currentLanguage === 'kh' ? 'មណ្ឌលសុខភាព' : 'Verified' }}</span>
               </span>
-              <span class="flex items-center gap-2">
-                <CheckCircle2 class="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{{ currentLanguage === 'kh' ? 'សង្គ្រោះបន្ទាន់ ២៤/៧' : '24/7 Trauma Care' }}</span>
+              <span class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+                <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
+                <span>{{ currentLanguage === 'kh' ? 'សង្គ្រោះបន្ទាន់ ២៤/៧' : '24/7 Care' }}</span>
               </span>
-              <span class="flex items-center gap-2">
-                <CheckCircle2 class="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{{ currentLanguage === 'kh' ? 'ទទួលប័ណ្ណ ប.ស.ស' : 'NSSF Health Insurance' }}</span>
+              <span class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+                <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
+                <span>{{ currentLanguage === 'kh' ? 'ទទួលប័ណ្ណ ប.ស.ស' : 'NSSF' }}</span>
               </span>
-              <span class="flex items-center gap-2">
-                <CheckCircle2 class="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{{ currentLanguage === 'kh' ? '២៥ រាជធានី-ខេត្ត' : '25 Provinces' }}</span>
+              <span class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+                <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
+                <span>{{ currentLanguage === 'kh' ? '២៥ រាជធានី-ខេត្ត' : '25 Prov.' }}</span>
               </span>
             </div>
 
             <!-- SAMU 119 Ambulance Hotline -->
-            <div class="flex items-center gap-2">
-              <span class="text-slate-300 font-bold">{{ currentLanguage === 'kh' ? 'រថយន្តសង្គ្រោះបន្ទាន់ជាតិ:' : 'National Ambulance:' }}</span>
+            <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/10">
+              <span class="text-slate-300 font-bold text-[11px] sm:text-xs">{{ currentLanguage === 'kh' ? 'រថយន្តសង្គ្រោះបន្ទាន់ជាតិ:' : 'National Ambulance:' }}</span>
               <a
                 href="tel:119"
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black transition-all hover:scale-105 shadow-md shadow-rose-600/30 animate-pulse"
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs transition-all hover:scale-105 shadow-md shadow-rose-600/30"
               >
                 <Ambulance class="w-3.5 h-3.5" />
                 <span>SAMU 119 (Free Call)</span>
@@ -416,57 +419,58 @@ function resetDocChecklist() {
 
       <!-- FILTER CONTROLS & VIEW MODE TOOLBAR -->
       <div id="healthcare-results-section" class="scroll-mt-24 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-xs">
-          <!-- Left: Count & Active Province Popover -->
-          <div class="flex flex-wrap items-center gap-3">
-            <div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-xs">
+          <!-- Left: Count & Active Province Removable Tag -->
+          <div class="space-y-1">
+            <div class="flex flex-wrap items-center gap-2">
               <h2 class="text-lg sm:text-xl font-black text-[#0A2540] dark:text-white flex items-center gap-2">
                 <span>{{ currentLanguage === 'kh' ? 'បញ្ជីមណ្ឌលសុខាភិបាល' : 'Healthcare Directory' }}</span>
                 <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-[#0D47A1] dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800">
                   {{ filteredHospitals.length }} {{ currentLanguage === 'kh' ? 'ទីតាំង' : 'Facilities' }}
                 </span>
               </h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                {{ currentLanguage === 'kh' ? `បង្ហាញមណ្ឌលសុខភាពក្នុង ${selectedProvince ? selectedProvince.nameKh : '២៥ រាជធានី-ខេត្ត'}` : `Showing facilities in ${selectedProvince ? selectedProvince.name : 'All Provinces'}` }}
-              </p>
+
+              <!-- Sleek Active Location Removable Pill -->
+              <span
+                v-if="selectedProvince && selectedProvince.id !== 'all'"
+                class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold"
+              >
+                <MapPin class="w-3 h-3 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span>{{ selectedProvince.nameKh }}</span>
+                <button
+                  @click="setProvince('all')"
+                  class="ml-0.5 p-0.5 rounded-full hover:bg-blue-200/60 dark:hover:bg-blue-800 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                  :title="currentLanguage === 'kh' ? 'បង្ហាញទូទាំងប្រទេស' : 'Show All Cambodia'"
+                  type="button"
+                >
+                  ✕
+                </button>
+              </span>
             </div>
+
+            <!-- Subtitle with quick link to show all -->
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              {{ currentLanguage === 'kh' ? `បង្ហាញមណ្ឌលសុខភាពក្នុង ${selectedProvince ? selectedProvince.nameKh : '២៥ រាជធានី-ខេត្ត'}` : `Showing facilities in ${selectedProvince ? selectedProvince.name : 'All Cambodia'}` }}
+              <button
+                v-if="selectedProvince && selectedProvince.id !== 'all'"
+                @click="setProvince('all')"
+                class="ml-1 text-blue-600 dark:text-blue-400 hover:underline font-bold cursor-pointer inline-flex items-center gap-0.5"
+                type="button"
+              >
+                <span>({{ currentLanguage === 'kh' ? 'បង្ហាញទូទាំងប្រទេស' : 'Show All Cambodia' }})</span>
+              </button>
+            </p>
           </div>
 
-        <!-- Right: Sort & View Mode Switcher -->
-          <div class="flex flex-wrap items-center gap-2.5">
-            <!-- Reset Button if filtered -->
-            <button
-              v-if="searchQuery || activePill !== 'all' || activeLocation !== 'All' || (selectedProvince && selectedProvince.id !== 'all')"
-              @click="resetFilters"
-              class="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
-              type="button"
-            >
-              <RotateCcw class="w-3 h-3" />
-              <span>{{ currentLanguage === 'kh' ? 'កំណត់ឡើងវិញ' : 'Reset' }}</span>
-            </button>
-
-            <!-- Sort By -->
-            <div class="relative">
-              <select
-                v-model="sortBy"
-                class="appearance-none rounded-xl border border-slate-200/90 bg-slate-50 hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900 pl-3 pr-7 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 outline-none transition cursor-pointer shadow-2xs"
-              >
-                <option value="rating">{{ currentLanguage === 'kh' ? 'ពិន្ទុខ្ពស់បំផុត' : 'Top Rated' }}</option>
-                <option value="reviews">{{ currentLanguage === 'kh' ? 'ការវាយតម្លៃច្រើន' : 'Most Reviews' }}</option>
-                <option value="name">{{ currentLanguage === 'kh' ? 'ឈ្មោះ (A-Z)' : 'Name (A-Z)' }}</option>
-              </select>
-              <div class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400">
-                <SlidersHorizontal class="w-3 h-3" />
-              </div>
-            </div>
-
+          <!-- Right: Controls Row (View Switcher + Sort + Reset) -->
+          <div class="flex items-center justify-between sm:justify-end gap-2 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-700/60">
             <!-- View Switcher (Grid vs Map) -->
-            <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-700">
+            <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-700 shrink-0">
               <button
                 type="button"
                 @click="viewMode = 'grid'"
                 :class="[
-                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none',
+                  'inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none',
                   viewMode === 'grid'
                     ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
@@ -480,7 +484,7 @@ function resetDocChecklist() {
                 type="button"
                 @click="viewMode = 'map'"
                 :class="[
-                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none',
+                  'inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none',
                   viewMode === 'map'
                     ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
@@ -490,25 +494,36 @@ function resetDocChecklist() {
                 <span>{{ currentLanguage === 'kh' ? 'ផែនទី' : 'Map' }}</span>
               </button>
             </div>
-          </div>
-        </div>
 
-        <!-- Active Province Filter Alert Banner -->
-        <div
-          v-if="selectedProvince && selectedProvince.id !== 'all'"
-          class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-900 dark:text-amber-200 shadow-xs"
-        >
-          <div class="flex items-center gap-2">
-            <MapPin class="w-4 h-4 text-amber-600 shrink-0" />
-            <span>{{ currentLanguage === 'kh' ? `កំពុងត្រងតាមទីតាំង៖ ${selectedProvince.nameKh} (មាន ${filteredHospitals.length} មណ្ឌលសុខភាព)` : `Filtered by province: ${selectedProvince.name} (${filteredHospitals.length} facilities)` }}</span>
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <!-- Sort By -->
+              <div class="relative">
+                <select
+                  v-model="sortBy"
+                  class="appearance-none rounded-xl border border-slate-200/90 bg-slate-50 hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900 pl-2.5 pr-7 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 outline-none transition cursor-pointer shadow-2xs"
+                >
+                  <option value="rating">{{ currentLanguage === 'kh' ? 'ពិន្ទុខ្ពស់បំផុត' : 'Top Rated' }}</option>
+                  <option value="reviews">{{ currentLanguage === 'kh' ? 'ការវាយតម្លៃច្រើន' : 'Most Reviews' }}</option>
+                  <option value="name">{{ currentLanguage === 'kh' ? 'ឈ្មោះ (A-Z)' : 'Name (A-Z)' }}</option>
+                </select>
+                <div class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400">
+                  <SlidersHorizontal class="w-3 h-3" />
+                </div>
+              </div>
+
+              <!-- Reset Button if filtered -->
+              <button
+                v-if="searchQuery || activePill !== 'all' || activeLocation !== 'All' || (selectedProvince && selectedProvince.id !== 'all')"
+                @click="resetFilters"
+                class="px-2.5 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1 hover:bg-rose-100 dark:hover:bg-rose-900/50 shadow-2xs"
+                type="button"
+                :title="currentLanguage === 'kh' ? 'កំណត់ឡើងវិញ' : 'Reset'"
+              >
+                <RotateCcw class="w-3 h-3" />
+                <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? 'កំណត់ឡើងវិញ' : 'Reset' }}</span>
+              </button>
+            </div>
           </div>
-          <button
-            @click="setProvince('all')"
-            class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-[#0D47A1] dark:text-blue-400 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-slate-700 text-xs font-black transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
-            type="button"
-          >
-            <span>{{ currentLanguage === 'kh' ? '🔄 បង្ហាញទូទាំងប្រទេស' : '🔄 Show All Provinces' }}</span>
-          </button>
         </div>
 
         <!-- VIEW 1: MODERN CARDS GRID -->
@@ -537,42 +552,38 @@ function resetDocChecklist() {
                     <span class="text-[10px] text-slate-300">({{ hospital.reviews }})</span>
                   </div>
 
-                  <!-- Top-Right Badges: Ownership & NSSF -->
-                  <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+                  <!-- Top-Right Badges: Ownership & NSSF in a clean row -->
+                  <div class="absolute top-3 right-3 flex items-center gap-1.5">
                     <!-- Ownership Badge -->
                     <span
                       class="px-2.5 py-1 rounded-xl text-[10px] font-black border uppercase shadow-sm backdrop-blur-md"
                       :class="hospital.ownership === 'public'
-                        ? 'bg-blue-600/90 text-white border-blue-400'
-                        : 'bg-violet-600/90 text-white border-violet-400'"
+                        ? 'bg-blue-600/90 text-white border-blue-400/50'
+                        : 'bg-violet-600/90 text-white border-violet-400/50'"
                     >
-                      <span class="inline-flex items-center gap-1"><component :is="hospital.ownership === 'public' ? Building2 : HospitalIcon" class="w-3 h-3" /> <span>{{ hospital.ownership === 'public' ? (currentLanguage === 'kh' ? 'មន្ទីរពេទ្យរដ្ឋ' : 'Public Hospital') : (currentLanguage === 'kh' ? 'ឯកជន' : 'Private') }}</span></span>
+                      <span class="inline-flex items-center gap-1"><component :is="hospital.ownership === 'public' ? Building2 : HospitalIcon" class="w-3 h-3" /> <span>{{ hospital.ownership === 'public' ? (currentLanguage === 'kh' ? 'រដ្ឋ' : 'Public') : (currentLanguage === 'kh' ? 'ឯកជន' : 'Private') }}</span></span>
                     </span>
 
                     <!-- NSSF Acceptance Badge -->
                     <span
                       v-if="hospital.acceptsNssf"
-                      class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600/95 text-white border border-emerald-300 shadow-sm backdrop-blur-md flex items-center gap-1"
+                      class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600/95 text-white border border-emerald-300/50 shadow-sm backdrop-blur-md flex items-center gap-1"
                     >
                       <ShieldCheck class="w-3 h-3" />
-                      <span>{{ currentLanguage === 'kh' ? 'ប.ស.ស (NSSF)' : 'NSSF' }}</span>
+                      <span>{{ currentLanguage === 'kh' ? 'ប.ស.ស' : 'NSSF' }}</span>
                     </span>
                   </div>
 
-                  <!-- Bottom-Left Category Tag -->
-                  <span class="absolute bottom-3 left-3 px-2.5 py-1 rounded-xl text-[10px] font-bold bg-slate-900/85 text-white backdrop-blur-md shadow-xs">
-                    {{ hospital.category === 'hospital' ? (currentLanguage === 'kh' ? 'មន្ទីរពេទ្យ' : 'Hospital') :
-                       hospital.category === 'clinic' ? (currentLanguage === 'kh' ? 'គ្លីនិកឯកទេស' : 'Specialist Clinic') :
-                       (currentLanguage === 'kh' ? 'ឱសថស្ថាន' : 'Pharmacy') }}
-                  </span>
-
                   <!-- Bottom-Right 24/7 Live Dot -->
-                  <div class="absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-950/85 text-emerald-300 border border-emerald-500/40 backdrop-blur-md">
+                  <div
+                    v-if="hospital.openingHours && (hospital.openingHours.includes('24') || hospital.openingHours === '24/7')"
+                    class="absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-black bg-emerald-950/85 text-emerald-300 border border-emerald-500/40 backdrop-blur-md"
+                  >
                     <span class="relative flex h-2 w-2">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
-                    <span>{{ hospital.openingHours }}</span>
+                    <span>24/7</span>
                   </div>
                 </div>
 

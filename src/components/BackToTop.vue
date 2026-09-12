@@ -28,7 +28,7 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
     <button
       v-if="isVisible"
       @click="scrollToTop"
-      class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#0D47A1]/90 hover:bg-[#0D47A1] text-white shadow-md flex items-center justify-center transition-all duration-150 active:scale-90 backdrop-blur-xs"
+      class="fixed bottom-5 right-3.5 sm:bottom-6 sm:right-6 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#0D47A1]/90 hover:bg-[#0D47A1] text-white shadow-lg flex items-center justify-center transition-all duration-150 active:scale-90 backdrop-blur-xs"
       aria-label="Back to top"
       type="button"
     >

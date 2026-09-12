@@ -749,33 +749,32 @@ function submitPostAd() {
         <!-- ========================================================== -->
         <main class="lg:col-span-3 space-y-3">
           
-          <!-- Active Province Filter Alert Banner -->
-          <div
-            v-if="selectedProvince && selectedProvince.id !== 'all'"
-            class="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-900 dark:text-amber-200 shadow-2xs"
-          >
-            <div class="flex items-center gap-2">
-              <MapPin class="w-4 h-4 text-amber-600 shrink-0" />
-              <span>{{ currentLanguage === 'kh' ? `កំពុងត្រងតាមទីតាំង៖ ${selectedProvince.nameKh} (មាន ${filteredJobs.length} ការងារ)` : `Filtered by province: ${selectedProvince.name} (${filteredJobs.length} jobs)` }}</span>
-            </div>
-            <button
-              @click="setProvince('all')"
-              class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 text-[#0D47A1] dark:text-blue-400 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-slate-700 text-xs font-black transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
-              type="button"
-            >
-              <span>{{ currentLanguage === 'kh' ? '🔄 បង្ហាញការងារទូទាំងប្រទេស' : '🔄 Show All Jobs Nationwide' }}</span>
-            </button>
-          </div>
-
           <!-- Feed Header: "Latest Jobs" + View Switcher + Sort -->
           <div class="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-wrap items-center justify-between gap-3">
             
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
               <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
                 Latest Jobs
               </h2>
               <span class="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-[#0D47A1] dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-900">
                 {{ filteredJobs.length }} Jobs
+              </span>
+
+              <!-- Active Province Pill with quick clear button -->
+              <span
+                v-if="selectedProvince && selectedProvince.id !== 'all'"
+                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[11px] font-bold"
+              >
+                <MapPin class="w-3 h-3 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span>{{ selectedProvince.nameKh }}</span>
+                <button
+                  @click="setProvince('all')"
+                  class="ml-0.5 p-0.5 rounded-full hover:bg-blue-200/60 dark:hover:bg-blue-800 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                  :title="currentLanguage === 'kh' ? 'បង្ហាញការងារទូទាំងប្រទេស' : 'Show All Jobs Nationwide'"
+                  type="button"
+                >
+                  ✕
+                </button>
               </span>
             </div>
 
