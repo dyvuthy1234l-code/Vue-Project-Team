@@ -89,28 +89,28 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="containerRef" class="relative font-khmer w-full">
+  <div ref="containerRef" class="relative font-khmer w-full max-w-full min-w-0">
     <!-- Header Label & Badges -->
     <div v-if="label" class="flex items-center justify-between mb-1.5">
-      <label class="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+      <label class="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5 truncate">
         <span
-          class="w-2 h-2 rounded-full"
+          class="w-2 h-2 rounded-full shrink-0"
           :class="type === 'origin' ? 'bg-emerald-500 ring-2 ring-emerald-400/20' : 'bg-rose-500 ring-2 ring-rose-400/20'"
         />
-        <span>{{ label }}</span>
+        <span class="truncate">{{ label }}</span>
       </label>
 
       <!-- Closest / 25 Provinces Tag -->
       <span
         v-if="type === 'origin' && isClosest"
-        class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/20"
+        class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/20 shrink-0"
       >
         <Check class="w-3 h-3" />
         <span>{{ currentLanguage === 'kh' ? 'ស្ថានីយជិតអ្នកបំផុត' : 'Closest Station' }}</span>
       </span>
       <span
         v-else
-        class="text-[10px] font-bold text-slate-400 dark:text-slate-500"
+        class="text-[10px] font-bold text-slate-400 dark:text-slate-500 shrink-0"
       >
         {{ currentLanguage === 'kh' ? '២៥ រាជធានី-ខេត្ត' : '25 Provinces' }}
       </span>
@@ -121,7 +121,7 @@ onUnmounted(() => {
       type="button"
       @click="toggleDropdown"
       :class="[
-        'w-full p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer shadow-2xs flex items-center justify-between gap-3 select-none',
+        'w-full max-w-full min-w-0 p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer shadow-2xs flex items-center justify-between gap-3 select-none',
         isOpen
           ? type === 'origin'
             ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-white dark:bg-slate-800'

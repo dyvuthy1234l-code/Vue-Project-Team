@@ -1409,7 +1409,7 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-khmer">
+  <div class="w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-khmer overflow-x-clip min-w-0">
     <!-- Service Hero Banner with 25 Provinces Selector -->
     <ServiceHeroBanner
       :title="t('transport.title')"
@@ -1423,82 +1423,82 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
     />
 
     <!-- Free Public Bus Policy Callout Banner for Cambodian Citizens -->
-    <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-white dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-900 border border-emerald-500/20 dark:border-emerald-500/30 p-4 sm:p-6 shadow-xs relative overflow-hidden">
-      <div class="relative z-10 space-y-3 sm:space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 shadow-2xs border border-emerald-200/60 dark:border-emerald-700/60">
-              <Bus class="w-5 h-5 sm:w-6 sm:h-6" />
+    <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-white dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-900 border border-emerald-500/20 dark:border-emerald-500/30 p-3.5 sm:p-6 shadow-xs relative overflow-hidden w-full min-w-0">
+      <div class="relative z-10 space-y-3 sm:space-y-4 min-w-0">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
+          <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 shadow-2xs border border-emerald-200/60 dark:border-emerald-700/60">
+              <Bus class="w-4 h-4 sm:w-6 sm:h-6" />
             </div>
-            <div>
+            <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
+                <h3 class="text-xs sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
                   {{ currentLanguage === 'kh' ? 'គោលការណ៍ជិះរថយន្តក្រុងសាធារណៈដោយឥតគិតថ្លៃ' : 'Phnom Penh Municipal Free Bus Policy' }}
                 </h3>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800 uppercase">
+                <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800 uppercase shrink-0">
                   100% Free / ឥតគិតថ្លៃ
                 </span>
               </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+              <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed line-clamp-2 sm:line-clamp-none">
                 {{ currentLanguage === 'kh' ? 'រដ្ឋបាលរាជធានីភ្នំពេញ ផ្តល់សេវាជិះរថយន្តក្រុងសាធារណៈដោយឥតគិតថ្លៃ ជូនចំពោះប្រជាពលរដ្ឋអាទិភាពដូចខាងក្រោម៖' : 'Phnom Penh Capital Administration grants free public transit passes to priority citizens:' }}
               </p>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1 text-xs font-bold">
-          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs">
-            <CheckCircle2 class="w-4 h-4 text-emerald-500 shrink-0" />
-            <span class="truncate">{{ currentLanguage === 'kh' ? 'សិស្ស-និស្សិត' : 'Students' }}</span>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1 text-xs font-bold w-full min-w-0">
+          <div class="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs min-w-0 overflow-hidden">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
+            <span class="truncate text-[11px] sm:text-xs">{{ currentLanguage === 'kh' ? 'សិស្ស-និស្សិត' : 'Students' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs">
-            <CheckCircle2 class="w-4 h-4 text-emerald-500 shrink-0" />
-            <span class="truncate">{{ currentLanguage === 'kh' ? 'ព្រះសង្ឃ' : 'Monks' }}</span>
+          <div class="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs min-w-0 overflow-hidden">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
+            <span class="truncate text-[11px] sm:text-xs">{{ currentLanguage === 'kh' ? 'ព្រះសង្ឃ' : 'Monks' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs">
-            <CheckCircle2 class="w-4 h-4 text-emerald-500 shrink-0" />
-            <span class="truncate">{{ currentLanguage === 'kh' ? 'មនុស្សចាស់ (៧០+)' : 'Elderly (70+)' }}</span>
+          <div class="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs min-w-0 overflow-hidden">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
+            <span class="truncate text-[11px] sm:text-xs">{{ currentLanguage === 'kh' ? 'មនុស្សចាស់ (៧០+)' : 'Elderly (70+)' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs">
-            <CheckCircle2 class="w-4 h-4 text-emerald-500 shrink-0" />
-            <span class="truncate">{{ currentLanguage === 'kh' ? 'អ្នកកាន់ប័ណ្ណ ប.ស.ស' : 'NSSF Cardholders' }}</span>
+          <div class="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs min-w-0 overflow-hidden">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
+            <span class="truncate text-[11px] sm:text-xs">{{ currentLanguage === 'kh' ? 'អ្នកកាន់ប័ណ្ណ ប.ស.ស' : 'NSSF Cardholders' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs">
-            <CheckCircle2 class="w-4 h-4 text-emerald-500 shrink-0" />
-            <span class="truncate">{{ currentLanguage === 'kh' ? 'កម្មកររោងចក្រ' : 'Factory Workers' }}</span>
+          <div class="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs min-w-0 overflow-hidden">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
+            <span class="truncate text-[11px] sm:text-xs">{{ currentLanguage === 'kh' ? 'កម្មកររោងចក្រ' : 'Factory Workers' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs">
-            <CheckCircle2 class="w-4 h-4 text-emerald-500 shrink-0" />
-            <span class="truncate">{{ currentLanguage === 'kh' ? 'ជនមានពិការភាព' : 'Persons with Disability' }}</span>
+          <div class="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-emerald-100 dark:border-emerald-900/60 text-slate-700 dark:text-emerald-200 shadow-2xs min-w-0 overflow-hidden">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
+            <span class="truncate text-[11px] sm:text-xs">{{ currentLanguage === 'kh' ? 'ជនមានពិការភាព' : 'Persons with Disability' }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Main View Switcher: Segmented Control -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 pb-3">
-      <div class="w-full sm:w-auto grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-inner sm:min-w-[440px]">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 pb-3 w-full min-w-0">
+      <div class="w-full sm:w-auto grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-inner min-w-0">
         <button
           @click="activeViewTab = 'all-routes'"
-          class="py-2 sm:py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2 text-center"
+          class="min-w-0 py-2 sm:py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 text-center"
           :class="activeViewTab === 'all-routes'
             ? 'bg-[#003366] text-white shadow-xs'
             : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'"
           type="button"
         >
-          <Compass class="w-4 h-4 shrink-0" />
+          <Compass class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
           <span class="truncate">{{ currentLanguage === 'kh' ? 'ស្វែងរកជើងធ្វើដំណើរ' : 'Journey Planner' }}</span>
         </button>
 
         <button
           @click="activeViewTab = 'city-bus-lines'"
-          class="py-2 sm:py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2 text-center"
+          class="min-w-0 py-2 sm:py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 text-center"
           :class="activeViewTab === 'city-bus-lines'
             ? 'bg-emerald-600 text-white shadow-xs'
             : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'"
           type="button"
         >
-          <Bus class="w-4 h-4 shrink-0" />
+          <Bus class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
           <span class="truncate">{{ currentLanguage === 'kh' ? 'ខ្សែរថយន្តក្រុងភ្នំពេញ' : 'City Bus Lines' }}</span>
         </button>
       </div>
@@ -1513,24 +1513,24 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
       <!-- Realistic 25-Province Transit & Terminal Console with Live GPS -->
       <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-7 shadow-sm space-y-6">
         <!-- Console Header with Live Radar & GPS Trigger -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-700/60">
-          <div class="flex items-center gap-2.5">
-            <span class="relative flex h-3 w-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-700/60 w-full min-w-0">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="relative flex h-3 w-3 shrink-0">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
             </span>
-            <div>
-              <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#0A2540] dark:text-white flex items-center gap-2">
-                <span>{{ currentLanguage === 'kh' ? 'ប្រព័ន្ធស្វែងរកផ្លូវ និងស្ថានីយដឹកជញ្ជូនជាតិ ២៥ ខេត្ត-ក្រុង' : 'Cambodia 25 Provinces Transit & Route Finder' }}</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-[#0D47A1] dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200/50">Live GPS</span>
+            <div class="min-w-0">
+              <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#0A2540] dark:text-white flex items-center gap-2 flex-wrap min-w-0">
+                <span class="break-words">{{ currentLanguage === 'kh' ? 'ប្រព័ន្ធស្វែងរកផ្លូវ និងស្ថានីយដឹកជញ្ជូនជាតិ ២៥ ខេត្ត-ក្រុង' : 'Cambodia 25 Provinces Transit & Route Finder' }}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-[#0D47A1] dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200/50 shrink-0">Live GPS</span>
               </h3>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 sm:line-clamp-none">
                 {{ currentLanguage === 'kh' ? 'គណនាចម្ងាយ រយៈពេលផ្លូវជាតិ តម្លៃសំបុត្រ និងស្ថានីយដែលនៅជិតអ្នកបំផុត' : 'Calculates road distance, travel duration, highways, fares, and nearest stations' }}
               </p>
             </div>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             <!-- GPS Auto-Detect Button -->
             <button
               @click="detectUserLocation(true)"
@@ -1568,24 +1568,24 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
         <!-- GPS Status Banner -->
         <div
           v-if="gpsStatusMessage"
-          class="p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/50 text-xs text-[#0D47A1] dark:text-blue-300 flex items-center justify-between gap-3"
+          class="p-3 sm:p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/50 text-xs text-[#0D47A1] dark:text-blue-300 flex items-center justify-between gap-2.5 w-full min-w-0"
         >
-          <div class="flex items-center gap-2.5">
+          <div class="flex items-center gap-2 min-w-0 flex-1">
             <MapPin class="w-4 h-4 text-emerald-600 shrink-0" />
-            <span class="font-bold leading-relaxed">{{ gpsStatusMessage }}</span>
+            <span class="font-bold leading-relaxed truncate">{{ gpsStatusMessage }}</span>
           </div>
           <button
             @click="gpsStatusMessage = null"
-            class="text-[11px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+            class="text-[11px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer shrink-0 px-1"
           >
             ✕
           </button>
         </div>
 
         <!-- Origin & Destination Selector Matrix -->
-        <div class="grid grid-cols-1 md:grid-cols-11 gap-3 sm:gap-4 items-center">
+        <div class="grid grid-cols-1 md:grid-cols-11 gap-2.5 sm:gap-4 items-center w-full min-w-0">
           <!-- Origin Station Dropdown (All 25 Provinces) -->
-          <div class="md:col-span-5">
+          <div class="w-full md:col-span-5 min-w-0">
             <StationPicker
               v-model="originProvinceId"
               :terminals="proximitySortedProvinces"
@@ -1596,19 +1596,19 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
           </div>
 
           <!-- Swap Button with 360-spin -->
-          <div class="md:col-span-1 flex justify-center py-1 md:py-4">
+          <div class="flex justify-center md:col-span-1 py-0.5 md:py-4">
             <button
               @click="swapStations"
-              class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700/80 hover:bg-blue-50 dark:hover:bg-blue-900/40 text-slate-600 dark:text-slate-200 hover:text-[#003366] dark:hover:text-blue-400 border border-slate-200 dark:border-slate-600 flex items-center justify-center transition-all cursor-pointer shadow-xs hover:scale-110 active:rotate-180"
+              class="w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-50 dark:bg-slate-700/80 dark:hover:bg-blue-900/40 text-slate-600 dark:text-slate-200 hover:text-[#003366] dark:hover:text-blue-400 border border-slate-200 dark:border-slate-600 flex items-center justify-center transition-all cursor-pointer shadow-xs hover:scale-110 active:rotate-180 shrink-0"
               type="button"
-              title="Swap Origin and Destination"
+              :title="currentLanguage === 'kh' ? 'ប្តូរទីតាំងចេញ និងគោលដៅ' : 'Swap Origin and Destination'"
             >
               <ArrowRightLeft class="w-4 h-4" />
             </button>
           </div>
 
           <!-- Destination Station Dropdown (All 25 Provinces) -->
-          <div class="md:col-span-5">
+          <div class="w-full md:col-span-5 min-w-0">
             <StationPicker
               v-model="destinationProvinceId"
               :terminals="PROVINCIAL_TERMINALS"
@@ -1619,15 +1619,15 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
         </div>
 
         <!-- Nearest Stations Quick-Picker Bar (Smooth Horizontal Scroll) -->
-        <div class="space-y-1.5 pt-1">
+        <div class="space-y-1.5 pt-1 w-full min-w-0 overflow-hidden">
           <div class="flex items-center justify-between text-xs">
-            <span class="font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <Sparkles class="w-3.5 h-3.5 text-amber-500" />
-              <span>{{ currentLanguage === 'kh' ? 'ស្ថានីយនៅជិតអ្នក (ចុចរើសគោលដៅ)៖' : 'Nearby Stations (Click to set destination):' }}</span>
+            <span class="font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 truncate">
+              <Sparkles class="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span class="truncate">{{ currentLanguage === 'kh' ? 'ស្ថានីយនៅជិតអ្នក (ចុចរើសគោលដៅ)៖' : 'Nearby Stations (Click to set destination):' }}</span>
             </span>
           </div>
 
-          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 w-full min-w-0 overscroll-x-contain">
             <button
               v-for="hub in proximitySortedProvinces.slice(0, 8)"
               :key="'near-' + hub.provinceId"
@@ -1647,13 +1647,13 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
         </div>
 
         <!-- Realistic Route Analysis & Highway Console -->
-        <div class="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 dark:from-slate-900 dark:via-blue-950/20 dark:to-slate-900 border border-blue-100 dark:border-blue-900/50 space-y-4">
+        <div class="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 dark:from-slate-900 dark:via-blue-950/20 dark:to-slate-900 border border-blue-100 dark:border-blue-900/50 space-y-3.5 sm:space-y-4 w-full min-w-0 overflow-hidden">
           <!-- Route Header Line -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-blue-200/60 dark:border-blue-800/40">
-            <div class="flex items-center gap-2">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-blue-200/60 dark:border-blue-800/40 w-full min-w-0">
+            <div class="flex items-center gap-2 min-w-0">
               <span class="px-2.5 py-1 rounded-xl bg-[#003366] text-white font-black text-xs flex items-center gap-1.5 shrink-0 shadow-2xs">
                 <Navigation class="w-3 h-3 text-emerald-300" />
-                <span>{{ currentLanguage === 'kh' ? 'ខ្សែផ្លូវដំណើរ' : 'Route' }}</span>
+                <span>{{ currentLanguage === 'kh' ? 'ខ្សែផ្លូវ' : 'Route' }}</span>
               </span>
               <span class="text-xs sm:text-sm font-black text-[#0A2540] dark:text-white truncate">
                 {{ currentLanguage === 'kh' ? originTerminal.nameKh : originTerminal.name }}
@@ -1662,18 +1662,18 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
               </span>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 shrink-0">
               <!-- Toggle Navigation Map Preview -->
               <button
                 @click="showTerminalMap = !showTerminalMap"
                 type="button"
-                class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
                 :class="showTerminalMap
                   ? 'bg-blue-600 text-white border-blue-600'
                   : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'"
               >
                 <MapPin class="w-3.5 h-3.5" />
-                <span>{{ showTerminalMap ? (currentLanguage === 'kh' ? 'បិទផែនទី' : 'Hide Map') : (currentLanguage === 'kh' ? 'មើលផែនទីនាំផ្លូវ' : 'View Route Map') }}</span>
+                <span>{{ showTerminalMap ? (currentLanguage === 'kh' ? 'បិទផែនទី' : 'Hide Map') : (currentLanguage === 'kh' ? 'មើលផែនទី' : 'View Map') }}</span>
               </button>
 
               <!-- Real Google Maps Navigation Button -->
@@ -1681,23 +1681,23 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
                 :href="currentMapExternalUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer shrink-0"
+                class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer shrink-0"
               >
-                <span>{{ currentLanguage === 'kh' ? 'បើក Google Maps ពិតៗ' : 'Real Google Maps' }}</span>
+                <span>{{ currentLanguage === 'kh' ? 'Google Maps ពិត' : 'Google Maps' }}</span>
                 <ExternalLink class="w-3.5 h-3.5" />
               </a>
             </div>
           </div>
 
           <!-- 4 Route Characteristic Metrics -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 w-full min-w-0">
             <!-- Metric 1: Distance -->
-            <div class="p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs">
-              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Navigation class="w-3 h-3 text-[#0D47A1] dark:text-blue-400" />
-                <span>{{ currentLanguage === 'kh' ? 'ចម្ងាយផ្លូវជាតិ' : 'Road Distance' }}</span>
+            <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs min-w-0 overflow-hidden">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 truncate">
+                <Navigation class="w-3 h-3 text-[#0D47A1] dark:text-blue-400 shrink-0" />
+                <span class="truncate">{{ currentLanguage === 'kh' ? 'ចម្ងាយផ្លូវជាតិ' : 'Road Distance' }}</span>
               </div>
-              <div class="text-sm sm:text-base font-black text-[#0A2540] dark:text-white mt-1">
+              <div class="text-sm sm:text-base font-black text-[#0A2540] dark:text-white mt-1 truncate">
                 {{ routeDetails.distanceKm === 0 ? '0 km' : `~ ${routeDetails.distanceKm} គ.ម` }}
               </div>
               <p class="text-[10px] text-slate-400 mt-0.5 truncate">
@@ -1706,12 +1706,12 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
             </div>
 
             <!-- Metric 2: Duration -->
-            <div class="p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs">
-              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Clock class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                <span>{{ currentLanguage === 'kh' ? 'រយៈពេលធ្វើដំណើរ' : 'Travel Time' }}</span>
+            <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs min-w-0 overflow-hidden">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 truncate">
+                <Clock class="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span class="truncate">{{ currentLanguage === 'kh' ? 'រយៈពេលធ្វើដំណើរ' : 'Travel Time' }}</span>
               </div>
-              <div class="text-sm sm:text-base font-black text-[#0A2540] dark:text-white mt-1">
+              <div class="text-sm sm:text-base font-black text-[#0A2540] dark:text-white mt-1 truncate">
                 {{ currentLanguage === 'kh' ? routeDetails.durationTextKh : routeDetails.durationTextEn }}
               </div>
               <p class="text-[10px] text-slate-400 mt-0.5 truncate">
@@ -1720,10 +1720,10 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
             </div>
 
             <!-- Metric 3: Highways Corridors -->
-            <div class="p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs">
-              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Compass class="w-3 h-3 text-amber-500" />
-                <span>{{ currentLanguage === 'kh' ? 'ខ្សែផ្លូវធំៗ' : 'Corridor Route' }}</span>
+            <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs min-w-0 overflow-hidden">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 truncate">
+                <Compass class="w-3 h-3 text-amber-500 shrink-0" />
+                <span class="truncate">{{ currentLanguage === 'kh' ? 'ខ្សែផ្លូវធំៗ' : 'Corridor Route' }}</span>
               </div>
               <div class="text-xs sm:text-sm font-black text-[#0A2540] dark:text-white mt-1 truncate" :title="currentLanguage === 'kh' ? routeDetails.highwayKh : routeDetails.highwayEn">
                 {{ currentLanguage === 'kh' ? routeDetails.highwayKh : routeDetails.highwayEn }}
@@ -1734,10 +1734,10 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
             </div>
 
             <!-- Metric 4: Estimated Fare -->
-            <div class="p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs">
-              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Ticket class="w-3 h-3 text-purple-600 dark:text-purple-400" />
-                <span>{{ currentLanguage === 'kh' ? 'តម្លៃសំបុត្រ' : 'Estimated Fares' }}</span>
+            <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs min-w-0 overflow-hidden">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 truncate">
+                <Ticket class="w-3 h-3 text-purple-600 dark:text-purple-400 shrink-0" />
+                <span class="truncate">{{ currentLanguage === 'kh' ? 'តម្លៃសំបុត្រ' : 'Estimated Fares' }}</span>
               </div>
               <div class="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400 mt-1 truncate">
                 {{ routeDetails.estimatedFareBus }}
@@ -1864,19 +1864,19 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
         </div>
 
         <!-- Mode Pills Filter (Smooth Horizontal Scroll on Mobile) -->
-        <div class="pt-2 border-t border-slate-100 dark:border-slate-700/60">
-          <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5">
+        <div class="w-full min-w-0 pt-2 border-t border-slate-100 dark:border-slate-700/60 overflow-hidden">
+          <div class="w-full min-w-0 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5 overscroll-x-contain">
             <button
               v-for="mode in transitTypes"
               :key="mode.value"
               @click="selectedType = mode.value"
               type="button"
-              class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border shrink-0 shadow-2xs"
+              class="px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border shrink-0 shadow-2xs"
               :class="selectedType === mode.value
                 ? 'bg-[#003366] text-white border-[#003366]'
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
             >
-              <component :is="mode.icon" class="w-3.5 h-3.5" />
+              <component :is="mode.icon" class="w-3.5 h-3.5 shrink-0" />
               <span>{{ mode.label }}</span>
             </button>
           </div>
@@ -1884,8 +1884,8 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
       </div>
 
       <!-- Result Count Banner -->
-      <div class="flex items-center justify-between">
-        <p class="text-xs font-bold text-slate-500 dark:text-slate-400">
+      <div class="flex items-center justify-between w-full min-w-0">
+        <p class="text-xs font-bold text-slate-500 dark:text-slate-400 truncate">
           {{ currentLanguage === 'kh' ? 'រកឃើញជម្រើសធ្វើដំណើរចំនួន' : 'Found' }}
           <span class="text-[#0A2540] dark:text-white font-black">{{ filteredTransport.length }}</span>
           {{ currentLanguage === 'kh' ? 'ខ្សែរត់ និងប្រតិបត្តិករ' : 'transit lines & operators' }}
@@ -1893,20 +1893,20 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
       </div>
 
       <!-- Transport Route Cards with Visual Route Timeline -->
-      <div v-if="paginatedTransport.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div v-if="paginatedTransport.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full min-w-0">
         <div
           v-for="item in paginatedTransport"
           :key="item.id"
-          class="group bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between"
+          class="group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between w-full min-w-0"
         >
-          <div>
+          <div class="min-w-0">
             <!-- Representative Transit Image Banner -->
-            <div class="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+            <div class="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
               <LazyImage
                 v-if="item.image"
                 :src="item.image"
                 :alt="localized(item.name, item.nameKh)"
-                img-class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                img-class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div
                 v-else
@@ -1915,46 +1915,46 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
                 <Bus class="w-12 h-12 opacity-50" />
               </div>
 
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent pointer-events-none" />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent pointer-events-none" />
 
               <!-- Top Row: Type Badge + Location Overlaid on Image -->
-              <div class="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-none">
-                <span :class="['px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-xl border flex items-center gap-1.5 shadow-sm backdrop-blur-md', typeStyles[item.type]?.badge || 'bg-slate-100 text-slate-700 border-slate-200']">
-                  <component :is="typeStyles[item.type]?.icon || Bus" class="w-3.5 h-3.5" />
+              <div class="absolute top-2.5 sm:top-3.5 left-2.5 sm:left-3.5 right-2.5 sm:right-3.5 flex items-center justify-between pointer-events-none gap-2">
+                <span :class="['px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider rounded-xl border flex items-center gap-1.5 shadow-sm backdrop-blur-md shrink-0', typeStyles[item.type]?.badge || 'bg-slate-100 text-slate-700 border-slate-200']">
+                  <component :is="typeStyles[item.type]?.icon || Bus" class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   <span>{{ item.type }}</span>
                 </span>
 
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/95 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 border border-slate-200/60 shadow-sm backdrop-blur-md">
-                  <MapPin class="w-3 h-3 text-red-500" />
-                  <span>{{ item.location }}</span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold bg-white/95 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 border border-slate-200/60 shadow-sm backdrop-blur-md truncate max-w-[130px] sm:max-w-none">
+                  <MapPin class="w-3 h-3 text-red-500 shrink-0" />
+                  <span class="truncate">{{ item.location }}</span>
                 </span>
               </div>
 
-              <!-- Price Floating Tag -->
-              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 text-white">
-                <div class="flex items-center gap-1.5 min-w-0">
-                  <span class="inline-flex items-center gap-1 text-xs font-black bg-emerald-600/95 backdrop-blur-md px-2.5 py-1 rounded-xl border border-emerald-400/40 shadow-xs shrink-0">
-                    <Ticket class="w-3.5 h-3.5 shrink-0" />
+              <!-- Price & Schedule Floating Tag -->
+              <div class="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex items-center justify-between gap-1.5 text-white">
+                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                  <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-black bg-emerald-600/95 backdrop-blur-md px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-emerald-400/40 shadow-xs shrink-0">
+                    <Ticket class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
                     <span>{{ getShortPrice(item.price) }}</span>
                   </span>
                   <span
                     v-if="isFreeEligible(item.price)"
-                    class="inline-flex items-center px-2 py-0.5 rounded-lg bg-emerald-500/90 backdrop-blur-md text-white text-[10px] font-extrabold truncate"
+                    class="inline-flex items-center px-1.5 py-0.5 rounded-md sm:rounded-lg bg-emerald-500/90 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-extrabold truncate"
                   >
-                    {{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃអាទិភាព' : 'Free Eligible' }}
+                    {{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃអាទិភាព' : 'Free' }}
                   </span>
                 </div>
-                <span class="inline-flex items-center gap-1 text-[11px] font-bold bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-xl shrink-0">
+                <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold bg-slate-900/85 backdrop-blur-md px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl shrink-0">
                   <Clock class="w-3 h-3 text-blue-300 shrink-0" />
-                  <span>{{ item.schedule }}</span>
+                  <span class="truncate max-w-[110px] sm:max-w-none">{{ item.schedule }}</span>
                 </span>
               </div>
             </div>
 
-            <div class="p-4 sm:p-5 space-y-3.5">
+            <div class="p-3.5 sm:p-5 space-y-3 min-w-0">
               <!-- Name & Route Details -->
               <div>
-                <h3 class="text-base sm:text-lg font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug">
+                <h3 class="text-sm sm:text-lg font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug">
                   {{ localized(item.name, item.nameKh) }}
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
@@ -1963,34 +1963,34 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
               </div>
 
               <!-- Route Path Visual Timeline -->
-              <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-700/80 space-y-1.5">
+              <div class="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-700/80 space-y-1.5 min-w-0">
                 <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   <span>{{ currentLanguage === 'kh' ? 'ទិសដៅខ្សែរត់ (Route Coverage)' : 'Route Coverage' }}</span>
-                  <span class="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <span class="text-emerald-600 dark:text-emerald-400 flex items-center gap-1 shrink-0">
                     <ShieldCheck class="w-3 h-3" />
                     <span>Official Service</span>
                   </span>
                 </div>
                 <div class="text-xs font-black text-[#0D47A1] dark:text-blue-300 flex items-start gap-2">
                   <MapPin class="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
-                  <span class="leading-relaxed">{{ item.route }}</span>
+                  <span class="leading-relaxed break-words">{{ item.route }}</span>
                 </div>
               </div>
 
               <!-- Useful Information Tip Box -->
-              <div v-if="item.usefulInformation || item.usefulInformationKh" class="p-3 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+              <div v-if="item.usefulInformation || item.usefulInformationKh" class="p-2.5 sm:p-3 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2 min-w-0">
                 <Smartphone class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                <p class="text-[11px] leading-relaxed">
+                <p class="text-[11px] leading-relaxed break-words min-w-0">
                   {{ localized(item.usefulInformation, item.usefulInformationKh) }}
                 </p>
               </div>
 
               <!-- Highlight for Phnom Penh City Bus Authority Card -->
-              <div v-if="item.id === 'pp-city-bus'" class="p-3 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2">
+              <div v-if="item.id === 'pp-city-bus'" class="p-2.5 sm:p-3 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-between gap-2 min-w-0">
+                <div class="flex items-center gap-1.5 min-w-0 flex-1">
                   <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <span class="text-xs font-black text-emerald-800 dark:text-emerald-200">
-                    {{ currentLanguage === 'kh' ? 'បណ្តាញរថយន្តក្រុងផ្លូវការទាំង ១៣ ខ្សែ & ចំណត' : 'All 13 Official Lines & Station Stops' }}
+                  <span class="text-xs font-black text-emerald-800 dark:text-emerald-200 truncate">
+                    {{ currentLanguage === 'kh' ? 'បណ្តាញរថយន្តក្រុងទាំង ១៣ ខ្សែ & ចំណត' : 'All 13 Official Lines & Stops' }}
                   </span>
                 </div>
                 <button
@@ -1998,16 +1998,16 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
                   type="button"
                   class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black transition-colors shrink-0 cursor-pointer shadow-2xs"
                 >
-                  {{ currentLanguage === 'kh' ? 'ពិនិត្យលម្អិត' : 'Inspect' }}
+                  {{ currentLanguage === 'kh' ? 'ពិនិត្យ' : 'Inspect' }}
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Card Actions Footer -->
-          <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
-            <div class="pt-3.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-3">
-              <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1">
+          <div class="px-3.5 pb-3.5 sm:px-5 sm:pb-5 pt-0">
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-2">
+              <span class="text-[10px] sm:text-[11px] text-slate-400 font-semibold flex items-center gap-1 shrink-0">
                 <CreditCard class="w-3.5 h-3.5 text-slate-400" />
                 <span>Cash & KHQR</span>
               </span>
@@ -2017,9 +2017,9 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
                 v-if="item.id === 'pp-city-bus'"
                 @click="openCityBusModal()"
                 type="button"
-                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition-all cursor-pointer"
+                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition-all cursor-pointer shrink-0"
               >
-                <span>{{ currentLanguage === 'kh' ? 'មើលផែនទី & ស្ថានីយ' : 'View Route & Stations' }}</span>
+                <span>{{ currentLanguage === 'kh' ? 'មើលខ្សែរត់ & ស្ថានីយ' : 'View Route' }}</span>
                 <ExternalLink class="w-3 h-3" />
               </button>
 
@@ -2028,7 +2028,7 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
                 :href="'https://www.google.com/maps/search/' + encodeURIComponent(item.route + ' ' + item.location + ' Cambodia')"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-[#0D47A1] dark:text-blue-300 hover:bg-[#0D47A1] hover:text-white dark:hover:bg-blue-600 text-xs font-bold border border-blue-200/70 dark:border-blue-700/60 transition-all cursor-pointer"
+                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-[#0D47A1] dark:text-blue-300 hover:bg-[#0D47A1] hover:text-white text-xs font-bold border border-blue-200/70 dark:border-blue-700/60 transition-all cursor-pointer shrink-0"
               >
                 <span>{{ currentLanguage === 'kh' ? 'មើលផែនទី & ស្ថានីយ' : 'View Route on Maps' }}</span>
                 <ExternalLink class="w-3 h-3" />

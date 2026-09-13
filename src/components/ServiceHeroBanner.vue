@@ -74,12 +74,15 @@ const { selectedProvince } = useLocation()
         <div class="max-w-3xl space-y-3.5">
           <!-- Official Civic Badge -->
           <div class="flex flex-wrap items-center gap-2">
-            <div class="inline-flex items-center gap-2 rounded-full bg-blue-500/25 px-3.5 py-1.5 text-xs font-black text-blue-200 ring-1 ring-blue-400/30 backdrop-blur-md">
-              <span class="relative flex h-2 w-2">
+            <div class="inline-flex items-center gap-2 rounded-full bg-blue-500/25 px-3 py-1 sm:px-3.5 sm:py-1.5 text-xs font-black text-blue-200 ring-1 ring-blue-400/30 backdrop-blur-md max-w-full">
+              <span class="relative flex h-2 w-2 shrink-0">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span class="inline-flex items-center gap-1.5"><Landmark class="w-3.5 h-3.5 text-[#D4AF37]" /> <span>ព្រះរាជាណាចក្រកម្ពុជា • {{ currentLanguage === 'kh' && badgeKh ? badgeKh : (badge || 'សេវាសាធារណៈផ្លូវការ') }}</span></span>
+              <span class="inline-flex items-center gap-1.5 min-w-0">
+                <Landmark class="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+                <span class="truncate">ព្រះរាជាណាចក្រកម្ពុជា • {{ currentLanguage === 'kh' && badgeKh ? badgeKh : (badge || 'សេវាសាធារណៈផ្លូវការ') }}</span>
+              </span>
             </div>
 
             <div class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold text-white/90 backdrop-blur-xs border border-white/10">
@@ -99,9 +102,9 @@ const { selectedProvince } = useLocation()
           </p>
 
           <!-- Active Location Helper Tag -->
-          <div class="pt-1 flex items-center gap-2 text-xs text-blue-200">
+          <div class="pt-1 flex items-center gap-2 text-xs text-blue-200 flex-wrap">
             <MapPin class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>
+            <span class="leading-relaxed">
               {{ currentLanguage === 'kh' ? 'កំពុងបង្ហាញសេវាកម្ម និងការិយាល័យក្នុង:' : 'Viewing services & offices in:' }}
               <strong class="text-white font-black underline decoration-emerald-400 decoration-2 underline-offset-4">
                 {{ currentLanguage === 'kh' ? selectedProvince.nameKh : selectedProvince.name }} (២៥ រាជធានី-ខេត្ត)
