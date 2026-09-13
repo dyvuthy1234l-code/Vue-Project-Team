@@ -83,34 +83,44 @@ function triggerToast(msg: string) {
 
     <!-- RIGHT CONTENT AREA -->
     <div class="flex-1 flex flex-col h-screen min-w-0 overflow-hidden">
-      <!-- TOP HEADER (Only shown on management detail tabs, hidden on overview dashboard to match mockup pixel-perfectly) -->
+      <!-- TOP HEADER (Always shown for unified navigation, Admin Role badge, and search) -->
       <AdminHeader
-        v-if="activeTab !== 'dashboard'"
+        :active-tab="activeTab"
         :sidebar-collapsed="isSidebarCollapsed"
         v-model:search-query="globalSearchQuery"
         @toggle-sidebar="toggleSidebar"
         @navigate="handleSelectTab"
       />
 
-      <!-- MAIN VIEWPORT (Single-screen on dashboard, scrollable on detail management tabs) -->
-      <main :class="['flex-1 min-h-0', activeTab === 'dashboard' ? 'p-3 sm:p-4 h-full overflow-hidden flex flex-col' : 'p-4 sm:p-6 overflow-y-auto scrollbar-thin']">
+      <!-- MAIN VIEWPORT (Clean, responsive layout across all admin tabs) -->
+      <main
+        :class="[
+          'flex-1 min-h-0',
+          activeTab === 'dashboard' || activeTab === 'government' || activeTab === 'health'
+            ? 'p-2.5 sm:p-3 lg:p-3.5 xl:p-4 overflow-y-auto lg:overflow-hidden flex flex-col'
+            : 'p-4 sm:p-6 overflow-y-auto scrollbar-thin'
+        ]"
+      >
         
-        <!-- Tab 1: Overview Dashboard (Matches Mockup Image) -->
+        <!-- Tab 1: Overview Dashboard (Single Screen View) -->
         <AdminOverview
           v-if="activeTab === 'dashboard'"
+          class="flex-1 min-h-0"
           @navigate="handleSelectTab"
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 2: Government Services -->
+        <!-- Tab 2: Government Services (Single Screen View with Pagination) -->
         <AdminGovernment
           v-else-if="activeTab === 'government'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 3: Healthcare & Hospitals -->
+        <!-- Tab 3: Healthcare & Hospitals (Single Screen View with Pagination) -->
         <AdminHealthcare
           v-else-if="activeTab === 'health'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 

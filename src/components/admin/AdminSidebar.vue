@@ -11,7 +11,9 @@ import {
   MessageSquare,
   Settings,
   ShieldCheck,
-  LogOut
+  LogOut,
+  ExternalLink,
+  Crown
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 
@@ -73,49 +75,53 @@ const systemItems: NavItem[] = [
 <template>
   <aside
     :class="[
-      'bg-gradient-to-b from-[#0EA5E9] to-[#0284C7] text-white border-r border-sky-400/40 shadow-xl flex flex-col justify-between shrink-0 transition-all duration-200 z-30 select-none h-screen overflow-hidden',
-      collapsed ? 'w-16 p-2' : 'w-[245px] sm:w-[255px] p-3'
+      'bg-[#0B1528] text-slate-200 border-r border-slate-800/80 shadow-2xl flex flex-col justify-between shrink-0 transition-all duration-200 z-30 select-none h-screen overflow-hidden',
+      collapsed ? 'w-16 p-2' : 'w-[255px] sm:w-[265px] p-3'
     ]"
   >
-    <!-- TOP SECTION: LOGO + MENU ITEMS -->
+    <!-- TOP SECTION: BRAND + MENU ITEMS -->
     <div class="flex-1 flex flex-col justify-between min-h-0 overflow-hidden">
       
       <!-- 1. BRAND LOGO HEADER -->
-      <div class="flex items-center pb-2 pt-0.5 px-1 shrink-0">
-        <router-link to="/" class="flex items-center gap-2.5 group focus:outline-none min-w-0" title="CamLife Home">
+      <div class="flex items-center pb-2.5 pt-1 px-1 shrink-0 border-b border-slate-800/60">
+        <router-link to="/" class="flex items-center gap-2.5 group focus:outline-none min-w-0" :title="currentLanguage === 'kh' ? 'គេហទំព័រពលរដ្ឋ' : 'CamLife Citizen Portal'">
           <img
             src="/logo.png"
             alt="CamLife"
-            class="h-8 w-8 rounded-xl object-contain bg-white p-0.5 shadow-xs shrink-0 transition-transform group-hover:scale-105"
+            class="h-8 w-8 rounded-xl object-contain bg-white p-0.5 shadow-sm shrink-0 transition-transform group-hover:scale-105"
           />
           <div v-if="!collapsed" class="flex flex-col min-w-0 leading-none">
-            <span class="text-white font-black text-base tracking-tight leading-none">CamLife</span>
-            <span class="text-sky-100 font-extrabold text-[10.5px] uppercase tracking-wider leading-none mt-1">Admin CMS</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-white font-black text-base tracking-tight leading-none">CamLife</span>
+              <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30 font-khmer">
+                {{ currentLanguage === 'kh' ? 'រដ្ឋបាល' : 'CMS' }}
+              </span>
+            </div>
+            <span class="text-slate-400 font-semibold text-[10px] tracking-wider leading-none mt-1 font-khmer">
+              {{ currentLanguage === 'kh' ? 'ផតថលរដ្ឋបាលជាតិ' : 'National Admin Portal' }}
+            </span>
           </div>
         </router-link>
       </div>
 
-      <!-- 2. PRIMARY TAB: DASHBOARD (Crisp White Pill on Sky Blue) -->
-      <div class="shrink-0 pt-1 pb-1">
+      <!-- 2. PRIMARY TAB: DASHBOARD -->
+      <div class="shrink-0 pt-2 pb-1">
         <button
           type="button"
           @click="emit('select-tab', 'dashboard')"
           :class="[
-            'w-full flex items-center gap-3 rounded-2xl text-left transition-all duration-150 cursor-pointer text-xs relative group',
-            collapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5',
+            'w-full flex items-center gap-3 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs relative group',
+            collapsed ? 'justify-center p-2.5' : 'px-3 py-2',
             activeTab === 'dashboard'
-              ? 'bg-white text-sky-800 shadow-md shadow-sky-950/20 font-bold'
-              : 'text-white/90 hover:text-white hover:bg-white/15 font-medium'
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold'
+              : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium'
           ]"
-          :title="currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រង (Dashboard)' : 'Dashboard'"
+          :title="currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងទូទៅ' : 'Overview Dashboard'"
         >
-          <Home :class="['w-4 h-4 shrink-0', activeTab === 'dashboard' ? 'text-sky-600' : 'text-sky-100 group-hover:text-white']" />
-          <div v-if="!collapsed" class="flex flex-col min-w-0 leading-none">
-            <span :class="['font-khmer text-xs leading-none', activeTab === 'dashboard' ? 'font-bold text-sky-900' : 'font-semibold text-white']">
-              {{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រង' : 'Dashboard' }}
-            </span>
-            <span :class="['text-[9.5px] leading-none mt-1', activeTab === 'dashboard' ? 'font-semibold text-sky-600' : 'text-sky-100/80 group-hover:text-white']">
-              {{ currentLanguage === 'kh' ? 'Dashboard' : 'ផ្ទាំងគ្រប់គ្រង' }}
+          <Home :class="['w-4 h-4 shrink-0', activeTab === 'dashboard' ? 'text-white' : 'text-slate-400 group-hover:text-white']" />
+          <div v-if="!collapsed" class="flex items-center min-w-0 flex-1">
+            <span :class="['font-khmer text-xs truncate', activeTab === 'dashboard' ? 'font-bold text-white' : 'font-medium text-slate-200']">
+              {{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងទូទៅ' : 'Overview Dashboard' }}
             </span>
           </div>
         </button>
@@ -125,9 +131,9 @@ const systemItems: NavItem[] = [
       <div class="shrink-0 space-y-0.5">
         <div
           v-if="!collapsed"
-          class="px-3 pt-1.5 pb-0.5 text-[9.5px] font-extrabold uppercase tracking-wider text-sky-100/90"
+          class="px-3 pt-2 pb-1 text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between font-khmer"
         >
-          CONTENT MANAGEMENT
+          <span>{{ currentLanguage === 'kh' ? 'ការគ្រប់គ្រងមាតិកា' : 'Content Management' }}</span>
         </div>
         <div class="space-y-0.5">
           <button
@@ -136,11 +142,11 @@ const systemItems: NavItem[] = [
             type="button"
             @click="emit('select-tab', item.id)"
             :class="[
-              'w-full flex items-center gap-3 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
-              collapsed ? 'justify-center p-2' : 'px-3 py-1.5',
+              'w-full flex items-center gap-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
+              collapsed ? 'justify-center p-2' : 'px-3 py-2',
               activeTab === item.id
-                ? 'bg-white text-sky-800 shadow-md shadow-sky-950/20 font-bold'
-                : 'text-white/90 hover:text-white hover:bg-white/15 font-medium'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-bold'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium'
             ]"
             :title="currentLanguage === 'kh' ? item.labelKh : item.labelEn"
           >
@@ -148,20 +154,12 @@ const systemItems: NavItem[] = [
               :is="item.icon"
               :class="[
                 'w-4 h-4 shrink-0 transition-colors',
-                activeTab === item.id ? 'text-sky-600' : 'text-sky-100 group-hover:text-white'
+                activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
               ]"
             />
-            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1 leading-none">
-              <span :class="['font-khmer text-xs leading-none truncate', activeTab === item.id ? 'font-bold text-sky-900' : 'font-semibold text-white']">
+            <div v-if="!collapsed" class="flex items-center min-w-0 flex-1">
+              <span :class="['font-khmer text-xs truncate', activeTab === item.id ? 'font-bold text-white' : 'font-medium text-slate-200']">
                 {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
-              </span>
-              <span
-                :class="[
-                  'text-[9px] leading-none mt-0.5 truncate',
-                  activeTab === item.id ? 'text-sky-600 font-semibold' : 'text-sky-100/80 group-hover:text-white'
-                ]"
-              >
-                {{ currentLanguage === 'kh' ? item.labelEn : item.labelKh }}
               </span>
             </div>
           </button>
@@ -172,9 +170,9 @@ const systemItems: NavItem[] = [
       <div class="shrink-0 space-y-0.5">
         <div
           v-if="!collapsed"
-          class="px-3 pt-1.5 pb-0.5 text-[9.5px] font-extrabold uppercase tracking-wider text-sky-100/90"
+          class="px-3 pt-2 pb-1 text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between font-khmer"
         >
-          USER & SUPPORT
+          <span>{{ currentLanguage === 'kh' ? 'អ្នកប្រើ & តួនាទី' : 'Users & Support' }}</span>
         </div>
         <div class="space-y-0.5">
           <button
@@ -183,11 +181,11 @@ const systemItems: NavItem[] = [
             type="button"
             @click="emit('select-tab', item.id)"
             :class="[
-              'w-full flex items-center gap-3 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
-              collapsed ? 'justify-center p-2' : 'px-3 py-1.5',
+              'w-full flex items-center gap-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
+              collapsed ? 'justify-center p-2' : 'px-3 py-2',
               activeTab === item.id
-                ? 'bg-white text-sky-800 shadow-md shadow-sky-950/20 font-bold'
-                : 'text-white/90 hover:text-white hover:bg-white/15 font-medium'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-bold'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium'
             ]"
             :title="currentLanguage === 'kh' ? item.labelKh : item.labelEn"
           >
@@ -195,26 +193,18 @@ const systemItems: NavItem[] = [
               :is="item.icon"
               :class="[
                 'w-4 h-4 shrink-0 transition-colors',
-                activeTab === item.id ? 'text-sky-600' : 'text-sky-100 group-hover:text-white'
+                activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
               ]"
             />
-            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1 leading-none">
-              <span :class="['font-khmer text-xs leading-none truncate', activeTab === item.id ? 'font-bold text-sky-900' : 'font-semibold text-white']">
+            <div v-if="!collapsed" class="flex items-center min-w-0 flex-1">
+              <span :class="['font-khmer text-xs truncate', activeTab === item.id ? 'font-bold text-white' : 'font-medium text-slate-200']">
                 {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
-              </span>
-              <span
-                :class="[
-                  'text-[9px] leading-none mt-0.5 truncate',
-                  activeTab === item.id ? 'text-sky-600 font-semibold' : 'text-sky-100/80 group-hover:text-white'
-                ]"
-              >
-                {{ currentLanguage === 'kh' ? item.labelEn : item.labelKh }}
               </span>
             </div>
             <!-- Red Badge 3 for Feedback & Reports -->
             <span
               v-if="item.id === 'feedback' && !collapsed"
-              class="w-4 h-4 rounded-full bg-red-500 text-white text-[9.5px] font-black flex items-center justify-center shrink-0 ml-auto shadow-xs"
+              class="w-4 h-4 rounded-full bg-rose-500 text-white text-[9.5px] font-black flex items-center justify-center shrink-0 ml-auto shadow-xs"
             >
               3
             </span>
@@ -222,13 +212,13 @@ const systemItems: NavItem[] = [
         </div>
       </div>
 
-      <!-- 5. SECTION: SYSTEM -->
+      <!-- 5. SECTION: SYSTEM & AUDIT -->
       <div class="shrink-0 space-y-0.5">
         <div
           v-if="!collapsed"
-          class="px-3 pt-1.5 pb-0.5 text-[9.5px] font-extrabold uppercase tracking-wider text-sky-100/90"
+          class="px-3 pt-2 pb-1 text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400 font-khmer"
         >
-          SYSTEM
+          {{ currentLanguage === 'kh' ? 'ប្រព័ន្ធ & សវនកម្ម' : 'System & Security' }}
         </div>
         <div class="space-y-0.5">
           <button
@@ -237,11 +227,11 @@ const systemItems: NavItem[] = [
             type="button"
             @click="emit('select-tab', item.id)"
             :class="[
-              'w-full flex items-center gap-3 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
-              collapsed ? 'justify-center p-2' : 'px-3 py-1.5',
+              'w-full flex items-center gap-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
+              collapsed ? 'justify-center p-2' : 'px-3 py-2',
               activeTab === item.id
-                ? 'bg-white text-sky-800 shadow-md shadow-sky-950/20 font-bold'
-                : 'text-white/90 hover:text-white hover:bg-white/15 font-medium'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-bold'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium'
             ]"
             :title="currentLanguage === 'kh' ? item.labelKh : item.labelEn"
           >
@@ -249,20 +239,12 @@ const systemItems: NavItem[] = [
               :is="item.icon"
               :class="[
                 'w-4 h-4 shrink-0 transition-colors',
-                activeTab === item.id ? 'text-sky-600' : 'text-sky-100 group-hover:text-white'
+                activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
               ]"
             />
-            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1 leading-none">
-              <span :class="['font-khmer text-xs leading-none truncate', activeTab === item.id ? 'font-bold text-sky-900' : 'font-semibold text-white']">
+            <div v-if="!collapsed" class="flex items-center min-w-0 flex-1">
+              <span :class="['font-khmer text-xs truncate', activeTab === item.id ? 'font-bold text-white' : 'font-medium text-slate-200']">
                 {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
-              </span>
-              <span
-                :class="[
-                  'text-[9px] leading-none mt-0.5 truncate',
-                  activeTab === item.id ? 'text-sky-600 font-semibold' : 'text-sky-100/80 group-hover:text-white'
-                ]"
-              >
-                {{ currentLanguage === 'kh' ? item.labelEn : item.labelKh }}
               </span>
             </div>
           </button>
@@ -271,43 +253,71 @@ const systemItems: NavItem[] = [
 
     </div>
 
-    <!-- 6. BOTTOM PROFILE CARD (Sky Blue theme) -->
-    <div class="mt-2 pt-2 border-t border-sky-400/40 shrink-0">
+    <!-- 6. BOTTOM PROFILE & ROLE ADMIN BADGE CARD -->
+    <div class="mt-2 pt-2 border-t border-slate-800/80 shrink-0">
       <div
         :class="[
-          'bg-sky-800/50 border border-sky-400/40 rounded-2xl transition-all',
+          'bg-slate-800/70 border border-slate-700/60 rounded-2xl transition-all',
           collapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-2.5 flex items-center gap-2.5 shadow-sm'
         ]"
       >
-        <!-- Purple/White Avatar Badge with 'A' -->
-        <div class="w-8 h-8 rounded-full bg-white text-sky-700 font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
-          A
+        <!-- Golden Shield/Crown Avatar -->
+        <div class="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-black text-xs flex items-center justify-center shrink-0 shadow-md">
+          <Crown class="w-4 h-4 text-slate-900" />
+          <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-[#0B1528]" title="Online"></span>
         </div>
 
         <div v-if="!collapsed" class="flex-1 min-w-0">
-          <div class="text-xs font-bold text-white truncate leading-none">Admin</div>
-          <div class="text-[9.5px] text-sky-100 truncate leading-none mt-0.5">Super Admin</div>
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xs font-bold text-white truncate font-khmer">
+              {{ currentLanguage === 'kh' ? 'មន្ត្រីរដ្ឋបាល' : 'Admin Officer' }}
+            </span>
+          </div>
+          <div class="flex items-center gap-1 mt-0.5">
+            <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 font-khmer">
+              {{ currentLanguage === 'kh' ? 'អ្នកគ្រប់គ្រងកំពូល' : 'Super Admin' }}
+            </span>
+          </div>
+          <div class="flex items-center gap-2 mt-1.5 pt-1 border-t border-slate-700/50">
+            <router-link
+              to="/"
+              class="text-[10px] text-blue-300 hover:text-white flex items-center gap-1 font-medium font-khmer transition-colors"
+              :title="currentLanguage === 'kh' ? 'គេហទំព័រពលរដ្ឋ' : 'Return to Citizen Site'"
+            >
+              <ExternalLink class="w-3 h-3" />
+              <span>{{ currentLanguage === 'kh' ? 'ទំព័រពលរដ្ឋ' : 'Citizen Site' }}</span>
+            </router-link>
+            <span class="text-slate-600">·</span>
+            <button
+              type="button"
+              @click="emit('logout')"
+              class="text-[10px] text-rose-300 hover:text-rose-100 flex items-center gap-1 font-medium font-khmer transition-colors cursor-pointer"
+              :title="currentLanguage === 'kh' ? 'ចាកចេញ' : 'Sign Out'"
+            >
+              <LogOut class="w-3 h-3 text-rose-400" />
+              <span>{{ currentLanguage === 'kh' ? 'ចាកចេញ' : 'Logout' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Collapsed buttons -->
+        <div v-else class="flex flex-col items-center gap-1">
+          <router-link
+            to="/"
+            class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50"
+            title="Public Site"
+          >
+            <ExternalLink class="w-3.5 h-3.5" />
+          </router-link>
           <button
             type="button"
             @click="emit('logout')"
-            class="text-[9.5px] text-rose-200 hover:text-white flex items-center gap-1 font-semibold leading-none mt-1 cursor-pointer"
+            class="p-1 rounded-lg text-rose-400 hover:text-white hover:bg-rose-500/20 cursor-pointer"
             title="Sign Out"
           >
-            <LogOut class="w-3 h-3 text-rose-200" />
-            <span>{{ currentLanguage === 'kh' ? 'ចាកចេញ' : 'Sign Out' }}</span>
+            <LogOut class="w-3.5 h-3.5" />
           </button>
         </div>
-
-        <!-- Collapsed signout button -->
-        <button
-          v-else
-          type="button"
-          @click="emit('logout')"
-          class="p-1.5 rounded-lg text-rose-200 hover:text-white hover:bg-white/10 cursor-pointer"
-          title="Sign Out"
-        >
-          <LogOut class="w-3.5 h-3.5" />
-        </button>
       </div>
     </div>
   </aside>

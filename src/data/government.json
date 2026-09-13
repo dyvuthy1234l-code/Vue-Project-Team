@@ -540,5 +540,443 @@
         "answerKh": "ប្លង់ទន់ទទួលស្គាល់ត្រឹមកម្រិតសង្កាត់/ខណ្ឌ រីឯប្លង់រឹងចុះបញ្ជីនៅក្រសួងរៀបចំដែនដីថ្នាក់ជាតិ មានកូអរដោនេ GPS ច្បាស់លាស់ និងមានសុពលភាពច្បាប់រឹងមាំបំផុត។"
       }
     ]
+  },
+  {
+    "id": "criminal-record",
+    "title": "Criminal Record Certificate (Police Clearance / Bulletin No. 3)",
+    "titleKh": "លិខិតថ្កោលទោស / ព្រឹត្តិបត្រថ្កោលទោសលេខ ៣",
+    "category": "Justice & Legal",
+    "image": "/images/documents/national-id.jpg",
+    "description": "Official criminal background check certificate (Bulletin No. 3) issued by the Ministry of Justice, mandatory for domestic/international employment, study abroad, and foreign visa applications.",
+    "descriptionKh": "ការស្នើសុំព្រឹត្តិបត្រថ្កោលទោសលេខ ៣ ចេញដោយក្រសួងយុត្តិធម៌ តម្រូវសម្រាប់ការដាក់ពាក្យបម្រើការងារ អាហារូបករណ៍ទៅសិក្សានៅក្រៅប្រទេស និងការសុំទិដ្ឋាការ (Visa)។",
+    "requirements": [
+      "Original valid Cambodian National ID Card",
+      "Valid Family Book (Kor.Bou.4) or Residence Book (Kor.Bou.2)",
+      "Recent 4x6 passport-style photograph (white background)",
+      "Official application form signed and thumbprinted"
+    ],
+    "requirementsKh": [
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរច្បាប់ដើមមានសុពលភាព",
+      "សៀវភៅគ្រួសារ (ក.ប.៤) ឬសៀវភៅស្នាក់នៅ (ក.ប.២) ច្បាប់ដើម",
+      "រូបថត ៤x៦ ថតថ្មីផ្ទៃខាងក្រោយពណ៌ស",
+      "ពាក្យស្នើសុំមានចុះហត្ថលេខា និងផ្តិតស្នាមមេដៃ"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Document Submission",
+        "titleKh": "ដាក់ពាក្យស្នើសុំ",
+        "description": "Submit application online via cr.moj.gov.kh or in person at Ministry of Justice One Window Service.",
+        "descriptionKh": "ដាក់ពាក្យតាមប្រព័ន្ធអនឡាញ cr.moj.gov.kh ឬដោយផ្ទាល់នៅការិយាល័យច្រកចេញចូលតែមួយនៃក្រសួងយុត្តិធម៌។"
+      },
+      {
+        "step": 2,
+        "title": "Background Verification",
+        "titleKh": "ផ្ទៀងផ្ទាត់កំណត់ត្រាព្រហ្មទណ្ឌ",
+        "description": "Judicial police run national automated criminal record checks against court records.",
+        "descriptionKh": "មន្ត្រីនគរបាលយុត្តិធម៌ផ្ទៀងផ្ទាត់ទិន្នន័យព្រហ្មទណ្ឌក្នុងប្រព័ន្ធតុលាការទូទាំងប្រទេស។"
+      },
+      {
+        "step": 3,
+        "title": "Certificate Issuance",
+        "titleKh": "ទទួលយកព្រឹត្តិបត្រថ្កោលទោស",
+        "description": "Pick up sealed and barcoded official Bulletin No. 3 certificate.",
+        "descriptionKh": "ទទួលយកព្រឹត្តិបត្រថ្កោលទោសលេខ ៣ ផ្លូវការដែលមានបិទតែម និងកូដសុវត្ថិភាព។"
+      }
+    ],
+    "location": "Ministry of Justice, Samdech Sothearos Blvd, Phnom Penh or online via cr.moj.gov.kh",
+    "locationKh": "ទីស្តីការក្រសួងយុត្តិធម៌ មហាវិថីសម្តេចសុធារស រាជធានីភ្នំពេញ ឬតាមអនឡាញ cr.moj.gov.kh",
+    "processingTime": "7 to 12 business days (Standard) / 3 business days (Express)",
+    "processingTimeKh": "៧ ដល់ ១២ ថ្ងៃធ្វើការ (ធម្មតា) / ៣ ថ្ងៃ (រហ័ស)",
+    "fee": "10,000 KHR (~$2.50) Standard / 20,000 KHR Express",
+    "feeKh": "១០,០០០ រៀល (ស្តង់ដារ) / ២០,០០០ រៀល (សេវារហ័ស)",
+    "validity": "3 Months from issuance date",
+    "validityKh": "៣ ខែ គិតចាប់ពីថ្ងៃចេញ",
+    "ageRequirements": "15 Years and Above",
+    "ageRequirementsKh": "អាយុចាប់ពី ១៥ ឆ្នាំឡើងទៅ",
+    "faq": [
+      {
+        "question": "Can someone else pick up my criminal record certificate on my behalf?",
+        "questionKh": "តើអាចឱ្យអ្នកដទៃមកបើកជំនួសបានទេ?",
+        "answer": "Yes, with an official power of attorney or if an immediate family member presents original family book and applicant's receipt stub.",
+        "answerKh": "អាចបាន ប្រសិនបើមានលិខិតផ្ទេរសិទ្ធិ ឬសមាជិកគ្រួសារផ្ទាល់ដែលមានឈ្មោះក្នុងសៀវភៅគ្រួសារ និងកាន់បង្កាន់ដៃទទួល។"
+      }
+    ]
+  },
+  {
+    "id": "vehicle-registration",
+    "title": "Vehicle Ownership Transfer & Road Tax Registration",
+    "titleKh": "ការផ្ទេរកម្មសិទ្ធិយានយន្ត និងបង់ពន្ធផ្លូវ",
+    "category": "Transport",
+    "image": "/images/documents/passport.jpg",
+    "description": "Official change of motorbike, automobile, and commercial vehicle legal owner title registration with the Ministry of Public Works and Transport.",
+    "descriptionKh": "ការផ្ទេរឈ្មោះម្ចាស់កម្មសិទ្ធិម៉ូតូ រថយន្ត និងយានយន្តពាណិជ្ជកម្មស្របច្បាប់ តាមរយៈក្រសួងសាធារណការ និងដឹកជញ្ជូន។",
+    "requirements": [
+      "Original Vehicle Identification Card (Vehicle Logbook / កាតគ្រី)",
+      "Official Buy-Sell Agreement authenticated by local Sangkat",
+      "Buyer and Seller Cambodian National ID Cards",
+      "Vehicle technical inspection certificate (Technical Inspection / ឆៀក)",
+      "Road tax sticker receipt"
+    ],
+    "requirementsKh": [
+      "ប័ណ្ណសម្គាល់យានយន្តច្បាប់ដើម (កាតគ្រីយានយន្ត)",
+      "កិច្ចសន្យាទិញលក់ដែលមានការដឹងឮពីសាលាសង្កាត់",
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែររបស់អ្នកទិញ និងអ្នកលក់",
+      "វិញ្ញាបនបត្រត្រួតពិនិត្យលក្ខណៈបច្ចេកទេសយានយន្ត (ឆៀក)",
+      "បង្កាន់ដៃបង់ពន្ធផ្លូវចុងក្រោយ"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Submit Online via MPWT Portal",
+        "titleKh": "ដាក់ពាក្យតាមប្រព័ន្ធ MPWT",
+        "description": "Input vehicle plate and engine serial details at vehicle.mpwt.gov.kh.",
+        "descriptionKh": "បញ្ចូលលេខតួ លេខម៉ាស៊ីន និងលេខផ្លាកលេខតាម vehicle.mpwt.gov.kh។"
+      },
+      {
+        "step": 2,
+        "title": "Physical Inspection Verification",
+        "titleKh": "ត្រួតពិនិត្យតួ និងម៉ាស៊ីនផ្ទាល់",
+        "description": "Bring vehicle for physical chassis rubbing verification at MPWT service branch.",
+        "descriptionKh": "យករថយន្តទៅកោសលេខតួ និងលេខម៉ាស៊ីនផ្ទៀងផ្ទាត់នៅមជ្ឈមណ្ឌលផ្តល់សេវា។"
+      },
+      {
+        "step": 3,
+        "title": "New QR Vehicle Card Delivery",
+        "titleKh": "ទទួលប័ណ្ណសម្គាល់ថ្មីមាន QR",
+        "description": "Receive updated laminated QR vehicle ownership smart card.",
+        "descriptionKh": "ទទួលកាតគ្រីថ្មីដែលមាន QR Code សម្គាល់ម្ចាស់កម្មសិទ្ធិថ្មី។"
+      }
+    ],
+    "location": "MPWT Service Centers (Chip Mong 271, AEON Sen Sok City) or Provincial Departments of Public Works",
+    "locationKh": "មជ្ឈមណ្ឌលផ្តល់សេវាសាធារណៈ MPWT (ផ្សារទំនើបជីបម៉ុង ២៧១, អ៊ីអន សែនសុខ) ឬមន្ទីរសាធារណការខេត្ត",
+    "processingTime": "1 to 3 business days",
+    "processingTimeKh": "១ ដល់ ៣ ថ្ងៃធ្វើការ",
+    "fee": "15,000 to 45,000 KHR depending on vehicle classification and engine size",
+    "feeKh": "១៥,០០០ ដល់ ៤៥,០០០ រៀល តាមប្រភេទយានយន្ត",
+    "validity": "Permanent Legal Ownership / 10 Years Card Renewal",
+    "validityKh": "អចិន្ត្រៃយ៍ / កាតគ្រីមានសុពលភាព ១០ ឆ្នាំ",
+    "ageRequirements": "18 Years and Above",
+    "ageRequirementsKh": "អាយុចាប់ពី ១៨ ឆ្នាំឡើងទៅ",
+    "faq": [
+      {
+        "question": "Can I transfer vehicle ownership without the seller present?",
+        "questionKh": "តើអាចផ្ទេរកម្មសិទ្ធិដោយគ្មានវត្តមានអ្នកលក់បានទេ?",
+        "answer": "Yes, if you hold an official notarized purchase contract and seller power of attorney authenticated by commune authorities.",
+        "answerKh": "អាចបាន ប្រសិនបើមានកិច្ចសន្យាទិញលក់ផ្លូវការ និងលិខិតផ្ទេរសិទ្ធិមានការទទួលស្គាល់ត្រឹមត្រូវពីសាលាសង្កាត់។"
+      }
+    ]
+  },
+  {
+    "id": "single-certificate",
+    "title": "Certificate of Celibacy / Single Status Certificate",
+    "titleKh": "លិខិតបញ្ជាក់ភាពនៅលីវ (លិខិតបញ្ជាក់លីវ)",
+    "category": "Civil Status",
+    "image": "/images/documents/national-id.jpg",
+    "description": "Official municipal certificate attesting that an individual is legally unmarried, divorced, or widowed, essential for civil marriage registration and overseas visa filing.",
+    "descriptionKh": "លិខិតរដ្ឋបាលផ្លូវការបញ្ជាក់ថាបុគ្គលម្នាក់ពិតជានៅលីវ មេម៉ាយ ឬពោះម៉ាយស្របច្បាប់ សម្រាប់ប្រើប្រាស់ក្នុងការចុះសំបុត្រអាពាហ៍ពិពាហ៍ និងការសុំទិដ្ឋាការ។",
+    "requirements": [
+      "Original Cambodian National ID Card",
+      "Original Family Book (Kor.Bou.4) or Residence Book",
+      "Two adult witnesses with valid ID cards residing in the same village/Sangkat",
+      "Divorce verdict or death certificate of previous spouse (if previously married)"
+    ],
+    "requirementsKh": [
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរច្បាប់ដើម",
+      "សៀវភៅគ្រួសារ (ក.ប.៤) ឬសៀវភៅស្នាក់នៅច្បាប់ដើម",
+      "សាក្សី ២ នាក់មានអត្តសញ្ញាណប័ណ្ណរស់នៅក្នុងភូមិ/សង្កាត់ជាមួយគ្នា",
+      "សាលក្រមលែងលះ ឬសំបុត្រមរណភាពសហព័ទ្ធមុន (ករណីធ្លាប់រៀបការ)"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Village Chief Endorsement",
+        "titleKh": "ការបញ្ជាក់ពីមេភូមិ",
+        "description": "Obtain residency and bachelorhood attestation from your local village chief.",
+        "descriptionKh": "សុំការបញ្ជាក់ពីមេភូមិអំពីស្ថានភាពនៅលីវជាក់ស្តែងក្នុងមូលដ្ឋាន។"
+      },
+      {
+        "step": 2,
+        "title": "Sangkat Hall Interview",
+        "titleKh": "សម្ភាសន៍នៅសាលាសង្កាត់",
+        "description": "Sign declaration before commune civil registrar accompanied by two witnesses.",
+        "descriptionKh": "ចុះហត្ថលេខាលើលិខិតសច្ចាប្រណិធានចំពោះមុខស្មៀនសង្កាត់ រួមជាមួយសាក្សី ២ នាក់។"
+      },
+      {
+        "step": 3,
+        "title": "Official Certificate Collection",
+        "titleKh": "ទទួលយកលិខិតបញ្ជាក់",
+        "description": "Collect verified Single Status Certificate signed by Commune Chief (Mekhum/Chau Sangkat).",
+        "descriptionKh": "ទទួលយកលិខិតបញ្ជាក់ភាពនៅលីវដែលមានហត្ថលេខា និងត្រាចៅសង្កាត់/មេឃុំ។"
+      }
+    ],
+    "location": "Local Sangkat / Commune Administrative Hall of permanent registration",
+    "locationKh": "សាលាសង្កាត់/ឃុំ ដែលមានឈ្មោះចុះបញ្ជីអចិន្ត្រៃយ៍",
+    "processingTime": "3 to 5 business days",
+    "processingTimeKh": "៣ ដល់ ៥ ថ្ងៃធ្វើការ",
+    "fee": "Free of charge (Official commune administration guideline)",
+    "feeKh": "ឥតគិតថ្លៃ (យោងតាមគោលការណ៍សេវារដ្ឋបាលឃុំ/សង្កាត់)",
+    "validity": "3 Months from issue date",
+    "validityKh": "៣ ខែ គិតចាប់ពីថ្ងៃចុះហត្ថលេខា",
+    "ageRequirements": "18 Years and Above",
+    "ageRequirementsKh": "អាយុចាប់ពី ១៨ ឆ្នាំឡើងទៅ",
+    "faq": [
+      {
+        "question": "Can I apply for a single certificate in Phnom Penh if my family book is in Battambang?",
+        "questionKh": "តើអាចសុំលិខិតនៅលីវនៅភ្នំពេញបានទេបើឈ្មោះក្នុងសៀវភៅគ្រួសារនៅបាត់ដំបង?",
+        "answer": "No, single status certificates can only be issued by the commune where your permanent civil record is held.",
+        "answerKh": "មិនអាចទេ លិខិតបញ្ជាក់ភាពនៅលីវត្រូវតែចេញដោយសាលាសង្កាត់/ឃុំដែលសាមីខ្លួនមានឈ្មោះក្នុងសៀវភៅគ្រួសារដើម។"
+      }
+    ]
+  },
+  {
+    "id": "construction-permit",
+    "title": "Residential Construction Permit & Building License",
+    "titleKh": "លិខិតអនុញ្ញាតសាងសង់លំនៅឋាន (ច្បាប់សាងសង់)",
+    "category": "Construction",
+    "image": "/images/documents/land-title.svg",
+    "description": "Legal architectural and structural authorization for constructing new residences, multi-story buildings, or major structural renovations up to 500 sqm floor area.",
+    "descriptionKh": "ការស្នើសុំច្បាប់អនុញ្ញាតសាងសង់ផ្ទះ វីឡា ឬការជួសជុលកែប្រែទ្រង់ទ្រាយសំណង់ដែលមានផ្ទៃក្រឡាក្រោម ៥០០ ម៉ែត្រការ៉េ ស្របតាមបទដ្ឋានបច្ចេកទេស។",
+    "requirements": [
+      "Original Hard Title or certified cadastral ownership certificate",
+      "Architectural blueprints and structural calculation plans certified by licensed engineer",
+      "Owner Cambodian National ID Card and Family Book",
+      "Site layout map with neighbor boundary agreement thumbprints",
+      "Application form addressed to District/Khan Governor"
+    ],
+    "requirementsKh": [
+      "ប្លង់ដីរឹងច្បាប់ដើម ឬវិញ្ញាបនបត្រសម្គាល់ម្ចាស់អចលនវត្ថុមានបញ្ជាក់ត្រឹមត្រូវ",
+      "ប្លង់ស្ថាបត្យកម្ម និងប្លង់គ្រឿងផ្គុំសំណង់មានហត្ថលេខាវិស្វករមានអាជ្ញាប័ណ្ណ",
+      "អត្តសញ្ញាណប័ណ្ណ និងសៀវភៅគ្រួសាររបស់ម្ចាស់សំណង់",
+      "ប្លង់ទីតាំង និងកិច្ចសន្យាព្រំប្រទល់ជាមួយអ្នកជិតខាង",
+      "ពាក្យស្នើសុំគោរពជូនលោកអភិបាលខណ្ឌ/ស្រុក"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Submit to District OWSO",
+        "titleKh": "ដាក់ពាក្យនៅការិយាល័យ OWSO",
+        "description": "Submit complete application dossiers at District One Window Service Office.",
+        "descriptionKh": "ដាក់ពាក្យ និងសំណុំឯកសារបច្ចេកទេសនៅច្រកចេញចូលតែមួយសាលាខណ្ឌ/ស្រុក។"
+      },
+      {
+        "step": 2,
+        "title": "On-Site Cadastral Inspection",
+        "titleKh": "ការចុះពិនិត្យទីតាំងជាក់ស្តែង",
+        "description": "District municipal engineering team inspects physical land boundary and public setback.",
+        "descriptionKh": "ក្រុមការងារបច្ចេកទេសខណ្ឌចុះពិនិត្យព្រំដី ចំណីផ្លូវ និងស្ថានភាពជាក់ស្តែង។"
+      },
+      {
+        "step": 3,
+        "title": "Collect Approved Building Permit",
+        "titleKh": "ទទួលយកលិខិតអនុញ្ញាតសាងសង់",
+        "description": "Pay statutory municipal building tariff and receive official construction permit.",
+        "descriptionKh": "បង់កម្រៃសេវាតាមច្បាប់ និងទទួលយកលិខិតអនុញ្ញាតសាងសង់ជាផ្លូវការ។"
+      }
+    ],
+    "location": "District/Khan Hall One Window Service Office (OWSO) or Municipal Department of Land Management",
+    "locationKh": "ការិយាល័យច្រកចេញចូលតែមួយ (OWSO) សាលាខណ្ឌ/ស្រុក ឬមន្ទីររៀបចំដែនដីរាជធានី-ខេត្ត",
+    "processingTime": "15 to 25 business days",
+    "processingTimeKh": "១៥ ដល់ ២៥ ថ្ងៃធ្វើការ",
+    "fee": "Statutory municipal fee calculated per square meter (~$120 to $350)",
+    "feeKh": "គិតតាមទំហំក្រឡាផ្ទៃសាងសង់ (~១២០ ដល់ ៣៥០ ដុល្លារ)",
+    "validity": "1 Year (Renewable during active construction works)",
+    "validityKh": "១ ឆ្នាំ (អាចបន្តសុពលភាពបាន)",
+    "ageRequirements": "18 Years and Above (Property Owner)",
+    "ageRequirementsKh": "អាយុចាប់ពី ១៨ ឆ្នាំឡើងទៅ (ម្ចាស់កម្មសិទ្ធិ)",
+    "faq": [
+      {
+        "question": "Can I start preliminary excavation before the permit is issued?",
+        "questionKh": "តើអាចចាប់ផ្តើមកាយដីមុនពេលច្បាប់សាងសង់ចេញបានទេ?",
+        "answer": "No, any construction activity before permit approval is subject to municipal fines and site suspension.",
+        "answerKh": "មិនអាចទេ ការសាងសង់មុនពេលទទួលបានលិខិតអនុញ្ញាតនឹងត្រូវផាកពិន័យ និងផ្អាកការដ្ឋានជាបណ្តោះអាសន្ន។"
+      }
+    ]
+  },
+  {
+    "id": "residence-book",
+    "title": "Residence Book (Kor.Bou.2) Registration & Update",
+    "titleKh": "ការធ្វើ និងកែប្រែសៀវភៅស្នាក់នៅ (ក.ប.២)",
+    "category": "Civil Status",
+    "image": "/images/documents/national-id.jpg",
+    "description": "Official residency record for citizens and residents living permanently or temporarily in local communes, required for schooling, bank account openings, and public utility connections.",
+    "descriptionKh": "ការចុះបញ្ជីស្នាក់នៅជាក់ស្តែងសម្រាប់ប្រជាពលរដ្ឋដែលរស់នៅអចិន្ត្រៃយ៍ ឬបណ្តោះអាសន្នក្នុងមូលដ្ឋាន សម្រាប់កូនចុះឈ្មោះចូលរៀន បើកគណនីធនាគារ និងភ្ជាប់ទឹកភ្លើង។",
+    "requirements": [
+      "Original Cambodian National ID Cards of household members",
+      "Birth certificates for children under 15 years old",
+      "House rental agreement or land ownership title of current dwelling",
+      "Letter of relocation / removal from previous Sangkat (if moving from another province)"
+    ],
+    "requirementsKh": [
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែររបស់សមាជិកគ្រួសារទាំងអស់",
+      "សំបុត្រកំណើតកូនៗអាយុក្រោម ១៥ ឆ្នាំ",
+      "កិច្ចសន្យាជួលផ្ទះ ឬប្លង់កម្មសិទ្ធិផ្ទះសម្បែងដែលកំពុងរស់នៅ",
+      "លិខិតផ្ទេរទីលំនៅចេញពីប៉ុស្តិ៍នគរបាលចាស់ (ករណីផ្លាស់ប្តូរទីលំនៅ)"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Visit Administrative Police Post",
+        "titleKh": "ទៅកាន់ប៉ុស្តិ៍នគរបាលរដ្ឋបាល",
+        "description": "Submit resident registration form to Sangkat Administrative Police Post.",
+        "descriptionKh": "ដាក់ពាក្យសុំចុះបញ្ជីស្នាក់នៅនៅប៉ុស្តិ៍នគរបាលរដ្ឋបាលឃុំ/សង្កាត់។"
+      },
+      {
+        "step": 2,
+        "title": "Household Physical Audit",
+        "titleKh": "មន្ត្រីចុះត្រួតពិនិត្យផ្ទះ",
+        "description": "Local police officer conducts friendly residency verification visit.",
+        "descriptionKh": "មន្ត្រីនគរបាលប៉ុស្តិ៍ចុះត្រួតពិនិត្យទីតាំងរស់នៅជាក់ស្តែង។"
+      },
+      {
+        "step": 3,
+        "title": "Receive Residence Book (Kor.Bou.2)",
+        "titleKh": "ទទួលយកសៀវភៅស្នាក់នៅ",
+        "description": "Collect green laminated Kor.Bou.2 residence book stamped by Khan Police Chief.",
+        "descriptionKh": "ទទួលយកសៀវភៅស្នាក់នៅ (ក.ប.២) ពណ៌បៃតងដែលមានត្រាអធិការនគរបាលខណ្ឌ។"
+      }
+    ],
+    "location": "Administrative Police Post of local Sangkat / Commune",
+    "locationKh": "ប៉ុស្តិ៍នគរបាលរដ្ឋបាលឃុំ/សង្កាត់នៃមូលដ្ឋានរស់នៅ",
+    "processingTime": "3 to 7 business days",
+    "processingTimeKh": "៣ ដល់ ៧ ថ្ងៃធ្វើការ",
+    "fee": "Free of charge (Official General Commissariat of National Police policy)",
+    "feeKh": "ឥតគិតថ្លៃ (តាមគោលការណ៍អគ្គស្នងការដ្ឋាននគរបាលជាតិ)",
+    "validity": "Permanent (Updated whenever household members relocate)",
+    "validityKh": "អចិន្ត្រៃយ៍ (ធ្វើបច្ចុប្បន្នភាពនៅពេលផ្លាស់ប្តូរសមាជិក ឬទីលំនៅ)",
+    "ageRequirements": "Head of Household aged 18 and Above",
+    "ageRequirementsKh": "មេគ្រួសារអាយុចាប់ពី ១៨ ឆ្នាំឡើងទៅ",
+    "faq": [
+      {
+        "question": "What is the difference between Kor.Bou.4 and Kor.Bou.2?",
+        "questionKh": "តើសៀវភៅគ្រួសារ (ក.ប.៤) និងសៀវភៅស្នាក់នៅ (ក.ប.២) ខុសគ្នាយ៉ាងដូចម្តេច?",
+        "answer": "Kor.Bou.4 is the permanent family genealogical register issued to Khmer citizens, while Kor.Bou.2 registers practical residential address of living.",
+        "answerKh": "សៀវភៅគ្រួសារ (ក.ប.៤) បញ្ជាក់ពីសែស្រឡាយគ្រួសារសញ្ជាតិខ្មែរ រីឯសៀវភៅស្នាក់នៅ (ក.ប.២) បញ្ជាក់ពីទីកន្លែងដែលកំពុងរស់នៅជាក់ស្តែង។"
+      }
+    ]
+  },
+  {
+    "id": "death-certificate",
+    "title": "Official Death Certificate Registration",
+    "titleKh": "ការចុះបញ្ជីសំបុត្រមរណភាពផ្លូវការ",
+    "category": "Civil Status",
+    "image": "/images/documents/national-id.jpg",
+    "description": "Mandatory legal registration of a citizen's passing with the civil registrar within 15 days, critical for estate succession, banking, and life insurance payouts.",
+    "descriptionKh": "ការចុះបញ្ជីមរណភាពស្របច្បាប់នៅសាលាសង្កាត់ក្នុងរង្វង់ ១៥ ថ្ងៃ សម្រាប់ការបែងចែកមរតក ការលុបឈ្មោះចេញពីសៀវភៅគ្រួសារ និងការទាមទារសំណងធានារ៉ាប់រង។",
+    "requirements": [
+      "Medical Certificate of Death from hospital, clinic, or medical examiner",
+      "Deceased's original Cambodian National ID Card and Family Book",
+      "Informant's original Cambodian National ID Card (immediate family member)",
+      "Police incident report (in case of unnatural or accidental death)"
+    ],
+    "requirementsKh": [
+      "លិខិតបញ្ជាក់មរណភាពពីមន្ទីរពេទ្យ គ្លីនិក ឬគ្រូពេទ្យកោសល្យវិច័យ",
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ និងសៀវភៅគ្រួសាររបស់សព",
+      "អត្តសញ្ញាណប័ណ្ណរបស់អ្នកផ្តល់ដំណឹង (សមាជិកគ្រួសារផ្ទាល់)",
+      "កំណត់ហេតុនគរបាល (ករណីគ្រោះថ្នាក់ចរាចរណ៍ ឬមរណភាពមិនប្រក្រតី)"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Report to Sangkat Civil Registrar",
+        "titleKh": "រាយការណ៍ជូនស្មៀនសង្កាត់",
+        "description": "Family member reports within 15 days of death with medical certification.",
+        "descriptionKh": "សាច់ញាតិរាយការណ៍ជូនស្មៀនសង្កាត់ក្នុងរយៈពេល ១៥ ថ្ងៃ រួមជាមួយលិខិតពេទ្យ។"
+      },
+      {
+        "step": 2,
+        "title": "Civil Ledger De-Registration",
+        "titleKh": "កត់ត្រាក្នុងសៀវភៅអត្រានុកូលដ្ឋាន",
+        "description": "Registrar records passing in official national civil registration system.",
+        "descriptionKh": "ស្មៀនកត់ត្រាការទទួលមរណភាពក្នុងបញ្ជីអត្រានុកូលដ្ឋានជាតិ។"
+      },
+      {
+        "step": 3,
+        "title": "Official Certificate Collection",
+        "titleKh": "ទទួលយកសំបុត្រមរណភាព",
+        "description": "Receive signed and sealed Death Certificate and certified copies.",
+        "descriptionKh": "ទទួលសំបុត្រមរណភាពផ្លូវការដែលមានហត្ថលេខា និងត្រាសាលាសង្កាត់។"
+      }
+    ],
+    "location": "Local Commune / Sangkat Administrative Hall of death location or permanent residence",
+    "locationKh": "សាលាសង្កាត់/ឃុំនៃទីកន្លែងទទួលមរណភាព ឬទីលំនៅអចិន្ត្រៃយ៍",
+    "processingTime": "Same Day to 2 business days",
+    "processingTimeKh": "ក្នុងថ្ងៃតែមួយ ឬ ១ ដល់ ២ ថ្ងៃធ្វើការ",
+    "fee": "Free of charge within legal 15-day reporting window",
+    "feeKh": "ឥតគិតថ្លៃ (សម្រាប់ការរាយការណ៍ក្នុងរយៈពេល ១៥ ថ្ងៃ)",
+    "validity": "Permanent Official Record",
+    "validityKh": "អចិន្ត្រៃយ៍",
+    "ageRequirements": "Adult relative informant aged 18 and Above",
+    "ageRequirementsKh": "សាច់ញាតិអាយុចាប់ពី ១៨ ឆ្នាំឡើងទៅ",
+    "faq": [
+      {
+        "question": "What happens if death is reported after 15 days?",
+        "questionKh": "តើមានបញ្ហាអ្វីទេប្រសិនបើរាយការណ៍យឺតលើសពី ១៥ ថ្ងៃ?",
+        "answer": "Late reporting requires district court declaratory judgment before the commune can issue the retrospective certificate.",
+        "answerKh": "ការរាយការណ៍យឺតលើសពី ១៥ ថ្ងៃតម្រូវឱ្យមានសាលក្រមពីសាលាដំបូងរាជធានី-ខេត្ត ទើបសាលាសង្កាត់អាចចេញសំបុត្រមរណភាពបាន។"
+      }
+    ]
+  },
+  {
+    "id": "nssf-card",
+    "title": "NSSF Health & Work Injury Member Registration",
+    "titleKh": "ការចុះឈ្មោះជាសមាជិក ប.ស.ស (ថែទាំសុខភាព & ហានិភ័យការងារ)",
+    "category": "Social Security",
+    "image": "/images/documents/passport.jpg",
+    "description": "Universal healthcare and work-injury protection enrollment through the National Social Security Fund (NSSF), granting free medical treatment across hundreds of accredited public and private hospitals in Cambodia.",
+    "descriptionKh": "ការចុះបញ្ជីសមាជិកបេឡាជាតិសន្តិសុខសង្គម (ប.ស.ស) សម្រាប់ទទួលបានសេវាពិនិត្យ និងព្យាបាលជំងឺឥតគិតថ្លៃនៅគ្រប់មន្ទីរពេទ្យរដ្ឋ និងឯកជនដៃគូទូទាំងប្រទេសកម្ពុជា។",
+    "requirements": [
+      "Original valid Cambodian National ID Card",
+      "Employment certificate or company staff ID (for enterprise employees)",
+      "Self-declaration certificate (for self-employed / informal sector individuals)",
+      "Active telephone number registered for digital NSSF Member App"
+    ],
+    "requirementsKh": [
+      "អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរច្បាប់ដើមមានសុពលភាព",
+      "លិខិតបញ្ជាក់ការងារ ឬប័ណ្ណសម្គាល់បុគ្គលិក (សម្រាប់បុគ្គលិកសហគ្រាស)",
+      "លិខិតបញ្ជាក់របរកស៊ី ឬមុខរបរជាក់ស្តែង (សម្រាប់បុគ្គលស្វ័យនិយោជន៍)",
+      "លេខទូរស័ព្ទផ្ទាល់ខ្លួនសម្រាប់ភ្ជាប់កម្មវិធី NSSF Member App"
+    ],
+    "process": [
+      {
+        "step": 1,
+        "title": "Online or In-Person Registration",
+        "titleKh": "ចុះឈ្មោះតាម App ឬសាខា ប.ស.ស",
+        "description": "Enroll via NSSF Member App or visit any NSSF district branch.",
+        "descriptionKh": "ចុះឈ្មោះតាមកម្មវិធីទូរស័ព្ទ NSSF Member App ឬទៅកាន់សាខា ប.ស.ស ដោយផ្ទាល់។"
+      },
+      {
+        "step": 2,
+        "title": "Biometric Photo & Data Verification",
+        "titleKh": "ថតរូប និងផ្ទៀងផ្ទាត់ទិន្នន័យ",
+        "description": "Officer verifies National ID details and activates NSSF member ID.",
+        "descriptionKh": "មន្ត្រីផ្ទៀងផ្ទាត់ទិន្នន័យអត្តសញ្ញាណប័ណ្ណ និងដំណើរការលេខកូដសមាជិក ប.ស.ស។"
+      },
+      {
+        "step": 3,
+        "title": "Digital & Physical Smart Card Delivery",
+        "titleKh": "ទទួលប័ណ្ណ ប.ស.ស ឌីជីថល និងកាតរឹង",
+        "description": "Access instant digital e-card on smartphone or collect physical membership card.",
+        "descriptionKh": "ទទួលបានប័ណ្ណ ប.ស.ស អេឡិចត្រូនិកលើទូរស័ព្ទភ្លាមៗ និងបើកយកកាតរឹងនៅពេលកំណត់។"
+      }
+    ],
+    "location": "NSSF Central Headquarters (Russian Blvd, Phnom Penh) or any Khan/Provincial NSSF Branch",
+    "locationKh": "ទីស្នាក់ការកណ្តាល ប.ស.ស (មហាវិថីសហព័ន្ធរុស្ស៊ី) ឬគ្រប់សាខា ប.ស.ស ខណ្ឌ/ខេត្តទូទាំងប្រទេស",
+    "processingTime": "Same Day (Digital E-Card) / 3 to 5 business days (Physical Card)",
+    "processingTimeKh": "ក្នុងថ្ងៃតែមួយ (ប័ណ្ណអេឡិចត្រូនិក) / ៣ ដល់ ៥ ថ្ងៃ (កាតរឹង)",
+    "fee": "Free initial card issuance (Healthcare covered by statutory monthly contributions)",
+    "feeKh": "ឥតគិតថ្លៃសម្រាប់ការចុះឈ្មោះ និងចេញប័ណ្ណដំបូង",
+    "validity": "Permanent Membership (Active with monthly contributions)",
+    "validityKh": "អចិន្ត្រៃយ៍ (សកម្មជាប្រចាំតាមការបង់វិភាគទាន)",
+    "ageRequirements": "All Ages (Workers, Civil Servants, Dependents, and Self-Employed)",
+    "ageRequirementsKh": "គ្រប់វ័យ (កម្មករនិយោជិត មន្ត្រីរាជការ និងបុគ្គលស្វ័យនិយោជន៍)",
+    "faq": [
+      {
+        "question": "Can informal street vendors and tuk-tuk drivers register for NSSF?",
+        "questionKh": "តើអ្នកលក់ដូរតាមផ្លូវ និងអ្នករត់កង់បីអាចចុះឈ្មោះ ប.ស.ស បានទេ?",
+        "answer": "Yes, under the Self-Employed Individual Scheme, informal workers can register directly using their national ID card and pay a low monthly fee (~15,600 KHR) for comprehensive free healthcare.",
+        "answerKh": "បាទ/ចាស អាចបាន ក្រោមរបបសន្តិសុខសង្គមសម្រាប់បុគ្គលស្វ័យនិយោជន៍ បងប្អូនអាចចុះឈ្មោះដោយផ្ទាល់ជាមួយអត្តសញ្ញាណប័ណ្ណ និងបង់វិភាគទានត្រឹមតែ ១៥,៦០០ រៀលក្នុងមួយខែ ដើម្បីទទួលបានការព្យាបាលឥតគិតថ្លៃ។"
+      }
+    ]
   }
 ]
