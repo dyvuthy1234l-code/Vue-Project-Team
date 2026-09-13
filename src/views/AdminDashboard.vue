@@ -185,19 +185,14 @@ function triggerToast(msg: string) {
 </template>
 
 <style scoped>
+.scrollbar-thin {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
 .scrollbar-thin::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 4px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .toast-enter-active,
