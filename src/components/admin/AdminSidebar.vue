@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  LayoutDashboard,
   FileText,
   Hospital as HospitalIcon,
   Briefcase,
@@ -38,6 +37,7 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'select-tab', tab: AdminTab): void
   (e: 'logout'): void
+  (e: 'toggle-sidebar'): void
 }>()
 
 const { currentLanguage } = useLanguage()
@@ -46,8 +46,6 @@ interface NavItem {
   id: AdminTab
   labelKh: string
   labelEn: string
-  subKh?: string
-  subEn?: string
   icon: any
 }
 
@@ -56,7 +54,7 @@ const contentItems: NavItem[] = [
   { id: 'health', labelKh: 'សុខាភិបាល & មន្ទីរពេទ្យ', labelEn: 'Healthcare & Hospitals', icon: HospitalIcon },
   { id: 'jobs', labelKh: 'ការងារ', labelEn: 'Jobs', icon: Briefcase },
   { id: 'transport', labelKh: 'ដឹកជញ្ជូន & ផ្លូវរថភ្លើង', labelEn: 'Transport', icon: Bus },
-  { id: 'homeservices', labelKh: 'សេវាជួសជុលផ្ទះ', labelEn: 'Home Services', icon: Home },
+  { id: 'homeservices', labelKh: 'សេវាកម្មជួសជុល', labelEn: 'Home Services', icon: Home },
   { id: 'offices', labelKh: 'ការិយាល័យ & OWSO', labelEn: 'Public Offices & OWSO', icon: Building2 },
   { id: 'news', labelKh: 'ព័ត៌មាន & សេចក្តីជូនដំណឹង', labelEn: 'News & Bulletins', icon: Newspaper }
 ]
@@ -75,56 +73,60 @@ const systemItems: NavItem[] = [
 <template>
   <aside
     :class="[
-      'bg-white dark:bg-slate-900 border-r border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between shrink-0 transition-all duration-200 z-20 select-none h-full overflow-hidden',
-      collapsed ? 'w-16' : 'w-60'
+      'bg-[#0B1728] text-slate-300 border-r border-slate-800/80 shadow-2xl flex flex-col justify-between shrink-0 transition-all duration-200 z-30 select-none h-screen overflow-hidden',
+      collapsed ? 'w-16 p-2' : 'w-[245px] sm:w-[255px] p-3'
     ]"
   >
-    <!-- Navigation Items Container (Fits entirely within one screen, no scrolling) -->
-    <div class="flex-1 flex flex-col justify-between py-2 px-2 overflow-hidden">
+    <!-- TOP SECTION: LOGO + MENU ITEMS -->
+    <div class="flex-1 flex flex-col justify-between min-h-0 overflow-hidden">
       
-      <!-- Top Primary: Dashboard -->
-      <div>
+      <!-- 1. BRAND LOGO HEADER -->
+      <div class="flex items-center pb-2 pt-0.5 px-1 shrink-0">
+        <router-link to="/" class="flex items-center gap-2.5 group focus:outline-none min-w-0" title="CamLife Home">
+          <img
+            src="/logo.png"
+            alt="CamLife"
+            class="h-8 w-8 rounded-xl object-contain bg-white/95 p-0.5 shadow-sm shrink-0 transition-transform group-hover:scale-105"
+          />
+          <div v-if="!collapsed" class="flex flex-col min-w-0 leading-none">
+            <span class="text-white font-black text-base tracking-tight leading-none">CamLife</span>
+            <span class="text-blue-400 font-bold text-[10.5px] uppercase tracking-wider leading-none mt-1">Admin CMS</span>
+          </div>
+        </router-link>
+      </div>
+
+      <!-- 2. PRIMARY TAB: DASHBOARD (Vibrant Blue Pill matching mockup) -->
+      <div class="shrink-0 pt-1 pb-1">
         <button
           type="button"
           @click="emit('select-tab', 'dashboard')"
           :class="[
-            'w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs relative group',
+            'w-full flex items-center gap-3 rounded-2xl text-left transition-all duration-150 cursor-pointer text-xs relative group',
+            collapsed ? 'justify-center p-2.5' : 'px-3.5 py-2.5',
             activeTab === 'dashboard'
-              ? 'bg-blue-50/90 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 font-extrabold shadow-2xs ring-1 ring-blue-500/20'
-              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-medium',
-            collapsed ? 'justify-center px-0' : ''
+              ? 'bg-[#1677FF] text-white shadow-lg shadow-blue-600/30 font-bold'
+              : 'text-slate-300 hover:text-white hover:bg-white/5 font-medium'
           ]"
           :title="currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រង (Dashboard)' : 'Dashboard'"
         >
-          <!-- Active Pill Accent Indicator -->
-          <span
-            v-if="activeTab === 'dashboard'"
-            class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#0D47A1] dark:bg-blue-400 rounded-r-full"
-          />
-          <div
-            :class="[
-              'w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors',
-              activeTab === 'dashboard'
-                ? 'bg-[#0D47A1] text-white shadow-xs'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:bg-blue-50 group-hover:text-[#0D47A1]'
-            ]"
-          >
-            <LayoutDashboard class="w-3.5 h-3.5" />
-          </div>
-          <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1">
-            <span class="font-khmer text-xs leading-none truncate font-bold">
+          <Home :class="['w-4 h-4 shrink-0', activeTab === 'dashboard' ? 'text-white' : 'text-slate-400 group-hover:text-white']" />
+          <div v-if="!collapsed" class="flex flex-col min-w-0 leading-none">
+            <span class="font-khmer text-xs font-bold text-white leading-none">
               {{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រង' : 'Dashboard' }}
             </span>
-            <span class="text-[9.5px] opacity-70 font-normal leading-none mt-0.5 truncate">
+            <span class="text-[9.5px] text-blue-100/90 font-normal leading-none mt-1">
               {{ currentLanguage === 'kh' ? 'Dashboard' : 'ផ្ទាំងគ្រប់គ្រង' }}
             </span>
           </div>
         </button>
       </div>
 
-      <!-- Section: Content Management -->
-      <div class="space-y-0.5">
-        <div v-if="!collapsed" class="px-2.5 pt-1 pb-0.5 text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      <!-- 3. SECTION: CONTENT MANAGEMENT -->
+      <div class="shrink-0 space-y-0.5">
+        <div
+          v-if="!collapsed"
+          class="px-3 pt-1.5 pb-0.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400/90"
+        >
           CONTENT MANAGEMENT
         </div>
         <div class="space-y-0.5">
@@ -134,31 +136,31 @@ const systemItems: NavItem[] = [
             type="button"
             @click="emit('select-tab', item.id)"
             :class="[
-              'w-full flex items-center gap-2.5 px-2.5 py-1 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs relative group',
+              'w-full flex items-center gap-3 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
+              collapsed ? 'justify-center p-2' : 'px-3 py-1.5',
               activeTab === item.id
-                ? 'bg-blue-50/90 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 font-extrabold shadow-2xs ring-1 ring-blue-500/20'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-medium',
-              collapsed ? 'justify-center px-0' : ''
+                ? 'bg-[#1677FF] text-white shadow-md shadow-blue-600/30 font-bold'
+                : 'text-slate-300 hover:text-white hover:bg-white/5 font-medium'
             ]"
             :title="currentLanguage === 'kh' ? item.labelKh : item.labelEn"
           >
-            <!-- Active Pill Accent Indicator -->
-            <span
-              v-if="activeTab === item.id"
-              class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#0D47A1] dark:bg-blue-400 rounded-r-full"
-            />
             <component
               :is="item.icon"
               :class="[
-                'w-3.5 h-3.5 shrink-0 transition-colors',
-                activeTab === item.id ? 'text-[#0D47A1] dark:text-blue-300' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200'
+                'w-4 h-4 shrink-0 transition-colors',
+                activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
               ]"
             />
-            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1">
+            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1 leading-none">
               <span class="font-khmer text-xs leading-none truncate font-semibold">
                 {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
               </span>
-              <span class="text-[9px] text-slate-400 dark:text-slate-500 font-normal leading-none mt-0.5 truncate">
+              <span
+                :class="[
+                  'text-[9px] leading-none mt-0.5 truncate',
+                  activeTab === item.id ? 'text-blue-100/80' : 'text-slate-400 group-hover:text-slate-300'
+                ]"
+              >
                 {{ currentLanguage === 'kh' ? item.labelEn : item.labelKh }}
               </span>
             </div>
@@ -166,9 +168,12 @@ const systemItems: NavItem[] = [
         </div>
       </div>
 
-      <!-- Section: User & Support -->
-      <div class="space-y-0.5">
-        <div v-if="!collapsed" class="px-2.5 pt-1 pb-0.5 text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      <!-- 4. SECTION: USER & SUPPORT -->
+      <div class="shrink-0 space-y-0.5">
+        <div
+          v-if="!collapsed"
+          class="px-3 pt-1.5 pb-0.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400/90"
+        >
           USER & SUPPORT
         </div>
         <div class="space-y-0.5">
@@ -178,41 +183,51 @@ const systemItems: NavItem[] = [
             type="button"
             @click="emit('select-tab', item.id)"
             :class="[
-              'w-full flex items-center gap-2.5 px-2.5 py-1 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs relative group',
+              'w-full flex items-center gap-3 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
+              collapsed ? 'justify-center p-2' : 'px-3 py-1.5',
               activeTab === item.id
-                ? 'bg-blue-50/90 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 font-extrabold shadow-2xs ring-1 ring-blue-500/20'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-medium',
-              collapsed ? 'justify-center px-0' : ''
+                ? 'bg-[#1677FF] text-white shadow-md shadow-blue-600/30 font-bold'
+                : 'text-slate-300 hover:text-white hover:bg-white/5 font-medium'
             ]"
             :title="currentLanguage === 'kh' ? item.labelKh : item.labelEn"
           >
-            <!-- Active Pill Accent Indicator -->
-            <span
-              v-if="activeTab === item.id"
-              class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#0D47A1] dark:bg-blue-400 rounded-r-full"
-            />
             <component
               :is="item.icon"
               :class="[
-                'w-3.5 h-3.5 shrink-0 transition-colors',
-                activeTab === item.id ? 'text-[#0D47A1] dark:text-blue-300' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200'
+                'w-4 h-4 shrink-0 transition-colors',
+                activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
               ]"
             />
-            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1">
+            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1 leading-none">
               <span class="font-khmer text-xs leading-none truncate font-semibold">
                 {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
               </span>
-              <span class="text-[9px] text-slate-400 dark:text-slate-500 font-normal leading-none mt-0.5 truncate">
+              <span
+                :class="[
+                  'text-[9px] leading-none mt-0.5 truncate',
+                  activeTab === item.id ? 'text-blue-100/80' : 'text-slate-400 group-hover:text-slate-300'
+                ]"
+              >
                 {{ currentLanguage === 'kh' ? item.labelEn : item.labelKh }}
               </span>
             </div>
+            <!-- Red Badge 3 for Feedback & Reports (Exact match with Mockup) -->
+            <span
+              v-if="item.id === 'feedback' && !collapsed"
+              class="w-4 h-4 rounded-full bg-red-500 text-white text-[9.5px] font-black flex items-center justify-center shrink-0 ml-auto shadow-xs"
+            >
+              3
+            </span>
           </button>
         </div>
       </div>
 
-      <!-- Section: System -->
-      <div class="space-y-0.5">
-        <div v-if="!collapsed" class="px-2.5 pt-1 pb-0.5 text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      <!-- 5. SECTION: SYSTEM -->
+      <div class="shrink-0 space-y-0.5">
+        <div
+          v-if="!collapsed"
+          class="px-3 pt-1.5 pb-0.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400/90"
+        >
           SYSTEM
         </div>
         <div class="space-y-0.5">
@@ -222,31 +237,31 @@ const systemItems: NavItem[] = [
             type="button"
             @click="emit('select-tab', item.id)"
             :class="[
-              'w-full flex items-center gap-2.5 px-2.5 py-1 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs relative group',
+              'w-full flex items-center gap-3 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
+              collapsed ? 'justify-center p-2' : 'px-3 py-1.5',
               activeTab === item.id
-                ? 'bg-blue-50/90 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 font-extrabold shadow-2xs ring-1 ring-blue-500/20'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-medium',
-              collapsed ? 'justify-center px-0' : ''
+                ? 'bg-[#1677FF] text-white shadow-md shadow-blue-600/30 font-bold'
+                : 'text-slate-300 hover:text-white hover:bg-white/5 font-medium'
             ]"
             :title="currentLanguage === 'kh' ? item.labelKh : item.labelEn"
           >
-            <!-- Active Pill Accent Indicator -->
-            <span
-              v-if="activeTab === item.id"
-              class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#0D47A1] dark:bg-blue-400 rounded-r-full"
-            />
             <component
               :is="item.icon"
               :class="[
-                'w-3.5 h-3.5 shrink-0 transition-colors',
-                activeTab === item.id ? 'text-[#0D47A1] dark:text-blue-300' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200'
+                'w-4 h-4 shrink-0 transition-colors',
+                activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
               ]"
             />
-            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1">
+            <div v-if="!collapsed" class="flex flex-col min-w-0 flex-1 leading-none">
               <span class="font-khmer text-xs leading-none truncate font-semibold">
                 {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
               </span>
-              <span class="text-[9px] text-slate-400 dark:text-slate-500 font-normal leading-none mt-0.5 truncate">
+              <span
+                :class="[
+                  'text-[9px] leading-none mt-0.5 truncate',
+                  activeTab === item.id ? 'text-blue-100/80' : 'text-slate-400 group-hover:text-slate-300'
+                ]"
+              >
                 {{ currentLanguage === 'kh' ? item.labelEn : item.labelKh }}
               </span>
             </div>
@@ -256,23 +271,44 @@ const systemItems: NavItem[] = [
 
     </div>
 
-    <!-- Bottom: Sign Out Button (Compact, fixed at bottom) -->
-    <div class="p-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 shrink-0">
-      <button
-        type="button"
-        @click="emit('logout')"
+    <!-- 6. BOTTOM PROFILE CARD (Matching Mockup with Purple 'A' Avatar) -->
+    <div class="mt-2 pt-2 border-t border-slate-800/80 shrink-0">
+      <div
         :class="[
-          'w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-left transition-all text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer group',
-          collapsed ? 'justify-center px-0' : ''
+          'bg-[#0D1D34] border border-blue-900/40 rounded-2xl transition-all',
+          collapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-2.5 flex items-center gap-2.5 shadow-sm'
         ]"
-        title="Sign Out"
       >
-        <LogOut class="w-4 h-4 shrink-0 text-rose-500 group-hover:-translate-x-0.5 transition-transform" />
-        <div v-if="!collapsed" class="flex flex-col min-w-0">
-          <span class="font-khmer text-xs leading-none font-bold">{{ currentLanguage === 'kh' ? 'ចាកចេញ' : 'Sign Out' }}</span>
-          <span class="text-[9.5px] text-rose-400 font-normal leading-none mt-0.5">{{ currentLanguage === 'kh' ? 'Sign Out' : 'ចាកចេញ' }}</span>
+        <!-- Purple Avatar Badge with 'A' -->
+        <div class="w-8 h-8 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
+          A
         </div>
-      </button>
+
+        <div v-if="!collapsed" class="flex-1 min-w-0">
+          <div class="text-xs font-bold text-white truncate leading-none">Admin</div>
+          <div class="text-[9.5px] text-slate-400 truncate leading-none mt-0.5">Super Admin</div>
+          <button
+            type="button"
+            @click="emit('logout')"
+            class="text-[9.5px] text-rose-400 hover:text-rose-300 flex items-center gap-1 font-semibold leading-none mt-1 cursor-pointer"
+            title="Sign Out"
+          >
+            <LogOut class="w-3 h-3 text-rose-400" />
+            <span>{{ currentLanguage === 'kh' ? 'ចាកចេញ' : 'Sign Out' }}</span>
+          </button>
+        </div>
+
+        <!-- Collapsed signout button -->
+        <button
+          v-else
+          type="button"
+          @click="emit('logout')"
+          class="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-white/10 cursor-pointer"
+          title="Sign Out"
+        >
+          <LogOut class="w-3.5 h-3.5" />
+        </button>
+      </div>
     </div>
   </aside>
 </template>

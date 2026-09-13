@@ -70,29 +70,30 @@ function triggerToast(msg: string) {
 </script>
 
 <template>
-  <div class="h-screen w-screen flex flex-col bg-[#F8FAFC] text-slate-800 antialiased overflow-hidden select-none">
+  <div class="h-screen w-screen flex bg-[#F8FAFC] text-slate-800 antialiased overflow-hidden select-none">
     
-    <!-- TOP HEADER -->
-    <AdminHeader
-      :sidebar-collapsed="isSidebarCollapsed"
-      v-model:search-query="globalSearchQuery"
+    <!-- LEFT NAVIGATION SIDEBAR (Full height h-screen matching mockup) -->
+    <AdminSidebar
+      :active-tab="activeTab"
+      :collapsed="isSidebarCollapsed"
+      @select-tab="handleSelectTab"
       @toggle-sidebar="toggleSidebar"
-      @navigate="handleSelectTab"
+      @logout="handleLogout"
     />
 
-    <!-- BODY: SIDEBAR + MAIN CONTENT AREA -->
-    <div class="flex-1 flex overflow-hidden">
-      
-      <!-- LEFT NAVIGATION SIDEBAR -->
-      <AdminSidebar
-        :active-tab="activeTab"
-        :collapsed="isSidebarCollapsed"
-        @select-tab="handleSelectTab"
-        @logout="handleLogout"
+    <!-- RIGHT CONTENT AREA -->
+    <div class="flex-1 flex flex-col h-screen min-w-0 overflow-hidden">
+      <!-- TOP HEADER (Only shown on management detail tabs, hidden on overview dashboard to match mockup pixel-perfectly) -->
+      <AdminHeader
+        v-if="activeTab !== 'dashboard'"
+        :sidebar-collapsed="isSidebarCollapsed"
+        v-model:search-query="globalSearchQuery"
+        @toggle-sidebar="toggleSidebar"
+        @navigate="handleSelectTab"
       />
 
       <!-- MAIN VIEWPORT (Single-screen on dashboard, scrollable on detail management tabs) -->
-      <main :class="['flex-1 p-3 sm:p-3.5', activeTab === 'dashboard' ? 'h-full overflow-hidden flex flex-col' : 'overflow-y-auto scrollbar-thin']">
+      <main :class="['flex-1 min-h-0', activeTab === 'dashboard' ? 'p-3 sm:p-4 h-full overflow-hidden flex flex-col' : 'p-4 sm:p-6 overflow-y-auto scrollbar-thin']">
         
         <!-- Tab 1: Overview Dashboard (Matches Mockup Image) -->
         <AdminOverview
