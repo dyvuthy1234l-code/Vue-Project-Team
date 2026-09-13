@@ -96,7 +96,7 @@ function triggerToast(msg: string) {
       <main
         :class="[
           'flex-1 min-h-0',
-          activeTab === 'dashboard' || activeTab === 'government' || activeTab === 'health' || activeTab === 'jobs' || activeTab === 'transport'
+          activeTab === 'dashboard' || activeTab === 'government' || activeTab === 'health' || activeTab === 'jobs' || activeTab === 'transport' || activeTab === 'homeservices' || activeTab === 'offices' || activeTab === 'news'
             ? 'p-2.5 sm:p-3 lg:p-3.5 xl:p-4 overflow-y-auto lg:overflow-hidden flex flex-col'
             : 'p-4 sm:p-6 overflow-y-auto scrollbar-thin'
         ]"
@@ -138,21 +138,24 @@ function triggerToast(msg: string) {
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 6: Home Services & Specialists -->
+        <!-- Tab 6: Home Services & Specialists (Single Screen View with Pagination) -->
         <AdminHomeServices
           v-else-if="activeTab === 'homeservices'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 7: Public Offices & OWSO -->
+        <!-- Tab 7: Public Offices & OWSO (Single Screen View with Pagination) -->
         <AdminOffices
           v-else-if="activeTab === 'offices'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 8: News & Bulletins -->
+        <!-- Tab 8: News & Bulletins (Single Screen View with Pagination) -->
         <AdminNews
           v-else-if="activeTab === 'news'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
