@@ -442,7 +442,7 @@ onUnmounted(() => {
             <button
               @click="setLanguage('kh')"
               :class="[
-                'px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 font-khmer',
+                'px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 font-khmer cursor-pointer',
                 currentLanguage === 'kh'
                   ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -450,12 +450,13 @@ onUnmounted(() => {
               type="button"
               title="ភាសាខ្មែរ"
             >
-              <span>KH</span>
+              <span class="font-extrabold tracking-tight">KH</span>
+              <span class="font-khmer font-bold text-xs">ខ្មែរ</span>
             </button>
             <button
               @click="setLanguage('en')"
               :class="[
-                'px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1',
+                'px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer',
                 currentLanguage === 'en'
                   ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -463,7 +464,8 @@ onUnmounted(() => {
               type="button"
               title="English"
             >
-              <span>EN</span>
+              <span class="font-extrabold tracking-tight">EN</span>
+              <span class="font-bold text-xs">English</span>
             </button>
           </div>
 
@@ -662,26 +664,28 @@ onUnmounted(() => {
               <button
                 @click="setLanguage('kh')"
                 :class="[
-                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all font-khmer cursor-pointer',
+                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all font-khmer cursor-pointer flex items-center gap-1.5',
                   currentLanguage === 'kh'
                     ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 ]"
                 type="button"
               >
-                KH
+                <span class="font-extrabold tracking-tight">KH</span>
+                <span class="font-khmer font-bold text-xs">ខ្មែរ</span>
               </button>
               <button
                 @click="setLanguage('en')"
                 :class="[
-                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer',
+                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
                   currentLanguage === 'en'
                     ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 ]"
                 type="button"
               >
-                EN
+                <span class="font-extrabold tracking-tight">EN</span>
+                <span class="font-bold text-xs">English</span>
               </button>
             </div>
           </div>
