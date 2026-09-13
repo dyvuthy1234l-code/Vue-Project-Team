@@ -96,7 +96,7 @@ function triggerToast(msg: string) {
       <main
         :class="[
           'flex-1 min-h-0',
-          activeTab === 'dashboard' || activeTab === 'government' || activeTab === 'health' || activeTab === 'jobs'
+          activeTab === 'dashboard' || activeTab === 'government' || activeTab === 'health' || activeTab === 'jobs' || activeTab === 'transport'
             ? 'p-2.5 sm:p-3 lg:p-3.5 xl:p-4 overflow-y-auto lg:overflow-hidden flex flex-col'
             : 'p-4 sm:p-6 overflow-y-auto scrollbar-thin'
         ]"
@@ -131,9 +131,10 @@ function triggerToast(msg: string) {
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 5: Transport & Transit -->
+        <!-- Tab 5: Transport & Transit (Single Screen View with Pagination) -->
         <AdminTransport
           v-else-if="activeTab === 'transport'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
