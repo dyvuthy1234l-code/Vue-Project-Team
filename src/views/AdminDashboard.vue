@@ -96,7 +96,7 @@ function triggerToast(msg: string) {
       <main
         :class="[
           'flex-1 min-h-0',
-          activeTab === 'dashboard' || activeTab === 'government' || activeTab === 'health'
+          activeTab === 'dashboard' || activeTab === 'government' || activeTab === 'health' || activeTab === 'jobs'
             ? 'p-2.5 sm:p-3 lg:p-3.5 xl:p-4 overflow-y-auto lg:overflow-hidden flex flex-col'
             : 'p-4 sm:p-6 overflow-y-auto scrollbar-thin'
         ]"
@@ -124,9 +124,10 @@ function triggerToast(msg: string) {
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 4: Jobs & Careers -->
+        <!-- Tab 4: Jobs & Careers (Single Screen View with Pagination) -->
         <AdminJobs
           v-else-if="activeTab === 'jobs'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
