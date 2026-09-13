@@ -51,13 +51,34 @@ const currentTabTitle = computed(() => {
   return tabLabels[key] || { kh: 'ផ្ទាំងគ្រប់គ្រង', en: 'Dashboard' }
 })
 
-const notifications = ref([
-  { id: 1, title: 'សំណើសុំបើកអាជីវកម្មថ្មី', titleEn: 'New Business Registration Request', time: '10m ago', unread: true },
-  { id: 2, title: 'ការងារថ្មីរង់ចាំការអនុម័ត', titleEn: 'New Job Listing Pending Approval', time: '35m ago', unread: true },
-  { id: 3, title: 'របាយការណ៍មតិយោបល់ពីប្រជាពលរដ្ឋ', titleEn: 'Citizen Feedback Submitted', time: '1h ago', unread: true },
-  { id: 4, title: 'ការធ្វើបច្ចុប្បន្នភាពមន្ទីរពេទ្យ', titleEn: 'Hospital Profile Updated', time: '2h ago', unread: false },
-  { id: 5, title: 'ប្រព័ន្ធដំណើរការធម្មតា', titleEn: 'Daily System Backup Completed', time: '4h ago', unread: false }
+interface AdminNotification {
+  id: number
+  title: string
+  titleEn: string
+  time: string
+  tab: string
+  unread: boolean
+}
+
+const notifications = ref<AdminNotification[]>([
+  { id: 1, title: 'សំណើសុំបើកអាជីវកម្មថ្មី #OWSO-2026', titleEn: 'New Business Registration Request', time: '10m ago', tab: 'government', unread: true },
+  { id: 2, title: 'ការងារថ្មីរង់ចាំការអនុម័ត: Vue Developer', titleEn: 'New Job Listing: Vue Developer', time: '35m ago', tab: 'jobs', unread: true },
+  { id: 3, title: 'របាយការណ៍មតិពលរដ្ឋ: អំពូលភ្លើងផ្លូវ', titleEn: 'Citizen Report: Broken Streetlight', time: '1h ago', tab: 'feedback', unread: true },
+  { id: 4, title: 'ការធ្វើបច្ចុប្បន្នភាពមន្ទីរពេទ្យតាកែវ', titleEn: 'Takeo Hospital Profile Updated', time: '2h ago', tab: 'health', unread: false },
+  { id: 5, title: 'សវនកម្មប្រព័ន្ធ: ការចូលប្រើប្រាស់ជោគជ័យ', titleEn: 'Security Audit: Admin Login Session', time: '4h ago', tab: 'logs', unread: false }
 ])
+
+const unreadCount = computed(() => notifications.value.filter(n => n.unread).length)
+
+function markAllAsRead() {
+  notifications.value.forEach(n => { n.unread = false })
+}
+
+function handleNotificationClick(item: AdminNotification) {
+  item.unread = false
+  isNotifOpen.value = false
+  emit('navigate', item.tab)
+}
 
 function handleQuickAction(tab: string) {
   isQuickActionsOpen.value = false
@@ -200,10 +221,10 @@ function handleQuickAction(tab: string) {
           title="Notifications"
         >
           <Bell class="w-4 h-4" />
-          <span class="absolute -top-1 -right-1 flex h-4 w-4">
+          <span v-if="unreadCount > 0" class="absolute -top-1 -right-1 flex h-4 w-4">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-60"></span>
             <span class="relative inline-flex rounded-full h-4 w-4 bg-rose-500 text-white text-[9px] font-black items-center justify-center ring-2 ring-white shadow-2xs">
-              5
+              {{ unreadCount }}
             </span>
           </span>
         </button>
@@ -215,28 +236,41 @@ function handleQuickAction(tab: string) {
         >
           <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
             <span class="text-xs font-bold text-slate-800 font-khmer">
-              {{ currentLanguage === 'kh' ? 'ការជូនដំណឹង' : 'Notifications' }} (5)
+              {{ currentLanguage === 'kh' ? 'ការជូនដំណឹង' : 'Notifications' }} ({{ unreadCount }})
             </span>
             <button
               type="button"
-              @click="isNotifOpen = false"
+              @click="markAllAsRead"
               class="text-[10px] text-blue-600 font-semibold cursor-pointer hover:underline font-khmer"
             >
-              {{ currentLanguage === 'kh' ? 'សម្គាល់ថាបានអាន' : 'Mark all read' }}
+              {{ currentLanguage === 'kh' ? 'សម្គាល់ថាបានអានទាំងអស់' : 'Mark all read' }}
             </button>
           </div>
           <div class="max-h-64 overflow-y-auto divide-y divide-slate-50">
             <div
               v-for="item in notifications"
               :key="item.id"
-              class="px-4 py-2.5 hover:bg-slate-50 cursor-pointer flex items-start gap-2.5 transition-colors"
+              @click="handleNotificationClick(item)"
+              class="px-4 py-2.5 hover:bg-slate-50 cursor-pointer flex items-start gap-2.5 transition-colors group"
             >
-              <div class="w-2 h-2 rounded-full mt-1.5 shrink-0" :class="item.unread ? 'bg-blue-600' : 'bg-slate-300'"></div>
+              <div
+                class="w-2 h-2 rounded-full mt-1.5 shrink-0 transition-colors"
+                :class="item.unread ? 'bg-blue-600 ring-2 ring-blue-100' : 'bg-slate-300'"
+              ></div>
               <div class="flex-1 min-w-0">
-                <p class="text-xs font-medium text-slate-800 truncate font-khmer">
+                <p
+                  :class="[
+                    'text-xs truncate font-khmer',
+                    item.unread ? 'font-bold text-slate-900 group-hover:text-blue-600' : 'text-slate-600 font-normal'
+                  ]"
+                >
                   {{ currentLanguage === 'kh' ? item.title : item.titleEn }}
                 </p>
-                <span class="text-[10px] text-slate-400">{{ item.time }}</span>
+                <div class="flex items-center gap-1 text-[10px] text-slate-400 mt-0.5 font-mono">
+                  <span>{{ item.time }}</span>
+                  <span>•</span>
+                  <span class="text-blue-600 font-sans uppercase text-[9px] font-bold">{{ item.tab }}</span>
+                </div>
               </div>
             </div>
           </div>

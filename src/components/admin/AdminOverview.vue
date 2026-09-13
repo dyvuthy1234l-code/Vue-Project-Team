@@ -9,8 +9,9 @@ import {
   Calendar,
   ChevronDown,
   TrendingUp,
-  MoreHorizontal,
-  ArrowUpRight
+  BarChart3,
+  Activity,
+  PieChart
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import {
@@ -45,27 +46,99 @@ const totalJobs = computed(() => jobsList.length)
 const totalLocations = computed(() => locationsList.length)
 const totalNews = computed(() => newsList.length)
 
-// Timeframe selector
+// Timeframe selector & Chart modes
 const selectedTimeframe = ref('Last 30 days')
 const isTimeframeOpen = ref(false)
 const timeframes = ['Last 7 days', 'Last 30 days', 'This Year']
+const chartMode = ref<'bar' | 'area' | 'donut'>('bar')
+const hoveredIdx = ref<number | null>(null)
+
+interface ChartItem {
+  nameKh: string
+  nameEn: string
+  val: string
+  num: number
+  heightPercent: number
+  bg: string
+  colorHex: string
+}
+
+const timeframeData: Record<string, ChartItem[]> = {
+  'Last 7 days': [
+    { nameKh: 'ច័ន្ទ', nameEn: 'Mon', val: '4.8K', num: 4800, heightPercent: 48, bg: 'bg-blue-600', colorHex: '#2563eb' },
+    { nameKh: 'អង្គារ', nameEn: 'Tue', val: '6.2K', num: 6200, heightPercent: 62, bg: 'bg-indigo-600', colorHex: '#4f46e5' },
+    { nameKh: 'ពុធ', nameEn: 'Wed', val: '7.9K', num: 7900, heightPercent: 79, bg: 'bg-emerald-600', colorHex: '#059669' },
+    { nameKh: 'ព្រហ', nameEn: 'Thu', val: '8.8K', num: 8800, heightPercent: 88, bg: 'bg-teal-600', colorHex: '#0d9488' },
+    { nameKh: 'សុក្រ', nameEn: 'Fri', val: '9.6K', num: 9600, heightPercent: 96, bg: 'bg-cyan-600', colorHex: '#0891b2' },
+    { nameKh: 'សៅរ៍', nameEn: 'Sat', val: '6.4K', num: 6400, heightPercent: 64, bg: 'bg-amber-500', colorHex: '#f59e0b' },
+    { nameKh: 'អាទិត្យ', nameEn: 'Sun', val: '3.9K', num: 3900, heightPercent: 39, bg: 'bg-rose-500', colorHex: '#f43f5e' }
+  ],
+  'Last 30 days': [
+    { nameKh: 'រដ្ឋបាល', nameEn: 'Admin', val: '32K', num: 32000, heightPercent: 82, bg: 'bg-[#1E40AF]', colorHex: '#1e40af' },
+    { nameKh: 'សុខភាព', nameEn: 'Health', val: '24K', num: 24000, heightPercent: 62, bg: 'bg-[#10B981]', colorHex: '#10b981' },
+    { nameKh: 'ការងារ', nameEn: 'Jobs', val: '18K', num: 18000, heightPercent: 46, bg: 'bg-[#06B6D4]', colorHex: '#06b6d4' },
+    { nameKh: 'ដឹកជញ្ជូន', nameEn: 'Transit', val: '15K', num: 15000, heightPercent: 38, bg: 'bg-[#3B82F6]', colorHex: '#3b82f6' },
+    { nameKh: 'ជួសជុល', nameEn: 'Repair', val: '12K', num: 12000, heightPercent: 30, bg: 'bg-[#0D9488]', colorHex: '#0d9488' },
+    { nameKh: 'ការិយាល័យ', nameEn: 'Offices', val: '10K', num: 10000, heightPercent: 25, bg: 'bg-[#F59E0B]', colorHex: '#f59e0b' },
+    { nameKh: 'ព័ត៌មាន', nameEn: 'News', val: '8K', num: 8000, heightPercent: 20, bg: 'bg-[#EF4444]', colorHex: '#ef4444' },
+    { nameKh: 'បន្ទាន់', nameEn: 'Emergency', val: '6K', num: 6000, heightPercent: 15, bg: 'bg-[#64748B]', colorHex: '#64748b' }
+  ],
+  'This Year': [
+    { nameKh: 'ត្រីមាស ១', nameEn: 'Q1', val: '112K', num: 112000, heightPercent: 68, bg: 'bg-blue-700', colorHex: '#1d4ed8' },
+    { nameKh: 'ត្រីមាស ២', nameEn: 'Q2', val: '138K', num: 138000, heightPercent: 82, bg: 'bg-indigo-600', colorHex: '#4f46e5' },
+    { nameKh: 'ត្រីមាស ៣', nameEn: 'Q3', val: '154K', num: 154000, heightPercent: 92, bg: 'bg-emerald-600', colorHex: '#059669' },
+    { nameKh: 'ត្រីមាស ៤', nameEn: 'Q4', val: '165K', num: 165000, heightPercent: 98, bg: 'bg-cyan-600', colorHex: '#0891b2' }
+  ]
+}
 
 function selectTimeframe(tf: string) {
   selectedTimeframe.value = tf
   isTimeframeOpen.value = false
+  hoveredIdx.value = null
 }
 
-// Chart Categories matching the image
-const chartData = [
-  { nameKh: 'សេវារដ្ឋបាល', nameEn: 'Admin', val: '32K', heightPercent: 82, bg: 'bg-[#1E40AF]' },
-  { nameKh: 'សុខភាព', nameEn: 'Health', val: '24K', heightPercent: 62, bg: 'bg-[#10B981]' },
-  { nameKh: 'ការងារ', nameEn: 'Jobs', val: '18K', heightPercent: 46, bg: 'bg-[#06B6D4]' },
-  { nameKh: 'ដឹកជញ្ជូន', nameEn: 'Transport', val: '15K', heightPercent: 38, bg: 'bg-[#3B82F6]' },
-  { nameKh: 'សេវាជួសជុល', nameEn: 'Repair', val: '12K', heightPercent: 30, bg: 'bg-[#0D9488]' },
-  { nameKh: 'ការិយាល័យ', nameEn: 'Offices', val: '10K', heightPercent: 25, bg: 'bg-[#F59E0B]' },
-  { nameKh: 'ព័ត៌មាន', nameEn: 'News', val: '8K', heightPercent: 20, bg: 'bg-[#EF4444]' },
-  { nameKh: 'សង្គ្រោះបន្ទាន់', nameEn: 'Emergency', val: '6K', heightPercent: 15, bg: 'bg-[#64748B]' }
-]
+const currentChartData = computed(() => {
+  return timeframeData[selectedTimeframe.value] || timeframeData['Last 30 days']
+})
+
+const svgPoints = computed(() => {
+  const data = currentChartData.value
+  const count = data.length
+  if (count <= 1) return []
+  const width = 460
+  const stepX = width / (count - 1)
+  return data.map((d, i) => {
+    const x = 20 + i * stepX
+    const y = 95 - (d.heightPercent / 100) * 80
+    return { x, y, item: d }
+  })
+})
+
+const areaPathD = computed(() => {
+  const pts = svgPoints.value
+  if (pts.length === 0) return ''
+  let d = `M ${pts[0].x} ${pts[0].y}`
+  for (let i = 1; i < pts.length; i++) {
+    const prev = pts[i - 1]
+    const curr = pts[i]
+    const cpx1 = prev.x + (curr.x - prev.x) / 2
+    const cpy1 = prev.y
+    const cpx2 = prev.x + (curr.x - prev.x) / 2
+    const cpy2 = curr.y
+    d += ` C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${curr.x} ${curr.y}`
+  }
+  return d
+})
+
+const areaFillD = computed(() => {
+  const lineD = areaPathD.value
+  const pts = svgPoints.value
+  if (!lineD || pts.length === 0) return ''
+  const last = pts[pts.length - 1]
+  const first = pts[0]
+  return `${lineD} L ${last.x} 115 L ${first.x} 115 Z`
+})
+
 
 // Recent Activity List (4 compact rows for single screen)
 const recentActivities = ref([
@@ -400,69 +473,126 @@ const recentContents = [
     <!-- 3. MIDDLE ROW: Service Usage Analytics Chart + Recent Activity Feed -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-2.5 lg:gap-3 flex-1 min-h-0">
       
-      <!-- Left: Service Usage Bar Chart (2 cols) -->
+      <!-- Left: Service Usage Bar & Area Chart (2 cols) -->
       <div class="lg:col-span-2 bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200/90 shadow-2xs flex flex-col justify-between min-h-0">
         
-        <!-- Header with Title & Filter Dropdown -->
-        <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 shrink-0">
+        <!-- Header with Title, Mode Switcher & Timeframe Dropdown -->
+        <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 shrink-0 gap-2">
           <div>
-            <h3 class="text-xs sm:text-sm font-black text-slate-900 font-khmer leading-none">
-              {{ currentLanguage === 'kh' ? 'ស្ថិតិនៃការប្រើប្រាស់សេវាកម្មប្រចាំខែ' : 'Service Utilization Analytics' }}
-            </h3>
-            <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">
-              Monthly citizen interactions by service sector
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-xs sm:text-sm font-black text-slate-900 font-khmer leading-none">
+                {{ currentLanguage === 'kh' ? 'ស្ថិតិនៃការប្រើប្រាស់សេវាកម្ម' : 'Service Utilization Analytics' }}
+              </h3>
+              <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded-full hidden sm:inline font-mono">
+                +14.8% ↑
+              </span>
+            </div>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5 font-khmer">
+              {{ currentLanguage === 'kh' ? 'អន្តរកម្មពលរដ្ឋតាមពេលវេលាជាក់ស្តែង' : 'Citizen interactions by sector' }}
             </p>
           </div>
 
-          <!-- Timeframe Dropdown -->
-          <div class="relative">
-            <button
-              type="button"
-              @click="isTimeframeOpen = !isTimeframeOpen"
-              class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-[10px] sm:text-[11px] font-bold text-slate-700 cursor-pointer shadow-2xs"
-            >
-              <Calendar class="w-3 h-3 text-slate-400" />
-              <span>{{ selectedTimeframe }}</span>
-              <ChevronDown class="w-2.5 h-2.5 text-slate-400" />
-            </button>
-
-            <div
-              v-if="isTimeframeOpen"
-              class="absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-30"
-            >
+          <!-- Chart Controls: Mode Toggle + Timeframe -->
+          <div class="flex items-center gap-1.5">
+            
+            <!-- Mode Toggle (Bar | Curve | Donut) -->
+            <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/80">
               <button
-                v-for="tf in timeframes"
-                :key="tf"
                 type="button"
-                @click="selectTimeframe(tf)"
-                :class="['w-full px-3 py-1.5 text-left text-[11px] font-bold hover:bg-slate-50 cursor-pointer', selectedTimeframe === tf ? 'text-blue-600' : 'text-slate-700']"
+                @click="chartMode = 'bar'"
+                :class="[
+                  'p-1 rounded-md text-xs transition-all cursor-pointer',
+                  chartMode === 'bar' ? 'bg-white text-blue-600 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                ]"
+                title="Bar Chart Mode"
               >
-                {{ tf }}
+                <BarChart3 class="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                @click="chartMode = 'area'"
+                :class="[
+                  'p-1 rounded-md text-xs transition-all cursor-pointer',
+                  chartMode === 'area' ? 'bg-white text-blue-600 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                ]"
+                title="Area Curve Mode"
+              >
+                <Activity class="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                @click="chartMode = 'donut'"
+                :class="[
+                  'p-1 rounded-md text-xs transition-all cursor-pointer',
+                  chartMode === 'donut' ? 'bg-white text-blue-600 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                ]"
+                title="Donut Share Mode"
+              >
+                <PieChart class="w-3.5 h-3.5" />
               </button>
             </div>
+
+            <!-- Timeframe Dropdown -->
+            <div class="relative">
+              <button
+                type="button"
+                @click="isTimeframeOpen = !isTimeframeOpen"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-[10px] sm:text-[11px] font-bold text-slate-700 cursor-pointer shadow-2xs"
+              >
+                <Calendar class="w-3 h-3 text-slate-400" />
+                <span>{{ selectedTimeframe }}</span>
+                <ChevronDown class="w-2.5 h-2.5 text-slate-400" />
+              </button>
+
+              <div
+                v-if="isTimeframeOpen"
+                class="absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-30"
+              >
+                <button
+                  v-for="tf in timeframes"
+                  :key="tf"
+                  type="button"
+                  @click="selectTimeframe(tf)"
+                  :class="['w-full px-3 py-1.5 text-left text-[11px] font-bold hover:bg-slate-50 cursor-pointer font-khmer', selectedTimeframe === tf ? 'text-blue-600 bg-blue-50/50' : 'text-slate-700']"
+                >
+                  {{ tf }}
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <!-- Vertical Bar Chart Visual -->
-        <div class="flex-1 min-h-0 flex flex-col justify-end pt-2">
+        <!-- 1. MODE: VERTICAL BAR CHART -->
+        <div v-if="chartMode === 'bar'" class="flex-1 min-h-0 flex flex-col justify-end pt-2">
           <!-- Bars Container -->
           <div class="relative flex-1 min-h-[75px] max-h-[125px] flex items-end justify-between gap-1 sm:gap-2 px-1.5 sm:px-3">
             
             <!-- Horizontal Guides -->
             <div class="absolute inset-0 flex flex-col justify-between pointer-events-none text-[8px] sm:text-[9px] text-slate-300 font-mono">
-              <div class="border-b border-slate-100 w-full flex items-center justify-between pb-0.5"><span>40K</span></div>
-              <div class="border-b border-slate-100 w-full flex items-center justify-between pb-0.5"><span>30K</span></div>
-              <div class="border-b border-slate-100 w-full flex items-center justify-between pb-0.5"><span>20K</span></div>
-              <div class="border-b border-slate-100 w-full flex items-center justify-between pb-0.5"><span>10K</span></div>
+              <div class="border-b border-slate-100 w-full flex items-center justify-between pb-0.5"><span>100%</span></div>
+              <div class="border-b border-slate-100 w-full flex items-center justify-between pb-0.5"><span>75%</span></div>
+              <div class="border-b border-slate-100 w-full flex items-center justify-between pb-0.5"><span>50%</span></div>
+              <div class="border-b border-slate-100 w-full flex items-center justify-between pb-0.5"><span>25%</span></div>
               <div class="border-b border-slate-200 w-full flex items-center justify-between pb-0.5"><span>0</span></div>
             </div>
 
             <!-- Bars -->
             <div
-              v-for="(item, idx) in chartData"
+              v-for="(item, idx) in currentChartData"
               :key="idx"
-              class="relative z-10 flex-1 flex flex-col items-center h-full justify-end group"
+              @mouseenter="hoveredIdx = idx"
+              @mouseleave="hoveredIdx = null"
+              class="relative z-10 flex-1 flex flex-col items-center h-full justify-end group cursor-pointer"
             >
+              <!-- Hover Tooltip -->
+              <div
+                v-if="hoveredIdx === idx"
+                class="absolute -top-7 px-1.5 py-0.5 bg-slate-900 text-white rounded text-[9px] font-mono font-bold whitespace-nowrap shadow-md z-30"
+              >
+                {{ item.val }} ({{ item.heightPercent }}%)
+              </div>
+
               <!-- Bar Value Label -->
               <span class="text-[8px] sm:text-[9px] font-black text-slate-700 mb-0.5 block leading-none opacity-0 group-hover:opacity-100 transition-opacity">
                 {{ item.val }}
@@ -479,7 +609,7 @@ const recentContents = [
           <!-- X-Axis Category Labels -->
           <div class="flex items-center justify-between gap-1 px-1.5 sm:px-3 pt-1 border-t border-slate-200 text-center shrink-0">
             <div
-              v-for="(item, idx) in chartData"
+              v-for="(item, idx) in currentChartData"
               :key="idx"
               class="flex-1 min-w-0"
             >
@@ -491,6 +621,121 @@ const recentContents = [
               </span>
             </div>
           </div>
+        </div>
+
+        <!-- 2. MODE: INTERACTIVE SVG AREA CURVE -->
+        <div v-else-if="chartMode === 'area'" class="flex-1 min-h-0 flex flex-col justify-between pt-1">
+          <div class="relative flex-1 min-h-[90px] max-h-[125px] w-full">
+            <svg viewBox="0 0 500 120" class="w-full h-full overflow-visible" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#2563eb" stop-opacity="0.35" />
+                  <stop offset="100%" stop-color="#2563eb" stop-opacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              <!-- Subtle Grid lines -->
+              <line x1="20" y1="20" x2="480" y2="20" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="20" y1="55" x2="480" y2="55" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="20" y1="90" x2="480" y2="90" stroke="#f1f5f9" stroke-width="1" />
+
+              <!-- Area Fill -->
+              <path :d="areaFillD" fill="url(#areaGrad)" />
+
+              <!-- Spline Line -->
+              <path :d="areaPathD" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" />
+
+              <!-- Interactive Points -->
+              <g v-for="(pt, idx) in svgPoints" :key="idx">
+                <circle
+                  :cx="pt.x"
+                  :cy="pt.y"
+                  r="4"
+                  class="fill-white stroke-blue-600 stroke-2 hover:r-6 transition-all cursor-pointer"
+                  @mouseenter="hoveredIdx = idx"
+                  @mouseleave="hoveredIdx = null"
+                />
+              </g>
+            </svg>
+          </div>
+
+          <!-- X-Axis Labels for Curve -->
+          <div class="flex items-center justify-between gap-1 px-2 pt-1 border-t border-slate-100 text-center shrink-0">
+            <div
+              v-for="(item, idx) in currentChartData"
+              :key="idx"
+              class="flex-1 min-w-0"
+            >
+              <span class="text-[9px] sm:text-[10px] font-bold text-slate-700 font-khmer truncate block">
+                {{ currentLanguage === 'kh' ? item.nameKh : item.nameEn }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. MODE: DONUT SHARE -->
+        <div v-else class="flex-1 min-h-0 flex items-center justify-around gap-4 py-2">
+          
+          <!-- SVG Donut Representation -->
+          <div class="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0">
+            <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+              <!-- Background ring -->
+              <path
+                class="text-slate-100"
+                stroke-width="4"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <!-- Slices -->
+              <path
+                class="text-blue-600"
+                stroke-dasharray="32, 100"
+                stroke-width="4.5"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                class="text-emerald-500"
+                stroke-dasharray="24, 100"
+                stroke-dashoffset="-32"
+                stroke-width="4.5"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                class="text-cyan-500"
+                stroke-dasharray="18, 100"
+                stroke-dashoffset="-56"
+                stroke-width="4.5"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <span class="text-xs font-black text-slate-800">100%</span>
+              <span class="text-[8px] text-slate-400 font-khmer">សរុបសេវា</span>
+            </div>
+          </div>
+
+          <!-- Legend Grid -->
+          <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+            <div
+              v-for="(item, idx) in currentChartData.slice(0, 6)"
+              :key="idx"
+              class="flex items-center gap-1.5"
+            >
+              <span class="w-2 h-2 rounded-full shrink-0" :class="item.bg"></span>
+              <span class="text-[10px] text-slate-600 font-khmer truncate max-w-[80px]">
+                {{ currentLanguage === 'kh' ? item.nameKh : item.nameEn }}
+              </span>
+              <span class="text-[10px] font-bold text-slate-800 font-mono">{{ item.val }}</span>
+            </div>
+          </div>
+
         </div>
 
       </div>

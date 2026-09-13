@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import BackToTop from '@/components/BackToTop.vue'
+import ChatbotWidget from '@/components/ChatbotWidget.vue'
 
 const route = useRoute()
 const isAdminRoute = computed(() => route.name === 'admin')
@@ -30,5 +31,6 @@ onMounted(() => {
     </main>
     <Footer v-if="!isAdminRoute" />
     <BackToTop v-if="!isAdminRoute" />
+    <ChatbotWidget v-if="!isAdminRoute" />
   </div>
 </template>
