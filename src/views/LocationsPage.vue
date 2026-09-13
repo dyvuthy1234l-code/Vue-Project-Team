@@ -136,7 +136,7 @@ function resetFilters() {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-khmer">
+  <div class="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10 space-y-5 sm:space-y-8 font-khmer overflow-x-clip min-w-0">
     <!-- Service Hero Banner with 25 Provinces Selector -->
     <ServiceHeroBanner
       :title="t('locations.title')"
@@ -148,48 +148,48 @@ function resetFilters() {
     />
 
     <!-- OWSO Citizen Paperwork Guide Callout Banner -->
-    <div class="rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-7 shadow-lg relative overflow-hidden">
-      <div class="relative z-10 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white ring-1 ring-white/30 shrink-0">
-              <FileCheck2 class="w-6 h-6 text-amber-300" />
+    <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-4 sm:p-7 shadow-lg relative overflow-hidden">
+      <div class="relative z-10 space-y-3.5 sm:space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div class="flex items-center gap-2.5 sm:gap-3">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white ring-1 ring-white/30 shrink-0">
+              <FileCheck2 class="w-5 h-5 sm:w-6 sm:h-6 text-amber-300" />
             </div>
             <div>
               <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-base sm:text-lg font-black tracking-tight">
+                <h3 class="text-sm sm:text-lg font-black tracking-tight">
                   {{ currentLanguage === 'kh' ? 'ការិយាល័យច្រកចេញចូលតែមួយ (One Window Service Office - OWSO)' : 'One Window Service Offices (OWSO) Network' }}
                 </h3>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-400 text-slate-900 uppercase">
+                <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-amber-400 text-slate-900 uppercase shrink-0">
                   {{ currentLanguage === 'kh' ? 'សេវាសាធារណៈរហ័ស' : 'Citizen Services' }}
                 </span>
               </div>
-              <p class="text-xs text-blue-100 mt-1">
+              <p class="text-[11px] sm:text-xs text-blue-100 mt-0.5 line-clamp-2 sm:line-clamp-none">
                 {{ currentLanguage === 'kh' ? 'ផ្តល់សេវារដ្ឋបាលប្រកបដោយតម្លាភាព គណនេយ្យភាព និងមានតម្លៃកម្រៃសេវាកំណត់ដោយច្បាប់ច្បាស់លាស់៖' : 'Standardized municipal administrative service counters providing transparent fees and turnaround times:' }}
               </p>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 pt-1 text-xs font-bold text-white">
-          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
-            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1 text-xs font-bold text-white sm:grid sm:grid-cols-3 md:grid-cols-5">
+          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10 shrink-0 whitespace-nowrap text-[11px] sm:text-xs">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-300 shrink-0" />
             <span>{{ currentLanguage === 'kh' ? 'សំបុត្រកំណើត/អាពាហ៍ពិពាហ៍' : 'Civil Registry' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
-            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10 shrink-0 whitespace-nowrap text-[11px] sm:text-xs">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-300 shrink-0" />
             <span>{{ currentLanguage === 'kh' ? 'សៀវភៅស្នាក់នៅ/គ្រួសារ' : 'Residence / Family' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
-            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10 shrink-0 whitespace-nowrap text-[11px] sm:text-xs">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-300 shrink-0" />
             <span>{{ currentLanguage === 'kh' ? 'ចុះបញ្ជីអាជីវកម្មខ្នាតតូច' : 'Business Permits' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
-            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10 shrink-0 whitespace-nowrap text-[11px] sm:text-xs">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-300 shrink-0" />
             <span>{{ currentLanguage === 'kh' ? 'លិខិតអនុញ្ញាតសាងសង់' : 'Building Permits' }}</span>
           </div>
-          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10">
-            <CheckCircle2 class="w-4 h-4 text-emerald-300 shrink-0" />
+          <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/10 shrink-0 whitespace-nowrap text-[11px] sm:text-xs">
+            <CheckCircle2 class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-300 shrink-0" />
             <span>{{ currentLanguage === 'kh' ? 'បញ្ជាក់នីត្យានុកូលភាព' : 'Document Legalization' }}</span>
           </div>
         </div>
@@ -197,26 +197,26 @@ function resetFilters() {
     </div>
 
     <!-- Filter Control Panel & View Mode Switcher -->
-    <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 shadow-sm space-y-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 p-3.5 sm:p-6 shadow-sm space-y-3.5 sm:space-y-4">
       <!-- Search Input + View Toggle Buttons -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         <div class="flex-1 relative">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-            <Search class="w-4 h-4" />
+          <div class="absolute inset-y-0 left-0 pl-3 sm:pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <Search class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <input
             v-model="searchQuery"
             type="text"
             :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកសាលាខណ្ឌ, សាលាសង្កាត់, ការិយាល័យច្រកចេញចូលតែមួយ (OWSO), ប៉ុស្តិ៍នគរបាល...' : 'Search OWSO offices, district halls, police stations, hospitals...'"
-            class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-[#0A2540] dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#0D47A1]"
+            class="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs sm:text-sm font-bold text-[#0A2540] dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#0D47A1]"
           />
         </div>
 
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
             @click="viewMode = 'grid'"
             type="button"
-            class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 border shadow-2xs"
+            class="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border shadow-2xs"
             :class="viewMode === 'grid'
               ? 'bg-[#0D47A1] text-white border-[#0D47A1]'
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'"
@@ -226,7 +226,7 @@ function resetFilters() {
           <button
             @click="viewMode = 'map'"
             type="button"
-            class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 border shadow-2xs"
+            class="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border shadow-2xs"
             :class="viewMode === 'map'
               ? 'bg-[#0D47A1] text-white border-[#0D47A1]'
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'"
@@ -236,15 +236,15 @@ function resetFilters() {
         </div>
       </div>
 
-      <!-- Category Filter Pills -->
+      <!-- Category Filter Pills (Horizontal Scroll on Mobile) -->
       <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60">
-        <div class="flex flex-wrap gap-2">
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
           <button
             v-for="cat in categories"
             :key="cat.value"
             @click="activeCategory = cat.value"
             type="button"
-            class="px-3.5 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border"
+            class="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border shrink-0 whitespace-nowrap"
             :class="activeCategory === cat.value
               ? 'bg-[#0D47A1] text-white border-[#0D47A1] shadow-2xs'
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
@@ -258,48 +258,50 @@ function resetFilters() {
       <!-- Active Filters Reset -->
       <div
         v-if="searchQuery || activeCategory !== 'All'"
-        class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/60 text-xs"
+        class="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-700/60 text-xs"
       >
-        <span class="text-slate-400 font-medium">
+        <span class="text-slate-400 font-medium text-[11px] sm:text-xs truncate mr-2">
           {{ currentLanguage === 'kh' ? 'តម្រងសកម្ម' : 'Filters Active' }}
         </span>
         <button
           @click="resetFilters"
-          class="text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 inline-flex items-center gap-1 cursor-pointer"
+          class="text-[11px] sm:text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 inline-flex items-center gap-1 cursor-pointer shrink-0"
         >
-          <RotateCcw class="w-3.5 h-3.5" />
+          <RotateCcw class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           <span>{{ currentLanguage === 'kh' ? 'កំណត់តម្រងឡើងវិញ' : 'Reset Filters' }}</span>
         </button>
       </div>
     </div>
 
-    <!-- Result Count -->
-    <div class="flex items-center justify-between">
+    <!-- Result Count Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
       <p class="text-xs font-bold text-slate-500 dark:text-slate-400">
         {{ currentLanguage === 'kh' ? 'រកឃើញការិយាល័យ & ទីតាំងរដ្ឋបាលចំនួន' : 'Found' }}
         <span class="text-[#0A2540] dark:text-white font-black">{{ filteredLocations.length }}</span>
         {{ currentLanguage === 'kh' ? 'កន្លែង' : 'civic locations' }}
       </p>
-      <VerificationBadge compact />
+      <div class="self-start sm:self-auto">
+        <VerificationBadge compact />
+      </div>
     </div>
 
     <!-- INTERACTIVE MAP VIEW -->
-    <div v-if="viewMode === 'map'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div v-if="viewMode === 'map'" class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start w-full min-w-0">
       <!-- Interactive Real Google Maps -->
-      <div class="lg:col-span-8 bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-sm relative min-h-[460px] p-4 flex flex-col justify-between">
+      <div class="lg:col-span-8 bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-800 overflow-hidden shadow-sm relative min-h-[380px] sm:min-h-[460px] p-3 sm:p-4 flex flex-col justify-between min-w-0">
         <!-- Map Overlay Header -->
-        <div class="flex items-center justify-between z-10 pb-3">
-          <span class="px-3 py-1 rounded-xl bg-slate-800/90 text-white text-xs font-bold border border-slate-700 backdrop-blur-md flex items-center gap-1.5">
-            <Compass class="w-3.5 h-3.5 text-blue-400" />
-            <span>{{ currentLanguage === 'kh' ? `ផែនទី Google Maps ទីតាំងរដ្ឋបាល ${selectedProvince.nameKh}` : `Google Maps: ${selectedProvince.name} Civic Offices` }}</span>
+        <div class="flex items-center justify-between gap-2 z-10 pb-3 flex-wrap sm:flex-nowrap">
+          <span class="px-2.5 sm:px-3 py-1 rounded-xl bg-slate-800/90 text-white text-xs font-bold border border-slate-700 backdrop-blur-md flex items-center gap-1.5 truncate">
+            <Compass class="w-3.5 h-3.5 text-blue-400 shrink-0" />
+            <span class="truncate">{{ currentLanguage === 'kh' ? `ផែនទី Google Maps ទីតាំងរដ្ឋបាល ${selectedProvince.nameKh}` : `Google Maps: ${selectedProvince.name} Civic Offices` }}</span>
           </span>
-          <span class="text-[11px] font-bold text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded-xl">
+          <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 bg-slate-800/80 px-2 py-1 rounded-xl shrink-0">
             {{ filteredLocations.length }} {{ currentLanguage === 'kh' ? 'ទីតាំង' : 'locations' }}
           </span>
         </div>
 
         <!-- Real Google Maps Iframe -->
-        <div class="relative h-80 w-full rounded-2xl overflow-hidden border border-slate-800 shadow-inner">
+        <div class="relative h-64 sm:h-80 w-full rounded-2xl overflow-hidden border border-slate-800 shadow-inner">
           <iframe
             :src="`https://maps.google.com/maps?q=${selectedLocation?.coordinates?.lat || selectedProvince.coordinates.lat},${selectedLocation?.coordinates?.lng || selectedProvince.coordinates.lng}&z=14&output=embed`"
             class="w-full h-full border-0"
@@ -310,28 +312,28 @@ function resetFilters() {
         </div>
 
         <!-- Location Quick-Pick Selector Buttons -->
-        <div class="pt-3 flex flex-wrap items-center gap-2 z-10">
+        <div class="pt-2 sm:pt-3 flex items-center gap-1.5 sm:gap-2 z-10 overflow-x-auto no-scrollbar py-0.5">
           <button
             v-for="loc in filteredLocations.slice(0, 6)"
             :key="loc.id"
             @click="selectOffice(loc)"
             type="button"
-            class="px-2.5 py-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5"
+            class="px-2.5 py-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap"
             :class="selectedLocation?.id === loc.id
               ? 'bg-amber-400 text-slate-950 border-amber-400'
               : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'"
           >
-            <Building v-if="loc.category === 'Government/OWSO'" class="w-3 h-3 text-blue-400" />
-            <Hospital v-else-if="loc.category === 'Hospital'" class="w-3 h-3 text-emerald-400" />
-            <ShieldAlert v-else-if="loc.category === 'Police Station'" class="w-3 h-3 text-rose-400" />
-            <Bus v-else class="w-3 h-3 text-amber-400" />
-            <span class="truncate max-w-[150px]">{{ localized(loc.name, loc.nameKh) }}</span>
+            <Building v-if="loc.category === 'Government/OWSO'" class="w-3 h-3 text-blue-400 shrink-0" />
+            <Hospital v-else-if="loc.category === 'Hospital'" class="w-3 h-3 text-emerald-400 shrink-0" />
+            <ShieldAlert v-else-if="loc.category === 'Police Station'" class="w-3 h-3 text-rose-400 shrink-0" />
+            <Bus v-else class="w-3 h-3 text-amber-400 shrink-0" />
+            <span class="truncate max-w-[130px] sm:max-w-[150px]">{{ localized(loc.name, loc.nameKh) }}</span>
           </button>
         </div>
       </div>
 
       <!-- Selected Office Details Drawer -->
-      <div class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 shadow-sm space-y-4 sticky top-6">
+      <div class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 p-4 sm:p-6 shadow-sm space-y-3.5 sm:space-y-4 sticky top-6 min-w-0">
         <div v-if="selectedLocation && selectedLocation.id" class="space-y-4">
           <div class="relative h-44 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700">
             <LazyImage
@@ -398,93 +400,94 @@ function resetFilters() {
       </div>
     </div>
 
-    <!-- DIRECTORY GRID VIEW -->
+    <!-- DIRECTORY GRID VIEW: 2 Columns on Mobile, 2 on MD, 3 on LG -->
     <div v-else class="space-y-6">
-      <div v-if="paginatedLocations.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-if="paginatedLocations.length > 0" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 w-full min-w-0">
         <div
           v-for="item in paginatedLocations"
           :key="item.id"
-          class="group bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between"
+          class="group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between min-w-0"
         >
-          <div>
+          <div class="min-w-0">
             <!-- Representative Image Banner -->
-            <div class="relative h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+            <div class="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
               <LazyImage
                 :src="getLocationImage(item)"
                 :alt="localized(item.name, item.nameKh)"
-                img-class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                img-class="w-full h-28 sm:h-44 object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent pointer-events-none" />
 
-              <!-- Category Badge -->
-              <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <span class="px-2.5 py-1 text-[11px] font-black uppercase tracking-wider rounded-xl bg-white/95 dark:bg-slate-900/90 text-[#0A2540] dark:text-white border border-slate-200/60 shadow-sm backdrop-blur-md flex items-center gap-1.5">
-                  <component :is="categories.find(c => c.value === item.category)?.icon || Building" class="w-3.5 h-3.5 text-blue-600" />
-                  <span>{{ item.category }}</span>
+              <!-- Category Badge & Open Badge -->
+              <div class="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between gap-1 pointer-events-none">
+                <span class="px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-[11px] font-black uppercase tracking-wider rounded-lg sm:rounded-xl bg-white/95 dark:bg-slate-900/90 text-[#0A2540] dark:text-white border border-slate-200/60 shadow-2xs backdrop-blur-md flex items-center gap-1 max-w-[65%] truncate">
+                  <component :is="categories.find(c => c.value === item.category)?.icon || Building" class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-blue-600 shrink-0" />
+                  <span class="truncate">{{ item.category }}</span>
                 </span>
 
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-600 text-white shadow-sm">
-                  <CheckCircle2 class="w-3 h-3" />
-                  <span>Open Today</span>
+                <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold bg-emerald-600 text-white shadow-2xs shrink-0">
+                  <CheckCircle2 class="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                  <span class="hidden sm:inline">Open Today</span>
+                  <span class="sm:hidden">បើក</span>
                 </span>
               </div>
             </div>
 
-            <div class="p-6 space-y-3.5">
+            <div class="p-2.5 sm:p-5 space-y-2 sm:space-y-3.5 min-w-0">
               <!-- Name & Description -->
-              <div>
-                <h3 class="text-base sm:text-lg font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug">
+              <div class="min-w-0">
+                <h3 class="text-xs sm:text-base font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-tight sm:leading-snug line-clamp-2 min-h-[2rem] sm:min-h-0">
                   {{ localized(item.name, item.nameKh) }}
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed line-clamp-2">
+                <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-1 sm:line-clamp-2">
                   {{ localized(item.description, item.descriptionKh) }}
                 </p>
               </div>
 
               <!-- Address Box -->
-              <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700 space-y-1">
-                <div class="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  <MapPin class="w-3 h-3 text-red-500" />
-                  <span>{{ currentLanguage === 'kh' ? 'អាសយដ្ឋានផ្លូវការ' : 'Official Address' }}</span>
+              <div class="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700 space-y-0.5 sm:space-y-1 min-w-0">
+                <div class="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 truncate">
+                  <MapPin class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-red-500 shrink-0" />
+                  <span class="truncate">{{ currentLanguage === 'kh' ? 'អាសយដ្ឋាន' : 'Address' }}</span>
                 </div>
-                <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 leading-relaxed">
+                <p class="text-[10px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300 leading-tight sm:leading-relaxed line-clamp-2">
                   {{ localized(item.address, item.addressKh) }}
                 </p>
               </div>
 
               <!-- Phone & Schedule -->
-              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
-                <span class="flex items-center gap-1 font-bold">
-                  <Clock class="w-3.5 h-3.5 text-blue-600" />
-                  <span>8:00 AM - 5:00 PM</span>
+              <div class="flex items-center justify-between text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 pt-0.5 sm:pt-1">
+                <span class="flex items-center gap-1 font-bold truncate">
+                  <Clock class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600 shrink-0" />
+                  <span class="truncate">8:00 AM - 5:00 PM</span>
                 </span>
-                <span class="flex items-center gap-1 font-bold text-[#0D47A1] dark:text-blue-400">
-                  <Phone class="w-3.5 h-3.5" />
-                  <span>{{ item.phone }}</span>
+                <span class="hidden sm:flex items-center gap-1 font-bold text-[#0D47A1] dark:text-blue-400 truncate">
+                  <Phone class="w-3.5 h-3.5 shrink-0" />
+                  <span class="truncate">{{ item.phone }}</span>
                 </span>
               </div>
             </div>
           </div>
 
           <!-- Card Actions Footer -->
-          <div class="px-6 pb-6 pt-0">
-            <div class="pt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-3">
+          <div class="p-2.5 sm:p-5 pt-0">
+            <div class="pt-2 sm:pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center gap-1.5 sm:gap-2">
               <a
                 :href="'tel:' + item.phone"
-                class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-[#0D47A1] dark:hover:text-blue-400"
+                class="flex-1 py-1.5 sm:py-2.5 px-1 sm:px-2.5 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/60 hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition-all cursor-pointer shadow-2xs"
               >
-                <PhoneCall class="w-3.5 h-3.5" />
-                <span>{{ currentLanguage === 'kh' ? 'ហៅទូរស័ព្ទ' : 'Call Office' }}</span>
+                <PhoneCall class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] dark:text-blue-400 shrink-0" />
+                <span>{{ currentLanguage === 'kh' ? 'ហៅ' : 'Call' }}</span>
               </a>
 
               <a
                 :href="getDirectionsUrl(item)"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-[#0D47A1] dark:text-blue-300 hover:bg-[#0D47A1] hover:text-white dark:hover:bg-blue-600 text-xs font-bold border border-blue-200/70 dark:border-blue-700/60 transition-all cursor-pointer"
+                class="flex-1 py-1.5 sm:py-2.5 px-1 sm:px-2.5 rounded-xl sm:rounded-2xl bg-[#0D47A1] hover:bg-blue-700 text-white font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition-all shadow-2xs hover:shadow-md cursor-pointer"
               >
-                <Navigation class="w-3.5 h-3.5" />
-                <span>{{ currentLanguage === 'kh' ? 'នាំផ្លូវលើ Google Maps' : 'Directions' }}</span>
+                <Navigation class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                <span>{{ currentLanguage === 'kh' ? 'នាំផ្លូវ' : 'Maps' }}</span>
               </a>
             </div>
           </div>
