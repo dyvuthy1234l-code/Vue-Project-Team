@@ -92,15 +92,8 @@ function triggerToast(msg: string) {
         @navigate="handleSelectTab"
       />
 
-      <!-- MAIN VIEWPORT (Clean, responsive layout across all admin tabs) -->
-      <main
-        :class="[
-          'flex-1 min-h-0',
-          activeTab === 'dashboard' || activeTab === 'government' || activeTab === 'health' || activeTab === 'jobs' || activeTab === 'transport' || activeTab === 'homeservices' || activeTab === 'offices' || activeTab === 'news'
-            ? 'p-2.5 sm:p-3 lg:p-3.5 xl:p-4 overflow-y-auto lg:overflow-hidden flex flex-col'
-            : 'p-4 sm:p-6 overflow-y-auto scrollbar-thin'
-        ]"
-      >
+      <!-- MAIN VIEWPORT (Clean, responsive single-screen layout across all admin tabs) -->
+      <main class="flex-1 min-h-0 p-2.5 sm:p-3 lg:p-3.5 xl:p-4 overflow-y-auto lg:overflow-hidden flex flex-col">
         
         <!-- Tab 1: Overview Dashboard (Single Screen View) -->
         <AdminOverview
@@ -159,27 +152,31 @@ function triggerToast(msg: string) {
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 9: Users -->
+        <!-- Tab 9: Users & Roles (Single Screen View with Pagination) -->
         <AdminUsers
           v-else-if="activeTab === 'users'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 10: Feedback & Reports -->
+        <!-- Tab 10: Feedback & Reports (Single Screen View with Pagination) -->
         <AdminFeedback
           v-else-if="activeTab === 'feedback'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 11: Settings -->
+        <!-- Tab 11: Settings (Single Screen Executive Layout) -->
         <AdminSettings
           v-else-if="activeTab === 'settings'"
+          class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />
 
-        <!-- Tab 12: Admin Audit Logs -->
+        <!-- Tab 12: Admin Audit Logs (Single Screen View with Pagination) -->
         <AdminLogs
           v-else-if="activeTab === 'logs'"
+          class="flex-1 min-h-0"
         />
 
       </main>

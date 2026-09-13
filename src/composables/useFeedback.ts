@@ -21,6 +21,9 @@ export interface ServiceReport {
   createdAt: string
 }
 
+export type FeedbackReport = ServiceReport
+
+
 const feedbacks = ref<ServiceFeedback[]>(
   JSON.parse(localStorage.getItem('camlife-feedbacks') || '[]')
 )
