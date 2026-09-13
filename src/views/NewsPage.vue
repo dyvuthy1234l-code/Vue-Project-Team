@@ -203,38 +203,38 @@ function copyNewsLink(id: string) {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-khmer">
+  <div class="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10 space-y-5 sm:space-y-8 font-khmer overflow-x-clip min-w-0">
 
     <!-- ============================================================
          1. REAL NEWSPAPER TOP BAR (Live Date, Clock, Exchange & Weather)
          ============================================================ -->
-    <header class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-slate-100 pb-3">
+    <header class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3 text-xs border-b border-slate-100 pb-2.5 sm:pb-3">
         <!-- Date & Live Digital Clock -->
-        <div class="flex items-center gap-3 flex-wrap">
-          <div class="flex items-center gap-1.5 font-bold text-slate-800">
-            <Calendar class="w-4 h-4 text-[#0D47A1]" />
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <div class="flex items-center gap-1.5 font-bold text-slate-800 text-[11px] sm:text-xs">
+            <Calendar class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0D47A1] shrink-0" />
             <span>{{ currentLanguage === 'kh' ? khmerDate : new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
           </div>
           <span class="text-slate-300">|</span>
-          <div class="flex items-center gap-1.5 font-mono font-bold text-[#0D47A1] bg-blue-50 px-2 py-0.5 rounded">
-            <Clock class="w-3.5 h-3.5 text-[#0D47A1]" />
+          <div class="flex items-center gap-1.5 font-mono font-bold text-[#0D47A1] bg-blue-50 px-2 py-0.5 rounded text-[11px] sm:text-xs">
+            <Clock class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] shrink-0" />
             <span>{{ liveTime }}</span>
           </div>
         </div>
 
         <!-- Quick Financial & Weather Ticker -->
-        <div class="flex items-center gap-4 text-[11px] font-bold text-slate-600 flex-wrap">
-          <span class="flex items-center gap-1 bg-amber-50 text-amber-900 px-2 py-0.5 rounded border border-amber-200/60">
-            <DollarSign class="w-3 h-3 text-amber-600" />
+        <div class="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] font-bold text-slate-600 flex-wrap">
+          <span class="flex items-center gap-1 bg-amber-50 text-amber-900 px-1.5 sm:px-2 py-0.5 rounded border border-amber-200/60">
+            <DollarSign class="w-3 h-3 text-amber-600 shrink-0" />
             <span>USD: 4,085៛</span>
           </span>
           <span class="hidden sm:flex items-center gap-1 bg-emerald-50 text-emerald-900 px-2 py-0.5 rounded border border-emerald-200/60">
-            <Coins class="w-3 h-3 text-emerald-600" />
+            <Coins class="w-3 h-3 text-emerald-600 shrink-0" />
             <span>មាស: $2,840/oz</span>
           </span>
-          <span class="flex items-center gap-1 bg-sky-50 text-sky-900 px-2 py-0.5 rounded border border-sky-200/60">
-            <CloudSun class="w-3.5 h-3.5 text-sky-600" />
+          <span class="flex items-center gap-1 bg-sky-50 text-sky-900 px-1.5 sm:px-2 py-0.5 rounded border border-sky-200/60">
+            <CloudSun class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-sky-600 shrink-0" />
             <span>ភ្នំពេញ 31°C</span>
           </span>
         </div>
@@ -243,28 +243,28 @@ function copyNewsLink(id: string) {
       <!-- ============================================================
            2. BREAKING NEWS LIVE TICKER (ព័ត៌មានទាន់ហេតុការណ៍)
            ============================================================ -->
-      <div class="flex items-center gap-3 overflow-hidden bg-rose-50/70 border border-rose-100 rounded-xl p-2">
-        <div class="flex items-center gap-1.5 bg-rose-600 text-white font-black text-[11px] px-3 py-1 rounded-lg shrink-0 uppercase tracking-wider shadow-xs">
-          <Radio class="w-3.5 h-3.5 animate-pulse" />
+      <div class="flex items-center gap-2 sm:gap-3 overflow-hidden bg-rose-50/70 border border-rose-100 rounded-xl p-1.5 sm:p-2">
+        <div class="flex items-center gap-1 sm:gap-1.5 bg-rose-600 text-white font-black text-[10px] sm:text-[11px] px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg shrink-0 uppercase tracking-wider shadow-xs">
+          <Radio class="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-pulse" />
           <span>{{ currentLanguage === 'kh' ? 'ទាន់ហេតុការណ៍' : 'Breaking News' }}</span>
         </div>
 
-        <div v-if="breakingNews.length > 0" class="flex-1 truncate text-xs font-bold text-slate-900">
+        <div v-if="breakingNews.length > 0" class="flex-1 min-w-0 truncate text-[11px] sm:text-xs font-bold text-slate-900">
           <router-link
             :to="'/news/' + breakingNews[currentTickerIndex].id"
-            class="hover:text-rose-600 hover:underline transition-colors"
+            class="hover:text-rose-600 hover:underline transition-colors block truncate"
           >
-            <span class="text-rose-600 mr-2">[{{ breakingNews[currentTickerIndex].category }}]</span>
+            <span class="text-rose-600 mr-1 sm:mr-2">[{{ breakingNews[currentTickerIndex].category }}]</span>
             {{ localized(breakingNews[currentTickerIndex].title, breakingNews[currentTickerIndex].titleKh) }}
           </router-link>
         </div>
 
-        <div class="flex items-center gap-1 shrink-0">
+        <div class="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <button @click="prevTicker" class="p-1 rounded hover:bg-rose-100 text-rose-700 cursor-pointer" title="Previous breaking news">
-            <ChevronLeft class="w-4 h-4" />
+            <ChevronLeft class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button @click="nextTicker" class="p-1 rounded hover:bg-rose-100 text-rose-700 cursor-pointer" title="Next breaking news">
-            <ChevronRight class="w-4 h-4" />
+            <ChevronRight class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
@@ -273,10 +273,10 @@ function copyNewsLink(id: string) {
     <!-- ============================================================
          3. TOP HEADLINES SHOWCASE (កម្រងព័ត៌មានធំបំផុតប្រចាំថ្ងៃ)
          ============================================================ -->
-    <section v-if="leadArticle" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <section v-if="leadArticle" class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
       <!-- Main Lead Headline (Left 7 Cols) -->
-      <div class="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between group">
-        <div class="relative h-64 sm:h-80 w-full overflow-hidden bg-slate-900">
+      <div class="lg:col-span-7 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-card-hover transition-all flex flex-col justify-between group min-w-0">
+        <div class="relative h-52 sm:h-80 w-full overflow-hidden bg-slate-900">
           <LazyImage
             :src="getNewsImage(leadArticle)"
             :alt="localized(leadArticle.title, leadArticle.titleKh)"
@@ -286,27 +286,27 @@ function copyNewsLink(id: string) {
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
 
           <!-- Overlay Badges -->
-          <div class="absolute top-4 left-4 flex items-center gap-2">
-            <span class="px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider bg-rose-600 text-white shadow-md flex items-center gap-1">
-              <Flame class="w-3.5 h-3.5" />
+          <div class="absolute top-2.5 sm:top-4 left-2.5 sm:left-4 flex items-center gap-1.5 sm:gap-2">
+            <span class="px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider bg-rose-600 text-white shadow-md flex items-center gap-1">
+              <Flame class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានលេចធ្លោ' : 'Top Story' }}</span>
             </span>
-            <span class="px-3 py-1 rounded-xl text-xs font-bold uppercase bg-slate-900/80 text-white backdrop-blur-xs">
+            <span class="px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold uppercase bg-slate-900/80 text-white backdrop-blur-xs">
               {{ leadArticle.category }}
             </span>
           </div>
 
           <!-- Bottom Title & Meta in Image -->
-          <div class="absolute bottom-4 left-4 right-4 text-white space-y-2">
-            <div class="flex items-center gap-3 text-xs text-slate-200 font-bold">
-              <span class="flex items-center gap-1"><Calendar class="w-3.5 h-3.5 text-amber-400" /> {{ leadArticle.date }}</span>
+          <div class="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 text-white space-y-1 sm:space-y-2">
+            <div class="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-slate-200 font-bold flex-wrap">
+              <span class="flex items-center gap-1"><Calendar class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" /> {{ leadArticle.date }}</span>
               <span>·</span>
-              <span class="flex items-center gap-1"><Eye class="w-3.5 h-3.5 text-blue-300" /> {{ Number(leadArticle.views || 24890).toLocaleString() }} views</span>
+              <span class="flex items-center gap-1"><Eye class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300" /> {{ Number(leadArticle.views || 24890).toLocaleString() }} views</span>
               <span>·</span>
               <span>{{ leadArticle.readTime || '4 នាទី' }}</span>
             </div>
 
-            <h2 class="text-lg sm:text-2xl font-black leading-snug group-hover:text-amber-300 transition-colors">
+            <h2 class="text-sm sm:text-2xl font-black leading-snug group-hover:text-amber-300 transition-colors line-clamp-2">
               <router-link :to="'/news/' + leadArticle.id">
                 {{ localized(leadArticle.title, leadArticle.titleKh) }}
               </router-link>
@@ -314,65 +314,65 @@ function copyNewsLink(id: string) {
           </div>
         </div>
 
-        <div class="p-6 space-y-4">
-          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        <div class="p-3.5 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-2 sm:line-clamp-none">
             {{ localized(leadArticle.description, leadArticle.descriptionKh) }}
           </p>
 
-          <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-            <div v-if="leadArticle.author" class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-full bg-blue-100 text-[#0D47A1] font-black text-xs flex items-center justify-center">
+          <div class="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-slate-100 gap-2">
+            <div v-if="leadArticle.author" class="flex items-center gap-2 min-w-0">
+              <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-100 text-[#0D47A1] font-black text-xs flex items-center justify-center shrink-0">
                 {{ leadArticle.author.slice(0, 1) }}
               </div>
-              <div class="text-[11px]">
-                <p class="font-bold text-slate-900">{{ leadArticle.author }}</p>
-                <p class="text-slate-400">{{ leadArticle.authorRole || leadArticle.source }}</p>
+              <div class="text-[10px] sm:text-[11px] min-w-0">
+                <p class="font-bold text-slate-900 truncate">{{ leadArticle.author }}</p>
+                <p class="text-slate-400 truncate">{{ leadArticle.authorRole || leadArticle.source }}</p>
               </div>
             </div>
 
             <router-link
               :to="'/news/' + leadArticle.id"
-              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white font-black text-xs transition-colors shadow-xs"
+              class="inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white font-black text-[11px] sm:text-xs transition-colors shadow-xs shrink-0"
             >
-              <span>{{ currentLanguage === 'kh' ? 'អានសេចក្តីពេញលេញ' : 'Read Full Story' }}</span>
-              <ArrowRight class="w-3.5 h-3.5" />
+              <span>{{ currentLanguage === 'kh' ? 'អានពេញលេញ' : 'Read Story' }}</span>
+              <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </router-link>
           </div>
         </div>
       </div>
 
       <!-- Sub-Lead Articles Stack (Right 5 Cols) -->
-      <div class="lg:col-span-5 flex flex-col gap-4">
+      <div class="lg:col-span-5 flex flex-col gap-2.5 sm:gap-4 min-w-0">
         <div class="flex items-center justify-between pb-1 border-b-2 border-[#0D47A1]">
-          <div class="flex items-center gap-2 text-sm font-black text-slate-900 uppercase tracking-wide">
-            <TrendingUp class="w-4 h-4 text-[#0D47A1]" />
+          <div class="flex items-center gap-2 text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wide">
+            <TrendingUp class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0D47A1]" />
             <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានសំខាន់ៗបន្ទាប់' : 'Trending Headlines' }}</span>
           </div>
-          <span class="text-[11px] font-bold text-slate-400">LIVE FEED</span>
+          <span class="text-[10px] sm:text-[11px] font-bold text-slate-400">LIVE FEED</span>
         </div>
 
         <article
           v-for="sub in subLeadArticles"
           :key="sub.id"
-          class="group bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs hover:shadow-card-hover transition-all flex gap-3.5 items-center"
+          class="group bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 p-2.5 sm:p-3.5 shadow-2xs hover:shadow-card-hover transition-all flex gap-2.5 sm:gap-3.5 items-center min-w-0"
         >
-          <div class="relative w-28 sm:w-32 h-20 sm:h-24 rounded-xl overflow-hidden shrink-0 bg-slate-100">
+          <div class="relative w-24 sm:w-32 h-18 sm:h-24 rounded-lg sm:rounded-xl overflow-hidden shrink-0 bg-slate-100">
             <LazyImage
               :src="getNewsImage(sub)"
               :alt="localized(sub.title, sub.titleKh)"
               img-class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               class="w-full h-full"
             />
-            <span class="absolute top-1.5 left-1.5 px-2 py-0.5 bg-slate-950/80 text-white text-[9px] font-black uppercase rounded backdrop-blur-xs">
+            <span class="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 px-1.5 py-0.5 bg-slate-950/80 text-white text-[8px] sm:text-[9px] font-black uppercase rounded backdrop-blur-xs">
               {{ sub.category }}
             </span>
           </div>
 
-          <div class="flex-1 min-w-0 space-y-1.5">
-            <div class="flex items-center gap-2 text-[10px] text-slate-400 font-bold">
-              <span class="text-[#0D47A1]">{{ sub.source }}</span>
+          <div class="flex-1 min-w-0 space-y-1 sm:space-y-1.5">
+            <div class="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-slate-400 font-bold">
+              <span class="text-[#0D47A1] truncate">{{ sub.source }}</span>
               <span>·</span>
-              <span>{{ sub.date }}</span>
+              <span class="shrink-0">{{ sub.date }}</span>
             </div>
 
             <h3 class="font-black text-xs sm:text-sm text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-2">
@@ -381,8 +381,8 @@ function copyNewsLink(id: string) {
               </router-link>
             </h3>
 
-            <div class="flex items-center gap-3 text-[10px] text-slate-400">
-              <span v-if="sub.views" class="flex items-center gap-1"><Eye class="w-3 h-3" /> {{ Number(sub.views).toLocaleString() }}</span>
+            <div class="flex items-center gap-2 text-[9px] sm:text-[10px] text-slate-400">
+              <span v-if="sub.views" class="flex items-center gap-0.5"><Eye class="w-2.5 h-2.5 sm:w-3 sm:h-3" /> {{ Number(sub.views).toLocaleString() }}</span>
               <span v-if="sub.readTime">{{ sub.readTime }}</span>
             </div>
           </div>
@@ -393,15 +393,15 @@ function copyNewsLink(id: string) {
     <!-- ============================================================
          4. CATEGORY NAVIGATION BAR & SEARCH TOOLBAR
          ============================================================ -->
-    <div class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs space-y-3">
-      <!-- Category Pills -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
+      <!-- Category Pills (Horizontal Scroll on Mobile) -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
         <button
           v-for="cat in categories"
           :key="cat.value"
           @click="activeCategory = cat.value"
           type="button"
-          class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 border"
+          class="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 border shrink-0"
           :class="activeCategory === cat.value
             ? 'bg-[#0D47A1] text-white border-[#0D47A1] shadow-2xs'
             : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'"
@@ -412,33 +412,33 @@ function copyNewsLink(id: string) {
       </div>
 
       <!-- Search & Layout Controls Row -->
-      <div class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+      <div class="pt-2 sm:pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 text-xs">
         <!-- Search Input -->
         <div class="relative w-full sm:w-80">
-          <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             v-model="searchQuery"
             type="text"
             :placeholder="currentLanguage === 'kh' ? 'ស្វែងរកព័ត៌មាន, ក្រសួង, បាគង, ស្ពាន, សុខាភិបាល...' : 'Search news, economy, infrastructure...'"
-            class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-bold focus:outline-hidden focus:ring-2 focus:ring-[#0D47A1]"
+            class="w-full pl-9 pr-3 sm:pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs sm:text-sm text-slate-800 font-bold focus:outline-hidden focus:ring-2 focus:ring-[#0D47A1]"
           />
         </div>
 
         <!-- Sorting & View Mode Switches -->
-        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3">
+        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2 sm:gap-3">
           <!-- Sort Options -->
           <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
             <button
               @click="sortBy = 'latest'"
               type="button"
-              :class="['px-2.5 py-1 rounded-lg text-xs font-bold transition-all', sortBy === 'latest' ? 'bg-white text-[#0D47A1] shadow-2xs font-black' : 'text-slate-500']"
+              :class="['px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition-all cursor-pointer', sortBy === 'latest' ? 'bg-white text-[#0D47A1] shadow-2xs font-black' : 'text-slate-500']"
             >
               {{ currentLanguage === 'kh' ? 'ថ្មីៗបំផុត' : 'Latest' }}
             </button>
             <button
               @click="sortBy = 'popular'"
               type="button"
-              :class="['px-2.5 py-1 rounded-lg text-xs font-bold transition-all', sortBy === 'popular' ? 'bg-white text-[#0D47A1] shadow-2xs font-black' : 'text-slate-500']"
+              :class="['px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition-all cursor-pointer', sortBy === 'popular' ? 'bg-white text-[#0D47A1] shadow-2xs font-black' : 'text-slate-500']"
             >
               {{ currentLanguage === 'kh' ? 'ពេញនិយម' : 'Popular' }}
             </button>
@@ -449,7 +449,7 @@ function copyNewsLink(id: string) {
             <button
               @click="viewMode = 'grid'"
               type="button"
-              :class="['p-1 rounded-lg transition-all', viewMode === 'grid' ? 'bg-white text-[#0D47A1] shadow-2xs' : 'text-slate-400']"
+              :class="['p-1 rounded-lg transition-all cursor-pointer', viewMode === 'grid' ? 'bg-white text-[#0D47A1] shadow-2xs' : 'text-slate-400']"
               title="Grid view"
             >
               <LayoutGrid class="w-4 h-4" />
@@ -457,15 +457,15 @@ function copyNewsLink(id: string) {
             <button
               @click="viewMode = 'list'"
               type="button"
-              :class="['p-1 rounded-lg transition-all', viewMode === 'list' ? 'bg-white text-[#0D47A1] shadow-2xs' : 'text-slate-400']"
+              :class="['p-1 rounded-lg transition-all cursor-pointer', viewMode === 'list' ? 'bg-white text-[#0D47A1] shadow-2xs' : 'text-slate-400']"
               title="Newspaper List view"
             >
               <List class="w-4 h-4" />
             </button>
-          </div>
         </div>
       </div>
     </div>
+  </div>
 
     <!-- ============================================================
          5. MAIN NEWSPAPER TWO-COLUMN EDITORIAL LAYOUT
@@ -489,98 +489,98 @@ function copyNewsLink(id: string) {
         </div>
 
         <!-- ==============================
-             FEED: GRID CARDS VIEW
+             FEED: GRID CARDS VIEW (2 Columns on Mobile, 2 on MD)
              ============================== -->
-        <div v-if="paginatedNews.length > 0 && viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div v-if="paginatedNews.length > 0 && viewMode === 'grid'" class="grid grid-cols-2 md:grid-cols-2 gap-2.5 sm:gap-6 w-full min-w-0">
           <article
             v-for="item in paginatedNews"
             :key="item.id"
-            class="group bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+            class="group bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between min-w-0"
           >
-            <div>
+            <div class="min-w-0">
               <!-- Cover Image -->
-              <div class="relative h-48 w-full overflow-hidden bg-slate-100">
+              <div class="relative h-28 sm:h-48 w-full overflow-hidden bg-slate-100">
                 <LazyImage
                   :src="getNewsImage(item)"
                   :alt="localized(item.title, item.titleKh)"
-                  img-class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  img-class="w-full h-28 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                   class="w-full h-full"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
 
                 <!-- Badges -->
-                <div class="absolute top-3 left-3 right-3 flex items-center justify-between">
-                  <span class="px-2.5 py-1 text-[10px] font-black uppercase rounded-lg bg-white/95 text-[#0D47A1] shadow-xs backdrop-blur-xs">
+                <div class="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between gap-1 pointer-events-none">
+                  <span class="px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-black uppercase rounded-md sm:rounded-lg bg-white/95 text-[#0D47A1] shadow-2xs backdrop-blur-xs max-w-[60%] truncate">
                     {{ item.category }}
                   </span>
-                  <span v-if="item.breaking" class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-rose-600 text-white shadow-xs flex items-center gap-1 animate-pulse">
+                  <span v-if="item.breaking" class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black uppercase bg-rose-600 text-white shadow-xs flex items-center gap-0.5 sm:gap-1 animate-pulse shrink-0">
                     ● {{ currentLanguage === 'kh' ? 'ទាន់ហេតុការណ៍' : 'Breaking' }}
                   </span>
-                  <span v-else class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-xs flex items-center gap-1">
-                    <ShieldCheck class="w-3 h-3 text-emerald-400" />
-                    <span>Verified</span>
+                  <span v-else class="px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-xs flex items-center gap-0.5 sm:gap-1 shrink-0">
+                    <ShieldCheck class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-400" />
+                    <span class="hidden sm:inline">Verified</span>
                   </span>
                 </div>
 
                 <!-- Floating Bottom Info on Image -->
-                <div class="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white text-[11px] font-bold">
-                  <span class="flex items-center gap-1 bg-slate-950/70 px-2 py-0.5 rounded backdrop-blur-xs">
-                    <Calendar class="w-3 h-3 text-slate-300" />
-                    <span>{{ item.date }}</span>
+                <div class="absolute bottom-2 left-2 sm:bottom-2.5 sm:left-3 right-2 sm:right-3 flex items-center justify-between gap-1 text-white text-[9px] sm:text-[11px] font-bold">
+                  <span class="flex items-center gap-0.5 sm:gap-1 bg-slate-950/70 px-1.5 sm:px-2 py-0.5 rounded backdrop-blur-xs truncate max-w-[60%]">
+                    <Calendar class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-300 shrink-0" />
+                    <span class="truncate">{{ item.date }}</span>
                   </span>
-                  <span v-if="item.views" class="flex items-center gap-1 bg-slate-950/70 px-2 py-0.5 rounded backdrop-blur-xs text-blue-200">
-                    <Eye class="w-3 h-3" />
+                  <span v-if="item.views" class="flex items-center gap-0.5 sm:gap-1 bg-slate-950/70 px-1.5 sm:px-2 py-0.5 rounded backdrop-blur-xs text-blue-200 shrink-0">
+                    <Eye class="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                     <span>{{ Number(item.views).toLocaleString() }}</span>
                   </span>
                 </div>
               </div>
 
               <!-- Article Content -->
-              <div class="p-5 space-y-2.5">
-                <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold">
-                  <span class="text-[#0D47A1]">{{ item.source }}</span>
-                  <span v-if="item.readTime">{{ item.readTime }}</span>
+              <div class="p-2.5 sm:p-5 space-y-1.5 sm:space-y-2.5 min-w-0">
+                <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 font-bold">
+                  <span class="text-[#0D47A1] truncate">{{ item.source }}</span>
+                  <span v-if="item.readTime" class="shrink-0">{{ item.readTime }}</span>
                 </div>
 
-                <h3 class="font-black text-base text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-2">
+                <h3 class="font-black text-xs sm:text-base text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-tight sm:leading-snug line-clamp-2 min-h-[2rem] sm:min-h-0">
                   <router-link :to="'/news/' + item.id">
                     {{ localized(item.title, item.titleKh) }}
                   </router-link>
                 </h3>
 
-                <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">
+                <p class="text-[10px] sm:text-xs text-slate-500 leading-relaxed line-clamp-1 sm:line-clamp-2">
                   {{ localized(item.description, item.descriptionKh) }}
                 </p>
               </div>
             </div>
 
             <!-- Card Bottom Bar -->
-            <div class="px-5 pb-5 pt-0">
-              <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <div v-if="item.author" class="flex items-center gap-1.5 text-[11px] text-slate-500">
-                  <div class="w-5 h-5 rounded-full bg-blue-100 text-[#0D47A1] text-[10px] font-bold flex items-center justify-center">
+            <div class="px-2.5 sm:px-5 pb-2.5 sm:pb-5 pt-0">
+              <div class="pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between gap-1">
+                <div v-if="item.author" class="flex items-center gap-1 text-[10px] sm:text-[11px] text-slate-500 min-w-0">
+                  <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-100 text-[#0D47A1] text-[9px] sm:text-[10px] font-bold flex items-center justify-center shrink-0">
                     {{ item.author.slice(0, 1) }}
                   </div>
-                  <span class="truncate max-w-[110px] font-medium">{{ item.author }}</span>
+                  <span class="truncate max-w-[60px] sm:max-w-[110px] font-medium">{{ item.author }}</span>
                 </div>
-                <span v-else class="text-[11px] text-slate-400">{{ item.source }}</span>
+                <span v-else class="text-[10px] sm:text-[11px] text-slate-400 truncate">{{ item.source }}</span>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1 sm:gap-2 shrink-0">
                   <button
                     @click="copyNewsLink(item.id)"
-                    class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                    class="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                     title="Share link"
                   >
-                    <Check v-if="copiedNewsId === item.id" class="w-3.5 h-3.5 text-emerald-600" />
-                    <Share2 v-else class="w-3.5 h-3.5" />
+                    <Check v-if="copiedNewsId === item.id" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
+                    <Share2 v-else class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </button>
 
                   <router-link
                     :to="'/news/' + item.id"
-                    class="inline-flex items-center gap-1 text-xs font-black text-[#0D47A1] group-hover:translate-x-1 transition-transform"
+                    class="inline-flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs font-black text-[#0D47A1] group-hover:translate-x-0.5 transition-transform shrink-0"
                   >
-                    <span>{{ currentLanguage === 'kh' ? 'អានលម្អិត' : 'Read' }}</span>
-                    <ArrowRight class="w-3.5 h-3.5" />
+                    <span>{{ currentLanguage === 'kh' ? 'អាន' : 'Read' }}</span>
+                    <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </router-link>
                 </div>
               </div>
