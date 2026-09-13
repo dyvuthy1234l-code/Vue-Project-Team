@@ -119,7 +119,7 @@ const filteredServices = computed(() => {
 
 // Pagination State (Full Screen Viewport Fit)
 const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(8)
 
 const totalPages = computed(() => Math.ceil(filteredServices.value.length / itemsPerPage.value) || 1)
 
@@ -275,13 +275,23 @@ function formatFee(s: GovernmentService): string {
 }
 
 function formatValidity(s: GovernmentService): string {
-  const v = currentLanguage.value === 'kh' ? (s.validityKh || s.validity || 'អចិន្ត្រៃយ៍') : (s.validity || 'Permanent')
-  if (v.includes('១០ ឆ្នាំ') && v.includes('៥ ឆ្នាំ')) return currentLanguage.value === 'kh' ? '១០ ឆ្នាំ / ៥ ឆ្នាំ' : '10 Yrs / 5 Yrs'
-  if (v.includes('១០ ឆ្នាំ') || v.includes('10 Years') || v.includes('10 years')) return currentLanguage.value === 'kh' ? '១០ ឆ្នាំ' : '10 Years'
-  if (v.includes('៣ ខែ') || v.includes('3 Months')) return currentLanguage.value === 'kh' ? '៣ ខែ' : '3 Months'
-  if (v.includes('១ ឆ្នាំ') || v.includes('1 Year')) return currentLanguage.value === 'kh' ? '១ ឆ្នាំ' : '1 Year'
-  if (v.includes('អចិន្ត្រៃយ៍') || v.includes('Permanent') || v.includes('Lifetime')) return currentLanguage.value === 'kh' ? 'អចិន្ត្រៃយ៍' : 'Permanent'
-  return v.replace(/\(.*?\)/g, '').trim() || v
+  if (currentLanguage.value === 'kh') {
+    const v = s.validityKh || s.validity || 'អចិន្ត្រៃយ៍'
+    if (v.includes('១០ ឆ្នាំ') && (v.includes('៥ ឆ្នាំ') || v.includes('កាតគ្រី') || v.includes('ប្រភេទ ក'))) return '១០ ឆ្នាំ / ៥ ឆ្នាំ'
+    if (v.includes('១០ ឆ្នាំ')) return '១០ ឆ្នាំ'
+    if (v.includes('៣ ខែ')) return '៣ ខែ'
+    if (v.includes('១ ឆ្នាំ')) return '១ ឆ្នាំ'
+    if (v.includes('អចិន្ត្រៃយ៍') || v.includes('គ្មានកាលកំណត់')) return 'អចិន្ត្រៃយ៍'
+    return v.replace(/\(.*?\)/g, '').trim() || v
+  } else {
+    const v = s.validity || 'Permanent'
+    if (v.includes('10 Years') && (v.includes('5 Years') || v.includes('Renewal') || v.includes('Lifetime'))) return '10 Yrs / 5 Yrs'
+    if (v.includes('10 Years') || v.includes('10 years')) return '10 Years'
+    if (v.includes('3 Months') || v.includes('3 months')) return '3 Months'
+    if (v.includes('1 Year') || v.includes('1 year')) return '1 Year'
+    if (v.includes('Permanent') || v.includes('Lifetime')) return 'Permanent'
+    return v.replace(/\(.*?\)/g, '').trim() || v
+  }
 }
 
 // -------------------------------------------------------------
@@ -667,47 +677,47 @@ function confirmDelete() {
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden flex-1 min-h-0 flex flex-col justify-between">
       
       <div class="overflow-x-auto overflow-y-auto flex-1 min-h-0">
-        <table class="w-full text-left text-xs border-collapse">
+        <table class="w-full table-fixed text-left text-xs border-collapse min-w-[680px] lg:min-w-full">
           
           <!-- Table Header -->
           <thead class="bg-slate-50/95 border-b border-slate-200/90 text-slate-600 font-bold text-[11px] sticky top-0 z-10 backdrop-blur-xs">
             <tr>
-              <th class="py-2.5 px-4 font-khmer w-[32%]">{{ currentLanguage === 'kh' ? 'សេវា & លេខសម្គាល់' : 'Service Title & ID' }}</th>
-              <th class="py-2.5 px-3 font-khmer w-[15%]">{{ currentLanguage === 'kh' ? 'ប្រភេទ' : 'Category' }}</th>
-              <th class="py-2.5 px-3 font-khmer w-[16%]">{{ currentLanguage === 'kh' ? 'រយៈពេល' : 'Processing Time' }}</th>
-              <th class="py-2.5 px-3 font-khmer w-[14%]">{{ currentLanguage === 'kh' ? 'តម្លៃសេវា' : 'Fee' }}</th>
-              <th class="py-2.5 px-3 font-khmer w-[13%]">{{ currentLanguage === 'kh' ? 'សុពលភាព' : 'Validity' }}</th>
-              <th class="py-2.5 px-4 text-right font-khmer w-[10%]">{{ currentLanguage === 'kh' ? 'សកម្មភាព' : 'Actions' }}</th>
+              <th class="py-2 px-3.5 font-khmer w-[27%]">{{ currentLanguage === 'kh' ? 'សេវា & លេខសម្គាល់' : 'Service Title & ID' }}</th>
+              <th class="py-2 px-2.5 font-khmer w-[13%]">{{ currentLanguage === 'kh' ? 'ប្រភេទ' : 'Category' }}</th>
+              <th class="py-2 px-2.5 font-khmer w-[14%]">{{ currentLanguage === 'kh' ? 'រយៈពេល' : 'Processing Time' }}</th>
+              <th class="py-2 px-2.5 font-khmer w-[15%]">{{ currentLanguage === 'kh' ? 'តម្លៃសេវា' : 'Fee' }}</th>
+              <th class="py-2 px-2.5 font-khmer w-[15%]">{{ currentLanguage === 'kh' ? 'សុពលភាព' : 'Validity' }}</th>
+              <th class="py-2 px-3 text-right font-khmer w-[16%]">{{ currentLanguage === 'kh' ? 'សកម្មភាព' : 'Actions' }}</th>
             </tr>
           </thead>
 
-          <!-- Table Body (Paginated: 5 items per page) -->
+          <!-- Table Body (Paginated: 8 items per page) -->
           <tbody class="divide-y divide-slate-100">
             <tr
               v-for="s in paginatedServices"
               :key="s.id"
-              class="hover:bg-blue-50/30 transition-all duration-150 group h-13 sm:h-14"
+              class="hover:bg-blue-50/30 transition-all duration-150 group h-11 sm:h-12"
             >
               
               <!-- 1. Service Title & ID -->
-              <td class="py-2 px-4 align-middle">
-                <div class="flex items-center gap-2.5">
-                  <div :class="['w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 shadow-2xs transition-transform group-hover:scale-105', getCategoryColor(s.category).iconBg]">
-                    <FileText class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <td class="py-1.5 px-3.5 align-middle">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div :class="['w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs transition-transform group-hover:scale-105', getCategoryColor(s.category).iconBg]">
+                    <FileText class="w-3.5 h-3.5" />
                   </div>
                   <div class="min-w-0 flex-1">
                     <span
-                      class="font-bold text-slate-900 block font-khmer leading-snug text-xs sm:text-[13px] group-hover:text-blue-600 transition-colors truncate max-w-[280px]"
+                      class="font-bold text-slate-900 block font-khmer leading-tight text-xs group-hover:text-blue-600 transition-colors truncate"
                       :title="currentLanguage === 'kh' ? (s.titleKh || s.title) : s.title"
                     >
                       {{ currentLanguage === 'kh' ? (s.titleKh || s.title) : s.title }}
                     </span>
 
-                    <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                      <span class="inline-flex items-center px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 text-[10px] font-mono border border-slate-200/80 font-medium">
+                    <div class="flex items-center gap-1.5 mt-0.5 min-w-0 truncate">
+                      <span class="inline-flex items-center px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 text-[9.5px] font-mono border border-slate-200/80 font-medium shrink-0">
                         {{ s.id }}
                       </span>
-                      <span v-if="s.location" class="inline-flex items-center gap-1 text-[10px] text-slate-400 font-medium truncate max-w-[190px]" :title="currentLanguage === 'kh' ? (s.locationKh || s.location) : s.location">
+                      <span v-if="s.location" class="inline-flex items-center gap-1 text-[9.5px] text-slate-400 font-medium truncate" :title="currentLanguage === 'kh' ? (s.locationKh || s.location) : s.location">
                         <MapPin class="w-2.5 h-2.5 shrink-0 text-slate-400" />
                         <span class="truncate font-khmer">{{ currentLanguage === 'kh' ? (s.locationKh || s.location) : s.location }}</span>
                       </span>
@@ -717,15 +727,18 @@ function confirmDelete() {
               </td>
 
               <!-- 2. Category Badge (Single-line whitespace-nowrap) -->
-              <td class="py-2 px-3 align-middle">
-                <span :class="['inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border font-khmer shadow-2xs whitespace-nowrap', getCategoryColor(s.category).bg]">
-                  {{ getCategoryLabel(s.category) }}
+              <td class="py-1.5 px-2.5 align-middle">
+                <span
+                  :class="['inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-bold border font-khmer shadow-2xs truncate max-w-full', getCategoryColor(s.category).bg]"
+                  :title="getCategoryLabel(s.category)"
+                >
+                  <span class="truncate">{{ getCategoryLabel(s.category) }}</span>
                 </span>
               </td>
 
               <!-- 3. Processing Time (Clean single-line badge) -->
-              <td class="py-2 px-3 align-middle">
-                <div class="inline-flex items-center gap-1.5" :title="currentLanguage === 'kh' ? (s.processingTimeKh || s.processingTime) : s.processingTime">
+              <td class="py-1.5 px-2.5 align-middle">
+                <div class="inline-flex items-center gap-1.5 max-w-full truncate" :title="currentLanguage === 'kh' ? (s.processingTimeKh || s.processingTime) : s.processingTime">
                   <div
                     :class="[
                       'w-5 h-5 rounded-md flex items-center justify-center shrink-0',
@@ -736,47 +749,47 @@ function confirmDelete() {
                   >
                     <Clock class="w-3 h-3" />
                   </div>
-                  <span class="text-[11.5px] font-semibold text-slate-700 font-khmer whitespace-nowrap">
+                  <span class="text-[11px] font-semibold text-slate-700 font-khmer truncate">
                     {{ formatProcessingTime(s) }}
                   </span>
                 </div>
               </td>
 
               <!-- 4. Fee Details (Pill shaped, no truncated raw strings) -->
-              <td class="py-2 px-3 align-middle">
+              <td class="py-1.5 px-2.5 align-middle">
                 <div v-if="isServiceFree(s)" :title="currentLanguage === 'kh' ? (s.feeKh || s.fee) : s.fee">
-                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/90 font-khmer shadow-2xs whitespace-nowrap">
-                    <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃ' : 'Free' }}</span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/90 font-khmer shadow-2xs truncate max-w-full">
+                    <CheckCircle2 class="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span class="truncate">{{ currentLanguage === 'kh' ? 'ឥតគិតថ្លៃ' : 'Free' }}</span>
                   </span>
                 </div>
                 <div v-else :title="currentLanguage === 'kh' ? (s.feeKh || s.fee) : s.fee">
-                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200/90 font-khmer shadow-2xs whitespace-nowrap">
-                    <Banknote class="w-3.5 h-3.5 text-blue-600" />
-                    <span>{{ formatFee(s) }}</span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-blue-50 text-blue-700 border border-blue-200/90 font-khmer shadow-2xs truncate max-w-full">
+                    <Banknote class="w-3 h-3 text-blue-600 shrink-0" />
+                    <span class="truncate">{{ formatFee(s) }}</span>
                   </span>
                 </div>
               </td>
 
               <!-- 5. Validity Period (Concise single-line pill) -->
-              <td class="py-2 px-3 align-middle">
+              <td class="py-1.5 px-2.5 align-middle">
                 <span
-                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200/90 font-khmer shadow-2xs whitespace-nowrap"
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-slate-100 text-slate-700 border border-slate-200/90 font-khmer shadow-2xs truncate max-w-full"
                   :title="currentLanguage === 'kh' ? (s.validityKh || s.validity || 'អចិន្ត្រៃយ៍') : (s.validity || 'Official')"
                 >
-                  <ShieldCheck class="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                  <span>{{ formatValidity(s) }}</span>
+                  <ShieldCheck class="w-3 h-3 text-blue-600 shrink-0" />
+                  <span class="truncate">{{ formatValidity(s) }}</span>
                 </span>
               </td>
 
               <!-- 6. Executive Action Toolbar (Modern micro-buttons) -->
-              <td class="py-2 px-4 text-right align-middle">
+              <td class="py-1.5 px-3 text-right align-middle">
                 <div class="flex items-center justify-end gap-1.5">
                   <!-- View Details -->
                   <button
                     type="button"
                     @click="openDetailModal(s)"
-                    class="w-7 h-7 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-200/60 hover:border-blue-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+                    class="w-7 h-7 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-200/60 hover:border-blue-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 shrink-0"
                     :title="currentLanguage === 'kh' ? 'មើលលម្អិត' : 'View Details'"
                   >
                     <Eye class="w-3.5 h-3.5" />
@@ -786,7 +799,7 @@ function confirmDelete() {
                   <button
                     type="button"
                     @click="openEditModal(s)"
-                    class="w-7 h-7 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-200/60 hover:border-emerald-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+                    class="w-7 h-7 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-200/60 hover:border-emerald-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 shrink-0"
                     :title="currentLanguage === 'kh' ? 'កែប្រែ' : 'Edit Service'"
                   >
                     <Edit2 class="w-3.5 h-3.5" />
@@ -796,7 +809,7 @@ function confirmDelete() {
                   <button
                     type="button"
                     @click="promptDelete(s)"
-                    class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200/60 hover:border-rose-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+                    class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200/60 hover:border-rose-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 shrink-0"
                     :title="currentLanguage === 'kh' ? 'លុប' : 'Delete Service'"
                   >
                     <Trash2 class="w-3.5 h-3.5" />
