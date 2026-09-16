@@ -402,11 +402,22 @@ const provincialHospitals: Hospital[] = [
 const hospitals: Hospital[] = [...baseHospitals, ...provincialHospitals]
 
 export function getHospitals(): Hospital[] {
+  try {
+    const customHosp = localStorage.getItem('camlife_custom_hospitals')
+    if (customHosp) {
+      const parsed: Hospital[] = JSON.parse(customHosp)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return [...parsed, ...hospitals]
+      }
+    }
+  } catch {
+    // fallback
+  }
   return hospitals
 }
 
 export function getHospitalById(id: string): Hospital | undefined {
-  return hospitals.find(h => h.id === id)
+  return getHospitals().find(h => h.id === id)
 }
 
 export function getGovernmentServices(): GovernmentService[] {

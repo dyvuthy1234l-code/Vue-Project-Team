@@ -13,10 +13,12 @@ import {
   ShieldCheck,
   LogOut,
   ExternalLink,
-  Crown
+  Crown,
+  ClipboardCheck
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useAuth } from '@/composables/useAuth'
+import { usePartnerSubmissions } from '@/composables/usePartnerSubmissions'
 
 export type AdminTab =
   | 'dashboard'
@@ -27,6 +29,7 @@ export type AdminTab =
   | 'homeservices'
   | 'offices'
   | 'news'
+  | 'submissions'
   | 'users'
   | 'feedback'
   | 'settings'
@@ -46,6 +49,7 @@ const emit = defineEmits<{
 
 const { currentLanguage } = useLanguage()
 const { currentUser } = useAuth()
+const { pendingCount } = usePartnerSubmissions()
 
 interface NavItem {
   id: AdminTab
@@ -65,6 +69,7 @@ const contentItems: NavItem[] = [
 ]
 
 const userSupportItems: NavItem[] = [
+  { id: 'submissions', labelKh: 'សំណើសុំចុះបញ្ជី', labelEn: 'Partner Submissions', icon: ClipboardCheck },
   { id: 'users', labelKh: 'អ្នកប្រើប្រាស់', labelEn: 'Users', icon: Users },
   { id: 'feedback', labelKh: 'មតិយោបល់', labelEn: 'Feedback & Reports', icon: MessageSquare }
 ]
@@ -204,6 +209,14 @@ const systemItems: NavItem[] = [
                 {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
               </span>
             </div>
+            <!-- Amber Badge for Pending Partner Submissions -->
+            <span
+              v-if="item.id === 'submissions' && pendingCount > 0 && !collapsed"
+              class="px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[9.5px] font-black font-mono flex items-center justify-center shrink-0 ml-auto shadow-xs"
+            >
+              {{ pendingCount }}
+            </span>
+
             <!-- Red Badge 3 for Feedback & Reports -->
             <span
               v-if="item.id === 'feedback' && !collapsed"

@@ -21,7 +21,8 @@ import {
   X,
   Eye,
   Info,
-  ExternalLink
+  ExternalLink,
+  Plus
 } from 'lucide-vue-next'
 import type { HomeService } from '@/types'
 import ServiceHeroBanner from '@/components/ServiceHeroBanner.vue'
@@ -29,6 +30,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
 import LazyImage from '@/components/LazyImage.vue'
 import VerificationBadge from '@/components/VerificationBadge.vue'
+import PartnerRegistrationModal from '@/components/PartnerRegistrationModal.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { getHomeServices } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
@@ -57,6 +59,7 @@ function loadAllServices(): HomeService[] {
 }
 
 const allServices = loadAllServices()
+const isPartnerModalOpen = ref(false)
 const searchQuery = ref('')
 const activeCategory = ref('All')
 const activeLocation = ref('All')
@@ -208,6 +211,14 @@ function handleTelegramContact(serviceName: string, provider: string) {
                 <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 shrink-0">
                   VERIFIED PROS
                 </span>
+                <button
+                  @click="isPartnerModalOpen = true"
+                  type="button"
+                  class="ml-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 border border-white/30 text-white text-[11px] sm:text-xs font-bold transition-all cursor-pointer shadow-xs"
+                >
+                  <Plus class="w-3.5 h-3.5" />
+                  <span>{{ currentLanguage === 'kh' ? 'ចុះបញ្ជីសេវាកម្ម' : 'List Service' }}</span>
+                </button>
               </div>
               <p class="text-[11px] sm:text-xs text-blue-100 mt-0.5 line-clamp-2 sm:line-clamp-none">
                 {{ currentLanguage === 'kh' ? 'រាល់ជាងជំនាញ និងសេវាកម្មទាំងអស់ ត្រូវបានផ្ទៀងផ្ទាត់អត្តសញ្ញាណ និងប្រវត្តិការងារច្បាស់លាស់ ធានាតម្លៃសមរម្យ និងទំនួលខុសត្រូវខ្ពស់' : 'All home service providers undergo identity verification, skill assessments, and customer satisfaction audits.' }}
@@ -746,5 +757,12 @@ function handleTelegramContact(serviceName: string, provider: string) {
         </div>
       </div>
     </Transition>
+
+    <!-- Partner Registration Modal -->
+    <PartnerRegistrationModal
+      :is-open="isPartnerModalOpen"
+      initial-type="home-service"
+      @close="isPartnerModalOpen = false"
+    />
   </div>
 </template>

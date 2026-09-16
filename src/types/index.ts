@@ -154,3 +154,29 @@ export interface SearchResult {
 }
 
 export type Language = 'en' | 'kh'
+
+export interface PartnerSubmission {
+  id: string
+  facilityType: 'hospital' | 'clinic' | 'pharmacy' | 'home-service'
+  nameKh: string
+  nameEn: string
+  category: string
+  location: string
+  address: string
+  addressKh: string
+  phone: string
+  email?: string
+  openingHours: string
+  licenseNumber: string
+  representativeName: string
+  representativeRole: string
+  descriptionKh: string
+  descriptionEn: string
+  services: string[]
+  acceptsNssf?: boolean
+  mapUrl?: string
+  status: 'pending' | 'approved' | 'rejected'
+  submittedAt: string
+  reviewedAt?: string
+  rejectReason?: string
+}

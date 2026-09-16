@@ -18,6 +18,7 @@ import AdminOffices from '@/components/admin/AdminOffices.vue'
 import AdminNews from '@/components/admin/AdminNews.vue'
 import AdminUsers from '@/components/admin/AdminUsers.vue'
 import AdminFeedback from '@/components/admin/AdminFeedback.vue'
+import AdminSubmissions from '@/components/admin/AdminSubmissions.vue'
 import AdminSettings from '@/components/admin/AdminSettings.vue'
 import AdminLogs from '@/components/admin/AdminLogs.vue'
 import AdminProfileModal from '@/components/admin/AdminProfileModal.vue'
@@ -166,6 +167,13 @@ function triggerToast(msg: string) {
         <!-- Tab 10: Feedback & Reports (Single Screen View with Pagination) -->
         <AdminFeedback
           v-else-if="activeTab === 'feedback'"
+          class="flex-1 min-h-0"
+          @show-toast="triggerToast"
+        />
+
+        <!-- Tab 11: Partner Submissions (Approval Portal) -->
+        <AdminSubmissions
+          v-else-if="activeTab === 'submissions'"
           class="flex-1 min-h-0"
           @show-toast="triggerToast"
         />

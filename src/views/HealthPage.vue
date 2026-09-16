@@ -22,10 +22,13 @@ import {
   FileText,
   ExternalLink,
   X,
-  Check
+  Check,
+  Plus,
+  Landmark
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
+import PartnerRegistrationModal from '@/components/PartnerRegistrationModal.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { getHospitals } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
@@ -44,6 +47,7 @@ usePageMeta({
 })
 
 const allHospitals = getHospitals()
+const isPartnerModalOpen = ref(false)
 const searchQuery = ref('')
 const activePill = ref('all')
 const activeLocation = ref('All')
@@ -316,6 +320,16 @@ function resetDocChecklist() {
                 <ShieldCheck class="w-3.5 h-3.5 text-emerald-400" />
                 <span>{{ currentLanguage === 'kh' ? 'ស្ដង់ដារវេជ្ជសាស្ត្រ ១០០%' : '100% Licensed & Verified' }}</span>
               </div>
+
+              <!-- Partner Onboarding Button -->
+              <button
+                @click="isPartnerModalOpen = true"
+                type="button"
+                class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-emerald-500/25 hover:bg-emerald-500/35 border border-emerald-400/40 text-emerald-200 hover:text-white text-[11px] sm:text-xs font-extrabold backdrop-blur-md shadow-xs transition-all cursor-pointer"
+              >
+                <Plus class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'ចុះបញ្ជីមន្ទីរពេទ្យ / គ្លីនិក' : 'List Facility' }}</span>
+              </button>
             </div>
 
             <!-- Main Title -->
@@ -1396,6 +1410,13 @@ function resetDocChecklist() {
         </div>
       </Transition>
     </Teleport>
+
+    <!-- Partner Registration Modal -->
+    <PartnerRegistrationModal
+      :is-open="isPartnerModalOpen"
+      initial-type="hospital"
+      @close="isPartnerModalOpen = false"
+    />
   </div>
 </template>
 
