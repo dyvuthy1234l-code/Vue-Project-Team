@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   Menu,
@@ -174,6 +174,16 @@ function onWindowClick(e: MouseEvent) {
   }
 }
 
+watch(isMobileDrawerOpen, (val) => {
+  if (val) {
+    document.body.classList.add('mobile-menu-open')
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.classList.remove('mobile-menu-open')
+    document.body.style.overflow = ''
+  }
+})
+
 onMounted(() => {
   window.addEventListener('click', onWindowClick)
   window.addEventListener('keydown', handleGlobalKeydown)
@@ -182,6 +192,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('click', onWindowClick)
   window.removeEventListener('keydown', handleGlobalKeydown)
+  document.body.classList.remove('mobile-menu-open')
+  document.body.style.overflow = ''
 })
 </script>
 
@@ -604,37 +616,38 @@ onUnmounted(() => {
     </div>
 
     <!-- ============================================================
-         MOBILE SIDE DRAWER OVERLAY
+         MOBILE SIDE DRAWER OVERLAY (TELEPORTED TO BODY)
     ============================================================= -->
-    <Transition
-      enter-active-class="transition-opacity duration-200 ease-out"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition-opacity duration-150 ease-in"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="isMobileDrawerOpen"
-        class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 lg:hidden"
-        @click="isMobileDrawerOpen = false"
-      />
-    </Transition>
-
-    <Transition
-      enter-active-class="transition duration-250 ease-out"
-      enter-from-class="translate-x-full"
-      enter-to-class="translate-x-0"
-      leave-active-class="transition duration-200 ease-in"
-      leave-from-class="translate-x-0"
-      leave-to-class="translate-x-full"
-    >
-      <aside
-        v-if="isMobileDrawerOpen"
-        class="fixed top-0 right-0 bottom-0 w-[90vw] sm:w-96 max-w-[400px] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-50 flex flex-col justify-between overflow-y-auto lg:hidden"
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-opacity duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
       >
-        <!-- Drawer Header -->
-        <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
+        <div
+          v-if="isMobileDrawerOpen"
+          class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[80] lg:hidden"
+          @click="isMobileDrawerOpen = false"
+        />
+      </Transition>
+
+      <Transition
+        enter-active-class="transition duration-250 ease-out"
+        enter-from-class="translate-x-full"
+        enter-to-class="translate-x-0"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="translate-x-0"
+        leave-to-class="translate-x-full"
+      >
+        <aside
+          v-if="isMobileDrawerOpen"
+          class="fixed top-0 right-0 bottom-0 w-[90vw] sm:w-96 max-w-[400px] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-[90] flex flex-col justify-between overflow-y-auto lg:hidden"
+        >
+          <!-- Drawer Header -->
+          <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
           <router-link to="/" @click="isMobileDrawerOpen = false" class="flex items-center gap-2">
             <img
               src="/logo.png"
@@ -937,7 +950,7 @@ onUnmounted(() => {
           <button
             v-else
             @click="handleAuthClick"
-            class="w-full py-2.5 bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-bold rounded-xl shadow-sm text-center transition-colors"
+            class="w-full py-2.5 bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-bold rounded-xl shadow-sm text-center transition-colors font-khmer cursor-pointer"
             type="button"
           >
             {{ currentLanguage === 'kh' ? 'ចូលគណនី / ចុះឈ្មោះ' : 'Sign In / Register' }}
@@ -945,6 +958,7 @@ onUnmounted(() => {
         </div>
       </aside>
     </Transition>
+  </Teleport>
 
     <!-- Global Modals -->
     <AuthModal />
