@@ -186,158 +186,157 @@ function handleLogout() {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-khmer">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 font-khmer">
 
     <!-- ============================================================
-         1. BREADCRUMBS & SECTION TITLE
+         1. COMPACT BREADCRUMBS & SECTION TITLE (OPTIMIZED FOR MOBILE)
     ============================================================= -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
+    <div class="flex items-center justify-between gap-2">
+      <div class="min-w-0 flex-1">
         <!-- Breadcrumb Navigation -->
-        <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2">
-          <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 flex items-center gap-1 transition-colors">
+        <div class="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mb-1">
+          <router-link to="/" class="hover:text-[#0D47A1] dark:hover:text-blue-400 flex items-center gap-1 transition-colors shrink-0">
             <Home class="w-3.5 h-3.5" />
-            <span>{{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}</span>
+            <span class="hidden xs:inline">{{ currentLanguage === 'kh' ? 'ទំព័រដើម' : 'Home' }}</span>
           </router-link>
           <span class="text-slate-300 dark:text-slate-600">/</span>
-          <span class="text-[#0D47A1] dark:text-blue-400 font-bold">
-            {{ currentLanguage === 'kh' ? 'ព័ត៌មានគណនីផ្ទាល់ខ្លួន' : 'Citizen Profile' }}
+          <span class="text-[#0D47A1] dark:text-blue-400 font-bold truncate">
+            {{ currentLanguage === 'kh' ? 'គណនីផ្ទាល់ខ្លួន' : 'My Profile' }}
           </span>
         </div>
 
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 rounded-full text-xs font-bold mb-2 border border-blue-200/80 dark:border-blue-900/60">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#0D47A1] dark:bg-blue-400" />
-          <span>{{ currentLanguage === 'kh' ? 'គណនីប្រជាពលរដ្ឋឌីជីថលជាតិ' : 'National Citizen Profile' }}</span>
-        </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0A2540] dark:text-white tracking-tight">
+        <h1 class="text-lg sm:text-2xl md:text-3xl font-black text-[#0A2540] dark:text-white tracking-tight truncate">
           {{ currentLanguage === 'kh' ? 'ព័ត៌មានគណនីប្រជាពលរដ្ឋ' : 'Citizen Digital Identity' }}
         </h1>
-        <p class="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+        <p class="hidden sm:block mt-0.5 text-xs text-slate-500 dark:text-slate-400">
           {{ currentLanguage === 'kh' ? 'គ្រប់គ្រងទិន្នន័យអត្តសញ្ញាណ លេខទូរស័ព្ទ អត្តសញ្ញាណប័ណ្ណ និងសុវត្ថិភាពគណនីរបស់អ្នក' : 'Manage your personal identity credentials, contact info, National ID, and account security' }}
         </p>
       </div>
 
-      <!-- Quick Back & Sign Out Action -->
-      <div class="flex items-center gap-2 shrink-0">
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-1.5 shrink-0">
         <router-link
           to="/saved-services"
-          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors"
+          class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-blue-50 dark:bg-slate-800 text-[#0D47A1] dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-bold border border-blue-200/80 dark:border-slate-700 transition-colors"
+          :title="currentLanguage === 'kh' ? 'ទិន្នន័យបាន Save' : 'Saved Items'"
         >
-          <Bookmark class="w-4 h-4 text-[#0D47A1] dark:text-blue-400" />
-          <span>{{ currentLanguage === 'kh' ? 'ទិន្នន័យបាន Save' : 'Saved Items' }}</span>
-          <span v-if="totalSavedCount > 0" class="ml-1 px-2 py-0.2 rounded-full text-[10px] font-black bg-[#0D47A1] text-white">
+          <Bookmark class="w-3.5 h-3.5" />
+          <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? 'ទិន្នន័យបាន Save' : 'Saved' }}</span>
+          <span v-if="totalSavedCount > 0" class="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-[#0D47A1] text-white font-mono">
             {{ totalSavedCount }}
           </span>
         </router-link>
 
         <button
           @click="handleLogout"
-          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl border border-red-200 dark:border-red-900/60 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-red-200/80 dark:border-red-900/60 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
           type="button"
+          :title="currentLanguage === 'kh' ? 'ចាកចេញ' : 'Sign Out'"
         >
-          <LogOut class="w-4 h-4" />
-          <span>{{ currentLanguage === 'kh' ? 'ចាកចេញ' : 'Sign Out' }}</span>
+          <LogOut class="w-3.5 h-3.5" />
+          <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? 'ចាកចេញ' : 'Sign Out' }}</span>
         </button>
       </div>
     </div>
 
     <!-- ============================================================
-         2. CITIZEN IDENTITY HERO CARD
+         2. CITIZEN IDENTITY HERO CARD (RESPONSIVE FOR MOBILE & DESKTOP)
     ============================================================= -->
-    <div class="relative rounded-3xl bg-gradient-to-r from-[#0A2540] via-[#0D3B66] to-[#0D47A1] p-6 sm:p-8 text-white shadow-xl border border-blue-900/40 overflow-hidden">
+    <div class="relative rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#0A2540] via-[#0D3B66] to-[#0D47A1] p-4 sm:p-7 text-white shadow-xl border border-blue-900/40 overflow-hidden">
       <!-- Decorative Backdrop Circles -->
       <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-blue-400/10 rounded-full blur-2xl pointer-events-none"></div>
       <div class="absolute right-1/3 -top-12 w-48 h-48 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
 
-      <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <!-- Avatar + Identity Info -->
-        <div class="flex items-center gap-4 sm:gap-6">
+      <div class="relative z-10 space-y-3.5 sm:space-y-5">
+        <!-- Top Section: Avatar + Identity Info -->
+        <div class="flex items-start sm:items-center gap-3.5 sm:gap-5">
           <!-- Avatar Box -->
           <div class="relative shrink-0">
-            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-amber-400 via-blue-400 to-indigo-300 p-0.5 shadow-2xl ring-4 ring-white/20">
-              <div class="w-full h-full rounded-2xl bg-[#0A2540] text-blue-100 flex items-center justify-center text-3xl sm:text-4xl font-black">
+            <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-amber-400 via-blue-400 to-indigo-300 p-0.5 shadow-lg ring-2 sm:ring-4 ring-white/20">
+              <div class="w-full h-full rounded-2xl bg-[#0A2540] text-blue-100 flex items-center justify-center text-2xl sm:text-3xl font-black">
                 {{ currentUser?.name?.charAt(0)?.toUpperCase() || 'C' }}
               </div>
             </div>
-            <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full ring-3 ring-[#0A2540]" title="Verified"></span>
+            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 sm:w-4.5 sm:h-4.5 bg-emerald-500 rounded-full ring-2 ring-[#0A2540]" title="Verified"></span>
           </div>
 
           <!-- Name & Details -->
-          <div class="min-w-0">
-            <div class="flex flex-wrap items-center gap-2 mb-1.5">
-              <h2 class="text-xl sm:text-2xl font-black tracking-tight truncate text-white">
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+              <h2 class="text-base sm:text-xl font-black tracking-tight truncate text-white leading-tight">
                 {{ currentUser?.name || 'Citizen User' }}
               </h2>
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 shrink-0">
-                <Sparkles class="w-3 h-3" />
-                <span>{{ currentLanguage === 'kh' ? 'បានផ្ទៀងផ្ទាត់' : 'Verified Citizen' }}</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-emerald-500/25 text-emerald-200 border border-emerald-400/30 shrink-0">
+                <Sparkles class="w-2.5 h-2.5" />
+                <span>{{ currentLanguage === 'kh' ? 'បានផ្ទៀងផ្ទាត់' : 'Verified' }}</span>
               </span>
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-400/20 text-blue-200 border border-blue-300/30 shrink-0">
-                <ShieldCheck class="w-3 h-3" />
-                <span>{{ currentUser?.role || (currentLanguage === 'kh' ? 'សមាជិកពលរដ្ឋ' : 'Citizen Member') }}</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-blue-400/20 text-blue-200 border border-blue-300/30 shrink-0">
+                <ShieldCheck class="w-2.5 h-2.5" />
+                <span>{{ currentUser?.role || (currentLanguage === 'kh' ? 'សមាជិកពលរដ្ឋ' : 'Citizen') }}</span>
               </span>
             </div>
 
             <!-- Detail Pills -->
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-blue-100/90 font-medium">
+            <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-x-4 gap-y-0.5 sm:gap-y-1 text-[11px] sm:text-xs text-blue-100/90 font-medium">
               <span class="flex items-center gap-1.5 truncate">
-                <Mail class="w-3.5 h-3.5 text-blue-300 shrink-0" />
-                <span class="font-mono">{{ currentUser?.email }}</span>
+                <Mail class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300 shrink-0" />
+                <span class="font-mono truncate">{{ currentUser?.email }}</span>
               </span>
               <span v-if="form.phone" class="flex items-center gap-1.5 truncate">
-                <Phone class="w-3.5 h-3.5 text-blue-300 shrink-0" />
+                <Phone class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300 shrink-0" />
                 <span class="font-mono">{{ form.phone }}</span>
               </span>
               <span v-if="form.nationalId" class="flex items-center gap-1.5 truncate">
-                <CreditCard class="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                <CreditCard class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300 shrink-0" />
                 <span class="font-mono font-bold">{{ currentLanguage === 'kh' ? 'អត្តសញ្ញាណប័ណ្ណ' : 'ID' }}: {{ form.nationalId }}</span>
               </span>
               <span v-if="form.province" class="flex items-center gap-1.5 truncate">
-                <MapPin class="w-3.5 h-3.5 text-blue-300 shrink-0" />
+                <MapPin class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300 shrink-0" />
                 <span>{{ form.province }}</span>
               </span>
             </div>
           </div>
         </div>
 
-        <!-- Quick Activity Stats Box -->
-        <div class="w-full md:w-auto grid grid-cols-3 gap-2.5 sm:gap-3 shrink-0">
-          <div class="p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center min-w-[90px]">
-            <p class="text-xl sm:text-2xl font-black text-white font-mono">{{ savedServicesCount }}</p>
-            <p class="text-[10px] sm:text-[11px] font-medium text-blue-200 mt-0.5">{{ currentLanguage === 'kh' ? 'សេវាបាន Save' : 'Services' }}</p>
+        <!-- Bottom Stats Row -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 pt-3 border-t border-white/10">
+          <div class="p-2 sm:p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
+            <p class="text-base sm:text-xl font-black text-white font-mono">{{ savedServicesCount }}</p>
+            <p class="text-[10px] sm:text-[11px] font-medium text-blue-200 mt-0.5 truncate">{{ currentLanguage === 'kh' ? 'សេវាបាន Save' : 'Services' }}</p>
           </div>
 
-          <div class="p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center min-w-[90px]">
-            <p class="text-xl sm:text-2xl font-black text-white font-mono">{{ savedJobIds.length }}</p>
-            <p class="text-[10px] sm:text-[11px] font-medium text-blue-200 mt-0.5">{{ currentLanguage === 'kh' ? 'ការងារបាន Save' : 'Jobs' }}</p>
+          <div class="p-2 sm:p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
+            <p class="text-base sm:text-xl font-black text-white font-mono">{{ savedJobIds.length }}</p>
+            <p class="text-[10px] sm:text-[11px] font-medium text-blue-200 mt-0.5 truncate">{{ currentLanguage === 'kh' ? 'ការងារបាន Save' : 'Jobs' }}</p>
           </div>
 
-          <div class="p-3 sm:p-4 rounded-2xl bg-emerald-500/15 backdrop-blur-md border border-emerald-400/25 text-center min-w-[90px]">
-            <CheckCircle2 class="w-5 h-5 text-emerald-300 mx-auto" />
-            <p class="text-[10px] sm:text-[11px] font-extrabold text-emerald-200 mt-1">{{ currentLanguage === 'kh' ? 'សកម្ម' : 'Active' }}</p>
+          <div class="p-2 sm:p-3 rounded-xl bg-emerald-500/15 backdrop-blur-md border border-emerald-400/25 text-center flex flex-col items-center justify-center">
+            <CheckCircle2 class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-300" />
+            <p class="text-[10px] sm:text-[11px] font-extrabold text-emerald-200 mt-0.5 truncate">{{ currentLanguage === 'kh' ? 'គណនីសកម្ម' : 'Active' }}</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ============================================================
-         3. TAB SWITCHER (PILLS)
+         3. SEGMENTED TABS (FITS ALL SCREEN SIZES - NO OVERFLOW BUG)
     ============================================================= -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-2 sm:p-3 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-      <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl w-full sm:w-auto overflow-x-auto">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2.5 shadow-sm flex items-center justify-between gap-3">
+      <!-- 3 Equal Tabs on Mobile, Flex on Desktop -->
+      <div class="grid grid-cols-3 sm:flex sm:items-center gap-1 sm:gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl sm:rounded-2xl w-full sm:w-auto">
         <!-- Tab 1: General -->
         <button
           type="button"
           @click="activeTab = 'general'"
           :class="[
-            'px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0',
+            'px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center',
             activeTab === 'general'
-              ? 'bg-[#0D47A1] text-white shadow-md'
+              ? 'bg-[#0D47A1] text-white shadow-sm'
               : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
           ]"
         >
-          <UserIcon class="w-4 h-4" />
-          <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានទូទៅ' : 'General Information' }}</span>
+          <UserIcon class="w-3.5 h-3.5 shrink-0" />
+          <span class="truncate">{{ currentLanguage === 'kh' ? 'ព័ត៌មានទូទៅ' : 'General Info' }}</span>
         </button>
 
         <!-- Tab 2: Security -->
@@ -345,14 +344,14 @@ function handleLogout() {
           type="button"
           @click="activeTab = 'security'"
           :class="[
-            'px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0',
+            'px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center',
             activeTab === 'security'
-              ? 'bg-[#0D47A1] text-white shadow-md'
+              ? 'bg-[#0D47A1] text-white shadow-sm'
               : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
           ]"
         >
-          <Lock class="w-4 h-4" />
-          <span>{{ currentLanguage === 'kh' ? 'សុវត្ថិភាព & ពាក្យសម្ងាត់' : 'Security & Password' }}</span>
+          <Lock class="w-3.5 h-3.5 shrink-0" />
+          <span class="truncate">{{ currentLanguage === 'kh' ? 'សុវត្ថិភាព' : 'Security' }}</span>
         </button>
 
         <!-- Tab 3: Activity -->
@@ -360,18 +359,18 @@ function handleLogout() {
           type="button"
           @click="activeTab = 'activity'"
           :class="[
-            'px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0',
+            'px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1 sm:gap-1.5 text-center',
             activeTab === 'activity'
-              ? 'bg-[#0D47A1] text-white shadow-md'
+              ? 'bg-[#0D47A1] text-white shadow-sm'
               : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
           ]"
         >
-          <Bookmark class="w-4 h-4" />
-          <span>{{ currentLanguage === 'kh' ? 'សកម្មភាព & ទិន្នន័យបាន Save' : 'My Activity' }}</span>
+          <Bookmark class="w-3.5 h-3.5 shrink-0" />
+          <span class="truncate">{{ currentLanguage === 'kh' ? 'សកម្មភាព' : 'Activity' }}</span>
           <span
             v-if="totalSavedCount > 0"
             :class="[
-              'px-2 py-0.5 rounded-full text-[10px] font-black font-mono',
+              'px-1.5 py-0.2 rounded-full text-[9px] font-black font-mono shrink-0',
               activeTab === 'activity' ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300'
             ]"
           >
@@ -380,28 +379,28 @@ function handleLogout() {
         </button>
       </div>
 
-      <!-- Save Button in Header Bar -->
+      <!-- Desktop Save Button on Tab Bar -->
       <button
         v-if="activeTab !== 'activity'"
         @click="handleSave"
         :disabled="isSaving"
-        class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-extrabold shadow-sm transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+        class="hidden sm:flex px-6 py-2.5 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-extrabold shadow-sm transition-all duration-150 active:scale-95 disabled:opacity-50 items-center justify-center gap-2 cursor-pointer shrink-0"
         type="button"
       >
         <span v-if="isSaving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
         <Save v-else class="w-4 h-4" />
-        <span>{{ isSaving ? (currentLanguage === 'kh' ? 'កំពុងរក្សាទុក...' : 'Saving...') : (currentLanguage === 'kh' ? 'រក្សាទុកការកែប្រែ' : 'Save Changes') }}</span>
+        <span>{{ isSaving ? (currentLanguage === 'kh' ? 'កំពុងរក្សាទុក...' : 'Saving...') : (currentLanguage === 'kh' ? 'រក្សាទុក' : 'Save Changes') }}</span>
       </button>
     </div>
 
     <!-- Feedback Alerts -->
-    <div v-if="errorMessage" class="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-semibold rounded-2xl flex items-center gap-3 animate-in fade-in">
-      <AlertCircle class="w-5 h-5 shrink-0" />
+    <div v-if="errorMessage" class="p-3 sm:p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-semibold rounded-xl sm:rounded-2xl flex items-center gap-2.5 animate-in fade-in">
+      <AlertCircle class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
       <span>{{ errorMessage }}</span>
     </div>
 
-    <div v-if="successMessage" class="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-semibold rounded-2xl flex items-center gap-3 animate-in fade-in">
-      <CheckCircle2 class="w-5 h-5 shrink-0" />
+    <div v-if="successMessage" class="p-3 sm:p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-semibold rounded-xl sm:rounded-2xl flex items-center gap-2.5 animate-in fade-in">
+      <CheckCircle2 class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
       <span>{{ successMessage }}</span>
     </div>
 
@@ -410,30 +409,30 @@ function handleLogout() {
     ============================================================= -->
 
     <!-- TAB 1: GENERAL INFORMATION -->
-    <div v-if="activeTab === 'general'" class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-      <div class="border-b border-slate-100 dark:border-slate-800 pb-4">
-        <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-          <UserIcon class="w-5 h-5 text-[#0D47A1] dark:text-blue-400" />
+    <div v-if="activeTab === 'general'" class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-8 shadow-sm space-y-4 sm:space-y-6">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-3 sm:pb-4">
+        <h3 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <UserIcon class="w-4 h-4 sm:w-5 sm:h-5 text-[#0D47A1] dark:text-blue-400" />
           <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានអត្តសញ្ញាណប្រជាពលរដ្ឋ' : 'Personal Identity Information' }}</span>
         </h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          {{ currentLanguage === 'kh' ? 'ទិន្នន័យខាងក្រោមត្រូវបានប្រើប្រាស់សម្រាប់សម្រួលការបំពេញបែបបទសេវារដ្ឋបាល និងការដាក់ពាក្យការងារ' : 'This information is used to auto-fill civic administrative applications and job submissions.' }}
+        <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          {{ currentLanguage === 'kh' ? 'ទិន្នន័យសម្រាប់សម្រួលការបំពេញបែបបទសេវារដ្ឋបាល និងការដាក់ពាក្យការងារ' : 'This information is used to auto-fill civic administrative applications and job submissions.' }}
         </p>
       </div>
 
       <!-- Field Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6">
         <!-- Full Name -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'ឈ្មោះពេញ (Full Name) *' : 'Full Name *' }}
           </label>
           <div class="relative">
-            <UserIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <UserIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               v-model="form.name"
               type="text"
-              class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all"
+              class="w-full pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all"
               :placeholder="currentLanguage === 'kh' ? 'បញ្ចូលឈ្មោះរបស់អ្នក...' : 'Enter your full name...'"
             />
           </div>
@@ -441,15 +440,15 @@ function handleLogout() {
 
         <!-- Email -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'អាសយដ្ឋានអ៊ីមែល (Email) *' : 'Email Address *' }}
           </label>
           <div class="relative">
-            <Mail class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Mail class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               v-model="form.email"
               type="email"
-              class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
+              class="w-full pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
               placeholder="citizen@camlife.kh"
             />
           </div>
@@ -457,15 +456,15 @@ function handleLogout() {
 
         <!-- Phone Number -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទ (Phone Number)' : 'Phone Number' }}
           </label>
           <div class="relative">
-            <Phone class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Phone class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               v-model="form.phone"
               type="tel"
-              class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
+              class="w-full pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
               placeholder="012 345 678"
             />
           </div>
@@ -473,71 +472,71 @@ function handleLogout() {
 
         <!-- Khmer National ID Card -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-            {{ currentLanguage === 'kh' ? 'លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (Khmer National ID)' : 'Khmer National ID (9 Digits)' }}
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+            {{ currentLanguage === 'kh' ? 'លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (National ID)' : 'Khmer National ID (9 Digits)' }}
           </label>
           <div class="relative">
-            <CreditCard class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <CreditCard class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               v-model="form.nationalId"
               type="text"
               maxlength="9"
-              class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono tracking-wider"
+              class="w-full pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono tracking-wider"
               placeholder="010198765"
             />
           </div>
-          <span class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 block">
+          <span class="text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500 mt-1 block">
             {{ currentLanguage === 'kh' ? 'លេខកូដសម្គាល់ប្រជាពលរដ្ឋ ៩ ខ្ទង់ផ្លូវការ' : 'Official 9-digit Cambodian identity number' }}
           </span>
         </div>
 
         <!-- Province / City -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'រាជធានី / ខេត្ត (Province / City)' : 'Province / City' }}
           </label>
           <div class="relative">
-            <MapPin class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <MapPin class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <select
               v-model="form.province"
-              class="w-full pl-11 pr-10 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all appearance-none cursor-pointer"
+              class="w-full pl-10 pr-9 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all appearance-none cursor-pointer"
             >
               <option v-for="prov in provinces" :key="prov.en" :value="prov.km">
                 {{ currentLanguage === 'kh' ? prov.km : prov.en }}
               </option>
             </select>
-            <ChevronRight class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 rotate-90 pointer-events-none" />
+            <ChevronRight class="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 rotate-90 pointer-events-none" />
           </div>
         </div>
 
         <!-- Occupation -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'មុខរបរ / វិជ្ជាជីវៈ (Occupation)' : 'Occupation / Profession' }}
           </label>
           <div class="relative">
-            <Briefcase class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <Briefcase class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <select
               v-model="form.occupation"
-              class="w-full pl-11 pr-10 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all appearance-none cursor-pointer"
+              class="w-full pl-10 pr-9 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all appearance-none cursor-pointer"
             >
               <option v-for="occ in occupations" :key="occ.en" :value="occ.km">
                 {{ currentLanguage === 'kh' ? occ.km : occ.en }}
               </option>
             </select>
-            <ChevronRight class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 rotate-90 pointer-events-none" />
+            <ChevronRight class="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 rotate-90 pointer-events-none" />
           </div>
         </div>
 
-        <!-- Gender Selection (Segmented Cards) -->
+        <!-- Gender Selection -->
         <div class="md:col-span-2">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'ភេទ (Gender)' : 'Gender' }}
           </label>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 gap-2.5 sm:gap-3 max-w-md">
             <label
               :class="[
-                'flex items-center justify-center gap-2.5 p-3 rounded-2xl border text-xs font-bold cursor-pointer transition-all',
+                'flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border text-xs font-bold cursor-pointer transition-all',
                 form.gender === 'ប្រុស'
                   ? 'bg-blue-50 dark:bg-blue-950/50 border-[#0D47A1] text-[#0D47A1] dark:text-blue-300 ring-2 ring-[#0D47A1]/20'
                   : 'bg-slate-50/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-blue-300'
@@ -549,7 +548,7 @@ function handleLogout() {
 
             <label
               :class="[
-                'flex items-center justify-center gap-2.5 p-3 rounded-2xl border text-xs font-bold cursor-pointer transition-all',
+                'flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border text-xs font-bold cursor-pointer transition-all',
                 form.gender === 'ស្រី'
                   ? 'bg-blue-50 dark:bg-blue-950/50 border-[#0D47A1] text-[#0D47A1] dark:text-blue-300 ring-2 ring-[#0D47A1]/20'
                   : 'bg-slate-50/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-blue-300'
@@ -563,24 +562,24 @@ function handleLogout() {
 
         <!-- Personal Bio / Notes -->
         <div class="md:col-span-2">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'កំណត់សម្គាល់ផ្ទាល់ខ្លួន (Personal Bio / Note)' : 'Personal Bio / Note' }}
           </label>
           <textarea
             v-model="form.bio"
             rows="3"
-            class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all resize-none"
+            class="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all resize-none"
             :placeholder="currentLanguage === 'kh' ? 'សរសេរព័ត៌មានសង្ខេបអំពីអ្នក...' : 'Write a brief note about yourself...'"
           ></textarea>
         </div>
       </div>
 
-      <!-- Action Footer -->
-      <div class="flex items-center justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
+      <!-- Form Action Button (Full Width on Mobile) -->
+      <div class="pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
         <button
           @click="handleSave"
           :disabled="isSaving"
-          class="px-8 py-3 rounded-2xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-extrabold shadow-md transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+          class="w-full sm:w-auto px-8 py-3 rounded-xl sm:rounded-2xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs sm:text-sm font-extrabold shadow-md transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
           type="button"
         >
           <span v-if="isSaving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -591,27 +590,27 @@ function handleLogout() {
     </div>
 
     <!-- TAB 2: SECURITY & PASSWORD -->
-    <div v-if="activeTab === 'security'" class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-      <div class="border-b border-slate-100 dark:border-slate-800 pb-4">
-        <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-          <KeyRound class="w-5 h-5 text-[#0D47A1] dark:text-blue-400" />
+    <div v-if="activeTab === 'security'" class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-8 shadow-sm space-y-4 sm:space-y-6">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-3 sm:pb-4">
+        <h3 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <KeyRound class="w-4 h-4 sm:w-5 sm:h-5 text-[#0D47A1] dark:text-blue-400" />
           <span>{{ currentLanguage === 'kh' ? 'សុវត្ថិភាព និងលេខសម្ងាត់' : 'Security & Password Settings' }}</span>
         </h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           {{ currentLanguage === 'kh' ? 'ផ្លាស់ប្តូរលេខសម្ងាត់ និងពិនិត្យកម្រិតសុវត្ថិភាពគណនីរបស់អ្នក' : 'Update your password and verify your civic digital credentials.' }}
         </p>
       </div>
 
       <!-- Security Status Card -->
-      <div class="p-5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/60 flex items-start gap-4">
-        <div class="w-10 h-10 rounded-xl bg-[#0D47A1] text-white flex items-center justify-center shrink-0">
-          <Shield class="w-5 h-5" />
+      <div class="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/60 flex items-start gap-3 sm:gap-4">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#0D47A1] text-white flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+          <Shield class="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
         <div>
-          <h4 class="text-sm font-extrabold text-[#0A2540] dark:text-blue-200">
+          <h4 class="text-xs sm:text-sm font-extrabold text-[#0A2540] dark:text-blue-200">
             {{ currentLanguage === 'kh' ? 'ប្រព័ន្ធការពារសុវត្ថិភាពគណនីជាតិ (Civic Encryption)' : 'National Civic Security Protection' }}
           </h4>
-          <p class="text-xs text-slate-600 dark:text-blue-300 mt-1 leading-relaxed">
+          <p class="text-[11px] sm:text-xs text-slate-600 dark:text-blue-300 mt-0.5 sm:mt-1 leading-relaxed">
             {{ currentLanguage === 'kh'
               ? 'គណនីរបស់អ្នកត្រូវបានភ្ជាប់ជាមួយលេខសម្គាល់ឌីជីថលជាតិ។ សូមកុំចែករំលែកពាក្យសម្ងាត់របស់អ្នកទៅកាន់អ្នកដទៃ។'
               : 'Your account credentials are encrypted and mapped to national identity standards. Never share your password with anyone.'
@@ -620,21 +619,21 @@ function handleLogout() {
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6">
         <!-- Current Password -->
         <div class="md:col-span-2">
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'ពាក្យសម្ងាត់បច្ចុប្បន្ន (Current Password)' : 'Current Password' }}
           </label>
           <div class="relative max-w-md">
-            <Lock class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Lock class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               v-model="form.currentPassword"
               :type="showPassword ? 'text' : 'password'"
-              class="w-full pl-11 pr-11 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
+              class="w-full pl-10 pr-10 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
               placeholder="••••••••"
             />
-            <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+            <button type="button" @click="showPassword = !showPassword" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
               <Eye v-if="!showPassword" class="w-4 h-4" />
               <EyeOff v-else class="w-4 h-4" />
             </button>
@@ -643,18 +642,18 @@ function handleLogout() {
 
         <!-- New Password -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'ពាក្យសម្ងាត់ថ្មី (New Password)' : 'New Password' }}
           </label>
           <div class="relative">
-            <Lock class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Lock class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               v-model="form.newPassword"
               :type="showNewPassword ? 'text' : 'password'"
-              class="w-full pl-11 pr-11 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
+              class="w-full pl-10 pr-10 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
               :placeholder="currentLanguage === 'kh' ? 'យ៉ាងតិច ៦ តួអក្សរ' : 'Minimum 6 characters'"
             />
-            <button type="button" @click="showNewPassword = !showNewPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+            <button type="button" @click="showNewPassword = !showNewPassword" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
               <Eye v-if="!showNewPassword" class="w-4 h-4" />
               <EyeOff v-else class="w-4 h-4" />
             </button>
@@ -663,27 +662,27 @@ function handleLogout() {
 
         <!-- Confirm Password -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'បញ្ជាក់ពាក្យសម្ងាត់ថ្មី (Confirm Password)' : 'Confirm New Password' }}
           </label>
           <div class="relative">
-            <Lock class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Lock class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               v-model="form.confirmPassword"
               :type="showNewPassword ? 'text' : 'password'"
-              class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
+              class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-800 dark:text-white text-xs sm:text-sm font-semibold focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#0D47A1] transition-all font-mono"
               placeholder="••••••••"
             />
           </div>
         </div>
       </div>
 
-      <!-- Action Footer -->
-      <div class="flex items-center justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
+      <!-- Action Button (Full Width on Mobile) -->
+      <div class="pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
         <button
           @click="handleSave"
           :disabled="isSaving"
-          class="px-8 py-3 rounded-2xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-extrabold shadow-md transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+          class="w-full sm:w-auto px-8 py-3 rounded-xl sm:rounded-2xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs sm:text-sm font-extrabold shadow-md transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
           type="button"
         >
           <span v-if="isSaving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -694,51 +693,51 @@ function handleLogout() {
     </div>
 
     <!-- TAB 3: ACTIVITY & SAVED STATS -->
-    <div v-if="activeTab === 'activity'" class="space-y-6">
+    <div v-if="activeTab === 'activity'" class="space-y-4 sm:space-y-6">
       <!-- Activity Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 shadow-sm flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-400 flex items-center justify-center shrink-0">
-            <Bookmark class="w-7 h-7" />
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 shadow-sm flex items-center gap-3.5 sm:gap-4">
+          <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-400 flex items-center justify-center shrink-0">
+            <Bookmark class="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <p class="text-3xl font-black text-[#0D47A1] dark:text-blue-400 font-mono">{{ savedServicesCount }}</p>
-            <p class="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">{{ currentLanguage === 'kh' ? 'សេវាសាធារណៈបានរក្សាទុក' : 'Saved Civic Services' }}</p>
+            <p class="text-2xl sm:text-3xl font-black text-[#0D47A1] dark:text-blue-400 font-mono">{{ savedServicesCount }}</p>
+            <p class="text-xs font-bold text-slate-700 dark:text-slate-300 mt-0.5">{{ currentLanguage === 'kh' ? 'សេវាសាធារណៈបានរក្សាទុក' : 'Saved Civic Services' }}</p>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 shadow-sm flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-            <Briefcase class="w-7 h-7" />
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 shadow-sm flex items-center gap-3.5 sm:gap-4">
+          <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <Briefcase class="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <p class="text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono">{{ savedJobIds.length }}</p>
-            <p class="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">{{ currentLanguage === 'kh' ? 'ឱកាសការងារបានរក្សាទុក' : 'Saved Career Jobs' }}</p>
+            <p class="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono">{{ savedJobIds.length }}</p>
+            <p class="text-xs font-bold text-slate-700 dark:text-slate-300 mt-0.5">{{ currentLanguage === 'kh' ? 'ឱកាសការងារបានរក្សាទុក' : 'Saved Career Jobs' }}</p>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 shadow-sm flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-            <CheckCircle2 class="w-7 h-7" />
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 shadow-sm flex items-center gap-3.5 sm:gap-4">
+          <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <CheckCircle2 class="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <p class="text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">{{ totalSavedCount }}</p>
-            <p class="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">{{ currentLanguage === 'kh' ? 'ទិន្នន័យសរុបទាំងអស់' : 'Total Bookmarked Items' }}</p>
+            <p class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">{{ totalSavedCount }}</p>
+            <p class="text-xs font-bold text-slate-700 dark:text-slate-300 mt-0.5">{{ currentLanguage === 'kh' ? 'ទិន្នន័យសរុបទាំងអស់' : 'Total Bookmarked Items' }}</p>
           </div>
         </div>
       </div>
 
       <!-- Quick Action Card -->
-      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-[#0D47A1] text-white flex items-center justify-center shrink-0">
-            <Layers class="w-6 h-6" />
+      <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-8 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+        <div class="flex items-center gap-3 sm:gap-4">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#0D47A1] text-white flex items-center justify-center shrink-0">
+            <Layers class="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h4 class="text-base font-extrabold text-slate-900 dark:text-white">
+            <h4 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
               {{ currentLanguage === 'kh' ? 'ទំព័រទិន្នន័យដែលបានរក្សាទុក (Citizen Pocket)' : 'My Saved Bookmarks Hub' }}
             </h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {{ currentLanguage === 'kh' ? 'ចូលទៅកាន់ទំព័ររួមដើម្បីស្វែងរក មើលការណែនាំសេវា ឬដាក់ពាក្យការងារដែលបានកត់ចំណាំ' : 'Access your unified saved pocket to filter and apply for bookmarked services and jobs.' }}
             </p>
           </div>
@@ -746,7 +745,7 @@ function handleLogout() {
 
         <router-link
           to="/saved-services"
-          class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-extrabold transition-all shadow-md active:scale-95 shrink-0"
+          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-extrabold transition-all shadow-md active:scale-95 shrink-0"
         >
           <span>{{ currentLanguage === 'kh' ? 'ចូលមើលទិន្នន័យបាន Save' : 'Open Saved Hub' }}</span>
           <ArrowRight class="w-4 h-4" />
@@ -754,23 +753,23 @@ function handleLogout() {
       </div>
 
       <!-- Account Metadata Card -->
-      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 shadow-sm space-y-3">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 shadow-sm space-y-2.5 sm:space-y-3">
         <h4 class="text-xs font-extrabold text-slate-800 dark:text-white uppercase tracking-wider">
           {{ currentLanguage === 'kh' ? 'ព័ត៌មានប្រព័ន្ធគណនី' : 'Account System Information' }}
         </h4>
         <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-          <div class="py-2.5 flex items-center justify-between">
+          <div class="py-2 flex items-center justify-between">
             <span class="text-slate-500 dark:text-slate-400">{{ currentLanguage === 'kh' ? 'ស្ថានភាពគណនី' : 'Account Status' }}</span>
             <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
               <CheckCircle2 class="w-3.5 h-3.5" />
-              <span>{{ currentLanguage === 'kh' ? 'សកម្ម និងផ្ទៀងផ្ទាត់រួច (Active & Verified)' : 'Active & Verified' }}</span>
+              <span>{{ currentLanguage === 'kh' ? 'សកម្ម និងផ្ទៀងផ្ទាត់រួច' : 'Active & Verified' }}</span>
             </span>
           </div>
-          <div class="py-2.5 flex items-center justify-between">
+          <div class="py-2 flex items-center justify-between">
             <span class="text-slate-500 dark:text-slate-400">{{ currentLanguage === 'kh' ? 'តួនាទី' : 'Role' }}</span>
             <span class="font-bold text-slate-700 dark:text-slate-300">{{ currentUser?.role || 'Citizen Member' }}</span>
           </div>
-          <div class="py-2.5 flex items-center justify-between">
+          <div class="py-2 flex items-center justify-between">
             <span class="text-slate-500 dark:text-slate-400">{{ currentLanguage === 'kh' ? 'សម័យប្រជុំចុងក្រោយ' : 'Last Session' }}</span>
             <span class="font-mono text-slate-700 dark:text-slate-300 flex items-center gap-1">
               <Clock class="w-3.5 h-3.5 text-slate-400" />
