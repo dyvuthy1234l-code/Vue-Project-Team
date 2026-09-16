@@ -2,14 +2,24 @@
 import { MapPin, DollarSign, Clock, Bookmark, BookmarkCheck, ArrowRight, Building2, CheckCircle2 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useSavedJobs } from '@/composables/useSavedJobs'
+import { useAuth } from '@/composables/useAuth'
 import type { Job } from '@/types'
+
+const props = defineProps<{
+  job: Job
+}>()
 
 const { t, currentLanguage } = useLanguage()
 const { isJobSaved, toggleSaveJob } = useSavedJobs()
+const { isLoggedIn, openLogin } = useAuth()
 
-defineProps<{
-  job: Job
-}>()
+function handleBookmark() {
+  if (!isLoggedIn()) {
+    openLogin()
+    return
+  }
+  toggleSaveJob(props.job.id)
+}
 
 const typeColors: Record<string, string> = {
   'Full-time': 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
@@ -59,7 +69,7 @@ const typeColors: Record<string, string> = {
 
         <!-- Bookmark Save Button (Obvious saved state) -->
         <button
-          @click="toggleSaveJob(job.id)"
+          @click="handleBookmark"
           :class="[
             'p-2.5 rounded-2xl transition-all shrink-0 cursor-pointer',
             isJobSaved(job.id)

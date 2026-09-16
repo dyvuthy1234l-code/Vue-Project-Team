@@ -33,6 +33,7 @@ import { useLanguage } from '@/composables/useLanguage'
 import { getHomeServices } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
+import { useAuth } from '@/composables/useAuth'
 
 const { t, localized, currentLanguage } = useLanguage()
 
@@ -157,6 +158,25 @@ function closeServiceDetail() {
   setTimeout(() => {
     selectedService.value = null
   }, 200)
+}
+
+const { isLoggedIn, openLogin } = useAuth()
+
+function handleCallTechnician(phone: string) {
+  if (!isLoggedIn()) {
+    openLogin()
+    return
+  }
+  window.location.href = `tel:${phone}`
+}
+
+function handleTelegramContact(serviceName: string, provider: string) {
+  if (!isLoggedIn()) {
+    openLogin()
+    return
+  }
+  const url = `https://t.me/share/url?url=${encodeURIComponent('CamLife Service Request: ' + serviceName)}&text=${encodeURIComponent('សូមទាក់ទងមកខ្ញុំអំពីសេវាកម្ម៖ ' + serviceName + ' (' + provider + ')')}`
+  window.open(url, '_blank')
 }
 </script>
 
@@ -448,20 +468,20 @@ function closeServiceDetail() {
               <span>{{ currentLanguage === 'kh' ? 'លម្អិត' : 'View' }}</span>
             </button>
 
-            <!-- Call Button -->
-            <a
-              :href="'tel:' + service.phone"
+            <!-- Call Button (Requires login) -->
+            <button
+              type="button"
+              @click="handleCallTechnician(service.phone)"
               class="flex-1 py-1.5 sm:py-2.5 px-1 sm:px-2.5 rounded-xl sm:rounded-2xl bg-[#0D47A1] hover:bg-blue-700 text-white font-black text-[10px] sm:text-xs flex items-center justify-center gap-0.5 sm:gap-1.5 transition-all shadow-2xs hover:shadow-md cursor-pointer"
             >
               <PhoneCall class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span>{{ currentLanguage === 'kh' ? 'ហៅ' : 'Call' }}</span>
-            </a>
+            </button>
 
-            <!-- Telegram Button -->
-            <a
-              :href="'https://t.me/share/url?url=' + encodeURIComponent('CamLife Service Request: ' + service.serviceName) + '&text=' + encodeURIComponent('សូមទាក់ទងមកខ្ញុំអំពីសេវាកម្ម៖ ' + service.serviceName + ' (' + service.provider + ')')"
-              target="_blank"
-              rel="noopener noreferrer"
+            <!-- Telegram Button (Requires login) -->
+            <button
+              type="button"
+              @click="handleTelegramContact(service.serviceName, service.provider)"
               class="w-6.5 h-6.5 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-500 hover:text-white dark:hover:bg-sky-500 dark:hover:text-white text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800/60 flex items-center justify-center transition-all cursor-pointer shadow-2xs group shrink-0"
               title="Telegram"
               aria-label="Telegram"
@@ -469,7 +489,7 @@ function closeServiceDetail() {
               <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current transition-transform group-hover:scale-110" viewBox="0 0 24 24">
                 <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.672c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.413Z"/>
               </svg>
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -694,18 +714,18 @@ function closeServiceDetail() {
 
           <!-- Modal Action Footer -->
           <div class="p-3 sm:p-5 bg-slate-50 dark:bg-slate-700/40 border-t border-slate-200/80 dark:border-slate-700 flex flex-wrap sm:flex-nowrap items-center gap-2">
-            <a
-              :href="'tel:' + selectedService.phone"
+            <button
+              type="button"
+              @click="handleCallTechnician(selectedService.phone)"
               class="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl sm:rounded-2xl bg-[#0D47A1] hover:bg-blue-700 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer"
             >
               <PhoneCall class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               <span>{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទហៅជាង (' + selectedService.phone + ')' : 'Call Technician (' + selectedService.phone + ')' }}</span>
-            </a>
+            </button>
 
-            <a
-              :href="'https://t.me/share/url?url=' + encodeURIComponent('CamLife Service Request: ' + selectedService.serviceName) + '&text=' + encodeURIComponent('សូមទាក់ទងមកខ្ញុំអំពីសេវាកម្ម៖ ' + selectedService.serviceName + ' (' + selectedService.provider + ')')"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              @click="handleTelegramContact(selectedService.serviceName, selectedService.provider)"
               class="py-2.5 sm:py-3 px-3.5 sm:px-5 rounded-xl sm:rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer shrink-0"
               title="Telegram"
             >
@@ -713,7 +733,7 @@ function closeServiceDetail() {
                 <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.672c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.413Z"/>
               </svg>
               <span>Telegram</span>
-            </a>
+            </button>
 
             <button
               type="button"

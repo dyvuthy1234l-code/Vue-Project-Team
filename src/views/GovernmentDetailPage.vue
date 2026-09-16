@@ -24,12 +24,14 @@ import VerificationBadge from '@/components/VerificationBadge.vue'
 import LazyImage from '@/components/LazyImage.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { useSavedServices } from '@/composables/useSavedServices'
+import { useAuth } from '@/composables/useAuth'
 import { getGovernmentServiceById } from '@/services/dataService'
 import { usePageMeta } from '@/composables/usePageMeta'
 
 const route = useRoute()
 const { t, localized, currentLanguage } = useLanguage()
 const { isSaved, toggleSave } = useSavedServices()
+const { isLoggedIn, openLogin } = useAuth()
 
 const isReportModalOpen = ref(false)
 const expandedFaq = ref<number | null>(null)
@@ -50,6 +52,10 @@ function toggleFaq(index: number) {
 
 function handleSaveService() {
   if (!service.value) return
+  if (!isLoggedIn()) {
+    openLogin()
+    return
+  }
   toggleSave({
     id: service.value.id,
     title: service.value.title,

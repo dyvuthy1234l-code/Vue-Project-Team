@@ -25,6 +25,7 @@ import {
 import NotFoundState from '@/components/NotFoundState.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { useSavedJobs } from '@/composables/useSavedJobs'
+import { useAuth } from '@/composables/useAuth'
 import { getJobById, getJobs } from '@/services/dataService'
 import { usePageMeta } from '@/composables/usePageMeta'
 import type { Job } from '@/types'
@@ -32,6 +33,7 @@ import type { Job } from '@/types'
 const route = useRoute()
 const { currentLanguage } = useLanguage()
 const { isJobSaved, toggleSaveJob } = useSavedJobs()
+const { currentUser, isLoggedIn, openLogin } = useAuth()
 
 const allJobsList = getJobs()
 
@@ -129,7 +131,26 @@ const applyForm = ref({
 })
 const isApplySubmitted = ref(false)
 
+function handleBookmarkJob() {
+  if (!isLoggedIn()) {
+    openLogin()
+    return
+  }
+  if (job.value) {
+    toggleSaveJob(job.value.id)
+  }
+}
+
 function openApplyModal() {
+  if (!isLoggedIn()) {
+    openLogin()
+    return
+  }
+  if (currentUser.value) {
+    if (!applyForm.value.fullName) applyForm.value.fullName = currentUser.value.name || ''
+    if (!applyForm.value.email) applyForm.value.email = currentUser.value.email || ''
+    if (!applyForm.value.phone && currentUser.value.phone) applyForm.value.phone = currentUser.value.phone
+  }
   isApplySubmitted.value = false
   isApplyModalOpen.value = true
 }
@@ -200,7 +221,7 @@ function submitApplication() {
                 BTDC-ID: {{ getJobIdNumber(job) }}
               </span>
               <button
-                @click="toggleSaveJob(job.id)"
+                @click="handleBookmarkJob"
                 type="button"
                 :title="isJobSaved(job.id) ? 'Saved' : 'Save Job'"
                 class="text-amber-300 hover:text-white cursor-pointer p-0.5"

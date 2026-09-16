@@ -34,11 +34,21 @@ import { getJobs } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { useLocation } from '@/composables/useLocation'
+import { useAuth } from '@/composables/useAuth'
 import type { Job } from '@/types'
 
 const { t, currentLanguage } = useLanguage()
 const { isJobSaved, toggleSaveJob } = useSavedJobs()
 const { selectedProvince, setProvince } = useLocation()
+const { currentUser, isLoggedIn, openLogin } = useAuth()
+
+function handleToggleSaveJob(jobId: string) {
+  if (!isLoggedIn()) {
+    openLogin()
+    return
+  }
+  toggleSaveJob(jobId)
+}
 
 usePageMeta({
   title: 'ឱកាសការងារចុងក្រោយ — BongThom Style Careers Portal',
@@ -433,7 +443,16 @@ const applyForm = ref({
 const isApplySubmitted = ref(false)
 
 function openApplyModal(job: Job) {
+  if (!isLoggedIn()) {
+    openLogin()
+    return
+  }
   selectedJobForApply.value = job
+  if (currentUser.value) {
+    if (!applyForm.value.fullName) applyForm.value.fullName = currentUser.value.name || ''
+    if (!applyForm.value.email) applyForm.value.email = currentUser.value.email || ''
+    if (!applyForm.value.phone && currentUser.value.phone) applyForm.value.phone = currentUser.value.phone
+  }
   isApplySubmitted.value = false
   isApplyModalOpen.value = true
 }
@@ -987,7 +1006,7 @@ function submitPostAd() {
             >
               <!-- Bookmark Ribbon Icon on Top Right Corner of Row -->
               <button
-                @click.stop="toggleSaveJob(job.id)"
+                @click.stop="handleToggleSaveJob(job.id)"
                 class="absolute top-2.5 right-3 text-blue-700 dark:text-blue-400 hover:scale-110 transition-transform cursor-pointer p-0.5 z-10"
                 :title="isJobSaved(job.id) ? 'Saved' : 'Save Job'"
                 type="button"
@@ -1097,7 +1116,7 @@ function submitPostAd() {
                   </div>
 
                   <button
-                    @click.stop="toggleSaveJob(job.id)"
+                    @click.stop="handleToggleSaveJob(job.id)"
                     class="text-[#0D47A1] cursor-pointer"
                     type="button"
                   >
