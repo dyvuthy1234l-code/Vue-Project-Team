@@ -297,7 +297,7 @@ function resetChat() {
       type="button"
       @click="isOpen = !isOpen"
       :class="[
-        'chatbot-floating-btn fixed bottom-5 right-5 z-40 p-3 sm:p-3.5 rounded-2xl shadow-xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer group',
+        'chatbot-floating-btn fixed bottom-5 right-5 z-30 p-3 sm:p-3.5 rounded-2xl shadow-xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer group',
         isOpen
           ? 'bg-slate-900 text-white scale-95'
           : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-blue-500/25 hover:scale-105 active:scale-95'
