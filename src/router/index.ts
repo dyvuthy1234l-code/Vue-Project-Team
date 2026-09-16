@@ -48,6 +48,11 @@ const router = createRouter({
       component: () => import('@/views/SavedServicesPage.vue')
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/views/ProfilePage.vue')
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/AdminDashboard.vue')
