@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   Menu,
@@ -174,16 +174,6 @@ function onWindowClick(e: MouseEvent) {
   }
 }
 
-watch(isMobileDrawerOpen, (val) => {
-  if (val) {
-    document.body.classList.add('mobile-menu-open')
-    document.body.style.overflow = 'hidden'
-  } else {
-    document.body.classList.remove('mobile-menu-open')
-    document.body.style.overflow = ''
-  }
-})
-
 onMounted(() => {
   window.addEventListener('click', onWindowClick)
   window.addEventListener('keydown', handleGlobalKeydown)
@@ -192,13 +182,11 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('click', onWindowClick)
   window.removeEventListener('keydown', handleGlobalKeydown)
-  document.body.classList.remove('mobile-menu-open')
-  document.body.style.overflow = ''
 })
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 bg-white dark:bg-[#0B1727] border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-200">
+  <header class="sticky top-0 z-50 bg-white dark:bg-[#0B1727] border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-200">
     <!-- ============================================================
          TOP UTILITY BAR: NATIONAL CITIZEN HEADER & EMERGENCY DIALS
     ============================================================= -->
@@ -668,38 +656,42 @@ onUnmounted(() => {
         <!-- Drawer Body Navigation Links -->
         <div class="p-3.5 sm:p-4 flex-1 space-y-1.5 overflow-y-auto font-khmer">
           <!-- Location selector & Language for mobile -->
-          <div class="pb-3 mb-2 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
-            <div class="flex-1 min-w-0">
-              <LocationSelector class="w-full" :inline="true" />
+          <div class="pb-3 mb-2 border-b border-slate-100 dark:border-slate-700 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <MapPin class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>{{ currentLanguage === 'kh' ? 'ជ្រើសរើសរាជធានី-ខេត្ត' : 'Select Location' }}</span>
+              </span>
+              <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/90 dark:border-slate-700 shrink-0">
+                <button
+                  @click="setLanguage('kh')"
+                  :class="[
+                    'px-2 py-1 rounded-lg text-xs font-bold transition-all font-khmer cursor-pointer flex items-center gap-1',
+                    currentLanguage === 'kh'
+                      ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ]"
+                  type="button"
+                >
+                  <span class="font-extrabold tracking-tight">KH</span>
+                  <span class="font-khmer font-bold text-xs">ខ្មែរ</span>
+                </button>
+                <button
+                  @click="setLanguage('en')"
+                  :class="[
+                    'px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1',
+                    currentLanguage === 'en'
+                      ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ]"
+                  type="button"
+                >
+                  <span class="font-extrabold tracking-tight">EN</span>
+                  <span class="font-bold text-xs">EN</span>
+                </button>
+              </div>
             </div>
-            <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/90 dark:border-slate-700 shrink-0">
-              <button
-                @click="setLanguage('kh')"
-                :class="[
-                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all font-khmer cursor-pointer flex items-center gap-1.5',
-                  currentLanguage === 'kh'
-                    ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                ]"
-                type="button"
-              >
-                <span class="font-extrabold tracking-tight">KH</span>
-                <span class="font-khmer font-bold text-xs">ខ្មែរ</span>
-              </button>
-              <button
-                @click="setLanguage('en')"
-                :class="[
-                  'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
-                  currentLanguage === 'en'
-                    ? 'bg-white dark:bg-slate-700 text-[#0D47A1] dark:text-blue-300 shadow-xs ring-1 ring-blue-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                ]"
-                type="button"
-              >
-                <span class="font-extrabold tracking-tight">EN</span>
-                <span class="font-bold text-xs">English</span>
-              </button>
-            </div>
+            <LocationSelector class="w-full" :inline="true" />
           </div>
 
           <!-- Quick SOS Emergency Dials for Mobile -->

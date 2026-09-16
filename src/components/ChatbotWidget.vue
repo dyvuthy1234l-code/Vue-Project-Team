@@ -501,10 +501,4 @@ function resetChat() {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-:global(body.mobile-menu-open) .chatbot-floating-btn {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: scale(0.8) !important;
-}
 </style>
