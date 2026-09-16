@@ -40,8 +40,7 @@ const router = createRouter({
     },
     {
       path: '/saved-jobs',
-      name: 'saved-jobs',
-      component: () => import('@/views/SavedJobsPage.vue')
+      redirect: '/saved-services?tab=jobs'
     },
     {
       path: '/saved-services',
