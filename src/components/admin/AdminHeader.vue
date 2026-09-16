@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   Menu,
   Search,
@@ -7,12 +8,19 @@ import {
   Plus,
   ShieldCheck,
   ChevronRight,
+  ChevronDown,
   FileText,
   Briefcase,
   Newspaper,
-  UserPlus
+  UserPlus,
+  User as UserIcon,
+  Crown,
+  Settings,
+  LogOut,
+  ExternalLink
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import { useAuth } from '@/composables/useAuth'
 
 const props = defineProps<{
   activeTab?: string
@@ -24,12 +32,27 @@ const emit = defineEmits<{
   (e: 'toggle-sidebar'): void
   (e: 'update:searchQuery', val: string): void
   (e: 'navigate', tab: string): void
+  (e: 'open-profile'): void
 }>()
 
+const router = useRouter()
 const { currentLanguage, setLanguage } = useLanguage()
+const { currentUser, logout } = useAuth()
 
 const isNotifOpen = ref(false)
 const isQuickActionsOpen = ref(false)
+const isProfileOpen = ref(false)
+
+function handleOpenProfile() {
+  isProfileOpen.value = false
+  emit('open-profile')
+}
+
+function handleLogout() {
+  isProfileOpen.value = false
+  logout()
+  router.push('/')
+}
 
 const tabLabels: Record<string, { kh: string; en: string }> = {
   dashboard: { kh: 'ផ្ទាំងគ្រប់គ្រងទូទៅ', en: 'Overview Dashboard' },
@@ -140,6 +163,13 @@ function handleQuickAction(tab: string) {
           <span>{{ currentLanguage === 'kh' ? 'បង្កើតថ្មី' : 'New Action' }}</span>
         </button>
 
+        <!-- BACKDROP FOR QUICK ACTIONS -->
+        <div
+          v-if="isQuickActionsOpen"
+          @click="isQuickActionsOpen = false"
+          class="fixed inset-0 z-40"
+        ></div>
+
         <div
           v-if="isQuickActionsOpen"
           class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150"
@@ -229,6 +259,13 @@ function handleQuickAction(tab: string) {
           </span>
         </button>
 
+        <!-- BACKDROP FOR NOTIFICATIONS -->
+        <div
+          v-if="isNotifOpen"
+          @click="isNotifOpen = false"
+          class="fixed inset-0 z-40"
+        ></div>
+
         <!-- Notification Popover -->
         <div
           v-if="isNotifOpen"
@@ -277,23 +314,121 @@ function handleQuickAction(tab: string) {
         </div>
       </div>
 
-      <!-- PROMINENT ROLE ADMIN PROFILE BADGE -->
-      <div class="flex items-center gap-2 pl-2 border-l border-slate-200">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-800 text-white flex items-center justify-center font-bold text-xs shadow-xs ring-2 ring-blue-100 shrink-0">
-          <ShieldCheck class="w-4 h-4 text-amber-300" />
-        </div>
-        <div class="hidden lg:flex flex-col text-left leading-tight">
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs font-bold text-slate-900 font-khmer">
-              {{ currentLanguage === 'kh' ? 'មន្ត្រីរដ្ឋបាល' : 'Admin Officer' }}
-            </span>
-            <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-purple-100 text-purple-700 border border-purple-200 font-khmer">
-              {{ currentLanguage === 'kh' ? 'តួនាទី: អភិបាល' : 'Role: Admin' }}
+      <!-- PROMINENT ROLE ADMIN PROFILE BADGE & DROPDOWN -->
+      <div class="relative pl-2 border-l border-slate-200">
+        <button
+          type="button"
+          @click="isProfileOpen = !isProfileOpen; isNotifOpen = false; isQuickActionsOpen = false"
+          class="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer group"
+          :title="currentLanguage === 'kh' ? 'គណនីអភិបាល' : 'Admin Profile'"
+          aria-haspopup="true"
+          :aria-expanded="isProfileOpen"
+        >
+          <div class="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-700 via-indigo-700 to-blue-900 text-white flex items-center justify-center font-bold text-xs shadow-xs ring-2 ring-blue-100 shrink-0 group-hover:scale-105 transition-transform">
+            <Crown class="w-4 h-4 text-amber-300" />
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white" title="Active"></span>
+          </div>
+          <div class="hidden lg:flex flex-col text-left leading-tight">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-slate-900 font-khmer group-hover:text-blue-600 transition-colors">
+                {{ currentUser?.name || (currentLanguage === 'kh' ? 'មន្ត្រីរដ្ឋបាល' : 'Admin Officer') }}
+              </span>
+              <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-purple-100 text-purple-700 border border-purple-200 font-khmer">
+                {{ currentLanguage === 'kh' ? 'អភិបាល' : 'Admin' }}
+              </span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-medium font-khmer mt-0.5 truncate max-w-[130px]">
+              {{ currentUser?.email || 'admin@camlife.gov.kh' }}
             </span>
           </div>
-          <span class="text-[10px] text-slate-400 font-medium font-khmer mt-0.5">
-            {{ currentLanguage === 'kh' ? 'សិទ្ធិគ្រប់គ្រងពេញលេញ' : 'Full Access Privilege' }}
-          </span>
+          <ChevronDown
+            class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 hidden lg:block"
+            :class="isProfileOpen ? 'rotate-180 text-blue-600' : ''"
+          />
+        </button>
+
+        <!-- BACKDROP FOR CLOSING DROPDOWN -->
+        <div
+          v-if="isProfileOpen"
+          @click="isProfileOpen = false"
+          class="fixed inset-0 z-40"
+        ></div>
+
+        <!-- PROFILE DROPDOWN POPOVER -->
+        <div
+          v-if="isProfileOpen"
+          class="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2 z-50 animate-in fade-in zoom-in-95 duration-150 font-khmer"
+        >
+          <!-- User Summary Card -->
+          <div class="p-3 bg-gradient-to-br from-slate-50 to-blue-50/60 rounded-xl border border-slate-150 mb-1.5">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 text-slate-950 font-black text-sm flex items-center justify-center shadow-xs shrink-0">
+                {{ (currentUser?.name || 'A').charAt(0).toUpperCase() }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-900 truncate">
+                  {{ currentUser?.name || 'Admin Officer' }}
+                </div>
+                <div class="text-[10.5px] text-slate-500 truncate font-mono">
+                  {{ currentUser?.email || 'admin@camlife.gov.kh' }}
+                </div>
+                <div class="inline-flex items-center gap-1 mt-1 text-[9px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.2 rounded border border-purple-200">
+                  <ShieldCheck class="w-2.5 h-2.5" />
+                  <span>{{ currentLanguage === 'kh' ? 'សិទ្ធិគ្រប់គ្រងកំពូល' : 'Super Administrator' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="space-y-0.5">
+            <button
+              type="button"
+              @click="handleOpenProfile"
+              class="w-full px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2.5 transition-colors cursor-pointer text-left"
+            >
+              <UserIcon class="w-4 h-4 text-blue-600" />
+              <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានគណនី (Profile)' : 'Admin Profile' }}</span>
+            </button>
+
+            <button
+              type="button"
+              @click="emit('navigate', 'settings'); isProfileOpen = false"
+              class="w-full px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2.5 transition-colors cursor-pointer text-left"
+            >
+              <Settings class="w-4 h-4 text-slate-500" />
+              <span>{{ currentLanguage === 'kh' ? 'ការកំណត់ប្រព័ន្ធ' : 'System Settings' }}</span>
+            </button>
+
+            <button
+              type="button"
+              @click="emit('navigate', 'logs'); isProfileOpen = false"
+              class="w-full px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2.5 transition-colors cursor-pointer text-left"
+            >
+              <ShieldCheck class="w-4 h-4 text-emerald-600" />
+              <span>{{ currentLanguage === 'kh' ? 'កំណត់ហេតុសវនកម្ម' : 'Audit Logs' }}</span>
+            </button>
+
+            <router-link
+              to="/"
+              @click="isProfileOpen = false"
+              class="w-full px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2.5 transition-colors cursor-pointer text-left"
+            >
+              <ExternalLink class="w-4 h-4 text-slate-500" />
+              <span>{{ currentLanguage === 'kh' ? 'គេហទំព័រពលរដ្ឋ' : 'Citizen Site' }}</span>
+            </router-link>
+          </div>
+
+          <div class="my-1.5 border-t border-slate-100"></div>
+
+          <button
+            type="button"
+            @click="handleLogout"
+            class="w-full px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 transition-colors cursor-pointer text-left"
+          >
+            <LogOut class="w-4 h-4 text-rose-500" />
+            <span>{{ currentLanguage === 'kh' ? 'ចាកចេញពីប្រព័ន្ធ' : 'Sign Out' }}</span>
+          </button>
         </div>
       </div>
 

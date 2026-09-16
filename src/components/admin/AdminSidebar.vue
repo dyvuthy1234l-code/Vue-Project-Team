@@ -16,6 +16,7 @@ import {
   Crown
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import { useAuth } from '@/composables/useAuth'
 
 export type AdminTab =
   | 'dashboard'
@@ -40,9 +41,11 @@ const emit = defineEmits<{
   (e: 'select-tab', tab: AdminTab): void
   (e: 'logout'): void
   (e: 'toggle-sidebar'): void
+  (e: 'open-profile'): void
 }>()
 
 const { currentLanguage } = useLanguage()
+const { currentUser } = useAuth()
 
 interface NavItem {
   id: AdminTab
@@ -261,23 +264,35 @@ const systemItems: NavItem[] = [
           collapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-2.5 flex items-center gap-2.5 shadow-sm'
         ]"
       >
-        <!-- Golden Shield/Crown Avatar -->
-        <div class="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-black text-xs flex items-center justify-center shrink-0 shadow-md">
+        <!-- Golden Shield/Crown Avatar (Clickable to open profile) -->
+        <button
+          type="button"
+          @click="emit('open-profile')"
+          class="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-black text-xs flex items-center justify-center shrink-0 shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+          :title="currentLanguage === 'kh' ? 'ចុចដើម្បីកែប្រែព័ត៌មានគណនី' : 'Click to edit profile'"
+        >
           <Crown class="w-4 h-4 text-slate-900" />
           <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-[#0B1528]" title="Online"></span>
-        </div>
+        </button>
 
         <div v-if="!collapsed" class="flex-1 min-w-0">
-          <div class="flex items-center gap-1.5 leading-none">
-            <span class="text-xs font-bold text-white truncate font-khmer">
-              {{ currentLanguage === 'kh' ? 'មន្ត្រីរដ្ឋបាល' : 'Admin Officer' }}
-            </span>
-          </div>
-          <div class="flex items-center gap-1 mt-0.5">
-            <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 font-khmer">
-              {{ currentLanguage === 'kh' ? 'អ្នកគ្រប់គ្រងកំពូល' : 'Super Admin' }}
-            </span>
-          </div>
+          <button
+            type="button"
+            @click="emit('open-profile')"
+            class="w-full text-left group cursor-pointer"
+            :title="currentLanguage === 'kh' ? 'ចុចដើម្បីកែប្រែព័ត៌មានគណនី' : 'Click to edit profile'"
+          >
+            <div class="flex items-center gap-1.5 leading-none">
+              <span class="text-xs font-bold text-white truncate font-khmer group-hover:text-blue-300 transition-colors">
+                {{ currentUser?.name || (currentLanguage === 'kh' ? 'មន្ត្រីរដ្ឋបាល' : 'Admin Officer') }}
+              </span>
+            </div>
+            <div class="flex items-center gap-1 mt-0.5">
+              <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 font-khmer">
+                {{ currentLanguage === 'kh' ? 'អ្នកគ្រប់គ្រងកំពូល' : 'Super Admin' }}
+              </span>
+            </div>
+          </button>
           <div class="flex items-center gap-2 mt-1.5 pt-1 border-t border-slate-700/50">
             <router-link
               to="/"

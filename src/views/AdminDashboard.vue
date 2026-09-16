@@ -20,6 +20,7 @@ import AdminUsers from '@/components/admin/AdminUsers.vue'
 import AdminFeedback from '@/components/admin/AdminFeedback.vue'
 import AdminSettings from '@/components/admin/AdminSettings.vue'
 import AdminLogs from '@/components/admin/AdminLogs.vue'
+import AdminProfileModal from '@/components/admin/AdminProfileModal.vue'
 
 const router = useRouter()
 const { currentUser, login, logout } = useAuth()
@@ -44,6 +45,7 @@ onMounted(() => {
 // Layout State
 const activeTab = ref<AdminTab>('dashboard')
 const isSidebarCollapsed = ref(false)
+const isProfileModalOpen = ref(false)
 const globalSearchQuery = ref('')
 
 function toggleSidebar() {
@@ -79,6 +81,7 @@ function triggerToast(msg: string) {
       @select-tab="handleSelectTab"
       @toggle-sidebar="toggleSidebar"
       @logout="handleLogout"
+      @open-profile="isProfileModalOpen = true"
     />
 
     <!-- RIGHT CONTENT AREA -->
@@ -90,6 +93,7 @@ function triggerToast(msg: string) {
         v-model:search-query="globalSearchQuery"
         @toggle-sidebar="toggleSidebar"
         @navigate="handleSelectTab"
+        @open-profile="isProfileModalOpen = true"
       />
 
       <!-- MAIN VIEWPORT (Clean, responsive single-screen layout across all admin tabs) -->
@@ -193,6 +197,13 @@ function triggerToast(msg: string) {
         <span>{{ toastMessage }}</span>
       </div>
     </transition>
+
+    <!-- ADMIN PROFILE MODAL -->
+    <AdminProfileModal
+      :is-open="isProfileModalOpen"
+      @close="isProfileModalOpen = false"
+      @saved="triggerToast"
+    />
 
   </div>
 </template>

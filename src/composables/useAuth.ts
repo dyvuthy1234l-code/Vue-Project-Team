@@ -6,6 +6,9 @@ export interface User {
   phone?: string
   role?: string
   avatar?: string
+  department?: string
+  bio?: string
+  lastLogin?: string
 }
 
 const STORAGE_KEY = 'camlife-user'
@@ -46,6 +49,13 @@ export function useAuth() {
     closeAuthModal()
   }
 
+  function updateProfile(updatedFields: Partial<User>) {
+    if (currentUser.value) {
+      currentUser.value = { ...currentUser.value, ...updatedFields }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser.value))
+    }
+  }
+
   function logout() {
     currentUser.value = null
     localStorage.removeItem(STORAGE_KEY)
@@ -60,6 +70,7 @@ export function useAuth() {
     openRegister,
     closeAuthModal,
     login,
+    updateProfile,
     logout
   }
 }
