@@ -24,7 +24,8 @@ import {
   Flame,
   Ambulance,
   PhoneCall,
-  House
+  House,
+  User as UserIcon
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useAuth } from '@/composables/useAuth'
@@ -33,6 +34,7 @@ import { useSavedJobs } from '@/composables/useSavedJobs'
 import AuthModal from '@/components/AuthModal.vue'
 import SearchModal from '@/components/SearchModal.vue'
 import LocationSelector from '@/components/LocationSelector.vue'
+import UserProfileModal from '@/components/UserProfileModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -46,6 +48,7 @@ const isMobileDrawerOpen = ref(false)
 const isServicesOpen = ref(false)
 const isMobileServicesExpanded = ref(false)
 const isProfileOpen = ref(false)
+const isUserProfileModalOpen = ref(false)
 const isSearchModalOpen = ref(false)
 
 const serviceLinks = [
@@ -532,6 +535,19 @@ onUnmounted(() => {
                     </span>
                   </div>
 
+                  <!-- Citizen Profile Link/Button -->
+                  <button
+                    @click="isProfileOpen = false; isUserProfileModalOpen = true"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-50/80 hover:text-[#0D47A1] dark:hover:bg-slate-700 transition-colors font-khmer group text-left cursor-pointer"
+                    type="button"
+                  >
+                    <span class="flex items-center gap-2">
+                      <UserIcon class="w-4 h-4 text-[#0D47A1] dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                      <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានគណនីផ្ទាល់ខ្លួន' : 'Citizen Profile' }}</span>
+                    </span>
+                    <ChevronRight class="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0D47A1] group-hover:translate-x-0.5 transition-all" />
+                  </button>
+
                   <!-- Unified Combined Saved Items Link -->
                   <router-link
                     to="/saved-services"
@@ -920,6 +936,16 @@ onUnmounted(() => {
               </button>
             </div>
 
+            <!-- Citizen Profile Button in Drawer -->
+            <button
+              @click="isMobileDrawerOpen = false; isUserProfileModalOpen = true"
+              class="w-full py-2.5 px-3 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 text-[#0D47A1] dark:text-blue-300 text-xs font-bold flex items-center justify-center gap-1.5 border border-blue-200/80 dark:border-blue-800 cursor-pointer"
+              type="button"
+            >
+              <UserIcon class="w-3.5 h-3.5" />
+              <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានគណនីផ្ទាល់ខ្លួន' : 'Citizen Profile' }}</span>
+            </button>
+
             <!-- Admin Link in Drawer for Administrators -->
             <button
               v-if="currentUser.role === 'Administrator' || currentUser.role === 'Admin'"
@@ -947,5 +973,6 @@ onUnmounted(() => {
     <!-- Global Modals -->
     <AuthModal />
     <SearchModal :is-open="isSearchModalOpen" @close="isSearchModalOpen = false" />
+    <UserProfileModal :is-open="isUserProfileModalOpen" @close="isUserProfileModalOpen = false" />
   </header>
 </template>

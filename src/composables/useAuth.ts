@@ -8,6 +8,10 @@ export interface User {
   avatar?: string
   department?: string
   bio?: string
+  nationalId?: string
+  province?: string
+  occupation?: string
+  gender?: string
   lastLogin?: string
 }
 
