@@ -50,6 +50,75 @@ const initialSubmissions: PartnerSubmission[] = [
     submittedAt: '2026-09-16 09:15'
   },
   {
+    id: 'sub-174203',
+    facilityType: 'employer',
+    nameKh: 'ក្រុមហ៊ុន ហ្វ័រវើត បច្ចេកវិទ្យា (ខេមបូឌា)',
+    nameEn: 'Forward Tech Solutions (Cambodia) Co., Ltd.',
+    category: 'Technology & Software',
+    industrySector: 'Information Technology',
+    location: 'Phnom Penh',
+    address: 'Canadia Tower 18th Floor, Monivong Blvd, Phnom Penh',
+    addressKh: 'អគារកាណាឌីយ៉ា ជាន់ទី ១៨ មហាវិថីព្រះមុនីវង្ស រាជធានីភ្នំពេញ',
+    phone: '023 999 123',
+    email: 'careers@forwardtech.kh',
+    openingHours: '08:00 - 17:30 (Mon-Fri)',
+    licenseNumber: 'MOC-REG-2025-99881',
+    representativeName: 'Sok Visal',
+    representativeRole: 'HR Director',
+    website: 'https://forwardtech.kh',
+    descriptionKh: 'ក្រុមហ៊ុនបច្ចេកវិទ្យាឈានមុខគេ ជំនាញផ្នែក Cloud, AI, និង Mobile Application Development។',
+    descriptionEn: 'Leading enterprise software company building cloud native and digital banking solutions.',
+    services: ['Senior Vue.js Developer', 'Node.js Backend Engineer', 'UI/UX Product Designer'],
+    status: 'pending',
+    submittedAt: '2026-09-16 11:20'
+  },
+  {
+    id: 'sub-174204',
+    facilityType: 'transport',
+    nameKh: 'ក្រុមហ៊ុន រថយន្តក្រុង អាស៊ាន អេចប្រេស',
+    nameEn: 'Asean Express Transit & Coaches',
+    category: 'Intercity Bus',
+    location: 'Phnom Penh',
+    address: 'Central Bus Terminal, Russian Blvd, Phnom Penh',
+    addressKh: 'ស្ថានីយចំណតរថយន្តក្រុងកណ្តាល មហាវិថីសហព័ន្ធរុស្ស៊ី រាជធានីភ្នំពេញ',
+    phone: '023 888 999',
+    email: 'booking@aseanexpress.kh',
+    openingHours: '05:30 - 23:00 (Daily)',
+    licenseNumber: 'MPWT-TRANS-2024-5511',
+    representativeName: 'Ouk Chamroeun',
+    representativeRole: 'Operations Manager',
+    fleetSize: '45 VIP Coaches & Vans',
+    routes: ['Phnom Penh - Siem Reap', 'Phnom Penh - Battambang', 'Phnom Penh - Sihanoukville'],
+    descriptionKh: 'សេវារថយន្តក្រុង VIP ទំនើប មាន WiFi ម៉ាស៊ីនត្រជាក់ និងកៅអីគេងសុវត្ថិភាពខ្ពស់។',
+    descriptionEn: 'Premium intercity express coaches connecting Phnom Penh to major provinces with onboard amenities.',
+    services: ['VIP Sleeper Bus', 'Express Van', 'Online Ticketing', 'Parcel Delivery'],
+    status: 'pending',
+    submittedAt: '2026-09-16 16:45'
+  },
+  {
+    id: 'sub-174205',
+    facilityType: 'emergency-ambulance',
+    nameKh: 'សេវារថយន្តសង្គ្រោះបន្ទាន់ ជីវិតថ្មី ២៤/៧',
+    nameEn: 'LifeCare 24/7 Private Ambulance Service',
+    category: 'Medical Rescue',
+    location: 'Phnom Penh',
+    address: 'Street 598, Tuol Sangke, Russey Keo, Phnom Penh',
+    addressKh: 'ផ្លូវ ៥៩៨ សង្កាត់ទួលសង្កែ ខណ្ឌឫស្សីកែវ រាជធានីភ្នំពេញ',
+    phone: '012 999 119',
+    email: 'dispatch@lifecare-ambulance.kh',
+    openingHours: '24/7 Hotline',
+    licenseNumber: 'MoH-EMR-2025-0019',
+    representativeName: 'Dr. Meng Sophat',
+    representativeRole: 'Emergency Dispatch Chief',
+    fleetSize: '8 ICU Mobile Units',
+    descriptionKh: 'សេវារថយន្តសង្គ្រោះបន្ទាន់បំពាក់បរិក្ខារ ICU ទំនើប គ្រូពេទ្យសង្គ្រោះបន្ទាន់ និងម៉ាស៊ីនជំនួយដង្ហើម ២៤ម៉ោង។',
+    descriptionEn: 'Rapid mobile intensive care unit (ICU) ambulance response with certified paramedics 24/7.',
+    services: ['24/7 Emergency Dispatch', 'ICU Patient Transfer', 'First Aid Trauma Support', 'Event Standby'],
+    acceptsNssf: true,
+    status: 'pending',
+    submittedAt: '2026-09-17 08:30'
+  },
+  {
     id: 'sub-174200',
     facilityType: 'clinic',
     nameKh: 'គ្លីនិកទន្តសាស្ត្រ សុភមង្គល',
@@ -198,6 +267,74 @@ export function usePartnerSubmissions() {
         }
       } catch (err) {
         console.error('Failed to append custom home service:', err)
+      }
+    }
+
+    // 3. If it's an employer, push a starter job opening to live custom jobs
+    if (sub.facilityType === 'employer') {
+      try {
+        const rawJobs = localStorage.getItem('camlife_user_jobs')
+        const customJobs = rawJobs ? JSON.parse(rawJobs) : []
+        const primaryService = sub.services && sub.services.length > 0 ? sub.services[0] : 'Career Opportunity'
+        const newJob = {
+          id: `job-partner-${Date.now()}`,
+          title: primaryService.startsWith('Open') ? primaryService : `Position: ${primaryService}`,
+          company: sub.nameEn,
+          location: sub.location,
+          salary: '$600 - $1,500/month',
+          salaryMin: 600,
+          salaryMax: 1500,
+          type: 'Full-time',
+          category: sub.industrySector || 'Enterprise',
+          postedDate: new Date().toISOString().split('T')[0],
+          description: sub.descriptionKh || sub.descriptionEn || `Official vacancy posted by verified partner ${sub.nameKh}.`,
+          requirements: ['Relevant experience or university degree in field', 'Good interpersonal and communication skills'],
+          benefits: ['Competitive salary & performance bonus', 'NSSF healthcare & staff insurance'],
+          applyUrl: sub.website || `tel:${sub.phone}`
+        }
+
+        if (!customJobs.some((j: any) => j.company === newJob.company && j.title === newJob.title)) {
+          customJobs.unshift(newJob)
+          localStorage.setItem('camlife_user_jobs', JSON.stringify(customJobs))
+        }
+      } catch (err) {
+        console.error('Failed to append custom employer job:', err)
+      }
+    }
+
+    // 4. If it's an emergency ambulance service, push to healthcare & emergency network
+    if (sub.facilityType === 'emergency-ambulance') {
+      try {
+        const rawHosp = localStorage.getItem(CUSTOM_HOSPITALS_KEY)
+        const customHospitals: Hospital[] = rawHosp ? JSON.parse(rawHosp) : []
+        const newAmbulance: Hospital = {
+          id: `amb-${Date.now()}`,
+          name: sub.nameEn,
+          nameKh: sub.nameKh,
+          category: 'hospital',
+          image: 'https://images.unsplash.com/photo-1587745416684-47953f16f02f?auto=format&fit=crop&w=800&q=80',
+          rating: 5.0,
+          reviews: 1,
+          location: sub.location,
+          phone: sub.phone,
+          openingHours: '24/7',
+          description: sub.descriptionEn || sub.descriptionKh,
+          descriptionKh: sub.descriptionKh,
+          services: sub.services && sub.services.length > 0 ? sub.services : ['24/7 ICU Ambulance', 'Emergency Dispatch'],
+          address: sub.address,
+          addressKh: sub.addressKh,
+          coordinates: { lat: 11.5564, lng: 104.9282 },
+          ownership: 'private',
+          acceptsNssf: sub.acceptsNssf || false,
+          emergencyHotline: sub.phone
+        }
+
+        if (!customHospitals.some(h => h.name === newAmbulance.name)) {
+          customHospitals.unshift(newAmbulance)
+          localStorage.setItem(CUSTOM_HOSPITALS_KEY, JSON.stringify(customHospitals))
+        }
+      } catch (err) {
+        console.error('Failed to append emergency ambulance to directory:', err)
       }
     }
 

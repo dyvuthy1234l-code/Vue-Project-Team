@@ -155,9 +155,18 @@ export interface SearchResult {
 
 export type Language = 'en' | 'kh'
 
+export type PartnerFacilityType =
+  | 'hospital'
+  | 'clinic'
+  | 'pharmacy'
+  | 'home-service'
+  | 'employer'
+  | 'transport'
+  | 'emergency-ambulance'
+
 export interface PartnerSubmission {
   id: string
-  facilityType: 'hospital' | 'clinic' | 'pharmacy' | 'home-service'
+  facilityType: PartnerFacilityType
   nameKh: string
   nameEn: string
   category: string
@@ -175,6 +184,10 @@ export interface PartnerSubmission {
   services: string[]
   acceptsNssf?: boolean
   mapUrl?: string
+  website?: string
+  fleetSize?: string
+  routes?: string[]
+  industrySector?: string
   status: 'pending' | 'approved' | 'rejected'
   submittedAt: string
   reviewedAt?: string

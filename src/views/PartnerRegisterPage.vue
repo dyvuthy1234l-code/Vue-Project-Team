@@ -19,13 +19,17 @@ import {
   ArrowRight,
   Clock,
   FileCheck,
-  LayoutDashboard
+  LayoutDashboard,
+  Briefcase,
+  Bus,
+  Ambulance,
+  Globe
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useAuth } from '@/composables/useAuth'
 import { usePartnerSubmissions } from '@/composables/usePartnerSubmissions'
 import { usePageMeta } from '@/composables/usePageMeta'
-import type { PartnerSubmission } from '@/types'
+import type { PartnerSubmission, PartnerFacilityType } from '@/types'
 
 const route = useRoute()
 const { currentLanguage } = useLanguage()
@@ -33,8 +37,8 @@ const { currentUser, isLoggedIn, openLogin, openRegister, logout } = useAuth()
 const { submitApplication } = usePartnerSubmissions()
 
 usePageMeta({
-  title: 'ចុះឈ្មោះជាដៃគូសេវា និងមន្ទីរពេទ្យ — CamLife Partner Registration',
-  description: 'ដាក់ពាក្យស្នើសុំចុះបញ្ជីមន្ទីរពេទ្យ គ្លីនិក ឱសថស្ថាន ឬសេវាកម្មជួសជុលរបស់អ្នកចូលក្នុងថ្នាលជាតិ CamLife'
+  title: 'ចុះឈ្មោះជាដៃគូសេវា និងស្ថាប័ន — CamLife Partner Registration',
+  description: 'ដាក់ពាក្យស្នើសុំចុះបញ្ជីមន្ទីរពេទ្យ គ្លីនិក ឱសថស្ថាន សេវាជាង ក្រុមហ៊ុនការងារ រថយន្តក្រុង ឬរថយន្តសង្គ្រោះបន្ទាន់'
 })
 
 const provinces = [
@@ -102,41 +106,82 @@ const homeServiceCategories = [
   { value: 'Handyman', labelKh: 'ជាងជួសជុលទូទៅ' }
 ]
 
-type FacilityType = 'hospital' | 'clinic' | 'pharmacy' | 'home-service'
+const industrySectors = [
+  { value: 'Information Technology', labelKh: 'បច្ចេកវិទ្យា & IT' },
+  { value: 'Banking & Finance', labelKh: 'ធនាគារ & ហិរញ្ញវត្ថុ' },
+  { value: 'Hospitality & Tourism', labelKh: 'បដិសណ្ឋារកិច្ច & ទេសចរណ៍' },
+  { value: 'Manufacturing & Garment', labelKh: 'រោងចក្រ & កាត់ដេរ' },
+  { value: 'Construction & Real Estate', labelKh: 'សំណង់ & អចលនទ្រព្យ' },
+  { value: 'Education & Training', labelKh: 'អប់រំ & បណ្តុះបណ្តាល' },
+  { value: 'Healthcare & Wellness', labelKh: 'សុខាភិបាល & ឱសថ' },
+  { value: 'Retail & Wholesale', labelKh: 'លក់រាយ & លក់ដុំ' },
+  { value: 'Logistics & Transport', labelKh: 'ភស្តុភារ & ដឹកជញ្ជូន' },
+  { value: 'Other', labelKh: 'វិស័យផ្សេងៗ' }
+]
 
-const facilityTypes: { value: FacilityType; labelKh: string; labelEn: string; icon: any; descKh: string }[] = [
+const facilityTypes: { value: PartnerFacilityType; labelKh: string; labelEn: string; icon: any; descKh: string; group: number }[] = [
+  // Group 1: Service & Business Listing
   {
     value: 'hospital',
     labelKh: 'មន្ទីរពេទ្យ',
     labelEn: 'Hospital',
     icon: HospitalIcon,
-    descKh: 'មន្ទីរពេទ្យរដ្ឋ ឬឯកជនទូទៅ'
+    descKh: 'មន្ទីរពេទ្យរដ្ឋ ឬឯកជនទូទៅ',
+    group: 1
   },
   {
     value: 'clinic',
     labelKh: 'គ្លីនិកឯកទេស',
     labelEn: 'Specialist Clinic',
     icon: Stethoscope,
-    descKh: 'គ្លីនិកពិគ្រោះ និងព្យាបាលជំងឺ'
+    descKh: 'គ្លីនិកពិគ្រោះ និងព្យាបាលជំងឺ',
+    group: 1
   },
   {
     value: 'pharmacy',
     labelKh: 'ឱសថស្ថាន',
     labelEn: 'Pharmacy',
     icon: Pill,
-    descKh: 'ឱសថស្ថានមានអាជ្ញាបណ្ណត្រឹមត្រូវ'
+    descKh: 'ឱសថស្ថានមានអាជ្ញាបណ្ណត្រឹមត្រូវ',
+    group: 1
   },
   {
     value: 'home-service',
     labelKh: 'សេវាជាង & គេហដ្ឋាន',
     labelEn: 'Home Service',
     icon: Wrench,
-    descKh: 'ជាងភ្លើង ទឹក ម៉ាស៊ីនត្រជាក់ សម្អាត'
+    descKh: 'ជាងភ្លើង ទឹក ម៉ាស៊ីនត្រជាក់ សម្អាត',
+    group: 1
+  },
+  {
+    value: 'employer',
+    labelKh: 'ក្រុមហ៊ុន / និយោជក',
+    labelEn: 'Company / Employer',
+    icon: Briefcase,
+    descKh: 'ចុះបញ្ជីក្រុមហ៊ុន និងដាក់ផ្សាយការងារ',
+    group: 1
+  },
+  // Group 2: B2B Operator Partnerships
+  {
+    value: 'transport',
+    labelKh: 'ក្រុមហ៊ុនដឹកជញ្ជូន',
+    labelEn: 'Transport & Bus',
+    icon: Bus,
+    descKh: 'រថយន្តក្រុង VIP តាក់ស៊ី ឬសេវាដឹកជញ្ជូន',
+    group: 2
+  },
+  {
+    value: 'emergency-ambulance',
+    labelKh: 'រថយន្តសង្គ្រោះបន្ទាន់',
+    labelEn: 'Ambulance Service',
+    icon: Ambulance,
+    descKh: 'សេវារថយន្តសង្គ្រោះ និង ICU ចល័ត',
+    group: 2
   }
 ]
 
 const form = reactive({
-  facilityType: 'hospital' as FacilityType,
+  facilityType: 'hospital' as PartnerFacilityType,
   nameKh: '',
   nameEn: '',
   category: 'General Healthcare',
@@ -153,6 +198,10 @@ const form = reactive({
   descriptionEn: '',
   servicesInput: '',
   acceptsNssf: true,
+  website: '',
+  fleetSize: '',
+  routesInput: '',
+  industrySector: 'Information Technology',
   agreement: false
 })
 
@@ -164,8 +213,11 @@ const lastSubmission = ref<PartnerSubmission | null>(null)
 // Initialize query parameter if present
 onMounted(() => {
   const queryType = route.query.type as string
-  if (queryType && ['hospital', 'clinic', 'pharmacy', 'home-service'].includes(queryType)) {
-    selectType(queryType as FacilityType)
+  if (
+    queryType &&
+    ['hospital', 'clinic', 'pharmacy', 'home-service', 'employer', 'transport', 'emergency-ambulance'].includes(queryType)
+  ) {
+    selectType(queryType as PartnerFacilityType)
   }
 
   // Pre-fill user data if logged in
@@ -189,12 +241,18 @@ function prefillUser() {
       form.phone = currentUser.value.phone
     }
     if (!form.representativeRole) {
-      form.representativeRole = form.facilityType === 'home-service' ? 'ម្ចាស់អាជីវកម្ម' : 'ប្រធានផ្នែករដ្ឋបាល'
+      if (form.facilityType === 'home-service') form.representativeRole = 'ម្ចាស់អាជីវកម្ម'
+      else if (form.facilityType === 'employer') form.representativeRole = 'ប្រធានផ្នែកធនធានមនុស្ស (HR)'
+      else if (form.facilityType === 'transport') form.representativeRole = 'ប្រធានប្រតិបត្តិការដឹកជញ្ជូន'
+      else if (form.facilityType === 'emergency-ambulance') form.representativeRole = 'ប្រធានក្រុមសង្គ្រោះបន្ទាន់'
+      else if (form.facilityType === 'pharmacy') form.representativeRole = 'ឱសថការី / ម្ចាស់ឱសថស្ថាន'
+      else if (form.facilityType === 'clinic') form.representativeRole = 'ប្រធានគ្លីនិក'
+      else form.representativeRole = 'ប្រធានផ្នែករដ្ឋបាល'
     }
   }
 }
 
-function selectType(type: FacilityType) {
+function selectType(type: PartnerFacilityType) {
   form.facilityType = type
   if (type === 'home-service') {
     form.category = 'AC Repair'
@@ -210,6 +268,21 @@ function selectType(type: FacilityType) {
     form.category = 'Clinic'
     form.openingHours = '08:00 - 20:00'
     form.representativeRole = 'ប្រធានគ្លីនិក'
+    form.acceptsNssf = true
+  } else if (type === 'employer') {
+    form.category = 'Enterprise'
+    form.openingHours = '08:00 - 17:00'
+    form.representativeRole = 'ប្រធានផ្នែកធនធានមនុស្ស (HR)'
+    form.acceptsNssf = true
+  } else if (type === 'transport') {
+    form.category = 'Transit Operator'
+    form.openingHours = '05:30 - 21:00'
+    form.representativeRole = 'ប្រធានប្រតិបត្តិការដឹកជញ្ជូន'
+    form.acceptsNssf = false
+  } else if (type === 'emergency-ambulance') {
+    form.category = 'Ambulance Dispatch'
+    form.openingHours = '24/7'
+    form.representativeRole = 'ប្រធានក្រុមសង្គ្រោះបន្ទាន់'
     form.acceptsNssf = true
   } else {
     form.category = 'Hospital'
@@ -260,11 +333,19 @@ function handleSubmit() {
       .map(s => s.trim())
       .filter(s => s.length > 0)
 
+    const routesList = form.routesInput
+      ? form.routesInput.split(',').map(r => r.trim()).filter(r => r.length > 0)
+      : undefined
+
     const submission = submitApplication({
       facilityType: form.facilityType,
       nameKh: form.nameKh.trim(),
       nameEn: form.nameEn.trim(),
-      category: form.facilityType === 'home-service' ? form.category : form.facilityType,
+      category: form.facilityType === 'home-service'
+        ? form.category
+        : form.facilityType === 'employer'
+          ? (form.industrySector || 'Enterprise')
+          : form.facilityType,
       location: form.location,
       addressKh: form.addressKh.trim() || form.address.trim(),
       address: form.address.trim() || form.addressKh.trim(),
@@ -277,7 +358,11 @@ function handleSubmit() {
       descriptionKh: form.descriptionKh.trim() || form.nameKh.trim(),
       descriptionEn: form.descriptionEn.trim() || form.nameEn.trim(),
       services: servicesList.length > 0 ? servicesList : ['General Services'],
-      acceptsNssf: form.facilityType !== 'home-service' ? form.acceptsNssf : false
+      acceptsNssf: ['hospital', 'clinic', 'emergency-ambulance', 'employer'].includes(form.facilityType) ? form.acceptsNssf : false,
+      website: form.website.trim() || undefined,
+      fleetSize: form.fleetSize.trim() || undefined,
+      routes: routesList,
+      industrySector: form.facilityType === 'employer' ? form.industrySector : undefined
     })
 
     isSubmitting.value = false
@@ -298,6 +383,10 @@ function resetFormForNew() {
   form.descriptionKh = ''
   form.descriptionEn = ''
   form.servicesInput = ''
+  form.website = ''
+  form.fleetSize = ''
+  form.routesInput = ''
+  form.industrySector = 'Information Technology'
   form.agreement = false
   prefillUser()
 }
@@ -545,17 +634,22 @@ function resetFormForNew() {
 
           <!-- STEP 1: FACILITY TYPE SELECTOR TABS -->
           <div class="space-y-3">
-            <label class="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
-              {{ currentLanguage === 'kh' ? '១. ជ្រើសរើសប្រភេទស្ថាប័ន / សេវាកម្ម *' : '1. Select Facility Type *' }}
-            </label>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                {{ currentLanguage === 'kh' ? '១. ជ្រើសរើសប្រភេទស្ថាប័ន / សេវាកម្ម *' : '1. Select Facility Type *' }}
+              </label>
+              <span class="text-[11px] text-slate-400 font-medium">
+                {{ currentLanguage === 'kh' ? 'សរុប ៧ ប្រភេទ (ក្រុមទី ១ & ក្រុមទី ២)' : '7 Registered Categories (Group 1 & 2)' }}
+              </span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               <button
                 v-for="item in facilityTypes"
                 :key="item.value"
                 @click="selectType(item.value)"
                 type="button"
                 :class="[
-                  'p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2',
+                  'p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2',
                   form.facilityType === item.value
                     ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 ring-2 ring-emerald-500/20 shadow-xs'
                     : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800/60'
@@ -566,6 +660,9 @@ function resetFormForNew() {
                     <component :is="item.icon" class="w-5 h-5" />
                   </div>
                   <span v-if="form.facilityType === item.value" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  <span v-else class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                    G{{ item.group }}
+                  </span>
                 </div>
                 <div>
                   <p class="text-xs font-black text-slate-900 dark:text-white leading-tight">
@@ -595,7 +692,17 @@ function resetFormForNew() {
                   v-model="form.nameKh"
                   type="text"
                   required
-                  :placeholder="form.facilityType === 'home-service' ? 'ឧ. ជាងភ្លើង និងម៉ាស៊ីនត្រជាក់ វណ្ណា' : 'ឧ. មន្ទីរពេទ្យកាល់ម៉ែត'"
+                  :placeholder="
+                    form.facilityType === 'home-service'
+                      ? 'ឧ. ជាងភ្លើង និងម៉ាស៊ីនត្រជាក់ វណ្ណា'
+                      : form.facilityType === 'employer'
+                        ? 'ឧ. ក្រុមហ៊ុន តិចណូឡូជី ខេមបូឌា'
+                        : form.facilityType === 'transport'
+                          ? 'ឧ. ក្រុមហ៊ុនរថយន្តក្រុង អាស៊ាន អេចប្រេស'
+                          : form.facilityType === 'emergency-ambulance'
+                            ? 'ឧ. សេវារថយន្តសង្គ្រោះបន្ទាន់ ឡាយហ្វ៍ឃែរ'
+                            : 'ឧ. មន្ទីរពេទ្យកាល់ម៉ែត'
+                  "
                   class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
@@ -609,12 +716,23 @@ function resetFormForNew() {
                   v-model="form.nameEn"
                   type="text"
                   required
-                  :placeholder="form.facilityType === 'home-service' ? 'e.g. Vanna AC & Electrical Service' : 'e.g. Calmette Hospital'"
+                  :placeholder="
+                    form.facilityType === 'home-service'
+                      ? 'e.g. Vanna AC & Electrical Service'
+                      : form.facilityType === 'employer'
+                        ? 'e.g. Forward Tech Solutions Co., Ltd.'
+                        : form.facilityType === 'transport'
+                          ? 'e.g. Asean Express Transit Co.'
+                          : form.facilityType === 'emergency-ambulance'
+                            ? 'e.g. LifeCare 24/7 Ambulance Service'
+                            : 'e.g. Calmette Hospital'
+                  "
                   class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
             </div>
 
+            <!-- Dynamic Category / Sector Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Home Service Specific Category -->
               <div v-if="form.facilityType === 'home-service'" class="space-y-1.5">
@@ -631,8 +749,49 @@ function resetFormForNew() {
                 </select>
               </div>
 
+              <!-- Employer Specific Industry Sector -->
+              <div v-else-if="form.facilityType === 'employer'" class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {{ currentLanguage === 'kh' ? 'វិស័យអាជីវកម្ម / ឧស្សាហកម្ម *' : 'Industry / Sector *' }}
+                </label>
+                <select
+                  v-model="form.industrySector"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option v-for="sec in industrySectors" :key="sec.value" :value="sec.value">
+                    {{ currentLanguage === 'kh' ? sec.labelKh : sec.value }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Transport Specific Fleet Size -->
+              <div v-else-if="form.facilityType === 'transport'" class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {{ currentLanguage === 'kh' ? 'ទំហំកងរថយន្ត / ចំនួនមធ្យោបាយ *' : 'Fleet Size / Vehicles *' }}
+                </label>
+                <input
+                  v-model="form.fleetSize"
+                  type="text"
+                  :placeholder="currentLanguage === 'kh' ? 'ឧ. រថយន្តក្រុង VIP ២៥ គ្រឿង, តាក់ស៊ី ១០ គ្រឿង' : 'e.g. 25 VIP Buses, 10 Mini-vans'"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <!-- Emergency Ambulance Fleet & ICU Units -->
+              <div v-else-if="form.facilityType === 'emergency-ambulance'" class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {{ currentLanguage === 'kh' ? 'ចំនួនរថយន្តសង្គ្រោះ & សម្ភារៈ ICU *' : 'Ambulance Units & ICU Gear *' }}
+                </label>
+                <input
+                  v-model="form.fleetSize"
+                  type="text"
+                  :placeholder="currentLanguage === 'kh' ? 'ឧ. រថយន្តសង្គ្រោះចល័ត ៦ គ្រឿង បំពាក់ឧបករណ៍ជំនួយដង្ហើម' : 'e.g. 6 Mobile ICU Ambulances with certified paramedics'"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
               <!-- Province / City -->
-              <div :class="form.facilityType === 'home-service' ? '' : 'md:col-span-2'" class="space-y-1.5">
+              <div :class="['home-service', 'employer', 'transport', 'emergency-ambulance'].includes(form.facilityType) ? '' : 'md:col-span-2'" class="space-y-1.5">
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
                   {{ currentLanguage === 'kh' ? 'រាជធានី-ខេត្ត *' : 'Province / City *' }}
                 </label>
@@ -645,6 +804,19 @@ function resetFormForNew() {
                   </option>
                 </select>
               </div>
+            </div>
+
+            <!-- Transport Routes Covered Field -->
+            <div v-if="form.facilityType === 'transport'" class="space-y-1.5">
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                {{ currentLanguage === 'kh' ? 'ខ្សែរត់ / ខេត្ត-ក្រុងដែលតភ្ជាប់ (ដាក់ក្បៀស [,] ដើម្បីញែក) *' : 'Transit Routes / Destinations Covered (Comma-separated) *' }}
+              </label>
+              <input
+                v-model="form.routesInput"
+                type="text"
+                :placeholder="currentLanguage === 'kh' ? 'ឧ. ភ្នំពេញ - សៀមរាប, ភ្នំពេញ - ព្រះសីហនុ, ភ្នំពេញ - បាត់ដំបង' : 'e.g. Phnom Penh - Siem Reap, Phnom Penh - Sihanoukville'"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+              />
             </div>
 
             <!-- Address -->
@@ -671,7 +843,11 @@ function resetFormForNew() {
               <!-- Phone -->
               <div class="space-y-1.5">
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទ / Hotline *' : 'Phone / Hotline *' }}
+                  {{
+                    form.facilityType === 'emergency-ambulance'
+                      ? (currentLanguage === 'kh' ? 'លេខទូរស័ព្ទសង្គ្រោះបន្ទាន់ ២៤/៧ *' : 'Emergency Hotline (24/7) *')
+                      : (currentLanguage === 'kh' ? 'លេខទូរស័ព្ទ / Hotline *' : 'Phone / Hotline *')
+                  }}
                 </label>
                 <div class="relative">
                   <Phone class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -695,7 +871,7 @@ function resetFormForNew() {
                   <input
                     v-model="form.email"
                     type="email"
-                    placeholder="contact@facility.gov.kh"
+                    placeholder="contact@company.com.kh"
                     class="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
@@ -715,14 +891,38 @@ function resetFormForNew() {
               </div>
             </div>
 
-            <!-- NSSF Option (Only for health facilities) -->
-            <div v-if="form.facilityType !== 'home-service'" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+            <!-- Website / Online Portal (for Employer & Transport) -->
+            <div v-if="['employer', 'transport'].includes(form.facilityType)" class="space-y-1.5">
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                {{ currentLanguage === 'kh' ? 'គេហទំព័រផ្លូវការ ឬផេកទំនាក់ទំនង (Website / Link)' : 'Official Website / Portal' }}
+              </label>
+              <div class="relative">
+                <Globe class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  v-model="form.website"
+                  type="url"
+                  placeholder="https://company.com.kh"
+                  class="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <!-- NSSF Option (For healthcare, ambulance, and employers) -->
+            <div v-if="['hospital', 'clinic', 'emergency-ambulance', 'employer'].includes(form.facilityType)" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
               <div class="space-y-0.5">
                 <span class="text-xs font-bold text-slate-800 dark:text-white">
-                  {{ currentLanguage === 'kh' ? 'ទទួលប័ណ្ណមូលនិធិសមធម៌ / ប.ស.ស (NSSF)' : 'Accepts NSSF Healthcare Coverage' }}
+                  {{
+                    form.facilityType === 'employer'
+                      ? (currentLanguage === 'kh' ? 'ក្រុមហ៊ុនបានចុះបញ្ជី ប.ស.ស (NSSF) ជូនបុគ្គលិកស្របច្បាប់' : 'Company is accredited with NSSF for employee coverage')
+                      : (currentLanguage === 'kh' ? 'ទទួលប័ណ្ណមូលនិធិសមធម៌ / ប.ស.ស (NSSF)' : 'Accepts NSSF Healthcare Coverage')
+                  }}
                 </span>
                 <p class="text-[11px] text-slate-400">
-                  {{ currentLanguage === 'kh' ? 'បើកដំណើរការជម្រើសនេះ ប្រសិនបើស្ថាប័នអ្នកមានកិច្ចព្រមព្រៀងជាមួយ ប.ស.ស' : 'Enable if your facility is accredited with NSSF' }}
+                  {{
+                    form.facilityType === 'employer'
+                      ? (currentLanguage === 'kh' ? 'បង្ហាញផ្លាកសញ្ញាស្ថាប័នស្របច្បាប់លើការងារដែលបានដាក់ផ្សាយ' : 'Displays NSSF certified badge on posted job vacancies')
+                      : (currentLanguage === 'kh' ? 'បើកដំណើរការជម្រើសនេះ ប្រសិនបើស្ថាប័នអ្នកមានកិច្ចព្រមព្រៀងជាមួយ ប.ស.ស' : 'Enable if your facility is accredited with NSSF')
+                  }}
                 </p>
               </div>
               <input
@@ -732,15 +932,33 @@ function resetFormForNew() {
               />
             </div>
 
-            <!-- Key Services (Comma Separated) -->
+            <!-- Key Services / Positions / Features (Comma Separated) -->
             <div class="space-y-1.5">
               <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                {{ currentLanguage === 'kh' ? 'សេវាសំខាន់ៗដែលផ្តល់ជូន (ដាក់ក្បៀស [,] ដើម្បីញែក)' : 'Services Offered (Comma-separated)' }}
+                {{
+                  form.facilityType === 'employer'
+                    ? (currentLanguage === 'kh' ? 'មុខតំណែង ឬជំនាញដែលត្រូវការជ្រើសរើស (ដាក់ក្បៀស [,] ដើម្បីញែក)' : 'Key Roles / Positions Hiring (Comma-separated)')
+                    : form.facilityType === 'transport'
+                      ? (currentLanguage === 'kh' ? 'សេវាកម្មដឹកជញ្ជូនដែលផ្តល់ជូន (ដាក់ក្បៀស [,] ដើម្បីញែក)' : 'Transport Services Offered (Comma-separated)')
+                      : form.facilityType === 'emergency-ambulance'
+                        ? (currentLanguage === 'kh' ? 'សេវាសង្គ្រោះបន្ទាន់ និងឧបករណ៍ចម្បងៗ (ដាក់ក្បៀស [,] ដើម្បីញែក)' : 'Emergency Services & Capabilities (Comma-separated)')
+                        : (currentLanguage === 'kh' ? 'សេវាសំខាន់ៗដែលផ្តល់ជូន (ដាក់ក្បៀស [,] ដើម្បីញែក)' : 'Services Offered (Comma-separated)')
+                }}
               </label>
               <input
                 v-model="form.servicesInput"
                 type="text"
-                :placeholder="form.facilityType === 'home-service' ? 'លាងម៉ាស៊ីនត្រជាក់, បញ្ចូលហ្គាស, ជួសជុលបន្ទាន់' : 'សង្គ្រោះបន្ទាន់, វះកាត់ទូទៅ, មន្ទីរពិសោធន៍, ថតកាំរស្មីអ៊ិច'"
+                :placeholder="
+                  form.facilityType === 'home-service'
+                    ? 'លាងម៉ាស៊ីនត្រជាក់, បញ្ចូលហ្គាស, ជួសជុលបន្ទាន់'
+                    : form.facilityType === 'employer'
+                      ? 'Software Engineer, Sales Executive, Graphic Designer, Accountant'
+                      : form.facilityType === 'transport'
+                        ? 'VIP Sleeper Bus, Airport Transfer, Rental Van, Express Parcel'
+                        : form.facilityType === 'emergency-ambulance'
+                          ? 'រថយន្តសង្គ្រោះ ICU, គ្រូពេទ្យសង្គ្រោះបន្ទាន់, បញ្ជូនអ្នកជំងឺឆ្លងខេត្ត'
+                          : 'សង្គ្រោះបន្ទាន់, វះកាត់ទូទៅ, មន្ទីរពិសោធន៍, ថតកាំរស្មីអ៊ិច'
+                "
                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
               />
             </div>

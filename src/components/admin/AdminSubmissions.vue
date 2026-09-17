@@ -16,7 +16,11 @@ import {
   Pill,
   Wrench,
   Check,
-  Ban
+  Ban,
+  Briefcase,
+  Bus,
+  Ambulance,
+  Globe
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { usePartnerSubmissions } from '@/composables/usePartnerSubmissions'
@@ -157,6 +161,12 @@ function getFacilityTypeBadge(type: string) {
       return { labelKh: 'ឱសថស្ថាន', labelEn: 'Pharmacy', icon: Pill, color: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800' }
     case 'home-service':
       return { labelKh: 'សេវាជួសជុល', labelEn: 'Home Service', icon: Wrench, color: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800' }
+    case 'employer':
+      return { labelKh: 'ក្រុមហ៊ុន / និយោជក', labelEn: 'Company / Employer', icon: Briefcase, color: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800' }
+    case 'transport':
+      return { labelKh: 'ក្រុមហ៊ុនដឹកជញ្ជូន', labelEn: 'Transport & Bus', icon: Bus, color: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' }
+    case 'emergency-ambulance':
+      return { labelKh: 'រថយន្តសង្គ្រោះបន្ទាន់', labelEn: 'Ambulance Service', icon: Ambulance, color: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800' }
     default:
       return { labelKh: type, labelEn: type, icon: Building2, color: 'bg-slate-50 text-slate-700 border-slate-200' }
   }
@@ -272,6 +282,9 @@ function getFacilityTypeBadge(type: string) {
           <option value="clinic">{{ currentLanguage === 'kh' ? '🩺 គ្លីនិក' : 'Clinics' }}</option>
           <option value="pharmacy">{{ currentLanguage === 'kh' ? '💊 ឱសថស្ថាន' : 'Pharmacies' }}</option>
           <option value="home-service">{{ currentLanguage === 'kh' ? '🔧 សេវាជួសជុល' : 'Home Services' }}</option>
+          <option value="employer">{{ currentLanguage === 'kh' ? '💼 ក្រុមហ៊ុន / និយោជក' : 'Companies / Employers' }}</option>
+          <option value="transport">{{ currentLanguage === 'kh' ? '🚌 ក្រុមហ៊ុនដឹកជញ្ជូន' : 'Transport Operators' }}</option>
+          <option value="emergency-ambulance">{{ currentLanguage === 'kh' ? '🚑 រថយន្តសង្គ្រោះបន្ទាន់' : 'Ambulance Services' }}</option>
         </select>
       </div>
     </div>
@@ -504,6 +517,39 @@ function getFacilityTypeBadge(type: string) {
             <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
               <span class="text-slate-400 block mb-0.5">ម៉ោងបំពេញការងារ</span>
               <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedDetail.openingHours }}</span>
+            </div>
+
+            <!-- Industry Sector (if Employer) -->
+            <div v-if="selectedDetail.industrySector" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+              <span class="text-slate-400 block mb-0.5">វិស័យឧស្សាហកម្ម</span>
+              <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ selectedDetail.industrySector }}</span>
+            </div>
+
+            <!-- Fleet Size (if Transport or Ambulance) -->
+            <div v-if="selectedDetail.fleetSize" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+              <span class="text-slate-400 block mb-0.5">ទំហំកងរថយន្ត / Units</span>
+              <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ selectedDetail.fleetSize }}</span>
+            </div>
+
+            <!-- Website Link (if present) -->
+            <div v-if="selectedDetail.website" class="col-span-2 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+              <div>
+                <span class="text-slate-400 block mb-0.5">គេហទំព័រ / ផេកផ្លូវការ</span>
+                <a :href="selectedDetail.website" target="_blank" class="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 font-mono">
+                  <Globe class="w-3.5 h-3.5" />
+                  <span>{{ selectedDetail.website }}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Routes Covered (if Transport) -->
+          <div v-if="selectedDetail.routes && selectedDetail.routes.length > 0" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+            <span class="text-slate-400 block mb-1.5">ខ្សែរត់ និងទិសដៅតភ្ជាប់ (Routes Covered)</span>
+            <div class="flex flex-wrap gap-1.5">
+              <span v-for="r in selectedDetail.routes" :key="r" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold">
+                🚌 {{ r }}
+              </span>
             </div>
           </div>
 
