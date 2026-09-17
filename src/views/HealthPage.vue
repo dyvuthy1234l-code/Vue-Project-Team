@@ -34,9 +34,11 @@ import { getHospitals } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { useLocation } from '@/composables/useLocation'
+import { useAuth } from '@/composables/useAuth'
 import type { Hospital } from '@/types'
 
 const router = useRouter()
+const { isLoggedIn, openLogin } = useAuth()
 
 const { t, currentLanguage, localized } = useLanguage()
 const { selectedProvince, setProvince } = useLocation()
@@ -48,6 +50,14 @@ usePageMeta({
 
 const allHospitals = getHospitals()
 const isPartnerModalOpen = ref(false)
+
+function navigateToPartnerRegister() {
+  if (!isLoggedIn()) {
+    openLogin()
+  }
+  router.push('/partner-register?type=hospital')
+}
+
 const searchQuery = ref('')
 const activePill = ref('all')
 const activeLocation = ref('All')
@@ -342,7 +352,7 @@ function resetDocChecklist() {
             <!-- Prominent Partner Facility Onboarding CTA Button -->
             <div class="shrink-0 flex items-center">
               <button
-                @click="isPartnerModalOpen = true"
+                @click="navigateToPartnerRegister"
                 type="button"
                 class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-sm shadow-xl shadow-blue-950/50 ring-2 ring-emerald-300/60 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
               >
@@ -488,7 +498,7 @@ function resetDocChecklist() {
           <!-- Right: Controls Row (Register CTA + View Switcher + Sort + Reset) -->
           <div class="flex items-center justify-between sm:justify-end gap-2 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-700/60 flex-wrap">
             <button
-              @click="isPartnerModalOpen = true"
+              @click="navigateToPartnerRegister"
               type="button"
               class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-xs hover:scale-102 transition-all cursor-pointer shrink-0"
             >
@@ -574,7 +584,7 @@ function resetDocChecklist() {
             </div>
           </div>
           <button
-            @click="isPartnerModalOpen = true"
+            @click="navigateToPartnerRegister"
             type="button"
             class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-xs sm:text-sm shadow-md hover:scale-102 transition-all cursor-pointer shrink-0"
           >

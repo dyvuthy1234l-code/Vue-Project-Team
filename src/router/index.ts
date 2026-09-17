@@ -53,6 +53,11 @@ const router = createRouter({
       component: () => import('@/views/ProfilePage.vue')
     },
     {
+      path: '/partner-register',
+      name: 'partner-register',
+      component: () => import('@/views/PartnerRegisterPage.vue')
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/AdminDashboard.vue')

@@ -38,7 +38,7 @@ import LocationSelector from '@/components/LocationSelector.vue'
 const route = useRoute()
 const router = useRouter()
 const { t, currentLanguage, setLanguage } = useLanguage()
-const { currentUser, openLogin, logout } = useAuth()
+const { currentUser, isLoggedIn, openLogin, logout } = useAuth()
 const { savedCount: savedServicesCount } = useSavedServices()
 const { savedJobIds } = useSavedJobs()
 const totalSavedCount = computed(() => savedServicesCount.value + savedJobIds.value.length)
@@ -48,6 +48,14 @@ const isServicesOpen = ref(false)
 const isMobileServicesExpanded = ref(false)
 const isProfileOpen = ref(false)
 const isSearchModalOpen = ref(false)
+
+function handlePartnerNav() {
+  closeAll()
+  if (!isLoggedIn()) {
+    openLogin()
+  }
+  router.push('/partner-register')
+}
 
 const serviceLinks = [
   {
@@ -402,6 +410,22 @@ onUnmounted(() => {
             >
               {{ t('nav.news') }}
             </router-link>
+
+            <!-- Partner Registration -->
+            <button
+              @click="handlePartnerNav"
+              :class="[
+                'px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 font-khmer flex items-center gap-1.5 cursor-pointer shrink-0',
+                isActive('/partner-register')
+                  ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-300 font-black border border-emerald-200 dark:border-emerald-800 shadow-2xs'
+                  : 'text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 dark:hover:text-white bg-emerald-50/70 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/70'
+              ]"
+              type="button"
+              :title="currentLanguage === 'kh' ? 'ចុះបញ្ជីស្ថាប័ន / សេវាកម្មជាដៃគូ' : 'Register as Partner Facility/Service'"
+            >
+              <Building2 class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>{{ currentLanguage === 'kh' ? 'ចុះបញ្ជីដៃគូ' : 'List Partner' }}</span>
+            </button>
           </nav>
         </div>
 
@@ -562,6 +586,19 @@ onUnmounted(() => {
                     >
                       {{ totalSavedCount }}
                     </span>
+                  </router-link>
+
+                  <!-- Partner Registration Shortcut -->
+                  <router-link
+                    to="/partner-register"
+                    @click="isProfileOpen = false"
+                    class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50/80 hover:text-emerald-700 dark:hover:bg-slate-700 transition-colors font-khmer group"
+                  >
+                    <span class="flex items-center gap-2">
+                      <Building2 class="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                      <span>{{ currentLanguage === 'kh' ? 'ចុះបញ្ជីស្ថាប័ន / ដៃគូ' : 'Partner Registration' }}</span>
+                    </span>
+                    <ChevronRight class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
                   </router-link>
 
                   <!-- Admin Dashboard Link (Only visible to Administrators) -->
@@ -897,6 +934,26 @@ onUnmounted(() => {
             </span>
             <span v-if="totalSavedCount > 0" class="px-2 py-0.5 text-xs font-bold rounded-full bg-blue-100 dark:bg-blue-900/60 text-[#0D47A1] dark:text-blue-300 font-mono">
               {{ totalSavedCount }}
+            </span>
+          </button>
+
+          <!-- Partner Registration Mobile Link -->
+          <button
+            @click="handlePartnerNav"
+            :class="[
+              'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer',
+              isActive('/partner-register')
+                ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-black ring-1 ring-emerald-500/20'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+            ]"
+            type="button"
+          >
+            <div class="flex items-center gap-3">
+              <Building2 class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>{{ currentLanguage === 'kh' ? 'ចុះបញ្ជីជាដៃគូសេវា' : 'Register as Partner' }}</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+              {{ currentLanguage === 'kh' ? 'ដៃគូ' : 'Partner' }}
             </span>
           </button>
         </div>

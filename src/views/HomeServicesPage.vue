@@ -36,13 +36,23 @@ import { getHomeServices } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { useAuth } from '@/composables/useAuth'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const { t, localized, currentLanguage } = useLanguage()
+const { isLoggedIn, openLogin } = useAuth()
 
 usePageMeta({
   title: 'សេវាជាង និងជួសជុលគេហដ្ឋាន — CamLife Verified Home Services',
   description: 'ស្វែងរកជាងភ្លើង ជាងទឹក ជាងម៉ាស៊ីនត្រជាក់ និងសេវាសម្អាតដែលបានផ្ទៀងផ្ទាត់ និងមានការធានាគុណភាព'
 })
+
+function navigateToPartnerRegister() {
+  if (!isLoggedIn()) {
+    openLogin()
+  }
+  router.push('/partner-register?type=home-service')
+}
 
 function loadAllServices(): HomeService[] {
   const base = getHomeServices()
@@ -163,8 +173,6 @@ function closeServiceDetail() {
   }, 200)
 }
 
-const { isLoggedIn, openLogin } = useAuth()
-
 function handleCallTechnician(phone: string) {
   if (!isLoggedIn()) {
     openLogin()
@@ -196,7 +204,7 @@ function handleTelegramContact(serviceName: string, provider: string) {
     >
       <template #actions>
         <button
-          @click="isPartnerModalOpen = true"
+          @click="navigateToPartnerRegister"
           type="button"
           class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-sm shadow-xl shadow-blue-950/50 ring-2 ring-emerald-300/60 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
         >
@@ -236,7 +244,7 @@ function handleTelegramContact(serviceName: string, provider: string) {
 
           <!-- Prominent Register Button in Guarantee Bar -->
           <button
-            @click="isPartnerModalOpen = true"
+            @click="navigateToPartnerRegister"
             type="button"
             class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-xs sm:text-sm shadow-md hover:scale-102 transition-all cursor-pointer shrink-0"
           >
@@ -400,7 +408,7 @@ function handleTelegramContact(serviceName: string, provider: string) {
         </div>
       </div>
       <button
-        @click="isPartnerModalOpen = true"
+        @click="navigateToPartnerRegister"
         type="button"
         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-xs sm:text-sm shadow-md hover:scale-102 transition-all cursor-pointer shrink-0"
       >
