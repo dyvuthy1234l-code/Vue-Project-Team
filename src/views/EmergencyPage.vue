@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import {
   AlertTriangle,
   LocateFixed,
@@ -23,25 +22,14 @@ import {
   Building2,
   Navigation,
   Activity,
-  LifeBuoy,
-  Plus
+  LifeBuoy
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
-import { useAuth } from '@/composables/useAuth'
 import { useLocation, CAMBODIAN_PROVINCES } from '@/composables/useLocation'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { getEmergencyContacts } from '@/services/dataService'
 
-const router = useRouter()
-const { isLoggedIn, openLogin } = useAuth()
 const { currentLanguage, localized } = useLanguage()
-
-function navigateToPartnerRegister() {
-  if (!isLoggedIn()) {
-    openLogin()
-  }
-  router.push('/partner-register?type=emergency-ambulance')
-}
 
 usePageMeta({
   title: 'មជ្ឈមណ្ឌលសង្គ្រោះបន្ទាន់ជាតិកម្ពុជា — 117, 118, 119 Emergency Response Portal',
@@ -779,30 +767,6 @@ const firstAidProtocols = [
             </button>
           </div>
         </div>
-      </section>
-
-      <!-- Private Ambulance & Medical Rescue Partner Onboarding Banner -->
-      <section class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#0f284e] via-[#1a3a6b] to-[#0d47a1] text-white p-4 sm:p-6 shadow-md border border-blue-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="space-y-1.5 max-w-2xl">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-black border border-rose-400/30">
-            <Ambulance class="w-3.5 h-3.5 text-rose-400" />
-            <span>{{ currentLanguage === 'kh' ? 'ដៃគូសង្គ្រោះវេជ្ជសាស្ត្រ & ICU ចល័ត' : 'Private Ambulance & Emergency Operators' }}</span>
-          </div>
-          <h3 class="text-sm sm:text-base font-black text-white tracking-tight">
-            {{ currentLanguage === 'kh' ? 'តើអ្នកជាសេវារថយន្តសង្គ្រោះបន្ទាន់ឯកជន ឬអង្គការសង្គ្រោះ?' : 'Are you a licensed private ambulance operator or rescue NGO?' }}
-          </h3>
-          <p class="text-xs text-blue-200/90 leading-relaxed">
-            {{ currentLanguage === 'kh' ? 'ចុះបញ្ជីកងរថយន្តសង្គ្រោះរបស់អ្នកចូលក្នុងថ្នាលជាតិ ដើម្បីជួយសង្គ្រោះប្រជាពលរដ្ឋបានកាន់តែលឿន និងទូលំទូលាយ។' : 'Join Cambodia’s official emergency directory to provide rapid 24/7 mobile ICU dispatch.' }}
-          </p>
-        </div>
-        <button
-          @click="navigateToPartnerRegister"
-          type="button"
-          class="shrink-0 inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-rose-950/40 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-        >
-          <Plus class="w-4 h-4" />
-          <span>{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីរថយន្តសង្គ្រោះបន្ទាន់' : '+ Register Ambulance Service' }}</span>
-        </button>
       </section>
 
       <!-- Urgent Important Instruction Notice -->

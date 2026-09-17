@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import {
   Clock,
   Compass,
@@ -22,8 +21,7 @@ import {
   Navigation,
   LocateFixed,
   Sparkles,
-  X,
-  Plus
+  X
 } from 'lucide-vue-next'
 import ServiceHeroBanner from '@/components/ServiceHeroBanner.vue'
 import StationPicker from '@/components/StationPicker.vue'
@@ -32,23 +30,13 @@ import PaginationBar from '@/components/PaginationBar.vue'
 import VerificationBadge from '@/components/VerificationBadge.vue'
 import LazyImage from '@/components/LazyImage.vue'
 import { useLanguage } from '@/composables/useLanguage'
-import { useAuth } from '@/composables/useAuth'
 import { getTransport } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { useLocation } from '@/composables/useLocation'
 
-const router = useRouter()
-const { isLoggedIn, openLogin } = useAuth()
 const { t, localized, currentLanguage } = useLanguage()
 const { selectedProvince, setProvince } = useLocation()
-
-function navigateToPartnerRegister() {
-  if (!isLoggedIn()) {
-    openLogin()
-  }
-  router.push('/partner-register?type=transport')
-}
 
 usePageMeta({
   title: 'ការធ្វើដំណើរ និងរថយន្តក្រុងសាធារណៈ — CamLife Public Transit & Routes',
@@ -1432,23 +1420,7 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
       banner-image-class="object-right sm:object-[78%_center]"
       image-opacity="opacity-70 sm:opacity-90"
       :breadcrumb-current="t('nav.transport')"
-    >
-      <template #actions>
-        <button
-          @click="navigateToPartnerRegister"
-          type="button"
-          class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-sm shadow-xl shadow-blue-950/50 ring-2 ring-emerald-300/60 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-        >
-          <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform shrink-0">
-            <Plus class="w-5 h-5 text-white" />
-          </div>
-          <div class="text-left">
-            <div class="leading-tight text-sm font-black">{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីក្រុមហ៊ុនដឹកជញ្ជូន' : '+ List Transport Operator' }}</div>
-            <div class="text-[11px] text-emerald-100 font-medium">{{ currentLanguage === 'kh' ? 'រថយន្តក្រុង VIP & តាក់ស៊ី' : 'Bus Fleet & Transit Network' }}</div>
-          </div>
-        </button>
-      </template>
-    </ServiceHeroBanner>
+    />
 
     <!-- Free Public Bus Policy Callout Banner for Cambodian Citizens -->
     <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-white dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-900 border border-emerald-500/20 dark:border-emerald-500/30 p-3.5 sm:p-6 shadow-xs relative overflow-hidden w-full min-w-0">

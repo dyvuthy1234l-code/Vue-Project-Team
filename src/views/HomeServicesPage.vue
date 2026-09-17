@@ -21,8 +21,7 @@ import {
   X,
   Eye,
   Info,
-  ExternalLink,
-  Plus
+  ExternalLink
 } from 'lucide-vue-next'
 import type { HomeService } from '@/types'
 import ServiceHeroBanner from '@/components/ServiceHeroBanner.vue'
@@ -30,29 +29,19 @@ import EmptyState from '@/components/EmptyState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
 import LazyImage from '@/components/LazyImage.vue'
 import VerificationBadge from '@/components/VerificationBadge.vue'
-import PartnerRegistrationModal from '@/components/PartnerRegistrationModal.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { getHomeServices } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { useAuth } from '@/composables/useAuth'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
-const { t, localized, currentLanguage } = useLanguage()
 const { isLoggedIn, openLogin } = useAuth()
+const { t, localized, currentLanguage } = useLanguage()
 
 usePageMeta({
   title: 'សេវាជាង និងជួសជុលគេហដ្ឋាន — CamLife Verified Home Services',
   description: 'ស្វែងរកជាងភ្លើង ជាងទឹក ជាងម៉ាស៊ីនត្រជាក់ និងសេវាសម្អាតដែលបានផ្ទៀងផ្ទាត់ និងមានការធានាគុណភាព'
 })
-
-function navigateToPartnerRegister() {
-  if (!isLoggedIn()) {
-    openLogin()
-  }
-  router.push('/partner-register?type=home-service')
-}
 
 function loadAllServices(): HomeService[] {
   const base = getHomeServices()
@@ -69,7 +58,6 @@ function loadAllServices(): HomeService[] {
 }
 
 const allServices = loadAllServices()
-const isPartnerModalOpen = ref(false)
 const searchQuery = ref('')
 const activeCategory = ref('All')
 const activeLocation = ref('All')
@@ -201,23 +189,7 @@ function handleTelegramContact(serviceName: string, provider: string) {
       badge-kh="សេវាជាងជំនាញ & ជួសជុលគេហដ្ឋាន"
       banner-image="/images/pillars/home-services.jpg"
       :breadcrumb-current="t('nav.homeServices')"
-    >
-      <template #actions>
-        <button
-          @click="navigateToPartnerRegister"
-          type="button"
-          class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-sm shadow-xl shadow-blue-950/50 ring-2 ring-emerald-300/60 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-        >
-          <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform shrink-0">
-            <Plus class="w-5 h-5 text-white" />
-          </div>
-          <div class="text-left">
-            <div class="leading-tight text-sm font-black">{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីសេវាកម្ម / ជាងជំនាញ' : '+ List Your Service / Pro' }}</div>
-            <div class="text-[11px] text-emerald-100 font-medium">{{ currentLanguage === 'kh' ? 'ចូលរួមជាដៃគូសេវាកម្ម CamLife' : 'Join as CamLife Service Partner' }}</div>
-          </div>
-        </button>
-      </template>
-    </ServiceHeroBanner>
+    />
 
     <!-- CamLife Citizen Trust & Safety Assurance Bar -->
     <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-4 sm:p-7 shadow-lg relative overflow-hidden">
@@ -241,16 +213,6 @@ function handleTelegramContact(serviceName: string, provider: string) {
               </p>
             </div>
           </div>
-
-          <!-- Prominent Register Button in Guarantee Bar -->
-          <button
-            @click="navigateToPartnerRegister"
-            type="button"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-xs sm:text-sm shadow-md hover:scale-102 transition-all cursor-pointer shrink-0"
-          >
-            <Plus class="w-4 h-4 text-white" />
-            <span>{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីសេវាកម្មរបស់អ្នក' : '+ List Your Service' }}</span>
-          </button>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-1 text-xs font-bold text-white">
@@ -390,31 +352,6 @@ function handleTelegramContact(serviceName: string, provider: string) {
       <div class="self-start sm:self-auto">
         <VerificationBadge compact />
       </div>
-    </div>
-
-    <!-- Callout Banner: Are you a technician or service provider? -->
-    <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-slate-950 via-blue-950 to-indigo-950 border border-blue-500/40 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg text-white">
-      <div class="flex items-center gap-3.5 text-center sm:text-left">
-        <div class="w-11 h-11 rounded-2xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center shrink-0">
-          <Wrench class="w-5 h-5 text-blue-400" />
-        </div>
-        <div>
-          <h4 class="text-sm sm:text-base font-black text-white">
-            {{ currentLanguage === 'kh' ? 'តើលោកអ្នកជាជាងជំនាញ ឬម្ចាស់ក្រុមហ៊ុនសេវាកម្មមែនទេ?' : 'Are you a Skilled Technician or Service Company?' }}
-          </h4>
-          <p class="text-xs text-blue-200/80 mt-0.5">
-            {{ currentLanguage === 'kh' ? 'ពង្រីកអតិថិជន និងទទួលការងារជួសជុលតាមរយៈការចុះបញ្ជីក្នុងបណ្តាញ CamLife ដោយឥតគិតថ្លៃ' : 'Expand your client base by listing your repair & home services on CamLife for free.' }}
-          </p>
-        </div>
-      </div>
-      <button
-        @click="navigateToPartnerRegister"
-        type="button"
-        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-xs sm:text-sm shadow-md hover:scale-102 transition-all cursor-pointer shrink-0"
-      >
-        <Plus class="w-4 h-4 text-white" />
-        <span>{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីសេវាកម្មឥឡូវនេះ' : '+ List Service Now' }}</span>
-      </button>
     </div>
 
     <!-- Verified Providers Marketplace Cards: 2 Columns on Mobile, 2 on MD, 3 on LG -->
@@ -808,12 +745,5 @@ function handleTelegramContact(serviceName: string, provider: string) {
         </div>
       </div>
     </Transition>
-
-    <!-- Partner Registration Modal -->
-    <PartnerRegistrationModal
-      :is-open="isPartnerModalOpen"
-      initial-type="home-service"
-      @close="isPartnerModalOpen = false"
-    />
   </div>
 </template>

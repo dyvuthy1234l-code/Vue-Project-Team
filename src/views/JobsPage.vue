@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import {
   Clock,
   Bookmark,
@@ -25,8 +24,7 @@ import {
   Briefcase,
   CheckCircle,
   MapPin,
-  SlidersHorizontal,
-  Plus
+  SlidersHorizontal
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
@@ -39,18 +37,10 @@ import { useLocation } from '@/composables/useLocation'
 import { useAuth } from '@/composables/useAuth'
 import type { Job } from '@/types'
 
-const router = useRouter()
 const { t, currentLanguage } = useLanguage()
 const { isJobSaved, toggleSaveJob } = useSavedJobs()
 const { selectedProvince, setProvince } = useLocation()
 const { currentUser, isLoggedIn, openLogin } = useAuth()
-
-function navigateToPartnerRegister() {
-  if (!isLoggedIn()) {
-    openLogin()
-  }
-  router.push('/partner-register?type=employer')
-}
 
 function handleToggleSaveJob(jobId: string) {
   if (!isLoggedIn()) {
@@ -636,30 +626,6 @@ function submitPostAd() {
         >
           <component :is="ql.icon" class="w-3.5 h-3.5" />
           <span>{{ currentLanguage === 'kh' ? ql.labelKh : ql.labelEn }}</span>
-        </button>
-      </div>
-
-      <!-- Employer Onboarding Banner -->
-      <div class="rounded-2xl bg-gradient-to-r from-[#003366] via-[#0A2E6E] to-[#1565C0] text-white p-4 sm:p-5 shadow-sm border border-blue-900/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="space-y-1">
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-blue-200 text-[11px] font-bold">
-            <Briefcase class="w-3.5 h-3.5 text-amber-300" />
-            <span>{{ currentLanguage === 'kh' ? 'សម្រាប់ក្រុមហ៊ុន និងនិយោជក' : 'For Employers & Recruiters' }}</span>
-          </div>
-          <h3 class="text-sm sm:text-base font-black text-white">
-            {{ currentLanguage === 'kh' ? 'ស្វែងរកបុគ្គលិកមានទេពកោសល្យ? ចុះបញ្ជីក្រុមហ៊ុនរបស់អ្នកឥឡូវនេះ' : 'Hiring talent? Register your company to post verified job ads' }}
-          </h3>
-          <p class="text-xs text-blue-200/90 leading-relaxed">
-            {{ currentLanguage === 'kh' ? 'ដាក់ផ្សាយការងារដោយឥតគិតថ្លៃ ទៅកាន់បេក្ខជនរាប់ពាន់នាក់ទូទាំង ២៥ រាជធានី-ខេត្ត។' : 'Post verified vacancies reaching thousands of job seekers across Cambodia.' }}
-          </p>
-        </div>
-        <button
-          @click="navigateToPartnerRegister"
-          type="button"
-          class="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-xs shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
-        >
-          <Plus class="w-4 h-4" />
-          <span>{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីក្រុមហ៊ុន / ដាក់ការងារ' : '+ Register Employer / Post Jobs' }}</span>
         </button>
       </div>
 

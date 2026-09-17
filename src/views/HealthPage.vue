@@ -23,22 +23,18 @@ import {
   ExternalLink,
   X,
   Check,
-  Plus,
   Landmark
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
-import PartnerRegistrationModal from '@/components/PartnerRegistrationModal.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { getHospitals } from '@/services/dataService'
 import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { useLocation } from '@/composables/useLocation'
-import { useAuth } from '@/composables/useAuth'
 import type { Hospital } from '@/types'
 
 const router = useRouter()
-const { isLoggedIn, openLogin } = useAuth()
 
 const { t, currentLanguage, localized } = useLanguage()
 const { selectedProvince, setProvince } = useLocation()
@@ -49,14 +45,6 @@ usePageMeta({
 })
 
 const allHospitals = getHospitals()
-const isPartnerModalOpen = ref(false)
-
-function navigateToPartnerRegister() {
-  if (!isLoggedIn()) {
-    openLogin()
-  }
-  router.push('/partner-register?type=hospital')
-}
 
 const searchQuery = ref('')
 const activePill = ref('all')
@@ -348,23 +336,6 @@ function resetDocChecklist() {
                 </p>
               </div>
             </div>
-
-            <!-- Prominent Partner Facility Onboarding CTA Button -->
-            <div class="shrink-0 flex items-center">
-              <button
-                @click="navigateToPartnerRegister"
-                type="button"
-                class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-sm shadow-xl shadow-blue-950/50 ring-2 ring-emerald-300/60 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-              >
-                <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform shrink-0">
-                  <Plus class="w-5 h-5 text-white" />
-                </div>
-                <div class="text-left">
-                  <div class="leading-tight text-sm font-black">{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីមន្ទីរពេទ្យ / គ្លីនិក' : '+ List Hospital / Clinic' }}</div>
-                  <div class="text-[11px] text-emerald-100 font-medium">{{ currentLanguage === 'kh' ? 'ចូលរួមបណ្តាញសុខាភិបាល' : 'Join Healthcare Network' }}</div>
-                </div>
-              </button>
-            </div>
           </div>
 
           <!-- Ultra-Clean Search Console (Input + Enter Key + Clear + Search Button) -->
@@ -495,17 +466,8 @@ function resetDocChecklist() {
             </p>
           </div>
 
-          <!-- Right: Controls Row (Register CTA + View Switcher + Sort + Reset) -->
+          <!-- Right: Controls Row (View Switcher + Sort + Reset) -->
           <div class="flex items-center justify-between sm:justify-end gap-2 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-700/60 flex-wrap">
-            <button
-              @click="navigateToPartnerRegister"
-              type="button"
-              class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-xs hover:scale-102 transition-all cursor-pointer shrink-0"
-            >
-              <Plus class="w-3.5 h-3.5" />
-              <span>{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីមន្ទីរពេទ្យ' : '+ List Facility' }}</span>
-            </button>
-
             <!-- View Switcher (Grid vs Map) -->
             <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-700 shrink-0">
               <button
@@ -566,31 +528,6 @@ function resetDocChecklist() {
               </button>
             </div>
           </div>
-        </div>
-
-        <!-- Callout Banner: Are you a medical facility representative? -->
-        <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-emerald-950/90 via-teal-950/80 to-slate-900 border border-emerald-500/40 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg text-white">
-          <div class="flex items-center gap-3.5 text-center sm:text-left">
-            <div class="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center shrink-0">
-              <Building2 class="w-5 h-5 text-emerald-400" />
-            </div>
-            <div>
-              <h4 class="text-sm sm:text-base font-black text-white">
-                {{ currentLanguage === 'kh' ? 'តើលោកអ្នកជាតំណាងមន្ទីរពេទ្យ គ្លីនិក ឬឱសថស្ថានមែនទេ?' : 'Are you a Hospital, Clinic, or Pharmacy Representative?' }}
-              </h4>
-              <p class="text-xs text-emerald-200/80 mt-0.5">
-                {{ currentLanguage === 'kh' ? 'ដាក់ពាក្យស្នើសុំចុះបញ្ជីទីតាំង និងសេវាកម្មសុខាភិបាលរបស់អ្នកក្នុងប្រព័ន្ធ CamLife ដោយឥតគិតថ្លៃ' : 'Apply to list your medical facility and services on CamLife Directory for free.' }}
-              </p>
-            </div>
-          </div>
-          <button
-            @click="navigateToPartnerRegister"
-            type="button"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-xs sm:text-sm shadow-md hover:scale-102 transition-all cursor-pointer shrink-0"
-          >
-            <Plus class="w-4 h-4 text-white" />
-            <span>{{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីទីនេះ' : '+ Apply for Listing' }}</span>
-          </button>
         </div>
 
         <!-- VIEW 1: MODERN CARDS GRID -->
@@ -1463,13 +1400,6 @@ function resetDocChecklist() {
         </div>
       </Transition>
     </Teleport>
-
-    <!-- Partner Registration Modal -->
-    <PartnerRegistrationModal
-      :is-open="isPartnerModalOpen"
-      initial-type="hospital"
-      @close="isPartnerModalOpen = false"
-    />
   </div>
 </template>
 
