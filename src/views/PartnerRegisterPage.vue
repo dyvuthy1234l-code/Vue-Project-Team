@@ -394,18 +394,18 @@ function resetFormForNew() {
 
 <template>
   <div class="min-h-screen bg-slate-50/60 dark:bg-[#070E1A] py-8 sm:py-12 font-khmer">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
       <!-- ============================================================
            HERO BANNER
       ============================================================= -->
-      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#061838] via-[#0A2E6E] to-[#0A3D62] text-white p-6 sm:p-10 shadow-2xl border border-blue-900/30">
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#061838] via-[#0A2E6E] to-[#0A3D62] text-white p-6 sm:p-10 lg:p-12 shadow-2xl border border-blue-900/30">
         <!-- Ambient Glow Orbs -->
         <div class="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
         <div class="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/25 blur-3xl" />
 
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div class="space-y-3 max-w-2xl">
+          <div class="space-y-3 max-w-3xl lg:max-w-4xl">
             <!-- Badge -->
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold backdrop-blur-md">
               <span class="relative flex h-2 w-2 shrink-0">
@@ -604,7 +604,7 @@ function resetFormForNew() {
       ============================================================= -->
       <section v-else class="space-y-6 animate-in fade-in">
         <!-- Main Form Container -->
-        <form @submit.prevent="handleSubmit" class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-10 border border-slate-200/90 dark:border-slate-700 shadow-xl space-y-8">
+        <form @submit.prevent="handleSubmit" class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-10 lg:p-12 border border-slate-200/90 dark:border-slate-700 shadow-xl space-y-8 sm:space-y-10">
 
           <!-- STEP 1: FACILITY TYPE SELECTOR TABS -->
           <div class="space-y-3">
@@ -616,14 +616,14 @@ function resetFormForNew() {
                 {{ currentLanguage === 'kh' ? 'សរុប ៧ ប្រភេទ (ក្រុមទី ១ & ក្រុមទី ២)' : '7 Registered Categories (Group 1 & 2)' }}
               </span>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4">
               <button
                 v-for="item in facilityTypes"
                 :key="item.value"
                 @click="selectType(item.value)"
                 type="button"
                 :class="[
-                  'p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2',
+                  'p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2.5',
                   form.facilityType === item.value
                     ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 ring-2 ring-emerald-500/20 shadow-xs'
                     : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800/60'
