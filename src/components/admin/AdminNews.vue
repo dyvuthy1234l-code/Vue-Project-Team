@@ -18,8 +18,11 @@ import {
   Flame
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
-import { getNews } from '@/services/dataService'
+import { getNews, saveCustomNews } from '@/services/dataService'
+import newsData from '@/data/news.json'
 import type { NewsItem } from '@/types'
+
+const baseNewsIds = new Set((newsData as NewsItem[]).map(n => n.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -30,24 +33,12 @@ const { currentLanguage } = useLanguage()
 // -------------------------------------------------------------
 // LOAD AND PERSIST NEWS ARTICLES
 // -------------------------------------------------------------
-function loadNews(): NewsItem[] {
-  const base = getNews()
-  try {
-    const saved = localStorage.getItem('camlife_custom_news')
-    if (saved) {
-      const parsed: NewsItem[] = JSON.parse(saved)
-      return [...parsed, ...base]
-    }
-  } catch {}
-  return [...base]
-}
-
-const newsList = ref<NewsItem[]>(loadNews())
+const newsList = ref<NewsItem[]>(getNews())
 
 function persistUserNews() {
   try {
-    const custom = newsList.value.filter(n => n.id.startsWith('news-custom-'))
-    localStorage.setItem('camlife_custom_news', JSON.stringify(custom))
+    const custom = newsList.value.filter(n => !baseNewsIds.has(n.id) || n.id.startsWith('news-custom-'))
+    saveCustomNews(custom)
   } catch {}
 }
 

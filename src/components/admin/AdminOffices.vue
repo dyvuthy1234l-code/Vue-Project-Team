@@ -19,8 +19,11 @@ import {
   Compass
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
-import { getLocations } from '@/services/dataService'
+import { getLocations, saveCustomLocations } from '@/services/dataService'
+import locationsData from '@/data/locations.json'
 import type { LocationItem } from '@/types'
+
+const baseLocIds = new Set((locationsData as LocationItem[]).map(l => l.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -31,24 +34,12 @@ const { currentLanguage } = useLanguage()
 // -------------------------------------------------------------
 // LOAD AND PERSIST LOCATIONS / OFFICES
 // -------------------------------------------------------------
-function loadLocations(): LocationItem[] {
-  const base = getLocations()
-  try {
-    const saved = localStorage.getItem('camlife_custom_locations')
-    if (saved) {
-      const parsed: LocationItem[] = JSON.parse(saved)
-      return [...parsed, ...base]
-    }
-  } catch {}
-  return [...base]
-}
-
-const locationList = ref<LocationItem[]>(loadLocations())
+const locationList = ref<LocationItem[]>(getLocations())
 
 function persistUserLocations() {
   try {
-    const custom = locationList.value.filter(l => l.id.startsWith('loc-custom-'))
-    localStorage.setItem('camlife_custom_locations', JSON.stringify(custom))
+    const custom = locationList.value.filter(l => !baseLocIds.has(l.id) || l.id.startsWith('loc-custom-'))
+    saveCustomLocations(custom)
   } catch {}
 }
 

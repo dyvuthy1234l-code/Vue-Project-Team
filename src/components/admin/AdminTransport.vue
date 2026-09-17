@@ -24,8 +24,11 @@ import {
   Compass
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
-import { getTransport } from '@/services/dataService'
+import { getTransport, saveCustomTransport } from '@/services/dataService'
+import transportData from '@/data/transport.json'
 import type { Transport } from '@/types'
+
+const baseTransIds = new Set((transportData as Transport[]).map(t => t.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -36,24 +39,12 @@ const { currentLanguage } = useLanguage()
 // -------------------------------------------------------------
 // LOAD AND PERSIST TRANSPORT ROUTES
 // -------------------------------------------------------------
-function loadTransport(): Transport[] {
-  const base = getTransport()
-  try {
-    const saved = localStorage.getItem('camlife_user_transport')
-    if (saved) {
-      const parsed: Transport[] = JSON.parse(saved)
-      return [...parsed, ...base]
-    }
-  } catch {}
-  return [...base]
-}
-
-const transportList = ref<Transport[]>(loadTransport())
+const transportList = ref<Transport[]>(getTransport())
 
 function persistUserTransport() {
   try {
-    const custom = transportList.value.filter(t => t.id.startsWith('route-custom-'))
-    localStorage.setItem('camlife_user_transport', JSON.stringify(custom))
+    const custom = transportList.value.filter(t => !baseTransIds.has(t.id) || t.id.startsWith('route-custom-') || t.id.startsWith('trans-'))
+    saveCustomTransport(custom)
   } catch {}
 }
 

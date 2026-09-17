@@ -20,8 +20,11 @@ import {
   Banknote
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
-import { getGovernmentServices } from '@/services/dataService'
+import { getGovernmentServices, saveCustomGovernmentServices } from '@/services/dataService'
+import governmentData from '@/data/government.json'
 import type { GovernmentService } from '@/types'
+
+const baseGovIds = new Set((governmentData as GovernmentService[]).map(g => g.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -31,6 +34,11 @@ const { currentLanguage } = useLanguage()
 
 // Main Services State
 const services = ref<GovernmentService[]>(getGovernmentServices())
+
+function persistGovernmentServices() {
+  const customItems = services.value.filter(s => !baseGovIds.has(s.id) || s.id.startsWith('gov-'))
+  saveCustomGovernmentServices(customItems)
+}
 
 // Search & Filters
 const searchQuery = ref('')
@@ -411,6 +419,7 @@ function handleSaveService() {
         requirements: reqsEn,
         requirementsKh: reqsKh
       }
+      persistGovernmentServices()
       emit('show-toast', currentLanguage.value === 'kh' ? 'បានកែប្រែទិន្នន័យសេវារដ្ឋបាលជោគជ័យ!' : 'Government service updated!')
     }
   } else {
@@ -463,6 +472,7 @@ function handleSaveService() {
     }
 
     services.value.unshift(newServiceItem)
+    persistGovernmentServices()
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានបន្ថែមសេវារដ្ឋបាលថ្មីជោគជ័យ!' : 'New government service added!')
   }
 
@@ -484,6 +494,7 @@ function confirmDelete() {
   if (deletingService.value) {
     const id = deletingService.value.id
     services.value = services.value.filter(s => s.id !== id)
+    persistGovernmentServices()
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានលុបសេវារដ្ឋបាលដោយជោគជ័យ!' : 'Service deleted successfully!')
   }
   isDeleteModalOpen.value = false

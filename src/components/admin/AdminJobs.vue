@@ -22,8 +22,11 @@ import {
   Banknote
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
-import { getJobs } from '@/services/dataService'
+import { getJobs, saveCustomJobs } from '@/services/dataService'
+import jobsData from '@/data/jobs.json'
 import type { Job } from '@/types'
+
+const baseJobIds = new Set((jobsData as Job[]).map(j => j.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -34,24 +37,12 @@ const { currentLanguage } = useLanguage()
 // -------------------------------------------------------------
 // LOAD AND PERSIST USER JOBS
 // -------------------------------------------------------------
-function loadJobs(): Job[] {
-  const base = getJobs()
-  try {
-    const saved = localStorage.getItem('camlife_user_jobs')
-    if (saved) {
-      const parsed: Job[] = JSON.parse(saved)
-      return [...parsed, ...base]
-    }
-  } catch {}
-  return [...base]
-}
-
-const jobs = ref<Job[]>(loadJobs())
+const jobs = ref<Job[]>(getJobs())
 
 function persistUserJobs() {
   try {
-    const customJobs = jobs.value.filter(j => j.id.startsWith('job-custom-'))
-    localStorage.setItem('camlife_user_jobs', JSON.stringify(customJobs))
+    const customJobs = jobs.value.filter(j => !baseJobIds.has(j.id) || j.id.startsWith('job-custom-') || j.id.startsWith('job-partner-'))
+    saveCustomJobs(customJobs)
   } catch {}
 }
 

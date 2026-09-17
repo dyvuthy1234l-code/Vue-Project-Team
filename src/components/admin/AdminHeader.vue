@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   Menu,
@@ -21,6 +21,11 @@ import {
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useAuth } from '@/composables/useAuth'
+import {
+  getAdminNotifications,
+  saveAdminNotifications,
+  type AdminNotification
+} from '@/composables/usePartnerSubmissions'
 
 const props = defineProps<{
   activeTab?: string
@@ -63,6 +68,7 @@ const tabLabels: Record<string, { kh: string; en: string }> = {
   homeservices: { kh: 'សេវាកម្មជួសជុលគេហដ្ឋាន', en: 'Home Services' },
   offices: { kh: 'ការិយាល័យច្រកចេញចូលតែមួយ', en: 'Offices & OWSO' },
   news: { kh: 'ព័ត៌មាន & សេចក្តីជូនដំណឹង', en: 'News & Bulletins' },
+  submissions: { kh: 'សំណើសុំចុះបញ្ជីដៃគូ', en: 'Partner Submissions' },
   users: { kh: 'អ្នកប្រើប្រាស់ & តួនាទី', en: 'Users & Roles' },
   feedback: { kh: 'មតិយោបល់ & របាយការណ៍', en: 'Feedback & Reports' },
   settings: { kh: 'ការកំណត់ប្រព័ន្ធ', en: 'System Settings' },
@@ -74,33 +80,37 @@ const currentTabTitle = computed(() => {
   return tabLabels[key] || { kh: 'ផ្ទាំងគ្រប់គ្រង', en: 'Dashboard' }
 })
 
-interface AdminNotification {
-  id: number
-  title: string
-  titleEn: string
-  time: string
-  tab: string
-  unread: boolean
+const notifications = ref<AdminNotification[]>(getAdminNotifications())
+
+function loadNotifs() {
+  notifications.value = getAdminNotifications()
 }
 
-const notifications = ref<AdminNotification[]>([
-  { id: 1, title: 'សំណើសុំបើកអាជីវកម្មថ្មី #OWSO-2026', titleEn: 'New Business Registration Request', time: '10m ago', tab: 'government', unread: true },
-  { id: 2, title: 'ការងារថ្មីរង់ចាំការអនុម័ត: Vue Developer', titleEn: 'New Job Listing: Vue Developer', time: '35m ago', tab: 'jobs', unread: true },
-  { id: 3, title: 'របាយការណ៍មតិពលរដ្ឋ: អំពូលភ្លើងផ្លូវ', titleEn: 'Citizen Report: Broken Streetlight', time: '1h ago', tab: 'feedback', unread: true },
-  { id: 4, title: 'ការធ្វើបច្ចុប្បន្នភាពមន្ទីរពេទ្យតាកែវ', titleEn: 'Takeo Hospital Profile Updated', time: '2h ago', tab: 'health', unread: false },
-  { id: 5, title: 'សវនកម្មប្រព័ន្ធ: ការចូលប្រើប្រាស់ជោគជ័យ', titleEn: 'Security Audit: Admin Login Session', time: '4h ago', tab: 'logs', unread: false }
-])
+onMounted(() => {
+  loadNotifs()
+  window.addEventListener('camlife-admin-notifs-updated', loadNotifs)
+  window.addEventListener('camlife-new-submission', loadNotifs)
+  window.addEventListener('storage', loadNotifs)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('camlife-admin-notifs-updated', loadNotifs)
+  window.removeEventListener('camlife-new-submission', loadNotifs)
+  window.removeEventListener('storage', loadNotifs)
+})
 
 const unreadCount = computed(() => notifications.value.filter(n => n.unread).length)
 
 function markAllAsRead() {
   notifications.value.forEach(n => { n.unread = false })
+  saveAdminNotifications(notifications.value)
 }
 
 function handleNotificationClick(item: AdminNotification) {
   item.unread = false
+  saveAdminNotifications(notifications.value)
   isNotifOpen.value = false
-  emit('navigate', item.tab)
+  emit('navigate', item.tab || 'submissions')
 }
 
 function handleQuickAction(tab: string) {
@@ -301,7 +311,7 @@ function handleQuickAction(tab: string) {
                     item.unread ? 'font-bold text-slate-900 group-hover:text-blue-600' : 'text-slate-600 font-normal'
                   ]"
                 >
-                  {{ currentLanguage === 'kh' ? item.title : item.titleEn }}
+                  {{ currentLanguage === 'kh' ? (item.titleKh || item.title) : (item.titleEn || item.title) }}
                 </p>
                 <div class="flex items-center gap-1 text-[10px] text-slate-400 mt-0.5 font-mono">
                   <span>{{ item.time }}</span>

@@ -22,8 +22,11 @@ import {
   AlertCircle
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
-import { getHospitals } from '@/services/dataService'
+import { getHospitals, saveCustomHospitals } from '@/services/dataService'
+import hospitalsData from '@/data/hospitals.json'
 import type { Hospital } from '@/types'
+
+const baseHospIds = new Set((hospitalsData as Hospital[]).map(h => h.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -35,6 +38,11 @@ const { currentLanguage } = useLanguage()
 // MAIN STATE
 // -------------------------------------------------------------
 const hospitals = ref<Hospital[]>(getHospitals())
+
+function persistHospitals() {
+  const customItems = hospitals.value.filter(h => !baseHospIds.has(h.id) || h.id.startsWith('h-new-') || h.id.startsWith('hosp-') || h.id.startsWith('amb-'))
+  saveCustomHospitals(customItems)
+}
 const searchQuery = ref('')
 const selectedLocation = ref('All')
 const selectedCategory = ref('All')
@@ -315,6 +323,7 @@ function saveForm() {
         description: formState.value.description.trim() || existing.description,
         descriptionKh: formState.value.descriptionKh.trim() || existing.descriptionKh
       }
+      persistHospitals()
       emit('show-toast', currentLanguage.value === 'kh' ? 'បានកែប្រែទិន្នន័យមន្ទីរពេទ្យជោគជ័យ!' : 'Hospital details updated!')
     }
   } else {
@@ -342,6 +351,7 @@ function saveForm() {
     }
 
     hospitals.value.unshift(newHospitalItem)
+    persistHospitals()
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានបន្ថែមមណ្ឌលសុខភាពថ្មីជោគជ័យ!' : 'New medical facility added!')
   }
 
@@ -363,6 +373,7 @@ function confirmDelete() {
   if (deletingHospital.value) {
     const id = deletingHospital.value.id
     hospitals.value = hospitals.value.filter(h => h.id !== id)
+    persistHospitals()
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានលុបមន្ទីរពេទ្យដោយជោគជ័យ!' : 'Hospital removed!')
   }
   isDeleteModalOpen.value = false

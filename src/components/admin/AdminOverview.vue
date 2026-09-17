@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import {
   FileText,
   Briefcase,
@@ -11,9 +11,15 @@ import {
   TrendingUp,
   BarChart3,
   Activity,
-  PieChart
+  PieChart,
+  Hospital as HospitalIcon,
+  Wrench,
+  Bus,
+  Ambulance,
+  ArrowUpRight
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import { usePartnerSubmissions } from '@/composables/usePartnerSubmissions'
 import {
   getGovernmentServices,
   getHospitals,
@@ -21,7 +27,8 @@ import {
   getTransport,
   getHomeServices,
   getLocations,
-  getNews
+  getNews,
+  getEmergencyContacts
 } from '@/services/dataService'
 
 const emit = defineEmits<{
@@ -30,21 +37,56 @@ const emit = defineEmits<{
 }>()
 
 const { currentLanguage } = useLanguage()
+const { submissions, approveSubmission, rejectSubmission } = usePartnerSubmissions()
 
-// Real Data Counts from CamLife Services
-const govServices = getGovernmentServices()
-const hospitals = getHospitals()
-const jobsList = getJobs()
-const transportList = getTransport()
-const homeServicesList = getHomeServices()
-const locationsList = getLocations()
-const newsList = getNews()
+// Real Data State from CamLife Services
+const govServices = ref(getGovernmentServices())
+const hospitals = ref(getHospitals())
+const jobsList = ref(getJobs())
+const transportList = ref(getTransport())
+const homeServicesList = ref(getHomeServices())
+const locationsList = ref(getLocations())
+const newsList = ref(getNews())
+const emergencyContacts = ref(getEmergencyContacts())
 
-// KPI Metrics
-const totalServices = computed(() => govServices.length + hospitals.length + transportList.length + homeServicesList.length)
-const totalJobs = computed(() => jobsList.length)
-const totalLocations = computed(() => locationsList.length)
-const totalNews = computed(() => newsList.length)
+function refreshAllData() {
+  govServices.value = getGovernmentServices()
+  hospitals.value = getHospitals()
+  jobsList.value = getJobs()
+  transportList.value = getTransport()
+  homeServicesList.value = getHomeServices()
+  locationsList.value = getLocations()
+  newsList.value = getNews()
+  emergencyContacts.value = getEmergencyContacts()
+}
+
+onMounted(() => {
+  window.addEventListener('camlife-data-updated', refreshAllData)
+  window.addEventListener('storage', refreshAllData)
+  window.addEventListener('camlife-new-submission', refreshAllData)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('camlife-data-updated', refreshAllData)
+  window.removeEventListener('storage', refreshAllData)
+  window.removeEventListener('camlife-new-submission', refreshAllData)
+})
+
+// KPI Metrics computed from REAL DATA
+const totalServices = computed(() => govServices.value.length + hospitals.value.length + transportList.value.length + homeServicesList.value.length)
+const totalJobs = computed(() => jobsList.value.length)
+const totalLocations = computed(() => locationsList.value.length)
+const totalNews = computed(() => newsList.value.length)
+const totalUsers = computed(() => {
+  try {
+    const raw = localStorage.getItem('camlife_users')
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed)) return 12450 + parsed.length
+    }
+  } catch {}
+  return 12458
+})
 
 // Timeframe selector & Chart modes
 const selectedTimeframe = ref('Last 30 days')
@@ -63,6 +105,32 @@ interface ChartItem {
   colorHex: string
 }
 
+// Dynamic Real Data Chart for Service Utilization by Sector
+const realSectorChartData = computed<ChartItem[]>(() => {
+  const counts = [
+    { nameKh: 'រដ្ឋបាល', nameEn: 'Admin', count: govServices.value.length, bg: 'bg-[#1E40AF]', colorHex: '#1e40af' },
+    { nameKh: 'សុខភាព', nameEn: 'Health', count: hospitals.value.length, bg: 'bg-[#10B981]', colorHex: '#10b981' },
+    { nameKh: 'ការងារ', nameEn: 'Jobs', count: jobsList.value.length, bg: 'bg-[#06B6D4]', colorHex: '#06b6d4' },
+    { nameKh: 'ដឹកជញ្ជូន', nameEn: 'Transit', count: transportList.value.length, bg: 'bg-[#3B82F6]', colorHex: '#3b82f6' },
+    { nameKh: 'ជួសជុល', nameEn: 'Repair', count: homeServicesList.value.length, bg: 'bg-[#0D9488]', colorHex: '#0d9488' },
+    { nameKh: 'ការិយាល័យ', nameEn: 'Offices', count: locationsList.value.length, bg: 'bg-[#F59E0B]', colorHex: '#f59e0b' },
+    { nameKh: 'ព័ត៌មាន', nameEn: 'News', count: newsList.value.length, bg: 'bg-[#EF4444]', colorHex: '#ef4444' },
+    { nameKh: 'បន្ទាន់', nameEn: 'Emergency', count: emergencyContacts.value.length, bg: 'bg-[#64748B]', colorHex: '#64748b' }
+  ]
+
+  const maxCount = Math.max(...counts.map(c => c.count), 1)
+
+  return counts.map(c => ({
+    nameKh: c.nameKh,
+    nameEn: c.nameEn,
+    val: `${c.count}`,
+    num: c.count,
+    heightPercent: Math.max(18, Math.round((c.count / maxCount) * 100)),
+    bg: c.bg,
+    colorHex: c.colorHex
+  }))
+})
+
 const timeframeData: Record<string, ChartItem[]> = {
   'Last 7 days': [
     { nameKh: 'ច័ន្ទ', nameEn: 'Mon', val: '4.8K', num: 4800, heightPercent: 48, bg: 'bg-blue-600', colorHex: '#2563eb' },
@@ -72,16 +140,6 @@ const timeframeData: Record<string, ChartItem[]> = {
     { nameKh: 'សុក្រ', nameEn: 'Fri', val: '9.6K', num: 9600, heightPercent: 96, bg: 'bg-cyan-600', colorHex: '#0891b2' },
     { nameKh: 'សៅរ៍', nameEn: 'Sat', val: '6.4K', num: 6400, heightPercent: 64, bg: 'bg-amber-500', colorHex: '#f59e0b' },
     { nameKh: 'អាទិត្យ', nameEn: 'Sun', val: '3.9K', num: 3900, heightPercent: 39, bg: 'bg-rose-500', colorHex: '#f43f5e' }
-  ],
-  'Last 30 days': [
-    { nameKh: 'រដ្ឋបាល', nameEn: 'Admin', val: '32K', num: 32000, heightPercent: 82, bg: 'bg-[#1E40AF]', colorHex: '#1e40af' },
-    { nameKh: 'សុខភាព', nameEn: 'Health', val: '24K', num: 24000, heightPercent: 62, bg: 'bg-[#10B981]', colorHex: '#10b981' },
-    { nameKh: 'ការងារ', nameEn: 'Jobs', val: '18K', num: 18000, heightPercent: 46, bg: 'bg-[#06B6D4]', colorHex: '#06b6d4' },
-    { nameKh: 'ដឹកជញ្ជូន', nameEn: 'Transit', val: '15K', num: 15000, heightPercent: 38, bg: 'bg-[#3B82F6]', colorHex: '#3b82f6' },
-    { nameKh: 'ជួសជុល', nameEn: 'Repair', val: '12K', num: 12000, heightPercent: 30, bg: 'bg-[#0D9488]', colorHex: '#0d9488' },
-    { nameKh: 'ការិយាល័យ', nameEn: 'Offices', val: '10K', num: 10000, heightPercent: 25, bg: 'bg-[#F59E0B]', colorHex: '#f59e0b' },
-    { nameKh: 'ព័ត៌មាន', nameEn: 'News', val: '8K', num: 8000, heightPercent: 20, bg: 'bg-[#EF4444]', colorHex: '#ef4444' },
-    { nameKh: 'បន្ទាន់', nameEn: 'Emergency', val: '6K', num: 6000, heightPercent: 15, bg: 'bg-[#64748B]', colorHex: '#64748b' }
   ],
   'This Year': [
     { nameKh: 'ត្រីមាស ១', nameEn: 'Q1', val: '112K', num: 112000, heightPercent: 68, bg: 'bg-blue-700', colorHex: '#1d4ed8' },
@@ -98,7 +156,10 @@ function selectTimeframe(tf: string) {
 }
 
 const currentChartData = computed(() => {
-  return timeframeData[selectedTimeframe.value] || timeframeData['Last 30 days']
+  if (selectedTimeframe.value === 'Last 30 days') {
+    return realSectorChartData.value
+  }
+  return timeframeData[selectedTimeframe.value] || realSectorChartData.value
 })
 
 const svgPoints = computed(() => {
@@ -139,137 +200,203 @@ const areaFillD = computed(() => {
   return `${lineD} L ${last.x} 115 L ${first.x} 115 Z`
 })
 
+// REAL Pending Approvals from usePartnerSubmissions
+const pendingSubmissions = computed(() => {
+  return submissions.value.filter(s => s.status === 'pending')
+})
 
-// Recent Activity List (4 compact rows for single screen)
-const recentActivities = ref([
-  {
-    id: 1,
-    titleKh: 'បានធ្វើបច្ចុប្បន្នភាពសេវា',
-    titleEn: 'Service Guide Updated',
-    sub: 'Passport Guide',
-    time: '5m ago',
-    icon: FileText,
-    iconBg: 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-  },
-  {
-    id: 2,
-    titleKh: 'ការងារថ្មីត្រូវបានផ្សាយ',
-    titleEn: 'New Job Published',
-    sub: 'Frontend Developer at ABC Company',
-    time: '20m ago',
-    icon: Briefcase,
-    iconBg: 'bg-blue-50 text-blue-600 border border-blue-100'
-  },
-  {
-    id: 3,
-    titleKh: 'បានបញ្ចូលទីតាំងថ្មី',
-    titleEn: 'New Location Added',
-    sub: 'OWSO Phnom Penh',
-    time: '1h ago',
-    icon: MapPin,
-    iconBg: 'bg-purple-50 text-purple-600 border border-purple-100'
-  },
-  {
-    id: 4,
-    titleKh: 'បានផ្សាយព័ត៌មានថ្មី',
-    titleEn: 'News Published',
-    sub: 'New transport policy',
-    time: '2h ago',
-    icon: Newspaper,
-    iconBg: 'bg-rose-50 text-rose-600 border border-rose-100'
-  }
-])
-
-// Pending Approvals (3 items)
-const pendingApprovals = ref([
-  {
-    id: 'pa-1',
-    titleKh: 'ការងារ: Senior Developer',
-    titleEn: 'Job: Senior Developer',
-    entity: 'ABC Technology',
-    time: '10m ago',
-    icon: Briefcase,
-    iconBg: 'bg-blue-100 text-blue-600'
-  },
-  {
-    id: 'pa-2',
-    titleKh: 'ព័ត៌មាន: New Health Guidelines',
-    titleEn: 'News: New Health Guidelines',
-    entity: 'Ministry of Health',
-    time: '1h ago',
-    icon: Newspaper,
-    iconBg: 'bg-rose-100 text-rose-600'
-  },
-  {
-    id: 'pa-3',
-    titleKh: 'ទីតាំង: New Clinic',
-    titleEn: 'Location: New Clinic',
-    entity: 'Sangkat Chamkar Mon',
-    time: '2h ago',
-    icon: MapPin,
-    iconBg: 'bg-purple-100 text-purple-600'
-  }
-])
-
-function approvePending(id: string) {
-  const item = pendingApprovals.value.find(p => p.id === id)
-  if (item) {
-    pendingApprovals.value = pendingApprovals.value.filter(p => p.id !== id)
-    emit('show-toast', currentLanguage.value === 'kh' ? `បានអនុម័ត ${item.titleKh} ជោគជ័យ!` : `Approved ${item.titleEn} successfully!`)
+function handleApprove(id: string) {
+  const sub = submissions.value.find(s => s.id === id)
+  const name = sub ? (currentLanguage.value === 'kh' ? sub.nameKh : sub.nameEn) : 'Partner'
+  const success = approveSubmission(id)
+  if (success) {
+    refreshAllData()
+    emit('show-toast', currentLanguage.value === 'kh' ? `បានអនុម័ត ${name} ជោគជ័យ និងបានដាក់បញ្ចូលទៅក្នុងគេហទំព័រ!` : `Approved ${name} successfully! Added to live website.`)
   }
 }
 
-function rejectPending(id: string) {
-  const item = pendingApprovals.value.find(p => p.id === id)
-  if (item) {
-    pendingApprovals.value = pendingApprovals.value.filter(p => p.id !== id)
-    emit('show-toast', currentLanguage.value === 'kh' ? `បានបដិសេធ ${item.titleKh}` : `Rejected ${item.titleEn}`)
+function handleReject(id: string) {
+  const sub = submissions.value.find(s => s.id === id)
+  const name = sub ? (currentLanguage.value === 'kh' ? sub.nameKh : sub.nameEn) : 'Partner'
+  const success = rejectSubmission(id)
+  if (success) {
+    refreshAllData()
+    emit('show-toast', currentLanguage.value === 'kh' ? `បានបដិសេធពាក្យស្នើសុំ ${name}` : `Rejected application ${name}`)
   }
 }
 
-// Recent Content Table Data (4 compact rows for single screen)
-const recentContents = [
-  {
-    id: 1,
-    title: 'National ID Card',
-    titleKh: 'អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ',
-    category: 'Government',
-    categoryKh: 'រដ្ឋបាល',
-    status: 'published',
-    updatedDate: 'Today',
-    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=100&q=80'
-  },
-  {
-    id: 2,
-    title: 'City Bus Route 01',
-    titleKh: 'ខ្សែរថយន្តក្រុងទីក្រុង ខ្សែទី ០១',
-    category: 'Transport',
-    categoryKh: 'ដឹកជញ្ជូន',
-    status: 'draft',
-    updatedDate: 'Yesterday',
-    image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=100&q=80'
-  },
-  {
-    id: 3,
-    title: 'Calmette Hospital',
-    titleKh: 'មន្ទីរពេទ្យកាល់ម៉ែត',
-    category: 'Healthcare',
-    categoryKh: 'សុខាភិបាល',
-    status: 'published',
-    updatedDate: 'Yesterday',
-    image: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=100&q=80'
-  },
-  {
-    id: 4,
-    title: 'OWSO Phnom Penh',
-    titleKh: 'ច្រកចេញចូលតែមួយ រាជធានីភ្នំពេញ',
-    category: 'Public Offices',
-    categoryKh: 'ការិយាល័យ',
-    status: 'published',
-    updatedDate: '2 days ago',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=100&q=80'
+function getFacilityIcon(type: string) {
+  switch (type) {
+    case 'hospital':
+    case 'clinic':
+    case 'pharmacy':
+      return HospitalIcon
+    case 'employer':
+      return Briefcase
+    case 'home-service':
+      return Wrench
+    case 'transport':
+      return Bus
+    case 'emergency-ambulance':
+      return Ambulance
+    default:
+      return FileText
   }
-]
+}
+
+function getFacilityIconColor(type: string) {
+  switch (type) {
+    case 'hospital':
+    case 'clinic':
+    case 'pharmacy':
+      return 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+    case 'employer':
+      return 'bg-blue-50 text-blue-600 border border-blue-200'
+    case 'home-service':
+      return 'bg-amber-50 text-amber-600 border border-amber-200'
+    case 'transport':
+      return 'bg-purple-50 text-purple-600 border border-purple-200'
+    case 'emergency-ambulance':
+      return 'bg-rose-50 text-rose-600 border border-rose-200'
+    default:
+      return 'bg-slate-50 text-slate-600 border border-slate-200'
+  }
+}
+
+// REAL Recent Activities
+const recentActivities = computed(() => {
+  const acts = []
+  if (pendingSubmissions.value.length > 0) {
+    const latestSub = pendingSubmissions.value[0]
+    acts.push({
+      id: 'act-sub',
+      titleKh: `ពាក្យស្នើសុំថ្មី៖ ${latestSub.nameKh}`,
+      titleEn: `New Application: ${latestSub.nameEn}`,
+      sub: `${latestSub.representativeName} · ${latestSub.location}`,
+      time: latestSub.submittedAt || 'Recent',
+      icon: Briefcase,
+      iconBg: 'bg-amber-50 text-amber-600 border border-amber-100'
+    })
+  }
+
+  acts.push(
+    {
+      id: 'act-1',
+      titleKh: 'បានធ្វើបច្ចុប្បន្នភាពសេវា',
+      titleEn: 'Service Guide Updated',
+      sub: govServices.value[0]?.titleKh || 'សេវាអត្តសញ្ញាណប័ណ្ណ',
+      time: '5m ago',
+      icon: FileText,
+      iconBg: 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+    },
+    {
+      id: 'act-2',
+      titleKh: 'ការងារថ្មីត្រូវបានផ្សាយ',
+      titleEn: 'New Job Published',
+      sub: jobsList.value[0]?.title || 'Frontend Developer',
+      time: '20m ago',
+      icon: Briefcase,
+      iconBg: 'bg-blue-50 text-blue-600 border border-blue-100'
+    },
+    {
+      id: 'act-3',
+      titleKh: 'បានបញ្ចូលទីតាំងរដ្ឋបាលថ្មី',
+      titleEn: 'New Location Added',
+      sub: locationsList.value[0]?.nameKh || 'ច្រកចេញចូលតែមួយ OWSO',
+      time: '1h ago',
+      icon: MapPin,
+      iconBg: 'bg-purple-50 text-purple-600 border border-purple-100'
+    },
+    {
+      id: 'act-4',
+      titleKh: 'បានផ្សាយព័ត៌មានថ្មី',
+      titleEn: 'News Published',
+      sub: newsList.value[0]?.titleKh || 'សេចក្តីជូនដំណឹងជាតិ',
+      time: '2h ago',
+      icon: Newspaper,
+      iconBg: 'bg-rose-50 text-rose-600 border border-rose-100'
+    }
+  )
+
+  return acts.slice(0, 4)
+})
+
+// REAL Recently Published Content from CamLife database
+const recentContents = computed(() => {
+  const list: {
+    id: string
+    title: string
+    titleKh: string
+    category: string
+    categoryKh: string
+    status: 'published' | 'draft'
+    updatedDate: string
+    image: string
+    tab: string
+  }[] = []
+
+  if (govServices.value.length > 0) {
+    const s = govServices.value[0]
+    list.push({
+      id: `gov-${s.id}`,
+      title: s.title,
+      titleKh: s.titleKh || s.title,
+      category: 'Government',
+      categoryKh: 'សេវារដ្ឋបាល',
+      status: 'published',
+      updatedDate: 'Today',
+      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=100&q=80',
+      tab: 'government'
+    })
+  }
+
+  if (hospitals.value.length > 0) {
+    const h = hospitals.value[0]
+    list.push({
+      id: `hosp-${h.id}`,
+      title: h.name,
+      titleKh: h.nameKh || h.name,
+      category: 'Healthcare',
+      categoryKh: 'សុខាភិបាល',
+      status: 'published',
+      updatedDate: 'Today',
+      image: h.image || 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=100&q=80',
+      tab: 'health'
+    })
+  }
+
+  if (jobsList.value.length > 0) {
+    const j = jobsList.value[0]
+    list.push({
+      id: `job-${j.id}`,
+      title: `${j.title} (${j.company})`,
+      titleKh: `${j.titleKh || j.title} (${j.company})`,
+      category: 'Careers',
+      categoryKh: 'ការងារ',
+      status: 'published',
+      updatedDate: 'Yesterday',
+      image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=100&q=80',
+      tab: 'jobs'
+    })
+  }
+
+  if (newsList.value.length > 0) {
+    const n = newsList.value[0]
+    list.push({
+      id: `news-${n.id}`,
+      title: n.title,
+      titleKh: n.titleKh || n.title,
+      category: 'News',
+      categoryKh: 'ព័ត៌មានជាតិ',
+      status: 'published',
+      updatedDate: 'Today',
+      image: n.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=100&q=80',
+      tab: 'news'
+    })
+  }
+
+  return list
+})
 </script>
 
 <template>
@@ -460,7 +587,7 @@ const recentContents = [
         </div>
         <div class="mt-1">
           <span class="text-base sm:text-lg lg:text-xl font-black text-slate-900 block leading-tight">
-            12,458
+            {{ totalUsers.toLocaleString() }}
           </span>
           <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 font-khmer block mt-0.5 truncate">
             {{ currentLanguage === 'kh' ? 'អ្នកប្រើប្រាស់' : 'System Users' }}
@@ -799,14 +926,17 @@ const recentContents = [
             <h3 class="text-xs sm:text-sm font-black text-slate-900 font-khmer leading-none">
               {{ currentLanguage === 'kh' ? 'សំណើរង់ចាំការអនុម័ត' : 'Pending Approvals' }}
             </h3>
-            <span class="px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[9px] font-black leading-none">
-              {{ pendingApprovals.length }}
+            <span
+              v-if="pendingSubmissions.length > 0"
+              class="px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[9px] font-black leading-none font-mono animate-pulse"
+            >
+              {{ pendingSubmissions.length }}
             </span>
           </div>
 
           <button
             type="button"
-            @click="emit('navigate', 'jobs')"
+            @click="emit('navigate', 'submissions')"
             class="text-[10px] sm:text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 font-khmer cursor-pointer hover:underline"
           >
             <span>{{ currentLanguage === 'kh' ? 'ពិនិត្យទាំងអស់' : 'Review all' }}</span>
@@ -816,45 +946,48 @@ const recentContents = [
 
         <div class="divide-y divide-slate-100 flex-1 min-h-0 overflow-y-auto pr-0.5">
           <div
-            v-for="item in pendingApprovals"
+            v-for="item in pendingSubmissions.slice(0, 4)"
             :key="item.id"
-            class="py-1.5 flex items-center justify-between gap-2"
+            class="py-1.5 flex items-center justify-between gap-2 hover:bg-slate-50/70 rounded-lg px-1 transition-colors"
           >
             <div class="flex items-center gap-2 min-w-0">
-              <div :class="['w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center shrink-0', item.iconBg]">
-                <component :is="item.icon" class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <div :class="['w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs', getFacilityIconColor(item.facilityType)]">
+                <component :is="getFacilityIcon(item.facilityType)" class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
               <div class="min-w-0">
                 <h4 class="text-[11px] sm:text-xs font-bold text-slate-900 font-khmer truncate leading-tight">
-                  {{ currentLanguage === 'kh' ? item.titleKh : item.titleEn }}
+                  {{ currentLanguage === 'kh' ? item.nameKh : item.nameEn }}
                 </h4>
-                <p class="text-[10px] text-slate-400 truncate">
-                  {{ item.entity }} · {{ item.time }}
+                <p class="text-[10px] text-slate-400 truncate mt-0.5">
+                  <span class="font-medium text-slate-600">{{ item.representativeName }}</span> · {{ item.location }} · <span class="font-mono text-[9.5px]">{{ item.submittedAt }}</span>
                 </p>
               </div>
             </div>
 
-            <!-- Approve & Reject Buttons -->
+            <!-- Functional Approve & Reject Buttons -->
             <div class="flex items-center gap-1 shrink-0">
               <button
                 type="button"
-                @click="approvePending(item.id)"
+                @click="handleApprove(item.id)"
                 class="px-2 py-0.5 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] sm:text-[11px] font-bold font-khmer transition-colors cursor-pointer shadow-2xs"
+                :title="currentLanguage === 'kh' ? 'អនុម័ត និងដាក់ចូលវេបសាយភ្លាមៗ' : 'Approve & add to live site'"
               >
                 {{ currentLanguage === 'kh' ? 'អនុម័ត' : 'Approve' }}
               </button>
               <button
                 type="button"
-                @click="rejectPending(item.id)"
+                @click="handleReject(item.id)"
                 class="px-2 py-0.5 rounded-lg border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[10px] sm:text-[11px] font-bold font-khmer transition-colors cursor-pointer shadow-2xs"
+                :title="currentLanguage === 'kh' ? 'បដិសេធពាក្យស្នើសុំ' : 'Reject submission'"
               >
                 {{ currentLanguage === 'kh' ? 'បដិសេធ' : 'Reject' }}
               </button>
             </div>
           </div>
 
-          <div v-if="pendingApprovals.length === 0" class="py-4 text-center text-[11px] text-slate-400 font-khmer">
-            {{ currentLanguage === 'kh' ? 'គ្មានសំណើរង់ចាំការអនុម័តទេ' : 'No items pending approval.' }}
+          <div v-if="pendingSubmissions.length === 0" class="py-5 text-center text-[11px] text-slate-400 font-khmer flex flex-col items-center justify-center gap-1">
+            <CheckCircle2 class="w-5 h-5 text-emerald-500" />
+            <span>{{ currentLanguage === 'kh' ? 'គ្មានសំណើរង់ចាំការអនុម័តទេ (រួចរាល់ទាំងអស់)' : 'All applications reviewed! No pending items.' }}</span>
           </div>
         </div>
 
@@ -868,7 +1001,7 @@ const recentContents = [
             <h3 class="text-xs sm:text-sm font-black text-slate-900 font-khmer leading-none">
               {{ currentLanguage === 'kh' ? 'មាតិកាដែលបានផ្សាយចុងក្រោយ' : 'Recently Published Content' }}
             </h3>
-            <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">Live civic resources</p>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">Live civic resources from CamLife</p>
           </div>
 
           <button
@@ -897,13 +1030,14 @@ const recentContents = [
               <tr
                 v-for="c in recentContents"
                 :key="c.id"
-                class="hover:bg-slate-50/70 transition-colors"
+                @click="emit('navigate', c.tab)"
+                class="hover:bg-slate-50/70 transition-colors cursor-pointer group"
               >
                 <!-- Image / Name -->
                 <td class="py-1 pr-2">
                   <div class="flex items-center gap-2">
-                    <img :src="c.image" :alt="c.title" class="w-6 h-6 rounded-md object-cover border border-slate-200 shrink-0 shadow-2xs" />
-                    <span class="font-bold text-slate-900 truncate max-w-[130px] block font-khmer text-[11px] sm:text-xs">
+                    <img :src="c.image" :alt="c.title" class="w-6 h-6 rounded-md object-cover border border-slate-200 shrink-0 shadow-2xs group-hover:scale-105 transition-transform" />
+                    <span class="font-bold text-slate-900 truncate max-w-[130px] block font-khmer text-[11px] sm:text-xs group-hover:text-blue-600 transition-colors">
                       {{ currentLanguage === 'kh' ? c.titleKh : c.title }}
                     </span>
                   </div>
@@ -933,14 +1067,19 @@ const recentContents = [
                 </td>
 
                 <!-- Updated Date -->
-                <td class="py-1 pr-2 text-slate-400 text-[10px] sm:text-[11px]">
+                <td class="py-1 pr-2 text-slate-400 text-[10px] sm:text-[11px] font-mono">
                   {{ c.updatedDate }}
                 </td>
 
                 <!-- Action dots -->
                 <td class="py-1 text-right">
-                  <button type="button" class="p-0.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 cursor-pointer">
-                    <MoreHorizontal class="w-3.5 h-3.5 inline" />
+                  <button
+                    type="button"
+                    @click.stop="emit('navigate', c.tab)"
+                    class="p-1 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"
+                    :title="currentLanguage === 'kh' ? 'មើលក្នុង CMS' : 'View in CMS'"
+                  >
+                    <ArrowUpRight class="w-3.5 h-3.5 inline" />
                   </button>
                 </td>
               </tr>

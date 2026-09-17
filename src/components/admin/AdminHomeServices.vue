@@ -21,8 +21,11 @@ import {
   Award
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
-import { getHomeServices } from '@/services/dataService'
+import { getHomeServices, saveCustomHomeServices } from '@/services/dataService'
+import homeServicesData from '@/data/home-services.json'
 import type { HomeService } from '@/types'
+
+const baseHSSIds = new Set((homeServicesData as HomeService[]).map(s => s.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -33,24 +36,12 @@ const { currentLanguage } = useLanguage()
 // -------------------------------------------------------------
 // LOAD AND PERSIST HOME SERVICES
 // -------------------------------------------------------------
-function loadHomeServices(): HomeService[] {
-  const base = getHomeServices()
-  try {
-    const saved = localStorage.getItem('camlife_custom_home_services')
-    if (saved) {
-      const parsed: HomeService[] = JSON.parse(saved)
-      return [...parsed, ...base]
-    }
-  } catch {}
-  return [...base]
-}
-
-const serviceList = ref<HomeService[]>(loadHomeServices())
+const serviceList = ref<HomeService[]>(getHomeServices())
 
 function persistUserHomeServices() {
   try {
-    const custom = serviceList.value.filter(s => s.id.startsWith('srv-custom-'))
-    localStorage.setItem('camlife_custom_home_services', JSON.stringify(custom))
+    const custom = serviceList.value.filter(s => !baseHSSIds.has(s.id) || s.id.startsWith('srv-custom-') || s.id.startsWith('hs-'))
+    saveCustomHomeServices(custom)
   } catch {}
 }
 

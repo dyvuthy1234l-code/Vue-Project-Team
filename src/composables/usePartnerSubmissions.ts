@@ -4,6 +4,75 @@ import type { PartnerSubmission, Hospital, HomeService } from '@/types'
 const STORAGE_KEY = 'camlife_partner_submissions'
 const CUSTOM_HOSPITALS_KEY = 'camlife_custom_hospitals'
 const CUSTOM_HOME_SERVICES_KEY = 'camlife_custom_home_services'
+const ADMIN_NOTIFICATIONS_KEY = 'camlife_admin_notifications'
+
+export interface AdminNotification {
+  id: string
+  title: string
+  titleKh: string
+  titleEn?: string
+  time: string
+  tab: string
+  unread: boolean
+  submissionId?: string
+  entityName?: string
+  facilityType?: string
+  type: 'submission' | 'service' | 'system'
+}
+
+export function getAdminNotifications(): AdminNotification[] {
+  try {
+    const raw = localStorage.getItem(ADMIN_NOTIFICATIONS_KEY)
+    if (raw) {
+      const parsed: AdminNotification[] = JSON.parse(raw)
+      if (Array.isArray(parsed)) return parsed
+    }
+  } catch {}
+  return [
+    {
+      id: 'notif-demo-1',
+      title: 'New partner application from Angkor International Hospital',
+      titleKh: 'ពាក្យស្នើសុំថ្មីពី៖ មន្ទីរពេទ្យអន្តរជាតិអង្គរ-សៀមរាប',
+      time: '15m ago',
+      tab: 'submissions',
+      unread: true,
+      submissionId: 'sub-174201',
+      entityName: 'មន្ទីរពេទ្យអន្តរជាតិអង្គរ-សៀមរាប',
+      facilityType: 'hospital',
+      type: 'submission'
+    },
+    {
+      id: 'notif-demo-2',
+      title: 'New partner application from Vattanak AC Repair',
+      titleKh: 'ពាក្យស្នើសុំថ្មីពី៖ សេវាជាងម៉ាស៊ីនត្រជាក់ វឌ្ឍនៈ',
+      time: '1h ago',
+      tab: 'submissions',
+      unread: true,
+      submissionId: 'sub-174202',
+      entityName: 'សេវាជាងម៉ាស៊ីនត្រជាក់ វឌ្ឍនៈ',
+      facilityType: 'home-service',
+      type: 'submission'
+    },
+    {
+      id: 'notif-demo-3',
+      title: 'Citizen inquiry report submitted',
+      titleKh: 'របាយការណ៍មតិពលរដ្ឋថ្មីត្រូវបានបញ្ជូនមក',
+      time: '2h ago',
+      tab: 'feedback',
+      unread: false,
+      type: 'system'
+    }
+  ]
+}
+
+export function saveAdminNotifications(list: AdminNotification[]) {
+  try {
+    localStorage.setItem(ADMIN_NOTIFICATIONS_KEY, JSON.stringify(list))
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('camlife-admin-notifs-updated'))
+    }
+  } catch {}
+}
 
 const initialSubmissions: PartnerSubmission[] = [
   {
@@ -189,6 +258,50 @@ export function usePartnerSubmissions() {
 
     submissions.value.unshift(newSubmission)
     saveSubmissions()
+
+    // Add to Admin Notifications
+    const notifs = getAdminNotifications()
+    const facilityKhMap: Record<string, string> = {
+      hospital: 'មន្ទីរពេទ្យ',
+      clinic: 'គ្លីនិកឯកទេស',
+      pharmacy: 'ឱសថស្ថាន',
+      'home-service': 'សេវាជាង/គេហដ្ឋាន',
+      employer: 'ក្រុមហ៊ុនជ្រើសរើសបុគ្គលិក',
+      transport: 'សេវាដឹកជញ្ជូន',
+      'emergency-ambulance': 'រថយន្តសង្គ្រោះបន្ទាន់'
+    }
+    const facLabelKh = facilityKhMap[newSubmission.facilityType] || 'ដៃគូថ្មី'
+    const newNotif: AdminNotification = {
+      id: `notif-${Date.now()}`,
+      title: `New partner submission: ${newSubmission.nameEn || newSubmission.nameKh}`,
+      titleKh: `មានពាក្យស្នើសុំថ្មីពី៖ ${newSubmission.nameKh || newSubmission.nameEn} (${facLabelKh})`,
+      time: 'Just now',
+      tab: 'submissions',
+      unread: true,
+      submissionId: newSubmission.id,
+      entityName: newSubmission.nameKh || newSubmission.nameEn,
+      facilityType: newSubmission.facilityType,
+      type: 'submission'
+    }
+    notifs.unshift(newNotif)
+    saveAdminNotifications(notifs)
+
+    // Broadcast Real-time event for Admin alert
+    try {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('camlife-new-submission', {
+          detail: {
+            submission: newSubmission,
+            notification: newNotif,
+            messageKh: `មានពាក្យស្នើសុំថ្មីពី៖ ${newSubmission.nameKh || newSubmission.nameEn}`,
+            messageEn: `New submission from: ${newSubmission.nameEn || newSubmission.nameKh}`
+          }
+        }))
+        window.dispatchEvent(new CustomEvent('camlife-data-updated'))
+        localStorage.setItem('camlife_last_submission_ping', JSON.stringify({ id: newSubmission.id, timestamp: Date.now() }))
+      }
+    } catch {}
+
     return newSubmission
   }
 
@@ -376,6 +489,12 @@ export function usePartnerSubmissions() {
       }
     }
 
+    try {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('camlife-data-updated'))
+      }
+    } catch {}
+
     return true
   }
 
@@ -387,6 +506,13 @@ export function usePartnerSubmissions() {
     sub.rejectReason = reason || 'ព័ត៌មាន ឬឯកសារមិនទាន់គ្រប់គ្រាន់តាមការកំណត់'
     sub.reviewedAt = new Date().toLocaleString([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
     saveSubmissions()
+
+    try {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('camlife-data-updated'))
+      }
+    } catch {}
+
     return true
   }
 
@@ -395,6 +521,11 @@ export function usePartnerSubmissions() {
     if (idx !== -1) {
       submissions.value.splice(idx, 1)
       saveSubmissions()
+      try {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('camlife-data-updated'))
+        }
+      } catch {}
       return true
     }
     return false
@@ -421,6 +552,8 @@ export function usePartnerSubmissions() {
     approveSubmission,
     rejectSubmission,
     deleteSubmission,
-    getUserSubmissions
+    getUserSubmissions,
+    getAdminNotifications,
+    saveAdminNotifications
   }
 }

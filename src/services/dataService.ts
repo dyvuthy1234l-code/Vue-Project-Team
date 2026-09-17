@@ -407,7 +407,8 @@ export function getHospitals(): Hospital[] {
     if (customHosp) {
       const parsed: Hospital[] = JSON.parse(customHosp)
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return [...parsed, ...hospitals]
+        const customIds = new Set(parsed.map(p => p.id))
+        return [...parsed, ...hospitals.filter(h => !customIds.has(h.id))]
       }
     }
   } catch {
@@ -421,47 +422,178 @@ export function getHospitalById(id: string): Hospital | undefined {
 }
 
 export function getGovernmentServices(): GovernmentService[] {
+  try {
+    const customGov = localStorage.getItem('camlife_custom_gov_services')
+    if (customGov) {
+      const parsed: GovernmentService[] = JSON.parse(customGov)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const customIds = new Set(parsed.map(p => p.id))
+        return [...parsed, ...governmentServices.filter(s => !customIds.has(s.id))]
+      }
+    }
+  } catch {}
   return governmentServices
 }
 
 export function getGovernmentServiceById(id: string): GovernmentService | undefined {
-  return governmentServices.find(s => s.id === id)
+  return getGovernmentServices().find(s => s.id === id)
 }
 
 export function getJobs(): Job[] {
+  try {
+    const customJobs = localStorage.getItem('camlife_user_jobs')
+    if (customJobs) {
+      const parsed: Job[] = JSON.parse(customJobs)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const customIds = new Set(parsed.map(p => p.id))
+        return [...parsed, ...jobs.filter(j => !customIds.has(j.id))]
+      }
+    }
+  } catch {}
   return jobs
 }
 
 export function getJobById(id: string): Job | undefined {
-  return jobs.find(j => j.id === id)
+  return getJobs().find(j => j.id === id)
 }
 
 export function getHomeServices(): HomeService[] {
+  try {
+    const customHS = localStorage.getItem('camlife_custom_home_services')
+    if (customHS) {
+      const parsed: HomeService[] = JSON.parse(customHS)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const customIds = new Set(parsed.map(p => p.id))
+        return [...parsed, ...homeServices.filter(s => !customIds.has(s.id))]
+      }
+    }
+  } catch {}
   return homeServices
 }
 
 export function getHomeServiceById(id: string): HomeService | undefined {
-  return homeServices.find(s => s.id === id)
+  return getHomeServices().find(s => s.id === id)
 }
 
 export function getTransport(): Transport[] {
+  try {
+    const customTrans1 = localStorage.getItem('camlife_custom_transports')
+    const customTrans2 = localStorage.getItem('camlife_user_transport')
+    const parsed1: Transport[] = customTrans1 ? JSON.parse(customTrans1) : []
+    const parsed2: Transport[] = customTrans2 ? JSON.parse(customTrans2) : []
+    const combinedCustom = [...parsed1, ...parsed2.filter(p2 => !parsed1.some(p1 => p1.id === p2.id))]
+    if (combinedCustom.length > 0) {
+      const customIds = new Set(combinedCustom.map(p => p.id))
+      return [...combinedCustom, ...transport.filter(t => !customIds.has(t.id))]
+    }
+  } catch {}
   return transport
 }
 
 export function getNews(): NewsItem[] {
+  try {
+    const customNews = localStorage.getItem('camlife_custom_news')
+    if (customNews) {
+      const parsed: NewsItem[] = JSON.parse(customNews)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const customIds = new Set(parsed.map(p => p.id))
+        return [...parsed, ...news.filter(n => !customIds.has(n.id))]
+      }
+    }
+  } catch {}
   return news
 }
 
 export function getNewsById(id: string): NewsItem | undefined {
-  return news.find(n => n.id === id)
+  return getNews().find(n => n.id === id)
 }
 
 export function getLocations(): LocationItem[] {
+  try {
+    const customLoc = localStorage.getItem('camlife_custom_locations')
+    if (customLoc) {
+      const parsed: LocationItem[] = JSON.parse(customLoc)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const customIds = new Set(parsed.map(p => p.id))
+        return [...parsed, ...locations.filter(l => !customIds.has(l.id))]
+      }
+    }
+  } catch {}
   return locations
 }
 
 export function getEmergencyContacts(): EmergencyContact[] {
   return emergencyContacts.sort((a, b) => a.priority - b.priority)
+}
+
+function notifyDataUpdated() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('camlife-data-updated'))
+  }
+}
+
+export function saveCustomGovernmentServices(services: GovernmentService[]) {
+  try {
+    localStorage.setItem('camlife_custom_gov_services', JSON.stringify(services))
+    notifyDataUpdated()
+  } catch (e) {
+    console.error('Failed to save custom government services', e)
+  }
+}
+
+export function saveCustomHospitals(hospList: Hospital[]) {
+  try {
+    localStorage.setItem('camlife_custom_hospitals', JSON.stringify(hospList))
+    notifyDataUpdated()
+  } catch (e) {
+    console.error('Failed to save custom hospitals', e)
+  }
+}
+
+export function saveCustomJobs(jobsList: Job[]) {
+  try {
+    localStorage.setItem('camlife_user_jobs', JSON.stringify(jobsList))
+    notifyDataUpdated()
+  } catch (e) {
+    console.error('Failed to save custom jobs', e)
+  }
+}
+
+export function saveCustomTransport(transList: Transport[]) {
+  try {
+    localStorage.setItem('camlife_custom_transports', JSON.stringify(transList))
+    localStorage.setItem('camlife_user_transport', JSON.stringify(transList))
+    notifyDataUpdated()
+  } catch (e) {
+    console.error('Failed to save custom transport', e)
+  }
+}
+
+export function saveCustomHomeServices(hsList: HomeService[]) {
+  try {
+    localStorage.setItem('camlife_custom_home_services', JSON.stringify(hsList))
+    notifyDataUpdated()
+  } catch (e) {
+    console.error('Failed to save custom home services', e)
+  }
+}
+
+export function saveCustomLocations(locList: LocationItem[]) {
+  try {
+    localStorage.setItem('camlife_custom_locations', JSON.stringify(locList))
+    notifyDataUpdated()
+  } catch (e) {
+    console.error('Failed to save custom locations', e)
+  }
+}
+
+export function saveCustomNews(newsList: NewsItem[]) {
+  try {
+    localStorage.setItem('camlife_custom_news', JSON.stringify(newsList))
+    notifyDataUpdated()
+  } catch (e) {
+    console.error('Failed to save custom news', e)
+  }
 }
 
 export function globalSearch(query: string): SearchResult[] {
@@ -498,7 +630,7 @@ export function globalSearch(query: string): SearchResult[] {
   })
 
   // Search hospitals
-  hospitals.forEach(h => {
+  getHospitals().forEach(h => {
     if (
       h.name.toLowerCase().includes(q) ||
       (h.nameKh && h.nameKh.toLowerCase().includes(q)) ||
@@ -528,7 +660,7 @@ export function globalSearch(query: string): SearchResult[] {
   })
 
   // Search government services
-  governmentServices.forEach(s => {
+  getGovernmentServices().forEach(s => {
     if (
       s.title.toLowerCase().includes(q) ||
       (s.titleKh && s.titleKh.toLowerCase().includes(q)) ||
@@ -548,7 +680,7 @@ export function globalSearch(query: string): SearchResult[] {
   })
 
   // Search jobs
-  jobs.forEach(j => {
+  getJobs().forEach(j => {
     if (
       j.title.toLowerCase().includes(q) ||
       j.company.toLowerCase().includes(q) ||
@@ -568,7 +700,7 @@ export function globalSearch(query: string): SearchResult[] {
   })
 
   // Search home services
-  homeServices.forEach(s => {
+  getHomeServices().forEach(s => {
     if (
       s.serviceName.toLowerCase().includes(q) ||
       (s.serviceNameKh && s.serviceNameKh.toLowerCase().includes(q)) ||
@@ -590,7 +722,7 @@ export function globalSearch(query: string): SearchResult[] {
   })
 
   // Search transport
-  transport.forEach(t => {
+  getTransport().forEach(t => {
     if (
       t.name.toLowerCase().includes(q) ||
       (t.nameKh && t.nameKh.toLowerCase().includes(q)) ||
@@ -611,7 +743,7 @@ export function globalSearch(query: string): SearchResult[] {
   })
 
   // Search news
-  news.forEach(n => {
+  getNews().forEach(n => {
     if (
       n.title.toLowerCase().includes(q) ||
       (n.titleKh && n.titleKh.toLowerCase().includes(q)) ||
@@ -631,7 +763,7 @@ export function globalSearch(query: string): SearchResult[] {
   })
 
   // Search locations
-  locations.forEach(l => {
+  getLocations().forEach(l => {
     if (
       l.name.toLowerCase().includes(q) ||
       (l.nameKh && l.nameKh.toLowerCase().includes(q)) ||
