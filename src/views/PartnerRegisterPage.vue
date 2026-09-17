@@ -33,7 +33,7 @@ import type { PartnerSubmission, PartnerFacilityType } from '@/types'
 
 const route = useRoute()
 const { currentLanguage } = useLanguage()
-const { currentUser, isLoggedIn, openLogin, openRegister, logout } = useAuth()
+const { currentUser, isLoggedIn, openLogin, openRegister } = useAuth()
 const { submitApplication } = usePartnerSubmissions()
 
 usePageMeta({
@@ -603,32 +603,6 @@ function resetFormForNew() {
            CASE 3: FULL REGISTRATION FORM (WHEN LOGGED IN)
       ============================================================= -->
       <section v-else class="space-y-6 animate-in fade-in">
-        <!-- Active User Status Bar -->
-        <div class="bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-xl bg-[#0D47A1] text-white flex items-center justify-center font-bold shrink-0">
-              {{ currentUser?.name.charAt(0).toUpperCase() }}
-            </div>
-            <div>
-              <p class="font-bold text-slate-800 dark:text-white">
-                {{ currentLanguage === 'kh' ? 'លោកអ្នកកំពុងដាក់ពាក្យក្នុងនាម៖' : 'Applying as:' }}
-                <strong class="text-[#0D47A1] dark:text-blue-300 font-black">{{ currentUser?.name }}</strong>
-                <span class="text-slate-500 font-normal"> ({{ currentUser?.email }})</span>
-              </p>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                {{ currentLanguage === 'kh' ? 'ព័ត៌មានទំនាក់ទំនងរបស់អ្នកនឹងត្រូវបានបំពេញដោយស្វ័យប្រវត្តិ។' : 'Your contact info has been automatically linked.' }}
-              </p>
-            </div>
-          </div>
-          <button
-            @click="logout"
-            type="button"
-            class="self-start sm:self-auto text-[11px] font-bold text-slate-500 hover:text-rose-600 underline cursor-pointer"
-          >
-            {{ currentLanguage === 'kh' ? 'ចាកចេញ / ប្តូរគណនី' : 'Sign Out / Switch' }}
-          </button>
-        </div>
-
         <!-- Main Form Container -->
         <form @submit.prevent="handleSubmit" class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-10 border border-slate-200/90 dark:border-slate-700 shadow-xl space-y-8">
 
