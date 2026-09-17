@@ -20,7 +20,9 @@ import {
   Briefcase,
   Bus,
   Ambulance,
-  Globe
+  Globe,
+  ShieldCheck,
+  ExternalLink
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { usePartnerSubmissions } from '@/composables/usePartnerSubmissions'
@@ -170,6 +172,25 @@ function getFacilityTypeBadge(type: string) {
     default:
       return { labelKh: type, labelEn: type, icon: Building2, color: 'bg-slate-50 text-slate-700 border-slate-200' }
   }
+}
+
+function getLiveLink(sub: PartnerSubmission): string {
+  if (sub.facilityType === 'hospital' || sub.facilityType === 'clinic' || sub.facilityType === 'pharmacy') {
+    return '/health'
+  }
+  if (sub.facilityType === 'home-service') {
+    return '/home-services'
+  }
+  if (sub.facilityType === 'employer') {
+    return '/jobs'
+  }
+  if (sub.facilityType === 'transport') {
+    return '/transport'
+  }
+  if (sub.facilityType === 'emergency-ambulance') {
+    return '/emergency'
+  }
+  return '/'
 }
 </script>
 
@@ -493,7 +514,36 @@ function getFacilityTypeBadge(type: string) {
               <Clock class="w-4 h-4" />
               <span>ស្ថានភាពបច្ចុប្បន្ន៖ {{ selectedDetail.status.toUpperCase() }}</span>
             </span>
-            <span class="text-[11px] font-mono">{{ selectedDetail.submittedAt }}</span>
+            <div class="text-right text-[11px] font-mono">
+              <p>ដាក់ពាក្យ៖ {{ selectedDetail.submittedAt }}</p>
+              <p v-if="selectedDetail.reviewedAt" class="text-[10px] text-slate-500">ត្រួតពិនិត្យ៖ {{ selectedDetail.reviewedAt }}</p>
+            </div>
+          </div>
+
+          <!-- Type & Category Tag Bar -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span :class="['px-3 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5', getFacilityTypeBadge(selectedDetail.facilityType).color]">
+              <component :is="getFacilityTypeBadge(selectedDetail.facilityType).icon" class="w-3.5 h-3.5" />
+              <span>{{ currentLanguage === 'kh' ? getFacilityTypeBadge(selectedDetail.facilityType).labelKh : getFacilityTypeBadge(selectedDetail.facilityType).labelEn }}</span>
+            </span>
+
+            <span v-if="selectedDetail.category" class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
+              🏷️ {{ selectedDetail.category }}
+            </span>
+
+            <span
+              v-if="selectedDetail.acceptsNssf"
+              class="px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 flex items-center gap-1"
+            >
+              <ShieldCheck class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>{{ currentLanguage === 'kh' ? 'ទទួលប័ណ្ណ ប.ស.ស (NSSF)' : 'NSSF Accepted' }}</span>
+            </span>
+            <span
+              v-else-if="['hospital', 'clinic', 'emergency-ambulance', 'employer'].includes(selectedDetail.facilityType)"
+              class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 font-semibold border border-slate-200 dark:border-slate-700"
+            >
+              {{ currentLanguage === 'kh' ? 'មិនទាន់ភ្ជាប់ ប.ស.ស' : 'No NSSF' }}
+            </span>
           </div>
 
           <div v-if="selectedDetail.rejectReason" class="p-3 bg-rose-50 text-rose-700 rounded-xl border border-rose-200">
@@ -543,6 +593,18 @@ function getFacilityTypeBadge(type: string) {
             </div>
           </div>
 
+          <!-- Descriptions (Khmer & English) -->
+          <div class="space-y-2">
+            <div v-if="selectedDetail.descriptionKh" class="p-3 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/60">
+              <span class="text-blue-600 dark:text-blue-400 font-bold block mb-1">📝 ការពិពណ៌នា (ភាសាខ្មែរ)៖</span>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">{{ selectedDetail.descriptionKh }}</p>
+            </div>
+            <div v-if="selectedDetail.descriptionEn" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+              <span class="text-slate-500 font-bold block mb-1">📝 Description (English):</span>
+              <p class="text-slate-600 dark:text-slate-300 font-mono text-[11px] leading-relaxed">{{ selectedDetail.descriptionEn }}</p>
+            </div>
+          </div>
+
           <!-- Routes Covered (if Transport) -->
           <div v-if="selectedDetail.routes && selectedDetail.routes.length > 0" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
             <span class="text-slate-400 block mb-1.5">ខ្សែរត់ និងទិសដៅតភ្ជាប់ (Routes Covered)</span>
@@ -553,10 +615,13 @@ function getFacilityTypeBadge(type: string) {
             </div>
           </div>
 
-          <!-- Address -->
-          <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+          <!-- Address (Both Khmer & English) -->
+          <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 space-y-1">
             <span class="text-slate-400 block mb-0.5">អាសយដ្ឋានលម្អិត</span>
-            <p class="font-semibold text-slate-800 dark:text-white">{{ selectedDetail.addressKh || selectedDetail.address }}</p>
+            <p class="font-semibold text-slate-800 dark:text-white">{{ selectedDetail.addressKh }}</p>
+            <p v-if="selectedDetail.address && selectedDetail.address !== selectedDetail.addressKh" class="text-slate-400 font-mono text-[11px]">
+              {{ selectedDetail.address }}
+            </p>
           </div>
 
           <!-- Representative -->
@@ -568,7 +633,7 @@ function getFacilityTypeBadge(type: string) {
 
           <!-- Services List -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-            <span class="text-slate-400 block mb-1.5">សេវា និងឯកទេសផ្តល់ជូន</span>
+            <span class="text-slate-400 block mb-1.5">សេវា ជំនាញ និងមុខតំណែងផ្តល់ជូន</span>
             <div class="flex flex-wrap gap-1.5">
               <span v-for="serv in selectedDetail.services" :key="serv" class="px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[11px] font-semibold">
                 {{ serv }}
@@ -578,7 +643,7 @@ function getFacilityTypeBadge(type: string) {
         </div>
 
         <!-- Modal Footer Actions -->
-        <div class="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
           <button
             @click="handleDelete(selectedDetail.id)"
             class="px-4 py-2 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold transition-colors cursor-pointer"
@@ -587,6 +652,17 @@ function getFacilityTypeBadge(type: string) {
           </button>
 
           <div class="flex items-center gap-2">
+            <!-- View on Live Website if Approved -->
+            <router-link
+              v-if="selectedDetail.status === 'approved'"
+              :to="getLiveLink(selectedDetail)"
+              target="_blank"
+              class="px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 text-xs font-bold transition-colors flex items-center gap-1.5"
+            >
+              <ExternalLink class="w-3.5 h-3.5" />
+              <span>មើលលើ Live</span>
+            </router-link>
+
             <button
               v-if="selectedDetail.status === 'pending'"
               @click="openRejectModal(selectedDetail.id)"

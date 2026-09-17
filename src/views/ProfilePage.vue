@@ -24,13 +24,21 @@ import {
   KeyRound,
   Shield,
   Layers,
-  Home
+  Home,
+  Building2,
+  ExternalLink,
+  FileText,
+  X,
+  Ban,
+  Globe
 } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import { useLanguage } from '@/composables/useLanguage'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { useSavedServices } from '@/composables/useSavedServices'
 import { useSavedJobs } from '@/composables/useSavedJobs'
+import { usePartnerSubmissions } from '@/composables/usePartnerSubmissions'
+import type { PartnerSubmission } from '@/types'
 
 usePageMeta({
   title: 'គណនីប្រជាពលរដ្ឋ — CamLife Citizen Profile',
@@ -42,10 +50,53 @@ const { currentUser, updateProfile, openLogin, logout } = useAuth()
 const { currentLanguage } = useLanguage()
 const { savedCount: savedServicesCount } = useSavedServices()
 const { savedJobIds } = useSavedJobs()
+const { submissions } = usePartnerSubmissions()
 
 const totalSavedCount = computed(() => savedServicesCount.value + savedJobIds.value.length)
 
-const activeTab = ref<'general' | 'security' | 'activity'>('general')
+const activeTab = ref<'general' | 'security' | 'activity' | 'submissions'>('general')
+
+const selectedSubmissionDetail = ref<PartnerSubmission | null>(null)
+const isSubmissionDetailOpen = ref(false)
+
+const userSubmissions = computed(() => {
+  if (!currentUser.value) return []
+  const currentId = currentUser.value?.nationalId || currentUser.value?.email
+  return submissions.value.filter(s =>
+    (s.userId && currentId && s.userId === currentId) ||
+    (s.applicantEmail && currentUser.value?.email && s.applicantEmail.toLowerCase() === currentUser.value.email.toLowerCase()) ||
+    (s.email && currentUser.value?.email && s.email.toLowerCase() === currentUser.value.email.toLowerCase()) ||
+    (s.representativeName && currentUser.value?.name && s.representativeName.toLowerCase().includes(currentUser.value.name.toLowerCase()))
+  )
+})
+
+function openSubmissionDetail(sub: PartnerSubmission) {
+  selectedSubmissionDetail.value = sub
+  isSubmissionDetailOpen.value = true
+}
+
+function closeSubmissionDetail() {
+  isSubmissionDetailOpen.value = false
+}
+
+function getLiveLink(sub: PartnerSubmission): string {
+  if (sub.facilityType === 'hospital' || sub.facilityType === 'clinic' || sub.facilityType === 'pharmacy') {
+    return '/health'
+  }
+  if (sub.facilityType === 'home-service') {
+    return '/home-services'
+  }
+  if (sub.facilityType === 'employer') {
+    return '/jobs'
+  }
+  if (sub.facilityType === 'transport') {
+    return '/transport'
+  }
+  if (sub.facilityType === 'emergency-ambulance') {
+    return '/emergency'
+  }
+  return '/'
+}
 const showPassword = ref(false)
 const showNewPassword = ref(false)
 const isSaving = ref(false)
@@ -377,11 +428,35 @@ function handleLogout() {
             {{ totalSavedCount }}
           </span>
         </button>
+
+        <!-- Tab 4: Submissions -->
+        <button
+          type="button"
+          @click="activeTab = 'submissions'"
+          :class="[
+            'px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1 sm:gap-1.5 text-center',
+            activeTab === 'submissions'
+              ? 'bg-[#0D47A1] text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+          ]"
+        >
+          <Building2 class="w-3.5 h-3.5 shrink-0" />
+          <span class="truncate">{{ currentLanguage === 'kh' ? 'ពាក្យស្នើសុំដៃគូ' : 'Submissions' }}</span>
+          <span
+            v-if="userSubmissions.length > 0"
+            :class="[
+              'px-1.5 py-0.2 rounded-full text-[9px] font-black font-mono shrink-0',
+              activeTab === 'submissions' ? 'bg-white/20 text-white' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+            ]"
+          >
+            {{ userSubmissions.length }}
+          </span>
+        </button>
       </div>
 
       <!-- Desktop Save Button on Tab Bar -->
       <button
-        v-if="activeTab !== 'activity'"
+        v-if="activeTab === 'general' || activeTab === 'security'"
         @click="handleSave"
         :disabled="isSaving"
         class="hidden sm:flex px-6 py-2.5 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-extrabold shadow-sm transition-all duration-150 active:scale-95 disabled:opacity-50 items-center justify-center gap-2 cursor-pointer shrink-0"
@@ -776,6 +851,271 @@ function handleLogout() {
               <span>{{ currentUser?.lastLogin || 'Today' }}</span>
             </span>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: PARTNER SUBMISSIONS -->
+    <div v-if="activeTab === 'submissions'" class="space-y-4 sm:space-y-6">
+      <!-- Top header banner -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <Building2 class="w-5 h-5 text-[#0D47A1] dark:text-blue-400" />
+            <span>{{ currentLanguage === 'kh' ? 'ពាក្យស្នើសុំចុះបញ្ជីដៃគូសេវារបស់ខ្ញុំ' : 'My Partner Onboarding Submissions' }}</span>
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            {{ currentLanguage === 'kh' ? 'តាមដានស្ថានភាពការត្រួតពិនិត្យ និងមើលព័ត៌មានលម្អិតនៃពាក្យស្នើសុំទាំងអស់' : 'Track verification progress and review full details of your applications.' }}
+          </p>
+        </div>
+
+        <router-link
+          to="/partner-register"
+          class="px-5 py-2.5 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-black transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 shrink-0"
+        >
+          <span>{{ currentLanguage === 'kh' ? '+ ដាក់ពាក្យថ្មី' : '+ New Submission' }}</span>
+        </router-link>
+      </div>
+
+      <!-- If no submissions -->
+      <div v-if="userSubmissions.length === 0" class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-10 text-center space-y-4">
+        <FileText class="w-12 h-12 text-slate-300 mx-auto" />
+        <h4 class="text-base font-bold text-slate-800 dark:text-white">
+          {{ currentLanguage === 'kh' ? 'មិនទាន់មានពាក្យស្នើសុំនៅឡើយទេ' : 'No partner submissions found.' }}
+        </h4>
+        <p class="text-xs text-slate-400 max-w-sm mx-auto">
+          {{ currentLanguage === 'kh' ? 'លោកអ្នកអាចដាក់ពាក្យស្នើសុំចុះបញ្ជីមន្ទីរពេទ្យ គ្លីនិក ឱសថស្ថាន សេវាជាង ក្រុមហ៊ុន ឬដឹកជញ្ជូន។' : 'You can register your hospital, clinic, pharmacy, home service, enterprise, or transit.' }}
+        </p>
+        <router-link
+          to="/partner-register"
+          class="inline-block px-5 py-2.5 rounded-xl bg-[#0D47A1] text-white font-bold text-xs shadow-sm"
+        >
+          {{ currentLanguage === 'kh' ? '+ ចុះបញ្ជីស្ថាប័នឥឡូវនេះ' : '+ Register Now' }}
+        </router-link>
+      </div>
+
+      <!-- Submissions List -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div
+          v-for="sub in userSubmissions"
+          :key="sub.id"
+          class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs flex flex-col justify-between space-y-4"
+        >
+          <div class="space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">{{ sub.nameKh }}</h4>
+                <p class="text-xs text-slate-400 font-mono">{{ sub.nameEn }}</p>
+              </div>
+              <span
+                v-if="sub.status === 'pending'"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
+              >
+                <Clock class="w-3 h-3" />
+                <span>{{ currentLanguage === 'kh' ? 'រង់ចាំពិនិត្យ' : 'Pending' }}</span>
+              </span>
+              <span
+                v-else-if="sub.status === 'approved'"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+              >
+                <CheckCircle2 class="w-3 h-3" />
+                <span>{{ currentLanguage === 'kh' ? 'បានអនុម័ត' : 'Approved' }}</span>
+              </span>
+              <span
+                v-else
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800"
+              >
+                <Ban class="w-3 h-3" />
+                <span>{{ currentLanguage === 'kh' ? 'បានបដិសេធ' : 'Rejected' }}</span>
+              </span>
+            </div>
+
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px]">
+                📍 {{ sub.location }}
+              </span>
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-mono">
+                🆔 {{ sub.licenseNumber }}
+              </span>
+              <span v-if="sub.category" class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[11px] font-bold">
+                {{ sub.category }}
+              </span>
+            </div>
+
+            <p v-if="sub.rejectReason" class="text-[11px] text-rose-600 bg-rose-50 dark:bg-rose-950/40 p-2 rounded-lg">
+              <span class="font-bold">មូលហេតុ៖</span> {{ sub.rejectReason }}
+            </p>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-[11px] text-slate-400 font-mono">{{ sub.submittedAt }}</span>
+            <div class="flex items-center gap-2">
+              <router-link
+                v-if="sub.status === 'approved'"
+                :to="getLiveLink(sub)"
+                target="_blank"
+                class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-[11px] font-bold flex items-center gap-1"
+              >
+                <ExternalLink class="w-3 h-3" />
+                <span>Live</span>
+              </router-link>
+              <button
+                @click="openSubmissionDetail(sub)"
+                class="px-3 py-1.5 rounded-lg bg-[#0D47A1] text-white text-[11px] font-bold shadow-xs hover:bg-[#1565C0] flex items-center gap-1 cursor-pointer"
+              >
+                <Eye class="w-3 h-3" />
+                <span>{{ currentLanguage === 'kh' ? 'មើលលម្អិត' : 'View Detail' }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE SUBMISSION DETAIL MODAL -->
+    <div v-if="isSubmissionDetailOpen && selectedSubmissionDetail" class="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-xs animate-in fade-in">
+      <div class="bg-white dark:bg-[#131F37] w-full max-w-xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden" @click.stop>
+        <div class="p-5 bg-gradient-to-r from-[#0A2540] to-[#0D47A1] text-white flex items-center justify-between">
+          <div>
+            <h4 class="text-base font-black truncate max-w-md">{{ selectedSubmissionDetail.nameKh }}</h4>
+            <p class="text-xs text-blue-200 font-mono">{{ selectedSubmissionDetail.nameEn }}</p>
+          </div>
+          <button @click="closeSubmissionDetail" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer">
+            <X class="w-4 h-4" />
+          </button>
+        </div>
+
+        <div class="p-5 space-y-3.5 max-h-[70vh] overflow-y-auto text-xs">
+          <!-- Status Banner -->
+          <div :class="['p-3 rounded-2xl border flex items-center justify-between', selectedSubmissionDetail.status === 'approved' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : selectedSubmissionDetail.status === 'rejected' ? 'bg-rose-50 text-rose-800 border-rose-200' : 'bg-amber-50 text-amber-800 border-amber-200']">
+            <div>
+              <span class="font-bold flex items-center gap-1.5">
+                <Clock class="w-4 h-4" />
+                <span>ស្ថានភាព៖ {{ selectedSubmissionDetail.status === 'approved' ? 'បានអនុម័តជាផ្លូវការ (Approved)' : selectedSubmissionDetail.status === 'rejected' ? 'បានបដិសេធ (Rejected)' : 'រង់ចាំពិនិត្យ (Pending)' }}</span>
+              </span>
+              <p class="text-[10px] text-slate-500 mt-0.5 font-mono">លេខកូដសំណើ៖ #{{ selectedSubmissionDetail.id }}</p>
+            </div>
+            <div class="text-right text-[11px] font-mono shrink-0">
+              <p>{{ selectedSubmissionDetail.submittedAt }}</p>
+              <p v-if="selectedSubmissionDetail.reviewedAt" class="text-emerald-700 font-bold">អនុម័ត៖ {{ selectedSubmissionDetail.reviewedAt }}</p>
+            </div>
+          </div>
+
+          <div v-if="selectedSubmissionDetail.rejectReason" class="p-3 bg-rose-50 text-rose-700 rounded-xl border border-rose-200">
+            <span class="font-bold">មូលហេតុបដិសេធ៖</span> {{ selectedSubmissionDetail.rejectReason }}
+          </div>
+
+          <!-- Tags -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950 text-[#0D47A1] dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800 text-[11px]">
+              {{ selectedSubmissionDetail.facilityType.toUpperCase() }}
+            </span>
+            <span v-if="selectedSubmissionDetail.category" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[11px]">
+              🏷️ {{ selectedSubmissionDetail.category }}
+            </span>
+            <span v-if="selectedSubmissionDetail.acceptsNssf" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 text-[11px] flex items-center gap-1">
+              <ShieldCheck class="w-3.5 h-3.5 text-emerald-600" />
+              <span>ទទួលប័ណ្ណ ប.ស.ស (NSSF)</span>
+            </span>
+          </div>
+
+          <!-- Metadata -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">លេខអាជ្ញាបណ្ណ</span>
+              <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedSubmissionDetail.licenseNumber }}</span>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">រាជធានី / ខេត្ត</span>
+              <span class="font-bold text-slate-800 dark:text-white">{{ selectedSubmissionDetail.location }}</span>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">ទូរស័ព្ទ</span>
+              <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedSubmissionDetail.phone }}</span>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">ម៉ោងបំពេញការងារ</span>
+              <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedSubmissionDetail.openingHours }}</span>
+            </div>
+            <div v-if="selectedSubmissionDetail.industrySector" class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">វិស័យឧស្សាហកម្ម</span>
+              <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ selectedSubmissionDetail.industrySector }}</span>
+            </div>
+            <div v-if="selectedSubmissionDetail.fleetSize" class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">ទំហំកងរថយន្ត</span>
+              <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ selectedSubmissionDetail.fleetSize }}</span>
+            </div>
+            <div v-if="selectedSubmissionDetail.website" class="col-span-2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">គេហទំព័រ</span>
+              <a :href="selectedSubmissionDetail.website" target="_blank" class="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-mono">
+                <Globe class="w-3.5 h-3.5" />
+                <span>{{ selectedSubmissionDetail.website }}</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Descriptions -->
+          <div class="space-y-2">
+            <div v-if="selectedSubmissionDetail.descriptionKh" class="p-3 bg-blue-50/60 dark:bg-blue-950/40 rounded-xl">
+              <span class="text-blue-600 dark:text-blue-400 font-bold block mb-1">ការពិពណ៌នា (ភាសាខ្មែរ)៖</span>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">{{ selectedSubmissionDetail.descriptionKh }}</p>
+            </div>
+            <div v-if="selectedSubmissionDetail.descriptionEn" class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span class="text-slate-500 font-bold block mb-1">Description (English):</span>
+              <p class="text-slate-600 dark:text-slate-300 font-mono text-[11px] leading-relaxed">{{ selectedSubmissionDetail.descriptionEn }}</p>
+            </div>
+          </div>
+
+          <!-- Routes Covered -->
+          <div v-if="selectedSubmissionDetail.routes && selectedSubmissionDetail.routes.length > 0" class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+            <span class="text-slate-400 block mb-1.5">ខ្សែរត់ / Routes Covered</span>
+            <div class="flex flex-wrap gap-1.5">
+              <span v-for="r in selectedSubmissionDetail.routes" :key="r" class="px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold">
+                🚌 {{ r }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+            <span class="text-slate-400 block mb-0.5">អាសយដ្ឋាន</span>
+            <p class="font-semibold text-slate-800 dark:text-white">{{ selectedSubmissionDetail.addressKh }}</p>
+            <p v-if="selectedSubmissionDetail.address && selectedSubmissionDetail.address !== selectedSubmissionDetail.addressKh" class="text-slate-400 font-mono text-[11px] mt-0.5">
+              {{ selectedSubmissionDetail.address }}
+            </p>
+          </div>
+
+          <!-- Representative -->
+          <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+            <span class="text-slate-400 block mb-0.5">អ្នកតំណាង ឬអ្នកដាក់ពាក្យ</span>
+            <p class="font-bold text-slate-800 dark:text-white">{{ selectedSubmissionDetail.representativeName }} ({{ selectedSubmissionDetail.representativeRole }})</p>
+            <p v-if="selectedSubmissionDetail.email" class="text-slate-500 font-mono text-[11px]">{{ selectedSubmissionDetail.email }}</p>
+          </div>
+
+          <!-- Services -->
+          <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+            <span class="text-slate-400 block mb-1.5">សេវាកម្មផ្តល់ជូន</span>
+            <div class="flex flex-wrap gap-1.5">
+              <span v-for="s in selectedSubmissionDetail.services" :key="s" class="px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold text-[11px]">
+                {{ s }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <button @click="closeSubmissionDetail" class="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 cursor-pointer">
+            បិទ
+          </button>
+          <router-link
+            v-if="selectedSubmissionDetail.status === 'approved'"
+            :to="getLiveLink(selectedSubmissionDetail)"
+            target="_blank"
+            class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1.5 shadow-sm"
+          >
+            <ExternalLink class="w-3.5 h-3.5" />
+            <span>មើលនៅលើ Live</span>
+          </router-link>
         </div>
       </div>
     </div>

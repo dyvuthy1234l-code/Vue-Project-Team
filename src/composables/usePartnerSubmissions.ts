@@ -338,6 +338,44 @@ export function usePartnerSubmissions() {
       }
     }
 
+    // 5. If it's a transport operator, push to live custom transport operators
+    if (sub.facilityType === 'transport') {
+      try {
+        const rawTrans = localStorage.getItem('camlife_custom_transports')
+        const customTransports = rawTrans ? JSON.parse(rawTrans) : []
+        const newTransport = {
+          id: `trans-${Date.now()}`,
+          name: sub.nameEn,
+          nameKh: sub.nameKh,
+          category: 'Bus & VIP Transit',
+          location: sub.location,
+          address: sub.address,
+          addressKh: sub.addressKh,
+          phone: sub.phone,
+          email: sub.email,
+          openingHours: sub.openingHours,
+          licenseNumber: sub.licenseNumber,
+          representativeName: sub.representativeName,
+          fleetSize: sub.fleetSize || '20+ Modern Fleet',
+          routes: sub.routes && sub.routes.length > 0 ? sub.routes : ['Phnom Penh - Provinces'],
+          website: sub.website,
+          description: sub.descriptionEn || sub.descriptionKh,
+          descriptionKh: sub.descriptionKh,
+          services: sub.services && sub.services.length > 0 ? sub.services : ['VIP Express', 'Online Booking'],
+          rating: 4.9,
+          reviews: 1,
+          image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80'
+        }
+
+        if (!customTransports.some((t: any) => t.name === newTransport.name)) {
+          customTransports.unshift(newTransport)
+          localStorage.setItem('camlife_custom_transports', JSON.stringify(customTransports))
+        }
+      } catch (err) {
+        console.error('Failed to append custom transport:', err)
+      }
+    }
+
     return true
   }
 
@@ -362,6 +400,18 @@ export function usePartnerSubmissions() {
     return false
   }
 
+  function getUserSubmissions(userIdentifier?: string): PartnerSubmission[] {
+    if (!userIdentifier) return submissions.value
+    const idLower = userIdentifier.toLowerCase().trim()
+    const matches = submissions.value.filter(s =>
+      (s.userId && s.userId === userIdentifier) ||
+      (s.applicantEmail && s.applicantEmail.toLowerCase() === idLower) ||
+      (s.email && s.email.toLowerCase() === idLower) ||
+      (s.representativeName && s.representativeName.toLowerCase().includes(idLower))
+    )
+    return matches.length > 0 ? matches : submissions.value
+  }
+
   return {
     submissions,
     pendingCount,
@@ -370,6 +420,7 @@ export function usePartnerSubmissions() {
     submitApplication,
     approveSubmission,
     rejectSubmission,
-    deleteSubmission
+    deleteSubmission,
+    getUserSubmissions
   }
 }

@@ -192,4 +192,7 @@ export interface PartnerSubmission {
   submittedAt: string
   reviewedAt?: string
   rejectReason?: string
+  userId?: string
+  applicantEmail?: string
+  applicantPhone?: string
 }
