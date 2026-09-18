@@ -51,7 +51,6 @@ import {
 } from '@/services/dataService'
 import VerificationBadge from '@/components/VerificationBadge.vue'
 import LazyImage from '@/components/LazyImage.vue'
-import ApplicationTracker from '@/components/ApplicationTracker.vue'
 import heroIllustration from '@/assets/cambodia-hero.png'
 
 type NearbyTab = 'hospitals' | 'police' | 'owso' | 'transport' | 'services'
@@ -676,12 +675,7 @@ onUnmounted(() => {
         </div>
       </section>
 
-      <!-- ============================================================
-           CITIZEN APPLICATION TRACKING SECTION
-      ============================================================= -->
-      <section class="mt-5 scroll-reveal">
-        <ApplicationTracker />
-      </section>
+
 
       <!-- ============================================================
            3. INTERACTIVE CITIZEN LIVE MAP & NEARBY SERVICES
