@@ -320,27 +320,28 @@ onUnmounted(() => {
 
               <!-- Dropdown Menu -->
               <Transition
-                enter-active-class="transition duration-150 ease-out"
-                enter-from-class="opacity-0 translate-y-2 scale-95"
+                enter-active-class="transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                enter-from-class="opacity-0 -translate-y-3 scale-95"
                 enter-to-class="opacity-100 translate-y-0 scale-100"
-                leave-active-class="transition duration-100 ease-in"
+                leave-active-class="transition-all duration-180 ease-in"
                 leave-from-class="opacity-100 translate-y-0 scale-100"
-                leave-to-class="opacity-0 translate-y-2 scale-95"
+                leave-to-class="opacity-0 -translate-y-2 scale-95"
               >
                 <div
                   v-if="isServicesOpen"
-                  class="absolute top-full left-0 mt-1 w-[380px] bg-white dark:bg-[#1E293B] rounded-2xl shadow-dropdown border border-slate-200/90 dark:border-slate-700 p-2 z-50 animate-fadeIn"
+                  class="absolute top-full left-0 mt-1.5 w-[385px] bg-white dark:bg-[#1E293B] rounded-2xl shadow-2xl border border-slate-200/90 dark:border-slate-700 p-2.5 z-50 backdrop-blur-md"
                 >
-                  <div class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700 mb-1 flex items-center justify-between">
+                  <div class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700 mb-1.5 flex items-center justify-between">
                     <span>{{ currentLanguage === 'kh' ? 'សេវាសាធារណៈ និងជីវិតប្រចាំថ្ងៃ' : 'Public & Civic Directory' }}</span>
-                    <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300">8 Services</span>
+                    <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/50 text-[#0D47A1] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40">8 Services</span>
                   </div>
                   <div class="space-y-1">
                     <button
-                      v-for="service in serviceLinks"
+                      v-for="(service, idx) in serviceLinks"
                       :key="service.path"
                       @click="navigateTo(service.path)"
-                      class="w-full flex items-center gap-3 p-2 rounded-xl text-left hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-all group border border-transparent hover:border-slate-200/60 dark:hover:border-slate-600"
+                      :style="{ animationDelay: `${idx * 30}ms` }"
+                      class="stagger-item w-full flex items-center gap-3 p-2 rounded-xl text-left hover:bg-blue-50/70 dark:hover:bg-slate-700/60 transition-all duration-200 group border border-transparent hover:border-blue-200/60 dark:hover:border-slate-600 hover:translate-x-1 cursor-pointer"
                       type="button"
                     >
                       <!-- Representative Image Thumbnail with Icon badge -->
@@ -365,7 +366,7 @@ onUnmounted(() => {
                           {{ currentLanguage === 'kh' ? service.label : service.labelKh }}
                         </p>
                       </div>
-                      <ChevronRight class="w-4 h-4 text-slate-300 dark:text-slate-500 group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                      <ChevronRight class="w-4 h-4 text-slate-300 dark:text-slate-500 group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all duration-200 shrink-0" />
                     </button>
                   </div>
                 </div>
@@ -521,29 +522,29 @@ onUnmounted(() => {
                 type="button"
               >
                 <div class="w-7 h-7 rounded-lg bg-[#0D47A1] text-white flex items-center justify-center text-xs font-bold">
-                  {{ currentUser.name.charAt(0).toUpperCase() }}
+                  {{ (currentUser.name || 'U').charAt(0).toUpperCase() }}
                 </div>
                 <span class="text-xs font-bold text-slate-800 dark:text-white max-w-[90px] truncate">
-                  {{ currentUser.name }}
+                  {{ currentUser.name || 'Citizen' }}
                 </span>
                 <ChevronDown class="w-3 h-3 text-slate-400" />
               </button>
 
               <Transition
-                enter-active-class="transition duration-150 ease-out"
-                enter-from-class="opacity-0 translate-y-2 scale-95"
+                enter-active-class="transition duration-250 ease-out"
+                enter-from-class="opacity-0 -translate-y-2 scale-95"
                 enter-to-class="opacity-100 translate-y-0 scale-100"
-                leave-active-class="transition duration-100 ease-in"
+                leave-active-class="transition duration-150 ease-in"
                 leave-from-class="opacity-100 translate-y-0 scale-100"
-                leave-to-class="opacity-0 translate-y-2 scale-95"
+                leave-to-class="opacity-0 -translate-y-2 scale-95"
               >
                 <div
                   v-if="isProfileOpen"
-                  class="absolute right-0 mt-1 w-56 bg-white dark:bg-[#1E293B] rounded-2xl shadow-dropdown border border-slate-200/90 dark:border-slate-700 p-2 z-50 animate-fadeIn"
+                  class="absolute right-0 mt-1.5 w-60 bg-white dark:bg-[#1E293B] rounded-2xl shadow-2xl border border-slate-200/90 dark:border-slate-700 p-2 z-50 animate-dropdown"
                 >
                   <div class="p-2 border-b border-slate-100 dark:border-slate-700 mb-1">
-                    <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name }}</p>
-                    <p class="text-[11px] text-slate-400 truncate">{{ currentUser.email }}</p>
+                    <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name || 'Citizen Member' }}</p>
+                    <p class="text-[11px] text-slate-400 truncate">{{ currentUser.email || '' }}</p>
                     <span
                       :class="[
                         'inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold',
@@ -964,11 +965,11 @@ onUnmounted(() => {
             <div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
               <div class="flex items-center gap-2.5 min-w-0">
                 <div class="w-8 h-8 rounded-xl bg-[#0D47A1] text-white flex items-center justify-center font-bold text-xs shrink-0">
-                  {{ currentUser.name.charAt(0).toUpperCase() }}
+                  {{ (currentUser.name || 'U').charAt(0).toUpperCase() }}
                 </div>
                 <div class="min-w-0">
-                  <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name }}</p>
-                  <p class="text-[10px] text-slate-400 truncate">{{ currentUser.email }}</p>
+                  <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ currentUser.name || 'Citizen Member' }}</p>
+                  <p class="text-[10px] text-slate-400 truncate">{{ currentUser.email || '' }}</p>
                   <span
                     :class="[
                       'inline-flex items-center gap-1 mt-0.5 px-2 py-0.2 rounded-full text-[9px] font-extrabold',

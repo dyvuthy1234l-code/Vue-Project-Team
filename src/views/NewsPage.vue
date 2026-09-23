@@ -208,7 +208,7 @@ function copyNewsLink(id: string) {
     <!-- ============================================================
          1. REAL NEWSPAPER TOP BAR (Live Date, Clock, Exchange & Weather)
          ============================================================ -->
-    <header class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
+    <header class="scroll-reveal bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3 text-xs border-b border-slate-100 pb-2.5 sm:pb-3">
         <!-- Date & Live Digital Clock -->
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -273,7 +273,7 @@ function copyNewsLink(id: string) {
     <!-- ============================================================
          3. TOP HEADLINES SHOWCASE (កម្រងព័ត៌មានធំបំផុតប្រចាំថ្ងៃ)
          ============================================================ -->
-    <section v-if="leadArticle" class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+    <section v-if="leadArticle" class="scroll-reveal grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
       <!-- Main Lead Headline (Left 7 Cols) -->
       <div class="lg:col-span-7 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-card-hover transition-all flex flex-col justify-between group min-w-0">
         <div class="relative h-52 sm:h-80 w-full overflow-hidden bg-slate-900">
@@ -393,7 +393,7 @@ function copyNewsLink(id: string) {
     <!-- ============================================================
          4. CATEGORY NAVIGATION BAR & SEARCH TOOLBAR
          ============================================================ -->
-    <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
+    <div class="scroll-reveal bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
       <!-- Category Pills (Horizontal Scroll on Mobile) -->
       <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
         <button
@@ -470,7 +470,7 @@ function copyNewsLink(id: string) {
     <!-- ============================================================
          5. MAIN NEWSPAPER TWO-COLUMN EDITORIAL LAYOUT
          ============================================================ -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div class="scroll-reveal grid grid-cols-1 lg:grid-cols-12 gap-8">
 
       <!-- ==========================================
            LEFT COLUMN: MAIN NEWS FEED (8 Cols)
@@ -493,9 +493,10 @@ function copyNewsLink(id: string) {
              ============================== -->
         <div v-if="paginatedNews.length > 0 && viewMode === 'grid'" class="grid grid-cols-2 md:grid-cols-2 gap-2.5 sm:gap-6 w-full min-w-0">
           <article
-            v-for="item in paginatedNews"
+            v-for="(item, nIdx) in paginatedNews"
             :key="item.id"
-            class="group bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between min-w-0"
+            :style="{ animationDelay: `${nIdx * 40}ms` }"
+            class="stagger-item stagger-card group bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-w-0"
           >
             <div class="min-w-0">
               <!-- Cover Image -->

@@ -31,13 +31,14 @@ const { selectedProvince } = useLocation()
 <template>
   <div class="service-hero-banner-wrapper space-y-6 font-khmer">
     <!-- Main Hero Banner Card -->
-    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#061838] via-[#0A2E6E] to-[#083c66] text-white shadow-xl shadow-blue-950/20 ring-1 ring-white/10 p-6 sm:p-8 md:p-10">
+    <section class="scroll-reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#061838] via-[#0A2E6E] to-[#083c66] text-white shadow-xl shadow-blue-950/20 ring-1 ring-white/10 p-6 sm:p-8 md:p-10">
       
       <!-- Background Representative Image Layer with Overlay -->
       <div v-if="bannerImage" class="absolute inset-0 pointer-events-none overflow-hidden">
         <img
           :src="bannerImage"
-          alt="Banner Illustration"
+          alt=""
+          role="presentation"
           :class="[
             'w-full h-full object-cover filter contrast-110 brightness-95 transition-all duration-300',
             bannerImageClass || 'object-right md:object-center',

@@ -192,7 +192,7 @@ function handleTelegramContact(serviceName: string, provider: string) {
     />
 
     <!-- CamLife Citizen Trust & Safety Assurance Bar -->
-    <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-4 sm:p-7 shadow-lg relative overflow-hidden">
+    <div class="scroll-reveal rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-4 sm:p-7 shadow-lg relative overflow-hidden">
       <div class="relative z-10 space-y-3.5 sm:space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div class="flex items-center gap-2.5 sm:gap-3">
@@ -249,7 +249,7 @@ function handleTelegramContact(serviceName: string, provider: string) {
     </div>
 
     <!-- Smart Problem Solver Filter Console -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 p-3.5 sm:p-6 shadow-sm space-y-3.5 sm:space-y-5">
+    <div class="scroll-reveal bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 p-3.5 sm:p-6 shadow-sm space-y-3.5 sm:space-y-5">
       <!-- Search Input + Location + Sorting -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-2.5 sm:gap-3">
         <!-- Search -->
@@ -355,11 +355,12 @@ function handleTelegramContact(serviceName: string, provider: string) {
     </div>
 
     <!-- Verified Providers Marketplace Cards: 2 Columns on Mobile, 2 on MD, 3 on LG -->
-    <div v-if="paginatedServices.length > 0" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 w-full min-w-0">
+    <div v-if="paginatedServices.length > 0" class="scroll-reveal grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 w-full min-w-0">
       <div
-        v-for="service in paginatedServices"
+        v-for="(service, sIdx) in paginatedServices"
         :key="service.id"
-        class="group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between min-w-0"
+        :style="{ animationDelay: `${sIdx * 40}ms` }"
+        class="stagger-item stagger-card group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-w-0"
       >
         <div class="min-w-0">
           <!-- Service Thumbnail Header -->

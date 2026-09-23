@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { CheckCircle2, Bell, ArrowRight, X } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import { useLanguage } from '@/composables/useLanguage'
@@ -26,27 +26,60 @@ import AdminLogs from '@/components/admin/AdminLogs.vue'
 import AdminProfileModal from '@/components/admin/AdminProfileModal.vue'
 
 const router = useRouter()
-const { currentUser, login, logout } = useAuth()
+const route = useRoute()
+const { currentUser, logout } = useAuth()
 const { currentLanguage } = useLanguage()
+
+const VALID_TABS: AdminTab[] = [
+  'dashboard',
+  'government',
+  'health',
+  'jobs',
+  'transport',
+  'homeservices',
+  'offices',
+  'news',
+  'submissions',
+  'users',
+  'feedback',
+  'settings',
+  'logs'
+]
+
+function getTabFromRoute(): AdminTab {
+  const tabParam = (route.params.tab as string) || (route.query.tab as string)
+  if (tabParam && VALID_TABS.includes(tabParam as AdminTab)) {
+    return tabParam as AdminTab
+  }
+  return 'dashboard'
+}
 
 usePageMeta({
   title: 'CamLife Admin CMS — Central Management Portal',
   description: 'Enterprise administration dashboard for CamLife civic services and content.'
 })
 
-// Ensure Admin access on mount
+// Layout State synchronized with Route
+const activeTab = ref<AdminTab>(getTabFromRoute())
+const isSidebarCollapsed = ref(false)
+const isProfileModalOpen = ref(false)
+const globalSearchQuery = ref('')
+
+// Verify Admin access on mount — reject anyone without Administrator/Admin role
 onMounted(() => {
   if (!currentUser.value || (currentUser.value.role !== 'Administrator' && currentUser.value.role !== 'Admin')) {
-    login({
-      name: 'Admin Officer',
-      email: 'admin@camlife.gov.kh',
-      phone: '012 999 888',
-      role: 'Administrator'
-    })
+    router.replace('/')
+    return
   }
 
   window.addEventListener('camlife-new-submission', handleNewSubmissionEvent)
   window.addEventListener('storage', handleStoragePing)
+})
+
+watch(currentUser, (user) => {
+  if (!user || (user.role !== 'Administrator' && user.role !== 'Admin')) {
+    router.replace('/')
+  }
 })
 
 onUnmounted(() => {
@@ -55,18 +88,23 @@ onUnmounted(() => {
   if (alertTimeout) clearTimeout(alertTimeout)
 })
 
-// Layout State
-const activeTab = ref<AdminTab>('dashboard')
-const isSidebarCollapsed = ref(false)
-const isProfileModalOpen = ref(false)
-const globalSearchQuery = ref('')
+watch(
+  () => [route.params.tab, route.query.tab],
+  () => {
+    activeTab.value = getTabFromRoute()
+  }
+)
 
 function toggleSidebar() {
   isSidebarCollapsed.value = !isSidebarCollapsed.value
 }
 
 function handleSelectTab(tab: string) {
-  activeTab.value = tab as AdminTab
+  const validTab = VALID_TABS.includes(tab as AdminTab) ? (tab as AdminTab) : 'dashboard'
+  activeTab.value = validTab
+  if (route.params.tab !== validTab) {
+    router.push(validTab === 'dashboard' ? '/admin' : `/admin/${validTab}`)
+  }
 }
 
 function handleLogout() {
@@ -164,7 +202,7 @@ function handleStoragePing(e: StorageEvent) {
 }
 
 function reviewSubmission() {
-  activeTab.value = 'submissions'
+  handleSelectTab('submissions')
   activeSubmissionAlert.value = null
 }
 </script>
@@ -195,99 +233,101 @@ function reviewSubmission() {
       />
 
       <!-- MAIN VIEWPORT (Clean, responsive single-screen layout across all admin tabs) -->
-      <main class="flex-1 min-h-0 p-2.5 sm:p-3 lg:p-3.5 xl:p-4 overflow-y-auto lg:overflow-hidden flex flex-col">
-        
-        <!-- Tab 1: Overview Dashboard (Single Screen View) -->
-        <AdminOverview
-          v-if="activeTab === 'dashboard'"
-          class="flex-1 min-h-0"
-          @navigate="handleSelectTab"
-          @show-toast="triggerToast"
-        />
+      <main class="flex-1 min-h-0 p-2.5 sm:p-3 lg:p-3.5 xl:p-4 overflow-y-auto flex flex-col">
+        <transition name="admin-tab" mode="out-in">
+          <div :key="activeTab" class="flex-1 min-h-0 flex flex-col">
+            <!-- Tab 1: Overview Dashboard (Single Screen View) -->
+            <AdminOverview
+              v-if="activeTab === 'dashboard'"
+              class="flex-1 min-h-0"
+              @navigate="handleSelectTab"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 2: Government Services (Single Screen View with Pagination) -->
-        <AdminGovernment
-          v-else-if="activeTab === 'government'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 2: Government Services (Single Screen View with Pagination) -->
+            <AdminGovernment
+              v-else-if="activeTab === 'government'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 3: Healthcare & Hospitals (Single Screen View with Pagination) -->
-        <AdminHealthcare
-          v-else-if="activeTab === 'health'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 3: Healthcare & Hospitals (Single Screen View with Pagination) -->
+            <AdminHealthcare
+              v-else-if="activeTab === 'health'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 4: Jobs & Careers (Single Screen View with Pagination) -->
-        <AdminJobs
-          v-else-if="activeTab === 'jobs'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 4: Jobs & Careers (Single Screen View with Pagination) -->
+            <AdminJobs
+              v-else-if="activeTab === 'jobs'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 5: Transport & Transit (Single Screen View with Pagination) -->
-        <AdminTransport
-          v-else-if="activeTab === 'transport'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 5: Transport & Transit (Single Screen View with Pagination) -->
+            <AdminTransport
+              v-else-if="activeTab === 'transport'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 6: Home Services & Specialists (Single Screen View with Pagination) -->
-        <AdminHomeServices
-          v-else-if="activeTab === 'homeservices'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 6: Home Services & Specialists (Single Screen View with Pagination) -->
+            <AdminHomeServices
+              v-else-if="activeTab === 'homeservices'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 7: Public Offices & OWSO (Single Screen View with Pagination) -->
-        <AdminOffices
-          v-else-if="activeTab === 'offices'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 7: Public Offices & OWSO (Single Screen View with Pagination) -->
+            <AdminOffices
+              v-else-if="activeTab === 'offices'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 8: News & Bulletins (Single Screen View with Pagination) -->
-        <AdminNews
-          v-else-if="activeTab === 'news'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 8: News & Bulletins (Single Screen View with Pagination) -->
+            <AdminNews
+              v-else-if="activeTab === 'news'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 9: Users & Roles (Single Screen View with Pagination) -->
-        <AdminUsers
-          v-else-if="activeTab === 'users'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 9: Users & Roles (Single Screen View with Pagination) -->
+            <AdminUsers
+              v-else-if="activeTab === 'users'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 10: Feedback & Reports (Single Screen View with Pagination) -->
-        <AdminFeedback
-          v-else-if="activeTab === 'feedback'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 10: Feedback & Reports (Single Screen View with Pagination) -->
+            <AdminFeedback
+              v-else-if="activeTab === 'feedback'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 11: Partner Submissions (Approval Portal) -->
-        <AdminSubmissions
-          v-else-if="activeTab === 'submissions'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 11: Partner Submissions (Approval Portal) -->
+            <AdminSubmissions
+              v-else-if="activeTab === 'submissions'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 11: Settings (Single Screen Executive Layout) -->
-        <AdminSettings
-          v-else-if="activeTab === 'settings'"
-          class="flex-1 min-h-0"
-          @show-toast="triggerToast"
-        />
+            <!-- Tab 11: Settings (Single Screen Executive Layout) -->
+            <AdminSettings
+              v-else-if="activeTab === 'settings'"
+              class="flex-1 min-h-0"
+              @show-toast="triggerToast"
+            />
 
-        <!-- Tab 12: Admin Audit Logs (Single Screen View with Pagination) -->
-        <AdminLogs
-          v-else-if="activeTab === 'logs'"
-          class="flex-1 min-h-0"
-        />
-
+            <!-- Tab 12: Admin Audit Logs (Single Screen View with Pagination) -->
+            <AdminLogs
+              v-else-if="activeTab === 'logs'"
+              class="flex-1 min-h-0"
+            />
+          </div>
+        </transition>
       </main>
 
     </div>
@@ -384,5 +424,21 @@ function reviewSubmission() {
 .toast-leave-to {
   opacity: 0;
   transform: translateY(12px);
+}
+
+/* Smooth, elegant tab transition for right content area */
+.admin-tab-enter-active {
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.admin-tab-leave-active {
+  transition: opacity 0.12s ease-in, transform 0.12s ease-in;
+}
+.admin-tab-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.admin-tab-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 </style>

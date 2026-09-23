@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import {
   GitCompare,
   X,
@@ -29,9 +29,23 @@ const { localized, currentLanguage } = useLanguage()
 const serviceAId = ref(props.availableServices[0]?.id || '')
 const serviceBId = ref(props.availableServices[1]?.id || '')
 
-function getService(id: string) {
-  return props.availableServices.find(s => s.id === id) || props.availableServices[0]
-}
+const serviceA = computed(() => props.availableServices.find(s => s.id === serviceAId.value))
+const serviceB = computed(() => props.availableServices.find(s => s.id === serviceBId.value))
+
+watch(
+  [() => props.availableServices, () => props.isOpen],
+  ([services, isOpen]) => {
+    if (isOpen && services.length > 0) {
+      if (!serviceAId.value || !services.some(s => s.id === serviceAId.value)) {
+        serviceAId.value = services[0]?.id || ''
+      }
+      if (!serviceBId.value || !services.some(s => s.id === serviceBId.value)) {
+        serviceBId.value = services[1]?.id || services[0]?.id || ''
+      }
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -108,7 +122,7 @@ function getService(id: string) {
         </div>
 
         <!-- Comparison Table -->
-        <div class="p-6 overflow-x-auto">
+        <div v-if="serviceA && serviceB" class="p-6 overflow-x-auto">
           <table class="w-full text-xs text-left">
             <thead>
               <tr class="border-b border-slate-200 dark:border-slate-700">
@@ -116,10 +130,10 @@ function getService(id: string) {
                   {{ currentLanguage === 'kh' ? 'លក្ខណៈវិនិច្ឆ័យ' : 'Feature / Criteria' }}
                 </th>
                 <th class="py-3 px-4 font-black text-[#0D47A1] dark:text-blue-400 text-sm w-3/8 font-khmer">
-                  {{ localized(getService(serviceAId).title, getService(serviceAId).titleKh) }}
+                  {{ localized(serviceA.title, serviceA.titleKh) }}
                 </th>
                 <th class="py-3 px-4 font-black text-indigo-600 dark:text-indigo-400 text-sm w-3/8 font-khmer">
-                  {{ localized(getService(serviceBId).title, getService(serviceBId).titleKh) }}
+                  {{ localized(serviceB.title, serviceB.titleKh) }}
                 </th>
               </tr>
             </thead>
@@ -131,12 +145,12 @@ function getService(id: string) {
                 </td>
                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-white">
                   <span class="px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 font-bold">
-                    {{ getService(serviceAId).category }}
+                    {{ serviceA.category }}
                   </span>
                 </td>
                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-white">
                   <span class="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold">
-                    {{ getService(serviceBId).category }}
+                    {{ serviceB.category }}
                   </span>
                 </td>
               </tr>
@@ -148,10 +162,10 @@ function getService(id: string) {
                   <span>{{ currentLanguage === 'kh' ? 'ថ្លៃសេវាផ្លូវការ' : 'Official Fee' }}</span>
                 </td>
                 <td class="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-300 font-khmer">
-                  {{ localized(getService(serviceAId).fee, getService(serviceAId).feeKh) }}
+                  {{ localized(serviceA.fee, serviceA.feeKh) }}
                 </td>
                 <td class="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-300 font-khmer">
-                  {{ localized(getService(serviceBId).fee, getService(serviceBId).feeKh) }}
+                  {{ localized(serviceB.fee, serviceB.feeKh) }}
                 </td>
               </tr>
 
@@ -162,10 +176,10 @@ function getService(id: string) {
                   <span>{{ currentLanguage === 'kh' ? 'រយៈពេលដំណើរការ' : 'Processing Time' }}</span>
                 </td>
                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-white font-khmer">
-                  {{ localized(getService(serviceAId).processingTime, getService(serviceAId).processingTimeKh) }}
+                  {{ localized(serviceA.processingTime, serviceA.processingTimeKh) }}
                 </td>
                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-white font-khmer">
-                  {{ localized(getService(serviceBId).processingTime, getService(serviceBId).processingTimeKh) }}
+                  {{ localized(serviceB.processingTime, serviceB.processingTimeKh) }}
                 </td>
               </tr>
 
@@ -176,15 +190,15 @@ function getService(id: string) {
                   <span>{{ currentLanguage === 'kh' ? 'ឯកសារតម្រូវ' : 'Required Docs' }}</span>
                 </td>
                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-white">
-                  <span class="font-bold">{{ getService(serviceAId).requirements.length }} items</span>
+                  <span class="font-bold">{{ serviceA.requirements.length }} items</span>
                   <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-2 font-khmer">
-                    {{ (currentLanguage === 'kh' ? getService(serviceAId).requirementsKh : getService(serviceAId).requirements).join(', ') }}
+                    {{ (currentLanguage === 'kh' ? serviceA.requirementsKh : serviceA.requirements).join(', ') }}
                   </p>
                 </td>
                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-white">
-                  <span class="font-bold">{{ getService(serviceBId).requirements.length }} items</span>
+                  <span class="font-bold">{{ serviceB.requirements.length }} items</span>
                   <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-2 font-khmer">
-                    {{ (currentLanguage === 'kh' ? getService(serviceBId).requirementsKh : getService(serviceBId).requirements).join(', ') }}
+                    {{ (currentLanguage === 'kh' ? serviceB.requirementsKh : serviceB.requirements).join(', ') }}
                   </p>
                 </td>
               </tr>
@@ -196,10 +210,10 @@ function getService(id: string) {
                   <span>{{ currentLanguage === 'kh' ? 'សុពលភាព' : 'Validity' }}</span>
                 </td>
                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-white font-khmer">
-                  {{ localized(getService(serviceAId).validity, getService(serviceAId).validityKh) }}
+                  {{ localized(serviceA.validity, serviceA.validityKh) }}
                 </td>
                 <td class="py-3.5 px-4 font-semibold text-slate-800 dark:text-white font-khmer">
-                  {{ localized(getService(serviceBId).validity, getService(serviceBId).validityKh) }}
+                  {{ localized(serviceB.validity, serviceB.validityKh) }}
                 </td>
               </tr>
 
@@ -210,10 +224,10 @@ function getService(id: string) {
                   <span>{{ currentLanguage === 'kh' ? 'ទីតាំងដាក់ពាក្យ' : 'Where to Apply' }}</span>
                 </td>
                 <td class="py-3.5 px-4 text-xs text-slate-700 dark:text-slate-300 font-khmer">
-                  {{ localized(getService(serviceAId).location, getService(serviceAId).locationKh) }}
+                  {{ localized(serviceA.location, serviceA.locationKh) }}
                 </td>
                 <td class="py-3.5 px-4 text-xs text-slate-700 dark:text-slate-300 font-khmer">
-                  {{ localized(getService(serviceBId).location, getService(serviceBId).locationKh) }}
+                  {{ localized(serviceB.location, serviceB.locationKh) }}
                 </td>
               </tr>
             </tbody>
@@ -232,6 +246,7 @@ function getService(id: string) {
 
           <div class="flex items-center gap-3">
             <router-link
+              v-if="serviceAId"
               :to="'/government/' + serviceAId"
               @click="emit('close')"
               class="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 text-xs font-bold hover:bg-blue-100"
@@ -240,6 +255,7 @@ function getService(id: string) {
               <ArrowRight class="w-3.5 h-3.5" />
             </router-link>
             <router-link
+              v-if="serviceBId"
               :to="'/government/' + serviceBId"
               @click="emit('close')"
               class="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100"

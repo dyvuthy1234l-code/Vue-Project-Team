@@ -639,7 +639,7 @@ onUnmounted(() => {
             ]"
           >
             <span :class="['absolute inset-x-0 top-0 h-1 z-10 opacity-0 transition-opacity group-hover:opacity-100', item.accent]" />
-            
+
             <!-- Clear Representative Image Banner with Icon Badge Overlay -->
             <div class="relative h-24 sm:h-28 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
               <LazyImage
@@ -648,7 +648,7 @@ onUnmounted(() => {
                 img-class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent pointer-events-none" />
-              
+
               <!-- Floating Icon Badge -->
               <div :class="['absolute bottom-2 left-2 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl shadow-md backdrop-blur-xs transition duration-300 group-hover:scale-110 border border-white/60 dark:border-slate-600', item.bg]">
                 <component :is="item.icon" :class="['h-3.5 w-3.5 sm:h-4 sm:w-4', item.color]" />

@@ -57,7 +57,7 @@ watch(
       errorMessage.value = ''
       successMessage.value = ''
       form.name = currentUser.value?.name || 'Admin Officer'
-      form.email = currentUser.value?.email || 'admin@camlife.gov.kh'
+      form.email = currentUser.value?.email || 'admin@gmail.com'
       form.phone = currentUser.value?.phone || '012 999 888'
       form.department = currentUser.value?.department || (currentLanguage.value === 'kh' ? 'ក្រសួងមុខងារសាធារណៈ / ច្រកចេញចូលតែមួយ OWSO Central' : 'Ministry of Public Function / OWSO Central')
       form.role = currentUser.value?.role || 'Super Administrator'
@@ -267,7 +267,7 @@ function handleSave() {
                     v-model="form.email"
                     type="email"
                     class="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-mono"
-                    placeholder="admin@camlife.gov.kh"
+                    placeholder="admin@gmail.com"
                   />
                 </div>
               </div>

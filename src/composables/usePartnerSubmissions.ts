@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import type { PartnerSubmission, Hospital, HomeService } from '@/types'
+import type { PartnerSubmission, Hospital, HomeService, Transport } from '@/types'
 
 const STORAGE_KEY = 'camlife_partner_submissions'
 const CUSTOM_HOSPITALS_KEY = 'camlife_custom_hospitals'
@@ -212,6 +212,124 @@ const initialSubmissions: PartnerSubmission[] = [
   }
 ]
 
+export const freshPendingSubmissions: PartnerSubmission[] = [
+  {
+    id: 'sub-new-001',
+    facilityType: 'hospital',
+    nameKh: 'មន្ទីរពេទ្យកុមារអង្គរ (ខេត្តសៀមរាប)',
+    nameEn: 'Angkor Hospital for Children',
+    category: 'hospital',
+    location: 'Siem Reap',
+    address: 'Tep Vong Street, Svay Dangkum, Siem Reap',
+    addressKh: 'ផ្លូវទេពវង្ស សង្កាត់ស្វាយដង្គំ ក្រុងសៀមរាប',
+    phone: '063 963 409',
+    email: 'info@angkorhospital.org',
+    openingHours: '24/7',
+    licenseNumber: 'MoH-SR-2026-9921',
+    representativeName: 'Dr. Ngoun Chanpheaktra',
+    representativeRole: 'Hospital Director',
+    descriptionKh: 'មន្ទីរពេទ្យកុមារឯកទេស ផ្តល់សេវាថែទាំសុខភាពកម្រិតខ្ពស់ សង្គ្រោះបន្ទាន់ និងពិនិត្យព្យាបាលជំងឺកុមារគ្រប់ប្រភេទដោយឥតគិតថ្លៃ និងសមរម្យ។',
+    descriptionEn: 'Leading pediatric healthcare institution providing specialized medical care, emergency response, and intensive treatments for children in Cambodia.',
+    services: ['Pediatric ICU 24/7', 'Neonatal Care', 'Eye Clinic', 'Emergency Surgery'],
+    acceptsNssf: true,
+    website: 'https://angkorhospital.org',
+    status: 'pending',
+    submittedAt: '2026-09-20 14:15'
+  },
+  {
+    id: 'sub-new-002',
+    facilityType: 'transport',
+    nameKh: 'ក្រុមហ៊ុន វីរៈ ប៊ុនថាំ អេចប្រេស (VIP Transit)',
+    nameEn: 'Vireak Buntham Express VIP Transit Co., Ltd.',
+    category: 'VIP Sleeper & Speed Ferry',
+    location: 'Phnom Penh',
+    address: 'Corner of St. 106 & Night Market, Phnom Penh',
+    addressKh: 'កែងផ្លូវ ១០៦ មាត់ទន្លេផ្សាររាត្រី រាជធានីភ្នំពេញ',
+    phone: '023 999 988',
+    email: 'booking@vireakbuntham.com',
+    openingHours: '05:00 - 23:30 (Daily)',
+    licenseNumber: 'MPWT-TRANS-2026-7819',
+    representativeName: 'Suo Vireak',
+    representativeRole: 'CEO & Managing Director',
+    fleetSize: '120+ VIP Sleeper Coaches & Speed Ferries',
+    routes: ['Phnom Penh - Siem Reap', 'Phnom Penh - Sihanoukville', 'Phnom Penh - Koh Rong Ferry', 'Phnom Penh - Bangkok'],
+    descriptionKh: 'ក្រុមហ៊ុនដឹកជញ្ជូនឈានមុខគេក្នុងប្រទេសកម្ពុជា មានរថយន្តគេង VIP សេវាទូកល្បឿនលឿនកោះរ៉ុង និងសេវាដឹកជញ្ជូនបញ្ញើឆាប់រហ័ស។',
+    descriptionEn: 'Cambodia premier passenger transportation company with luxury sleeping coaches, island speed ferries, and express parcel logistics nationwide.',
+    services: ['Luxury Hotel Bus', 'Speed Ferry to Koh Rong', 'Online GPS Tracking', 'Parcel Delivery'],
+    website: 'https://vireakbuntham.com',
+    status: 'pending',
+    submittedAt: '2026-09-20 15:30'
+  },
+  {
+    id: 'sub-new-003',
+    facilityType: 'employer',
+    nameKh: 'ធនាគារ អេស៊ីលីដា ភីអិលស៊ី (ផ្នែកបច្ចេកវិទ្យា & IT)',
+    nameEn: 'ACLEDA Bank Plc. — Digital Banking Division',
+    category: 'Banking & Financial Technology',
+    industrySector: 'Banking & Finance',
+    location: 'Phnom Penh',
+    address: '#61, Preah Monivong Blvd, Sangkat Srah Chork, Phnom Penh',
+    addressKh: 'អគារលេខ ៦១ មហាវិថីព្រះមុនីវង្ស សង្កាត់ស្រះចក ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ',
+    phone: '023 999 999',
+    email: 'hr.careers@acledabank.com.kh',
+    openingHours: '08:00 - 17:00 (Mon - Fri)',
+    licenseNumber: 'NBC-BANK-REG-001',
+    representativeName: 'Dr. In Channy',
+    representativeRole: 'President & Group Managing Director',
+    website: 'https://acledabank.com.kh',
+    descriptionKh: 'គ្រឹះស្ថានធនាគារពាណិជ្ជឈានមុខគេនៅកម្ពុជា ប្រកាសជ្រើសរើសបុគ្គលិកជំនាញផ្នែក FinTech, Mobile App Developer, និង Cyber Security ជាច្រើនកន្លែង។',
+    descriptionEn: 'The leading commercial bank in Cambodia actively recruiting talented FinTech software engineers, mobile banking developers, and data specialists.',
+    services: ['Senior Mobile App Developer', 'Cyber Security Analyst', 'DevOps Cloud Engineer', 'Core Banking Specialist'],
+    status: 'pending',
+    submittedAt: '2026-09-20 16:40'
+  },
+  {
+    id: 'sub-new-004',
+    facilityType: 'home-service',
+    nameKh: 'សេវាជាងអគ្គិសនី និងទឹកស្អាត ភ្នំពេញ ២៤/៧',
+    nameEn: 'Phnom Penh 24/7 Smart Electric & Plumbing',
+    category: 'Electrician & Plumbing',
+    location: 'Phnom Penh',
+    address: 'Street 2004, Teuk Thla, Sen Sok, Phnom Penh',
+    addressKh: 'ផ្លូវ ២០០៤ សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ',
+    phone: '012 555 666',
+    email: 'service@smartplumb-kh.com',
+    openingHours: '24/7 On-Call Emergency',
+    licenseNumber: 'MOC-SVC-2026-3391',
+    representativeName: 'Kong Chamroeun',
+    representativeRole: 'Master Technician & Team Lead',
+    descriptionKh: 'ក្រុមជាងជំនាញមានបទពិសោធន៍ ១០ ឆ្នាំឡើង ទទួលដោះស្រាយបញ្ហាឆ្លងចរន្តភ្លើង ខូចទុយោទឹក លេចធ្លាយ និងតម្លើងបរិក្ខារអគ្គិសនីគ្រប់ប្រភេទ ឆ្លើយតបរហ័ស ២៤ ម៉ោង។',
+    descriptionEn: 'Certified master technicians providing on-demand rapid emergency electrical fixes, pipe burst repairs, and modern appliance installations across Phnom Penh.',
+    services: ['24/7 Emergency Power Outage', 'Water Leak Detection', 'Home Rewiring', 'Pump & Solar Setup'],
+    status: 'pending',
+    submittedAt: '2026-09-20 17:10'
+  },
+  {
+    id: 'sub-new-005',
+    facilityType: 'emergency-ambulance',
+    nameKh: 'សេវារថយន្តសង្គ្រោះបន្ទាន់ រ៉ូយ៉ាល់ភ្នំពេញ (ICU Mobile)',
+    nameEn: 'Royal Phnom Penh Mobile ICU Emergency Dispatch',
+    category: 'Mobile Intensive Care',
+    location: 'Phnom Penh',
+    address: 'Russian Blvd, Tuol Kork, Phnom Penh',
+    addressKh: 'មហាវិថីសហព័ន្ធរុស្ស៊ី សង្កាត់ទឹកល្អក់១ ខណ្ឌទួលគោក រាជធានីភ្នំពេញ',
+    phone: '023 991 119',
+    email: 'emergency@royalphnompenhhospital.com',
+    openingHours: '24/7 Trauma Emergency',
+    licenseNumber: 'MoH-EMR-2026-0044',
+    representativeName: 'Dr. Som Sophat',
+    representativeRole: 'Head of Emergency & Trauma',
+    fleetSize: '12 Advanced Life Support (ALS) Ambulances',
+    descriptionKh: 'រថយន្តសង្គ្រោះបន្ទាន់ស្តង់ដារមន្ទីរពេទ្យបាងកក បំពាក់ម៉ាស៊ីនជំនួយដង្ហើម Defibrillator និងក្រុមគ្រូពេទ្យសង្គ្រោះជីវិតបន្ទាន់ ត្រៀមចេញជួយក្នុងរយៈពេល ៥ នាទី។',
+    descriptionEn: 'High-acuity mobile intensive care ambulance fleet equipped with cardiac monitors, advanced ventilators, and trauma paramedic teams on 24/7 standby.',
+    services: ['24/7 Advanced Cardiac Life Support', 'Inter-Provincial Patient Transfer', 'Air Ambulance Coordination'],
+    acceptsNssf: true,
+    website: 'https://royalphnompenhhospital.com',
+    status: 'pending',
+    submittedAt: '2026-09-20 18:25'
+  }
+]
+
 const submissions = ref<PartnerSubmission[]>(loadSubmissions())
 
 function loadSubmissions(): PartnerSubmission[] {
@@ -220,19 +338,29 @@ function loadSubmissions(): PartnerSubmission[] {
     if (raw) {
       const parsed = JSON.parse(raw)
       if (Array.isArray(parsed) && parsed.length > 0) {
+        // If there are no pending submissions, prepend the fresh pending submissions
+        const hasPending = parsed.some((s: any) => s.status === 'pending')
+        if (!hasPending) {
+          const newIds = new Set(freshPendingSubmissions.map(f => f.id))
+          const existing = parsed.filter((p: any) => !newIds.has(p.id))
+          const combined = [...freshPendingSubmissions, ...existing]
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(combined))
+          } catch {}
+          return combined
+        }
         return parsed
       }
     }
   } catch (err) {
     console.error('Failed to load partner submissions from storage:', err)
   }
-  // Initialize default
+  const allInitial = [...freshPendingSubmissions, ...initialSubmissions]
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialSubmissions))
-  } catch {
-    // ignore
-  }
-  return [...initialSubmissions]
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allInitial))
+    localStorage.setItem(STORAGE_KEY + '_initialized', 'true')
+  } catch {}
+  return allInitial
 }
 
 function saveSubmissions() {
@@ -456,27 +584,19 @@ export function usePartnerSubmissions() {
       try {
         const rawTrans = localStorage.getItem('camlife_custom_transports')
         const customTransports = rawTrans ? JSON.parse(rawTrans) : []
-        const newTransport = {
+        const newTransport: Transport = {
           id: `trans-${Date.now()}`,
-          name: sub.nameEn,
-          nameKh: sub.nameKh,
-          category: 'Bus & VIP Transit',
-          location: sub.location,
-          address: sub.address,
-          addressKh: sub.addressKh,
-          phone: sub.phone,
-          email: sub.email,
-          openingHours: sub.openingHours,
-          licenseNumber: sub.licenseNumber,
-          representativeName: sub.representativeName,
-          fleetSize: sub.fleetSize || '20+ Modern Fleet',
-          routes: sub.routes && sub.routes.length > 0 ? sub.routes : ['Phnom Penh - Provinces'],
-          website: sub.website,
-          description: sub.descriptionEn || sub.descriptionKh,
-          descriptionKh: sub.descriptionKh,
-          services: sub.services && sub.services.length > 0 ? sub.services : ['VIP Express', 'Online Booking'],
-          rating: 4.9,
-          reviews: 1,
+          name: sub.nameEn || sub.nameKh,
+          nameKh: sub.nameKh || sub.nameEn,
+          type: 'bus',
+          route: sub.routes && sub.routes.length > 0 ? sub.routes.join(', ') : 'Phnom Penh - Provinces',
+          schedule: sub.openingHours || '05:30 AM - 09:00 PM',
+          price: '$10 - $18',
+          location: sub.location || 'Phnom Penh',
+          description: sub.descriptionEn || sub.descriptionKh || '',
+          descriptionKh: sub.descriptionKh || sub.descriptionEn || '',
+          usefulInformation: `Fleet: ${sub.fleetSize || '20+ Modern Fleet'} | License: ${sub.licenseNumber || ''} | Contact: ${sub.phone || ''}`,
+          usefulInformationKh: `មធ្យោបាយធ្វើដំណើរ៖ ${sub.fleetSize || 'រថយន្តទំនើប ២០+ គ្រឿង'} | អាជ្ញាបណ្ណ៖ ${sub.licenseNumber || ''} | ទំនាក់ទំនង៖ ${sub.phone || ''}`,
           image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80'
         }
 
@@ -532,15 +652,34 @@ export function usePartnerSubmissions() {
   }
 
   function getUserSubmissions(userIdentifier?: string): PartnerSubmission[] {
-    if (!userIdentifier) return submissions.value
+    if (!userIdentifier) return []
     const idLower = userIdentifier.toLowerCase().trim()
-    const matches = submissions.value.filter(s =>
+    return submissions.value.filter(s =>
       (s.userId && s.userId === userIdentifier) ||
       (s.applicantEmail && s.applicantEmail.toLowerCase() === idLower) ||
       (s.email && s.email.toLowerCase() === idLower) ||
       (s.representativeName && s.representativeName.toLowerCase().includes(idLower))
     )
-    return matches.length > 0 ? matches : submissions.value
+  }
+
+  function addDemoPendingSubmissions(): number {
+    freshPendingSubmissions.forEach(item => {
+      const idx = submissions.value.findIndex(s => s.id === item.id)
+      if (idx !== -1) {
+        submissions.value[idx].status = 'pending'
+        delete submissions.value[idx].reviewedAt
+        delete submissions.value[idx].rejectReason
+      } else {
+        submissions.value.unshift({ ...item })
+      }
+    })
+    saveSubmissions()
+    try {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('camlife-data-updated'))
+      }
+    } catch {}
+    return freshPendingSubmissions.length
   }
 
   return {
@@ -554,6 +693,7 @@ export function usePartnerSubmissions() {
     deleteSubmission,
     getUserSubmissions,
     getAdminNotifications,
-    saveAdminNotifications
+    saveAdminNotifications,
+    addDemoPendingSubmissions
   }
 }

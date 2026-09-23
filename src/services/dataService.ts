@@ -477,14 +477,28 @@ export function getHomeServiceById(id: string): HomeService | undefined {
 
 export function getTransport(): Transport[] {
   try {
-    const customTrans1 = localStorage.getItem('camlife_custom_transports')
-    const customTrans2 = localStorage.getItem('camlife_user_transport')
-    const parsed1: Transport[] = customTrans1 ? JSON.parse(customTrans1) : []
-    const parsed2: Transport[] = customTrans2 ? JSON.parse(customTrans2) : []
-    const combinedCustom = [...parsed1, ...parsed2.filter(p2 => !parsed1.some(p1 => p1.id === p2.id))]
-    if (combinedCustom.length > 0) {
-      const customIds = new Set(combinedCustom.map(p => p.id))
-      return [...combinedCustom, ...transport.filter(t => !customIds.has(t.id))]
+    const customTrans = localStorage.getItem('camlife_custom_transports')
+    if (customTrans) {
+      const parsed: any[] = JSON.parse(customTrans)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const cleaned: Transport[] = parsed.map(t => ({
+          ...t,
+          id: t.id || `trans-${Date.now()}`,
+          name: t.name || 'Unnamed Transport',
+          nameKh: t.nameKh || t.name || '',
+          type: (['bus', 'taxi', 'train', 'plane', 'ferry'].includes(t.type) ? t.type : 'bus') as Transport['type'],
+          route: t.route || (Array.isArray(t.routes) ? t.routes.join(', ') : 'Phnom Penh - Provinces'),
+          schedule: t.schedule || t.openingHours || '06:00 AM - 08:00 PM',
+          price: t.price || '$10 - $15',
+          location: t.location || 'Phnom Penh',
+          description: t.description || '',
+          descriptionKh: t.descriptionKh || t.description || '',
+          usefulInformation: t.usefulInformation || '',
+          usefulInformationKh: t.usefulInformationKh || ''
+        }))
+        const customIds = new Set(cleaned.map(c => c.id))
+        return [...cleaned, ...transport.filter(t => !customIds.has(t.id))]
+      }
     }
   } catch {}
   return transport
@@ -509,21 +523,33 @@ export function getNewsById(id: string): NewsItem | undefined {
 }
 
 export function getLocations(): LocationItem[] {
+  let list = locations
   try {
     const customLoc = localStorage.getItem('camlife_custom_locations')
     if (customLoc) {
       const parsed: LocationItem[] = JSON.parse(customLoc)
       if (Array.isArray(parsed) && parsed.length > 0) {
         const customIds = new Set(parsed.map(p => p.id))
-        return [...parsed, ...locations.filter(l => !customIds.has(l.id))]
+        list = [...parsed, ...locations.filter(l => !customIds.has(l.id))]
       }
     }
   } catch {}
-  return locations
+  return list.map(l => ({
+    ...l,
+    category: l.category || 'Government/OWSO',
+    name: l.name || '',
+    nameKh: l.nameKh || l.name || '',
+    address: l.address || '',
+    addressKh: l.addressKh || l.address || '',
+    phone: l.phone || '+855 23 720 001',
+    description: l.description || '',
+    descriptionKh: l.descriptionKh || l.description || '',
+    coordinates: l.coordinates || { lat: 11.5564, lng: 104.9282 }
+  }))
 }
 
 export function getEmergencyContacts(): EmergencyContact[] {
-  return emergencyContacts.sort((a, b) => a.priority - b.priority)
+  return [...emergencyContacts].sort((a, b) => a.priority - b.priority)
 }
 
 function notifyDataUpdated() {
@@ -562,7 +588,6 @@ export function saveCustomJobs(jobsList: Job[]) {
 export function saveCustomTransport(transList: Transport[]) {
   try {
     localStorage.setItem('camlife_custom_transports', JSON.stringify(transList))
-    localStorage.setItem('camlife_user_transport', JSON.stringify(transList))
     notifyDataUpdated()
   } catch (e) {
     console.error('Failed to save custom transport', e)
@@ -597,7 +622,7 @@ export function saveCustomNews(newsList: NewsItem[]) {
 }
 
 export function globalSearch(query: string): SearchResult[] {
-  if (!query.trim()) return []
+  if (!query || typeof query !== 'string' || !query.trim()) return []
   const q = query.toLowerCase().trim()
   const results: SearchResult[] = []
 
@@ -607,22 +632,19 @@ export function globalSearch(query: string): SearchResult[] {
       e.name.toLowerCase().includes(q) ||
       (e.nameKh && e.nameKh.toLowerCase().includes(q)) ||
       e.number.includes(q) ||
-      e.description.toLowerCase().includes(q) ||
+      (e.description && e.description.toLowerCase().includes(q)) ||
       (e.descriptionKh && e.descriptionKh.toLowerCase().includes(q)) ||
       q.includes('អាសន្ន') ||
       q.includes('សង្គ្រោះ') ||
-      q.includes('emergency') ||
-      q.includes('police') ||
-      q.includes('បាញ់') ||
-      q.includes('ភ្លើង')
+      q.includes('emergency')
     ) {
-      if (!results.some(r => r.id === e.id)) {
+      if (!results.some(r => r.id === e.id && r.type === 'emergency')) {
         results.push({
           id: e.id,
           title: `${e.number} - ${e.name}`,
-          description: e.description,
+          description: e.description || '',
           category: 'Emergency 24/7',
-          type: 'emergency' as any,
+          type: 'emergency',
           route: '/emergency'
         })
       }
@@ -634,19 +656,15 @@ export function globalSearch(query: string): SearchResult[] {
     if (
       h.name.toLowerCase().includes(q) ||
       (h.nameKh && h.nameKh.toLowerCase().includes(q)) ||
-      h.description.toLowerCase().includes(q) ||
+      (h.description && h.description.toLowerCase().includes(q)) ||
       (h.descriptionKh && h.descriptionKh.toLowerCase().includes(q)) ||
       h.category.toLowerCase().includes(q) ||
       h.location.toLowerCase().includes(q) ||
       (h.address && h.address.toLowerCase().includes(q)) ||
       (h.addressKh && h.addressKh.toLowerCase().includes(q)) ||
-      h.services.some(s => s.toLowerCase().includes(q)) ||
-      q.includes('ឈឺ') ||
-      q.includes('ពេទ្យ') ||
-      q.includes('doctor') ||
-      q.includes('sick')
+      (h.services && h.services.some(s => s.toLowerCase().includes(q)))
     ) {
-      if (!results.some(r => r.id === h.id)) {
+      if (!results.some(r => r.id === h.id && r.type === 'hospital')) {
         results.push({
           id: h.id,
           title: h.name,
@@ -664,7 +682,7 @@ export function globalSearch(query: string): SearchResult[] {
     if (
       s.title.toLowerCase().includes(q) ||
       (s.titleKh && s.titleKh.toLowerCase().includes(q)) ||
-      s.description.toLowerCase().includes(q) ||
+      (s.description && s.description.toLowerCase().includes(q)) ||
       (s.descriptionKh && s.descriptionKh.toLowerCase().includes(q)) ||
       s.category.toLowerCase().includes(q)
     ) {
@@ -683,8 +701,10 @@ export function globalSearch(query: string): SearchResult[] {
   getJobs().forEach(j => {
     if (
       j.title.toLowerCase().includes(q) ||
+      (j.titleKh && j.titleKh.toLowerCase().includes(q)) ||
       j.company.toLowerCase().includes(q) ||
-      j.description.toLowerCase().includes(q) ||
+      (j.description && j.description.toLowerCase().includes(q)) ||
+      (j.descriptionKh && j.descriptionKh.toLowerCase().includes(q)) ||
       j.category.toLowerCase().includes(q) ||
       j.location.toLowerCase().includes(q)
     ) {
@@ -705,7 +725,7 @@ export function globalSearch(query: string): SearchResult[] {
       s.serviceName.toLowerCase().includes(q) ||
       (s.serviceNameKh && s.serviceNameKh.toLowerCase().includes(q)) ||
       s.provider.toLowerCase().includes(q) ||
-      s.description.toLowerCase().includes(q) ||
+      (s.description && s.description.toLowerCase().includes(q)) ||
       (s.descriptionKh && s.descriptionKh.toLowerCase().includes(q)) ||
       s.category.toLowerCase().includes(q) ||
       s.location.toLowerCase().includes(q)
@@ -726,10 +746,11 @@ export function globalSearch(query: string): SearchResult[] {
     if (
       t.name.toLowerCase().includes(q) ||
       (t.nameKh && t.nameKh.toLowerCase().includes(q)) ||
-      t.description.toLowerCase().includes(q) ||
+      (t.description && t.description.toLowerCase().includes(q)) ||
       (t.descriptionKh && t.descriptionKh.toLowerCase().includes(q)) ||
       t.type.toLowerCase().includes(q) ||
-      t.route.toLowerCase().includes(q)
+      (t.route && t.route.toLowerCase().includes(q)) ||
+      (t.location && t.location.toLowerCase().includes(q))
     ) {
       results.push({
         id: t.id,
@@ -747,7 +768,7 @@ export function globalSearch(query: string): SearchResult[] {
     if (
       n.title.toLowerCase().includes(q) ||
       (n.titleKh && n.titleKh.toLowerCase().includes(q)) ||
-      n.description.toLowerCase().includes(q) ||
+      (n.description && n.description.toLowerCase().includes(q)) ||
       (n.descriptionKh && n.descriptionKh.toLowerCase().includes(q)) ||
       n.category.toLowerCase().includes(q)
     ) {
@@ -757,7 +778,7 @@ export function globalSearch(query: string): SearchResult[] {
         description: n.description,
         category: n.category,
         type: 'news',
-        route: '/news'
+        route: `/news/${n.id}`
       })
     }
   })
@@ -767,10 +788,10 @@ export function globalSearch(query: string): SearchResult[] {
     if (
       l.name.toLowerCase().includes(q) ||
       (l.nameKh && l.nameKh.toLowerCase().includes(q)) ||
-      l.description.toLowerCase().includes(q) ||
+      (l.description && l.description.toLowerCase().includes(q)) ||
       (l.descriptionKh && l.descriptionKh.toLowerCase().includes(q)) ||
       l.category.toLowerCase().includes(q) ||
-      l.address.toLowerCase().includes(q) ||
+      (l.address && l.address.toLowerCase().includes(q)) ||
       (l.addressKh && l.addressKh.toLowerCase().includes(q))
     ) {
       results.push({

@@ -12,7 +12,8 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { useFeedback } from '@/composables/useFeedback'
@@ -85,14 +86,23 @@ function handleStatusChange(id: string, newStatus: 'pending' | 'verified' | 'res
 }
 
 // -------------------------------------------------------------
-// DETAIL MODAL
+// PAGE VIEW STATE ('list' | 'detail')
+// -------------------------------------------------------------
+const currentView = ref<'list' | 'detail'>('list')
+
+function backToList() {
+  currentView.value = 'list'
+  selectedDetailReport.value = null
+}
+
+// -------------------------------------------------------------
+// DETAIL SUB-PAGE VIEW
 // -------------------------------------------------------------
 const selectedDetailReport = ref<FeedbackReport | null>(null)
-const isDetailModalOpen = ref(false)
 
 function openDetailModal(r: FeedbackReport) {
   selectedDetailReport.value = r
-  isDetailModalOpen.value = true
+  currentView.value = 'detail'
 }
 
 // -------------------------------------------------------------
@@ -123,8 +133,13 @@ function confirmDelete() {
 <template>
   <div class="h-full flex flex-col justify-between gap-2 sm:gap-2.5 select-none">
     
-    <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
+    <!-- ======================================================== -->
+    <!-- VIEW 1: FEEDBACK & REPORTS LIST VIEW                     -->
+    <!-- ======================================================== -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col justify-between gap-2 sm:gap-2.5">
+      
+      <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
       
       <!-- KPI 1: Total Reports -->
       <div
@@ -519,88 +534,130 @@ function confirmDelete() {
       </div>
 
     </div>
+    </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 1: VIEW FEEDBACK REPORT DETAIL                     -->
+    <!-- VIEW 2: FULL FEEDBACK REPORT DETAIL SUB-PAGE             -->
     <!-- ======================================================== -->
-    <div
-      v-if="isDetailModalOpen && selectedDetailReport"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isDetailModalOpen = false"
-    >
-      <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 overflow-hidden text-xs">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shadow-2xs">
-              <MessageSquare class="w-4 h-4" />
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-slate-900 font-khmer leading-tight">
-                {{ selectedDetailReport.serviceTitle }}
-              </h3>
-              <p class="text-[10px] text-slate-400 font-mono mt-0.5">ID: {{ selectedDetailReport.id }}</p>
-            </div>
-          </div>
+    <div v-else-if="currentView === 'detail' && selectedDetailReport" class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200">
+      
+      <!-- Top Action Bar with Back button & Breadcrumb -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            @click="isDetailModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            <X class="w-4 h-4" />
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
           </button>
-        </div>
 
-        <div class="py-4 space-y-3">
-          <div class="grid grid-cols-2 gap-2.5">
-            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-              <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">មូលហេតុ</span>
-              <span class="font-bold text-slate-800">{{ selectedDetailReport.reasonLabel }}</span>
-            </div>
-            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-              <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">ស្ថានភាព</span>
-              <span class="font-bold text-emerald-700 capitalize">{{ selectedDetailReport.status }}</span>
-            </div>
-          </div>
+          <div class="h-4 w-px bg-slate-200"></div>
 
-          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">ទំនាក់ទំនងពលរដ្ឋ</span>
-            <span class="font-bold text-slate-800 font-mono">{{ selectedDetailReport.contactEmail || 'Anonymous' }}</span>
-          </div>
-
-          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">ខ្លឹមសារមតិយោបល់លម្អិត</span>
-            <p class="text-slate-700 font-khmer leading-relaxed">{{ selectedDetailReport.details || 'No detailed note provided.' }}</p>
+          <div class="flex items-center gap-1.5 text-xs font-khmer">
+            <span class="text-slate-400 font-medium cursor-pointer hover:text-slate-700" @click="backToList">
+              {{ currentLanguage === 'kh' ? 'មតិយោបល់' : 'Feedback & Reports' }}
+            </span>
+            <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
+            <span class="font-bold text-slate-800 truncate max-w-[280px]">
+              {{ selectedDetailReport.serviceTitle }}
+            </span>
           </div>
         </div>
 
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-          <div class="flex items-center gap-1.5">
-            <button
-              v-if="selectedDetailReport.status !== 'verified'"
-              type="button"
-              @click="handleStatusChange(selectedDetailReport.id, 'verified'); selectedDetailReport.status = 'verified'"
-              class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold font-khmer cursor-pointer"
-            >
-              ផ្ទៀងផ្ទាត់
-            </button>
-            <button
-              v-if="selectedDetailReport.status !== 'resolved'"
-              type="button"
-              @click="handleStatusChange(selectedDetailReport.id, 'resolved'); selectedDetailReport.status = 'resolved'"
-              class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold font-khmer cursor-pointer"
-            >
-              ដោះស្រាយ
-            </button>
-          </div>
+        <!-- Quick Status Change Actions -->
+        <div class="flex items-center gap-2">
           <button
+            v-if="selectedDetailReport.status !== 'verified'"
             type="button"
-            @click="isDetailModalOpen = false"
-            class="px-3.5 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold font-khmer cursor-pointer"
+            @click="handleStatusChange(selectedDetailReport.id, 'verified'); selectedDetailReport.status = 'verified'"
+            class="px-3.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold font-khmer cursor-pointer transition-colors shadow-2xs"
           >
-            {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
+            {{ currentLanguage === 'kh' ? 'ផ្ទៀងផ្ទាត់' : 'Mark Verified' }}
+          </button>
+          <button
+            v-if="selectedDetailReport.status !== 'resolved'"
+            type="button"
+            @click="handleStatusChange(selectedDetailReport.id, 'resolved'); selectedDetailReport.status = 'resolved'"
+            class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold font-khmer cursor-pointer transition-colors shadow-xs"
+          >
+            {{ currentLanguage === 'kh' ? 'ដោះស្រាយរួចរាល់' : 'Resolve Issue' }}
           </button>
         </div>
       </div>
+
+      <!-- Detail Card Content Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
+        
+        <!-- Header Info -->
+        <div class="flex items-start justify-between pb-5 border-b border-slate-100 gap-4">
+          <div class="flex items-start gap-3.5 min-w-0">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 shadow-2xs">
+              <MessageSquare class="w-6 h-6" />
+            </div>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border font-khmer bg-amber-50 text-amber-800 border-amber-200">
+                  {{ selectedDetailReport.reasonLabel }}
+                </span>
+                <span class="text-[11px] font-mono text-slate-400">ID: {{ selectedDetailReport.id }}</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 font-khmer leading-tight">
+                {{ selectedDetailReport.serviceTitle }}
+              </h2>
+              <p class="text-xs text-slate-400 font-medium mt-0.5 font-khmer">
+                {{ currentLanguage === 'kh' ? 'កាលបរិច្ឆេទបញ្ជូន៖' : 'Submitted Date:' }} {{ selectedDetailReport.createdAt }}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <span
+              :class="[
+                'px-3 py-1 rounded-full text-xs font-bold capitalize font-khmer',
+                selectedDetailReport.status === 'resolved'
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                  : selectedDetailReport.status === 'verified'
+                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                  : 'bg-amber-100 text-amber-800 border border-amber-200'
+              ]"
+            >
+              {{ selectedDetailReport.status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 3 KPIs / Details -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'មូលហេតុនៃបញ្ហា' : 'Reason' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">{{ selectedDetailReport.reasonLabel }}</span>
+          </div>
+
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ស្ថានភាពបច្ចុប្បន្ន' : 'Status' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 capitalize font-khmer">{{ selectedDetailReport.status }}</span>
+          </div>
+
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ទំនាក់ទំនងពលរដ្ឋ' : 'Contact Citizen' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-mono truncate">{{ selectedDetailReport.contactEmail || 'Anonymous' }}</span>
+          </div>
+        </div>
+
+        <!-- Detailed Description -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider">
+            {{ currentLanguage === 'kh' ? 'ខ្លឹមសារមតិយោបល់ និងសេចក្តីរាយការណ៍លម្អិត' : 'Detailed Citizen Feedback & Notes' }}
+          </h4>
+          <p class="text-xs sm:text-sm text-slate-700 font-khmer leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+            {{ selectedDetailReport.details || 'No detailed note provided.' }}
+          </p>
+        </div>
+
+      </div>
+
     </div>
 
     <!-- ======================================================== -->

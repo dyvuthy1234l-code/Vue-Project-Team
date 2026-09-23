@@ -231,8 +231,7 @@ const mySubmissions = computed(() => {
 })
 
 const displayedSubmissions = computed(() => {
-  if (mySubmissions.value.length > 0) return mySubmissions.value
-  return submissions.value
+  return mySubmissions.value
 })
 
 function openUserDetailModal(sub: PartnerSubmission) {

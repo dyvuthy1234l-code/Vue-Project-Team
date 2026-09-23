@@ -293,31 +293,68 @@ function resetChat() {
   <div class="select-none">
     
     <!-- 1. FLOATING CHATBOT BUTTON (BOTTOM RIGHT) -->
-    <button
-      type="button"
-      @click="isOpen = !isOpen"
-      :class="[
-        'chatbot-floating-btn fixed bottom-5 right-5 z-30 p-3 sm:p-3.5 rounded-2xl shadow-xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer group',
-        isOpen
-          ? 'bg-slate-900 text-white scale-95'
-          : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-blue-500/25 hover:scale-105 active:scale-95'
-      ]"
-      title="CamLife AI Assistant"
-    >
-      <div class="relative">
-        <Bot v-if="!isOpen" class="w-6 h-6 animate-pulse" />
-        <X v-else class="w-6 h-6" />
-        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-white"></span>
-      </div>
-      <div class="hidden sm:flex flex-col text-left">
-        <span class="text-xs font-black font-khmer leading-none">
-          {{ currentLanguage === 'kh' ? 'ជំនួយការ CamLife AI' : 'CamLife Assistant' }}
-        </span>
-        <span class="text-[10px] text-blue-100 font-medium leading-tight mt-0.5">
-          {{ currentLanguage === 'kh' ? 'សួរនាំព័ត៌មានរដ្ឋបាល ២៤/៧' : '24/7 Civic AI Support' }}
-        </span>
-      </div>
-    </button>
+    <div class="fixed bottom-5 right-5 z-40 floating-ai-btn select-none">
+      <!-- Glow Aura (Only when closed) -->
+      <div
+        v-if="!isOpen"
+        class="absolute -inset-1 rounded-full blur-md transition-all duration-500 pointer-events-none bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-400 opacity-75 group-hover:opacity-100 group-hover:blur-lg animate-pulse"
+      ></div>
+
+      <!-- Main Pill Button (When closed) -->
+      <button
+        v-if="!isOpen"
+        type="button"
+        @click="isOpen = true"
+        class="chatbot-floating-btn relative flex items-center gap-3 px-3.5 py-2.5 sm:px-4.5 sm:py-2.5 rounded-full cursor-pointer transition-all duration-300 shadow-xl overflow-hidden group border border-white/30 backdrop-blur-md bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white shadow-[0_10px_25px_-5px_rgba(37,99,235,0.45)] hover:shadow-[0_15px_30px_-5px_rgba(79,70,229,0.55)] hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-95"
+      >
+        <!-- Shimmer sweep effect on hover -->
+        <div class="absolute inset-0 w-full h-full rounded-full overflow-hidden pointer-events-none">
+          <div class="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/25 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out"></div>
+        </div>
+
+        <!-- AI Icon Avatar Orb -->
+        <div class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105 shadow-inner bg-gradient-to-tr from-white/25 to-white/10 backdrop-blur-md border border-white/40 text-white">
+          <!-- Bot Icon with Sparkles & Live Pulse -->
+          <Bot class="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-xs transition-transform group-hover:rotate-6" />
+          
+          <!-- Live Glowing Online Dot -->
+          <span class="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 ring-2 ring-blue-700"></span>
+          </span>
+
+          <!-- Mini AI Magic Sparkle -->
+          <Sparkles class="w-3 h-3 text-amber-300 absolute -bottom-0.5 -left-0.5 drop-shadow-xs animate-pulse" />
+        </div>
+
+        <!-- Text Labels (Expanded on sm screens) -->
+        <div class="hidden sm:flex flex-col text-left pr-1">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs sm:text-[13px] font-black font-khmer leading-snug tracking-tight">
+              {{ currentLanguage === 'kh' ? 'ជំនួយការ CamLife AI' : 'CamLife Assistant' }}
+            </span>
+            <span class="text-[9px] font-black font-mono uppercase px-1.5 py-0.5 rounded-full bg-white/20 text-white border border-white/25 leading-none shadow-2xs">
+              AI
+            </span>
+          </div>
+          <span class="text-[10px] sm:text-[11px] text-blue-100/90 font-medium font-khmer leading-tight mt-0.5 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            {{ currentLanguage === 'kh' ? 'សួរនាំព័ត៌មានរដ្ឋបាល ២៤/៧' : '24/7 Civic AI Support' }}
+          </span>
+        </div>
+      </button>
+
+      <!-- Sleek Circular Close Button (When open) -->
+      <button
+        v-else
+        type="button"
+        @click="isOpen = false"
+        class="w-12 h-12 rounded-full bg-slate-900/95 hover:bg-slate-800 text-white border border-white/20 shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group"
+        aria-label="Close Assistant"
+      >
+        <X class="w-5 h-5 text-white transition-transform duration-300 group-hover:rotate-90" />
+      </button>
+    </div>
 
     <!-- 2. CHAT DRAWER / WINDOW -->
     <transition
@@ -330,13 +367,13 @@ function resetChat() {
     >
       <div
         v-if="isOpen"
-        class="fixed bottom-20 right-4 sm:right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[540px] max-h-[82vh] bg-white rounded-2xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden select-text"
+        class="fixed bottom-[88px] sm:bottom-[92px] right-4 sm:right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-120px)] bg-white rounded-2xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden select-text"
       >
         
         <!-- Chat Header -->
         <div class="p-3.5 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white flex items-center justify-between shrink-0 select-none shadow-xs">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-white border border-white/20 shrink-0">
+            <div class="w-8 h-8 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-white border border-white/20 shrink-0 shadow-inner">
               <Bot class="w-5 h-5" />
             </div>
             <div>
@@ -344,7 +381,10 @@ function resetChat() {
                 <h4 class="text-xs font-black font-khmer leading-tight">
                   {{ currentLanguage === 'kh' ? 'ជំនួយការឆ្លាតវៃ CamLife' : 'CamLife Smart Assistant' }}
                 </h4>
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span class="flex h-2 w-2 relative">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                </span>
               </div>
               <p class="text-[10px] text-blue-100 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ផ្តល់ព័ត៌មានសេវាសាធារណៈ & រដ្ឋបាល' : 'Automated Civic Service Guide' }}
@@ -494,6 +534,23 @@ function resetChat() {
 </template>
 
 <style scoped>
+@keyframes floatAura {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.floating-ai-btn {
+  animation: floatAura 5s ease-in-out infinite;
+}
+
+.floating-ai-btn:hover {
+  animation-play-state: paused;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

@@ -149,7 +149,7 @@ export interface SearchResult {
   title: string
   description: string
   category: string
-  type: 'hospital' | 'government' | 'job' | 'home-service' | 'transport' | 'news' | 'location'
+  type: 'hospital' | 'government' | 'job' | 'home-service' | 'transport' | 'news' | 'location' | 'emergency'
   route: string
 }
 

@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+const STORAGE_KEY = 'camlife-user'
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -58,9 +60,10 @@ const router = createRouter({
       component: () => import('@/views/PartnerRegisterPage.vue')
     },
     {
-      path: '/admin',
+      path: '/admin/:tab?',
       name: 'admin',
-      component: () => import('@/views/AdminDashboard.vue')
+      component: () => import('@/views/AdminDashboard.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/home-services',
@@ -112,6 +115,26 @@ const router = createRouter({
     if (savedPosition) return savedPosition
     return { top: 0 }
   }
+})
+
+// Navigation Guard: strictly protect admin routes
+router.beforeEach((to, _from, next) => {
+  if (to.meta.requiresAdmin) {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY)
+      if (data) {
+        const user = JSON.parse(data)
+        if (user.role === 'Administrator' || user.role === 'Admin') {
+          return next()
+        }
+      }
+    } catch {
+      // ignore parse errors
+    }
+    // Block non-admin users and unregistered visitors from entering Admin CMS
+    return next({ path: '/' })
+  }
+  next()
 })
 
 export default router

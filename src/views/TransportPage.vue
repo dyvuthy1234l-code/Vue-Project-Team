@@ -21,8 +21,18 @@ import {
   Navigation,
   LocateFixed,
   Sparkles,
-  X
+  X,
+  Phone,
+  PhoneCall,
+  Info,
+  Wifi,
+  Zap,
+  Coffee,
+  Check,
+  Copy,
+  Globe
 } from 'lucide-vue-next'
+import type { Transport } from '@/types'
 import ServiceHeroBanner from '@/components/ServiceHeroBanner.vue'
 import StationPicker from '@/components/StationPicker.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -1356,6 +1366,386 @@ const currentBusLineMapExternal = computed(() => {
   return `https://www.google.com/maps/dir/?api=1&origin=${l.startLat},${l.startLng}&destination=${l.endLat},${l.endLng}&travelmode=driving`
 })
 
+// Detailed Information Modal for any Transport Operator
+export interface OperatorExtraInfo {
+  hotline: string
+  hotlineFormatted: string
+  bookingUrl?: string
+  terminalAddress: string
+  terminalAddressKh: string
+  amenities: { icon: string; nameKh: string; nameEn: string }[]
+  highlightsKh: string[]
+  highlightsEn: string[]
+  departures: { time: string; period: string; noteKh: string; noteEn: string }[]
+}
+
+const OPERATOR_DETAILS: Record<string, OperatorExtraInfo> = {
+  'pp-city-bus': {
+    hotline: '023880880',
+    hotlineFormatted: '023 880 880 / 012 888 999',
+    terminalAddress: 'Phnom Penh Municipal Bus Authority Headquarters, St. 598, Phnom Penh',
+    terminalAddressKh: 'រដ្ឋបាលរថយន្តក្រុងសាធារណៈរាជធានីភ្នំពេញ ផ្លូវលេខ ៥៩៨ រាជធានីភ្នំពេញ',
+    amenities: [
+      { icon: 'snowflake', nameKh: 'ម៉ាស៊ីនត្រជាក់ទំនើប', nameEn: 'Air Conditioned' },
+      { icon: 'shield', nameKh: 'សុវត្ថិភាពខ្ពស់ តាមដាន GPS', nameEn: 'Live GPS Security' },
+      { icon: 'ticket', nameKh: 'ជិះឥតគិតថ្លៃសម្រាប់សិស្ស-ចាស់ជរា', nameEn: 'Free for Students & Seniors' },
+      { icon: 'smartphone', nameKh: 'បង់តាម KHQR ឬកាតឆ្លាតវៃ', nameEn: 'KHQR & Contactless Card' },
+    ],
+    highlightsKh: [
+      'ដំណើរការ ១៣ ខ្សែរត់ទូទាំងរាជធានីភ្នំពេញ',
+      'ចេញរៀងរាល់ ១០ ទៅ ១៥ នាទីម្តង ចាប់ពីម៉ោង 5:30 ព្រឹក ដល់ 8:30 យប់',
+      'តម្លៃសំបុត្រតែ ១,៥០០ រៀលប៉ុណ្ណោះក្នុងម្នាក់',
+      'មានកម្មវិធី City Bus សម្រាប់មើល GPS រថយន្តក្រុងតាមពេលវេលាជាក់ស្តែង'
+    ],
+    highlightsEn: [
+      '13 major commuter lines throughout Phnom Penh',
+      'Departures every 10-15 minutes from 5:30 AM to 8:30 PM',
+      'Flat affordable fare of only 1,500 KHR (~$0.37)',
+      'Official City Bus app for live GPS bus tracking'
+    ],
+    departures: [
+      { time: '05:30 - 08:30', period: 'ព្រឹក (Morning Rush)', noteKh: 'ចេញរៀងរាល់ ១០ នាទីម្តង', noteEn: 'Every 10 mins' },
+      { time: '08:30 - 16:30', period: 'ថ្ងៃត្រង់ (Midday)', noteKh: 'ចេញរៀងរាល់ ១៥ នាទីម្តង', noteEn: 'Every 15 mins' },
+      { time: '16:30 - 20:30', period: 'ល្ងាច (Evening Rush)', noteKh: 'ចេញរៀងរាល់ ១០-១២ នាទីម្តង', noteEn: 'Every 10-12 mins' },
+    ]
+  },
+  'giant-ibis-transport': {
+    hotline: '023999333',
+    hotlineFormatted: '023 999 333 / 095 777 808',
+    bookingUrl: 'https://www.giantibis.com',
+    terminalAddress: 'St. 106 (Night Market Terminal / Riverside), Phnom Penh',
+    terminalAddressKh: 'ផ្លូវលេខ ១០៦ (ចំណតផ្សាររាត្រី មាត់ទន្លេ), រាជធានីភ្នំពេញ',
+    amenities: [
+      { icon: 'wifi', nameKh: 'វ៉ាយហ្វាយល្បឿនលឿន (Wi-Fi)', nameEn: 'High-speed Wi-Fi' },
+      { icon: 'zap', nameKh: 'ព្រីភ្លើងសាកថ្មទូរស័ព្ទ (USB/Outlet)', nameEn: 'Power & USB Plugs' },
+      { icon: 'coffee', nameKh: 'ទឹកបរិសុទ្ធ និងនំឥតគិតថ្លៃ', nameEn: 'Free Snacks & Water' },
+      { icon: 'bus', nameKh: 'គ្រែគេងកម្រិត VIP ពេលយប់', nameEn: 'VIP Sleeping Berths' },
+      { icon: 'car', nameKh: 'សេវាទទួលដល់សណ្ឋាគារ', nameEn: 'Free Hotel Pickup' },
+    ],
+    highlightsKh: [
+      'ល្បីល្បាញខាងសុវត្ថិភាព មានអ្នកបើកបរពីរនាក់សម្រាប់ផ្លូវឆ្ងាយ',
+      'មានជើងពេលថ្ងៃ (កៅអីទន់ធំទូលាយ) និងជើងពេលយប់ (គ្រែគេងផាសុកភាព)',
+      'រថយន្តមានប្រព័ន្ធតាមដានល្បឿន GPS ជាប់ជាប្រចាំ',
+      'មានខ្សែរត់ទៅសៀមរាប កំពត កែប និងឆ្លងដែនទៅបាងកក ហូជីមិញ'
+    ],
+    highlightsEn: [
+      'Top-tier safety record with two rotating drivers on long hauls',
+      'Day buses with generous legroom and night sleeping berths',
+      'Continuous GPS speed-monitoring on all coaches',
+      'Connecting Phnom Penh, Siem Reap, Kampot, Kep, Bangkok & Ho Chi Minh'
+    ],
+    departures: [
+      { time: '07:45 AM', period: 'ជើងព្រឹក (Morning Express)', noteKh: 'ភ្នំពេញ ⇄ សៀមរាប / កំពត', noteEn: 'PP ⇄ Siem Reap / Kampot' },
+      { time: '08:45 AM', period: 'ជើងព្រឹក (Morning Coach)', noteKh: 'ភ្នំពេញ ⇄ បាងកក / ហូជីមិញ', noteEn: 'PP ⇄ Bangkok / Saigon' },
+      { time: '12:30 PM', period: 'ជើងរសៀល (Afternoon)', noteKh: 'ភ្នំពេញ ⇄ សៀមរាប', noteEn: 'PP ⇄ Siem Reap' },
+      { time: '10:30 PM', period: 'ជើងយប់ (Night Sleeper)', noteKh: 'គ្រែគេងទៅសៀមរាប', noteEn: 'Sleeper bus to Siem Reap' },
+      { time: '11:30 PM', period: 'ជើងកណ្តាលអធ្រាត្រ (Midnight Sleeper)', noteKh: 'គ្រែគេង VIP សៀមរាប', noteEn: 'VIP Sleeper Siem Reap' },
+    ]
+  },
+  'mekong-express-limousine': {
+    hotline: '012787839',
+    hotlineFormatted: '012 787 839 / 023 427 518',
+    bookingUrl: 'https://catmekongexpress.com',
+    terminalAddress: 'St. 102 & Riverside, Wat Phnom, Phnom Penh',
+    terminalAddressKh: 'ផ្លូវលេខ ១០២ ក្បែរវត្តភ្នំ មាត់ទន្លេ, រាជធានីភ្នំពេញ',
+    amenities: [
+      { icon: 'snowflake', nameKh: 'ម៉ាស៊ីនត្រជាក់ត្រជាក់ស្រួល', nameEn: 'Air-Conditioned' },
+      { icon: 'coffee', nameKh: 'ផ្តល់ទឹកសុទ្ធ និងកន្សែងត្រជាក់', nameEn: 'Water & Wet Towel' },
+      { icon: 'wifi', nameKh: 'Wi-Fi លើរថយន្ត', nameEn: 'Onboard Wi-Fi' },
+      { icon: 'bus', nameKh: 'មានទាំង Van VIP និង Bus ធំ', nameEn: 'VIP Vans & Large Buses' },
+    ],
+    highlightsKh: [
+      'ក្រុមហ៊ុនរថយន្តក្រុងជើងចាស់ឈានមុខគេ ប្រកបដោយទំនុកចិត្ត',
+      'មានរថយន្ត VIP Van ១១ កៅអី និងរថយន្តក្រុងធំ ៤៥ កៅអី',
+      'ចេញដំណើររៀងរាល់ ១ ម៉ោងម្តង ទៅកាន់ខេត្តសំខាន់ៗ',
+      'មានសេវាផ្ញើទំនិញរហ័សឆ្លងខេត្តប្រកបដោយសុវត្ថិភាព'
+    ],
+    highlightsEn: [
+      'Cambodia’s pioneer inter-provincial limousine bus line',
+      'Features 11-seater VIP Vans and 45-passenger tour buses',
+      'Hourly departures to all major provincial capitals',
+      'Express cargo & parcel delivery alongside passengers'
+    ],
+    departures: [
+      { time: '06:30 AM', period: 'ជើងព្រឹកព្រលឹម', noteKh: 'ភ្នំពេញ ⇄ សៀមរាប / បាត់ដំបង', noteEn: 'PP ⇄ Siem Reap / Battambang' },
+      { time: '08:00 AM', period: 'ជើងព្រឹក', noteKh: 'ភ្នំពេញ ⇄ ព្រះសីហនុ', noteEn: 'PP ⇄ Sihanoukville' },
+      { time: '11:00 AM', period: 'ជើងថ្ងៃត្រង់', noteKh: 'ភ្នំពេញ ⇄ ប៉ោយប៉ែត / សៀមរាប', noteEn: 'PP ⇄ Poipet / Siem Reap' },
+      { time: '02:30 PM', period: 'ជើងរសៀល', noteKh: 'ភ្នំពេញ ⇄ សៀមរាប', noteEn: 'PP ⇄ Siem Reap' },
+      { time: '05:00 PM', period: 'ជើងល្ងាច', noteKh: 'ជើងចុងក្រោយប្រចាំថ្ងៃ', noteEn: 'Last daily departure' },
+    ]
+  },
+  'passapp-technologies': {
+    hotline: '016512888',
+    hotlineFormatted: '016 512 888 / App Support',
+    bookingUrl: 'https://passapp.asia',
+    terminalAddress: 'On-Demand Nationwide (Phnom Penh, Siem Reap, Sihanoukville, Kampot, Battambang)',
+    terminalAddressKh: 'សេវាកម្មហៅជិះទូទាំងប្រទេស (ភ្នំពេញ, សៀមរាប, ព្រះសីហនុ, កំពត, បាត់ដំបង)',
+    amenities: [
+      { icon: 'smartphone', nameKh: 'កក់តាមទូរស័ព្ទ ២៤/៧', nameEn: '24/7 Mobile App Booking' },
+      { icon: 'ticket', nameKh: 'គិតតម្លៃតាមគីឡូម៉ែត្រជាក់ស្តែង', nameEn: 'Transparent Meter Pricing' },
+      { icon: 'zap', nameKh: 'បង់តាម KHQR ឬសាច់ប្រាក់', nameEn: 'KHQR & Cash Payments' },
+      { icon: 'shield', nameKh: 'មានប្រវត្តិ និងទិន្នន័យអ្នកបើកបរ', nameEn: 'Driver ID & Trip Tracking' },
+    ],
+    highlightsKh: [
+      'កម្មវិធីហៅកង់បី និងតាក់ស៊ីបង្កើតដោយកូនខ្មែរ ពេញនិយមបំផុត',
+      'រថយន្ត និងកង់បីរង់ចាំបម្រើសេវាកម្ម ២៤ ម៉ោងលើ ២៤ ម៉ោង',
+      'ជម្រើស៖ កង់បីឥណ្ឌា (Rickshaw), Classic Car, SUV និង Van',
+      'តម្លៃសមរម្យ ចាប់ផ្តើមពី ៣,០០០ រៀល គិតច្បាស់លាស់តាមចម្ងាយ'
+    ],
+    highlightsEn: [
+      'Cambodia’s pioneer homegrown ride-hailing super platform',
+      '24/7 round-the-clock vehicle availability across the city',
+      'Fleet options: Rickshaws, Standard Cars, SUVs, and Vans',
+      'Affordable transparent meter fares starting from 3,000 KHR'
+    ],
+    departures: [
+      { time: '24 Hours / 7 Days', period: 'សេវាកម្មគ្រប់ពេល', noteKh: 'រង់ចាំតែ ២-៥ នាទី រថយន្តមកដល់ទីតាំង', noteEn: '2-5 mins average arrival time' }
+    ]
+  },
+  'grab-cambodia': {
+    hotline: '023964315',
+    hotlineFormatted: '023 964 315 / In-App Help',
+    bookingUrl: 'https://www.grab.com/kh/',
+    terminalAddress: 'Service Hub Phnom Penh & Major Cities',
+    terminalAddressKh: 'មជ្ឈមណ្ឌលសេវាកម្ម ភ្នំពេញ និងបណ្តាខេត្តក្រុងធំៗ',
+    amenities: [
+      { icon: 'ticket', nameKh: 'តម្លៃថេរដឹងមុនជិះ (Upfront Fare)', nameEn: 'Fixed Upfront Fares' },
+      { icon: 'smartphone', nameKh: 'បង់ប្រាក់អេឡិចត្រូនិក និងកាត Visa', nameEn: 'Visa, Mastercard & Bakong' },
+      { icon: 'shield', nameKh: 'មានធានារ៉ាប់រងពេលធ្វើដំណើរ', nameEn: 'Trip Safety Insurance' },
+      { icon: 'car', nameKh: 'JustGrab រថយន្តម៉ាស៊ីនត្រជាក់ស្អាត', nameEn: 'AC Cars & Premium Taxis' },
+    ],
+    highlightsKh: [
+      'បង្ហាញតម្លៃច្បាស់លាស់មុនពេលបញ្ជាក់ការកក់ គ្មានការឡើងថ្លៃកណ្តាលផ្លូវ',
+      'ប័ណ្ណបញ្ចុះតម្លៃ និងពិន្ទុសន្សំ GrabRewards',
+      'សុវត្ថិភាពខ្ពស់ អាចចែករំលែកទីតាំងធ្វើដំណើរទៅកាន់ក្រុមគ្រួសារ',
+      'មានទាំង GrabRemorque, GrabCar, GrabSUV និង GrabFood'
+    ],
+    highlightsEn: [
+      'Guaranteed fixed upfront fares with zero unexpected surcharges',
+      'Exclusive promos, discounts, and GrabRewards points',
+      'Safety SOS feature and live trip sharing with loved ones',
+      'Versatile fleet: GrabRemorque, JustGrab Cars, Premium SUVs'
+    ],
+    departures: [
+      { time: '24/7 Continuous', period: 'គ្រប់ពេលវេលា', noteKh: 'កក់ភ្លាមមកដល់ភ្លាម ២៤ ម៉ោង', noteEn: 'Immediate on-demand booking' }
+    ]
+  },
+  'royal-railway-cambodia': {
+    hotline: '078888582',
+    hotlineFormatted: '078 888 582 / 078 888 583',
+    bookingUrl: 'https://www.royalrailway.easybook.com',
+    terminalAddress: 'Phnom Penh Railway Station, St. 106 & Russian Blvd (Near Vattanac Tower)',
+    terminalAddressKh: 'ស្ថានីយរថភ្លើងភ្នំពេញ ផ្លូវលេខ ១០៦ និងមហាវិថីសហព័ន្ធរុស្ស៊ី (ទល់មុខអគារវឌ្ឍនៈ)',
+    amenities: [
+      { icon: 'snowflake', nameKh: 'ទូររថភ្លើងម៉ាស៊ីនត្រជាក់', nameEn: 'Air-Conditioned Coaches' },
+      { icon: 'coffee', nameKh: 'មានកន្លែងលក់អាហារ និងភេសជ្ជៈ', nameEn: 'Café & Snack Bar Coach' },
+      { icon: 'train', nameKh: 'អាចផ្ញើម៉ូតូ និងកង់តាមទូរទំនិញ', nameEn: 'Motorbike & Bicycle Cargo' },
+      { icon: 'shield', nameKh: 'សុវត្ថិភាពខ្ពស់ ទេសភាពធម្មជាតិ', nameEn: 'Scenic & Ultra-Safe Transit' },
+    ],
+    highlightsKh: [
+      'ខ្សែភាគខាងត្បូង៖ ភ្នំពេញ ⇄ តាកែវ ⇄ កែប ⇄ កំពត ⇄ ព្រះសីហនុ',
+      'ខ្សែភាគខាងជើង៖ ភ្នំពេញ ⇄ ពោធិ៍សាត់ ⇄ បាត់ដំបង',
+      'ទស្សនាទេសភាពវាលស្រែ ភ្នំ និងឆ្នេរសមុទ្រដ៏ស្រស់ស្អាតដោយសុវត្ថិភាព',
+      'តម្លៃសមរម្យបំផុត ចាប់ពី $៦ ដល់ $១០ ក្នុងមួយជើង'
+    ],
+    highlightsEn: [
+      'Southern Line: Phnom Penh ⇄ Takeo ⇄ Kep ⇄ Kampot ⇄ Sihanoukville',
+      'Northern Line: Phnom Penh ⇄ Pursat ⇄ Battambang',
+      'Mesmerizing vistas of rice paddies, mountains, and coastal seascapes',
+      'Affordable fares ranging between $6 and $10 one-way'
+    ],
+    departures: [
+      { time: '07:00 AM (រៀងរាល់ថ្ងៃសុក្រ-ចន្ទ)', period: 'ជើងព្រឹក (Morning Line)', noteKh: 'ចេញពីភ្នំពេញ ឆ្ពោះទៅ កំពត / ព្រះសីហនុ', noteEn: 'Phnom Penh to Kampot & Sihanoukville' },
+      { time: '02:00 PM (រៀងរាល់ថ្ងៃសុក្រ-អាទិត្យ)', period: 'ជើងរសៀល (Afternoon Line)', noteKh: 'ចេញពីព្រះសីហនុ ត្រឡប់មកភ្នំពេញវិញ', noteEn: 'Sihanoukville back to Phnom Penh' },
+    ]
+  },
+  'cambodia-angkor-air': {
+    hotline: '0236666787',
+    hotlineFormatted: '023 6666 787 / 023 6666 789',
+    bookingUrl: 'https://www.cambodiaangkorair.com',
+    terminalAddress: 'Phnom Penh International Airport (PNH) & Siem Reap Angkor (SAI)',
+    terminalAddressKh: 'អាកាសយានដ្ឋានអន្តរជាតិភ្នំពេញ (PNH) & អាកាសយានដ្ឋានអន្តរជាតិសៀមរាបអង្គរ (SAI)',
+    amenities: [
+      { icon: 'plane', nameKh: 'យន្តហោះ ATR-72 និង Airbus A320/321', nameEn: 'Modern Fleet ATR & Airbus' },
+      { icon: 'ticket', nameKh: 'វ៉ាលីសយួរដៃ 7kg និងផ្ញើ 20kg ឥតគិតថ្លៃ', nameEn: '20kg Checked + 7kg Cabin Bag' },
+      { icon: 'coffee', nameKh: 'ភេសជ្ជៈលើជើងហោះហើរ', nameEn: 'In-flight Refreshments' },
+      { icon: 'clock', nameKh: 'ហោះហើរត្រឹមតែ ៤៥ នាទីប៉ុណ្ណោះ', nameEn: '45-Min Domestic Flight' },
+    ],
+    highlightsKh: [
+      'ក្រុមហ៊ុនអាកាសចរណ៍ជាតិផ្លូវការនៃព្រះរាជាណាចក្រកម្ពុជា',
+      'ជើងហោះហើរក្នុងស្រុក ភ្នំពេញ ⇄ សៀមរាប និង ភ្នំពេញ ⇄ ព្រះសីហនុ',
+      'ជើងហោះហើរអន្តរជាតិទៅ វៀតណាម ថៃ ចិន និងឥណ្ឌា',
+      'សន្សំពេលវេលាធ្វើដំណើរបានច្រើនបំផុត ហោះត្រឹម ៤៥ នាទី'
+    ],
+    highlightsEn: [
+      'Official National Flag Carrier of the Kingdom of Cambodia',
+      'Domestic direct shuttles between Phnom Penh, Siem Reap & Sihanoukville',
+      'Regional international routes to Vietnam, Thailand, China & India',
+      'Saves maximum travel time: only 45 minutes door-to-door in flight'
+    ],
+    departures: [
+      { time: '09:15 AM', period: 'ជើងព្រឹក (Morning Flight)', noteKh: 'ភ្នំពេញ ⇄ សៀមរាប (PNH ✈ SAI)', noteEn: 'Phnom Penh to Siem Reap' },
+      { time: '01:45 PM', period: 'ជើងរសៀល (Afternoon Flight)', noteKh: 'ភ្នំពេញ ⇄ ព្រះសីហនុ / សៀមរាប', noteEn: 'PP to Sihanoukville / Siem Reap' },
+      { time: '06:20 PM', period: 'ជើងល្ងាច (Evening Flight)', noteKh: 'សៀមរាប ⇄ ភ្នំពេញ', noteEn: 'Siem Reap to Phnom Penh' },
+    ]
+  },
+  'buva-sea-cambodia': {
+    hotline: '0978888950',
+    hotlineFormatted: '097 888 8950 / 086 525 252',
+    bookingUrl: 'https://buvasea.com',
+    terminalAddress: 'Ochheuteal Pier (Serendipity), Sihanoukville Port',
+    terminalAddressKh: 'ផែអូរឈើទាល (សេរ៉េនឌីភីធី), ក្រុងព្រះសីហនុ',
+    amenities: [
+      { icon: 'ship', nameKh: 'ទូកកាតាម៉ារ៉ានល្បឿនលឿនទំនើប', nameEn: 'Modern High-Speed Catamaran' },
+      { icon: 'shield', nameKh: 'អាវពោងសុវត្ថិភាពគ្រប់កៅអី', nameEn: 'Safety Life Jackets for All' },
+      { icon: 'snowflake', nameKh: 'ម៉ាស៊ីនត្រជាក់ និងកៅអីអង្គុយស្រួល', nameEn: 'Air-Conditioned Seating' },
+      { icon: 'clock', nameKh: 'ធ្វើដំណើរត្រឹម ៤៥ នាទីដល់កោះ', nameEn: '45-Min Express Crossing' },
+    ],
+    highlightsKh: [
+      'ទូកល្បឿនលឿនទៅកាន់កោះរ៉ុង និងកោះរ៉ុងសន្លឹម',
+      'ចំណតកោះ៖ Koh Toch, Coconut Beach, Long Set, Saracen Bay, M\'Pai Bay',
+      'សំបុត្រទៅមក Open Return មានសុពលភាពរហូតដល់ ១៤ ថ្ងៃ',
+      'ចេញដំណើរទៀងទាត់ ៤ ជើងក្នុងមួយថ្ងៃ'
+    ],
+    highlightsEn: [
+      'Premier speed ferry shuttles to Koh Rong & Koh Rong Sanloem islands',
+      'Island piers: Koh Toch, Coconut Beach, Long Set, Saracen Bay, M\'Pai Bay',
+      'Flexible open-return ticket valid up to 14 days',
+      'Reliable timetable with 4 daily departures in both directions'
+    ],
+    departures: [
+      { time: '08:00 AM', period: 'ជើងព្រឹកព្រលឹម', noteKh: 'ព្រះសីហនុ ⇄ កោះរ៉ុង / សន្លឹម', noteEn: 'Mainland to Koh Rong / Sanloem' },
+      { time: '11:00 AM', period: 'ជើងព្រឹក', noteKh: 'ព្រះសីហនុ ⇄ កោះរ៉ុង', noteEn: 'Mainland to Koh Rong' },
+      { time: '02:00 PM', period: 'ជើងរសៀល', noteKh: 'ព្រះសីហនុ ⇄ កោះរ៉ុង / សន្លឹម', noteEn: 'Mainland to Koh Rong / Sanloem' },
+      { time: '04:30 PM', period: 'ជើងចុងក្រោយប្រចាំថ្ងៃ', noteKh: 'ជើងល្ងាចទាន់ថ្ងៃលិច', noteEn: 'Last afternoon departure' },
+    ]
+  },
+  'island-speed-ferry-cambodia': {
+    hotline: '012555222',
+    hotlineFormatted: '012 555 222 / 098 555 222',
+    terminalAddress: 'G.T.V.C Terminal, Port 52, Sihanoukville',
+    terminalAddressKh: 'ស្ថានីយ ជីធីវីស៊ី កំពង់ផែ ៥២, ក្រុងព្រះសីហនុ',
+    amenities: [
+      { icon: 'snowflake', nameKh: 'ទូកធំបំពាក់ម៉ាស៊ីនត្រជាក់', nameEn: '150-Passenger AC Vessel' },
+      { icon: 'shield', nameKh: 'ប្រព័ន្ធតាមដានរលក និងសុវត្ថិភាពសមុទ្រ', nameEn: 'Maritime Safety Radar' },
+      { icon: 'coffee', nameKh: 'បន្ទប់រង់ចាំ VIP នៅផែដីគោក', nameEn: 'VIP Pier Waiting Lounge' },
+      { icon: 'ship', nameKh: 'បុគ្គលិកជួយលើកឥវ៉ាន់ និងវ៉ាលីស', nameEn: 'Luggage Porter Assistance' },
+    ],
+    highlightsKh: [
+      'ទូកធំផ្ទុកអ្នកដំណើរ ១៥០ នាក់ រលូន មិនសូវរលក',
+      'ចេញពីផែព្រះសីហនុ ទៅកោះរ៉ុង និងកោះរ៉ុងសន្លឹម',
+      'សំបុត្រទៅ-មកមានតម្លៃត្រឹម $២៥ ប៉ុណ្ណោះ',
+      'បុគ្គលិករួសរាយ រៀបចំឥវ៉ាន់ និងវ៉ាលីសជូនអ្នកដំណើរ'
+    ],
+    highlightsEn: [
+      'Spacious 150-passenger enclosed high-speed vessel for stable voyage',
+      'Daily connections between Sihanoukville and Koh Rong islands',
+      'Affordable $25 round-trip ticket with return flexibility',
+      'Attentive staff and luggage assistance on and off the pier'
+    ],
+    departures: [
+      { time: '08:30 AM', period: 'ជើងព្រឹកព្រលឹម', noteKh: 'ចេញដំណើរទៅកោះ', noteEn: 'Departure to Islands' },
+      { time: '11:30 AM', period: 'ជើងព្រឹក', noteKh: 'ចេញដំណើរទៅកោះ', noteEn: 'Departure to Islands' },
+      { time: '02:30 PM', period: 'ជើងរសៀល', noteKh: 'ចេញដំណើរទៅកោះ', noteEn: 'Departure to Islands' },
+      { time: '04:00 PM', period: 'ជើងចុងក្រោយ', noteKh: 'ជើងល្ងាច', noteEn: 'Last departure' },
+    ]
+  },
+  'capitol-tour-bus': {
+    hotline: '023217627',
+    hotlineFormatted: '023 217 627 / 012 929 119',
+    terminalAddress: 'St. 182 & St. 107 (Near Orussey Market), Phnom Penh',
+    terminalAddressKh: 'ផ្លូវ ១៨២ កែងផ្លូវ ១០៧ (ក្បែរផ្សារអូរឫស្សី), រាជធានីភ្នំពេញ',
+    amenities: [
+      { icon: 'ticket', nameKh: 'តម្លៃសន្សំសំចៃបំផុត (Budget Fares)', nameEn: 'Best Budget Prices' },
+      { icon: 'snowflake', nameKh: 'ម៉ាស៊ីនត្រជាក់', nameEn: 'Air-Conditioned Buses' },
+      { icon: 'clock', nameKh: 'មានជើងចេញរៀងរាល់ម៉ោង', nameEn: 'Hourly Departures' },
+      { icon: 'bus', nameKh: 'បណ្តាញផ្លូវរត់គ្រប់ខេត្ត', nameEn: 'Extensive Provincial Network' },
+    ],
+    highlightsKh: [
+      'ក្រុមហ៊ុនរថយន្តក្រុងចំណាស់ និងពេញនិយមបំផុតសម្រាប់អ្នកសន្សំថវិកា',
+      'ខ្សែរត់ទៅកាន់៖ បាត់ដំបង ប៉ោយប៉ែត កំពត ស្វាយរៀង សៀមរាប',
+      'តម្លៃចាប់ពី $៦ ដល់ $១០ ប៉ុណ្ណោះក្នុងម្នាក់',
+      'ទីតាំងងាយស្រួលនៅកណ្តាលក្រុង ក្បែរផ្សារអូរឫស្សី'
+    ],
+    highlightsEn: [
+      'Long-running budget transit staple favored by everyday commuters',
+      'Routes to Battambang, Poipet, Kampot, Svay Rieng & Siem Reap',
+      'Budget fares from $6 to $10 per seat',
+      'Central terminal location right near Orussey Market'
+    ],
+    departures: [
+      { time: '06:30 AM', period: 'ជើងព្រឹកព្រលឹម', noteKh: 'ភ្នំពេញ ⇄ បាត់ដំបង / ប៉ោយប៉ែត', noteEn: 'PP to Battambang / Poipet' },
+      { time: '07:30 AM', period: 'ជើងព្រឹក', noteKh: 'ភ្នំពេញ ⇄ សៀមរាប / កំពត', noteEn: 'PP to Siem Reap / Kampot' },
+      { time: '10:30 AM', period: 'ជើងថ្ងៃត្រង់', noteKh: 'ភ្នំពេញ ⇄ បណ្តាខេត្ត', noteEn: 'PP to Provinces' },
+      { time: '01:30 PM', period: 'ជើងរសៀល', noteKh: 'ភ្នំពេញ ⇄ បាត់ដំបង / សៀមរាប', noteEn: 'PP to Battambang / Siem Reap' },
+      { time: '03:30 PM', period: 'ជើងចុងក្រោយ', noteKh: 'ជើងរសៀលចុងក្រោយ', noteEn: 'Last afternoon bus' },
+    ]
+  }
+}
+
+// Modal State & Handlers
+const selectedTransportDetail = ref<Transport | null>(null)
+const showTransportDetailsModal = ref(false)
+const copiedPhone = ref(false)
+
+function openTransportDetailsModal(item: Transport) {
+  selectedTransportDetail.value = item
+  showTransportDetailsModal.value = true
+}
+
+function closeTransportDetailsModal() {
+  showTransportDetailsModal.value = false
+  selectedTransportDetail.value = null
+  copiedPhone.value = false
+}
+
+function copyPhoneNumber(phone: string) {
+  if (navigator?.clipboard) {
+    navigator.clipboard.writeText(phone)
+    copiedPhone.value = true
+    setTimeout(() => {
+      copiedPhone.value = false
+    }, 2000)
+  }
+}
+
+function getAmenityIconComponent(iconName: string) {
+  switch (iconName) {
+    case 'wifi': return Wifi
+    case 'zap': return Zap
+    case 'coffee': return Coffee
+    case 'phone': return Phone
+    case 'smartphone': return Smartphone
+    case 'plane': return Plane
+    case 'ship': return Ship
+    case 'train': return Train
+    case 'bus': return Bus
+    case 'car': return Car
+    case 'shield': return ShieldCheck
+    case 'clock': return Clock
+    case 'ticket': return Ticket
+    default: return Sparkles
+  }
+}
+
+const selectedOperatorInfo = computed<OperatorExtraInfo | null>(() => {
+  if (!selectedTransportDetail.value) return null
+  return OPERATOR_DETAILS[selectedTransportDetail.value.id] || null
+})
+
+const currentTransportMapEmbed = computed(() => {
+  if (!selectedTransportDetail.value) return ''
+  const item = selectedTransportDetail.value
+  const query = encodeURIComponent(`${item.name} ${item.location} Cambodia`)
+  return `https://maps.google.com/maps?q=${query}&hl=km&output=embed`
+})
+
+const currentTransportMapExternal = computed(() => {
+  if (!selectedTransportDetail.value) return ''
+  const item = selectedTransportDetail.value
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name + ' ' + item.location + ' Cambodia')}`
+})
+
 // Transit types for filter
 const transitTypes = computed(() => [
   { value: 'All', label: currentLanguage.value === 'kh' ? 'គ្រប់ប្រភេទ' : 'All Modes', icon: Compass },
@@ -1511,7 +1901,7 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
     <!-- VIEW 1: JOURNEY PLANNER & ALL TRANSIT ROUTES -->
     <div v-if="activeViewTab === 'all-routes'" class="space-y-8">
       <!-- Realistic 25-Province Transit & Terminal Console with Live GPS -->
-      <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-7 shadow-sm space-y-6">
+      <div class="scroll-reveal bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-7 shadow-sm space-y-6">
         <!-- Console Header with Live Radar & GPS Trigger -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-700/60 w-full min-w-0">
           <div class="flex items-center gap-2.5 min-w-0">
@@ -1893,15 +2283,19 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
       </div>
 
       <!-- Transport Route Cards with Visual Route Timeline -->
-      <div v-if="paginatedTransport.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full min-w-0">
+      <div v-if="paginatedTransport.length > 0" class="scroll-reveal grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full min-w-0">
         <div
-          v-for="item in paginatedTransport"
+          v-for="(item, itemIdx) in paginatedTransport"
           :key="item.id"
-          class="group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between w-full min-w-0"
+          class="stagger-item stagger-card group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between w-full min-w-0"
+          :style="{ animationDelay: `${itemIdx * 35}ms` }"
         >
           <div class="min-w-0">
             <!-- Representative Transit Image Banner -->
-            <div class="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+            <div
+              @click="openTransportDetailsModal(item)"
+              class="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-700 cursor-pointer"
+            >
               <LazyImage
                 v-if="item.image"
                 :src="item.image"
@@ -1954,7 +2348,10 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
             <div class="p-3.5 sm:p-5 space-y-3 min-w-0">
               <!-- Name & Route Details -->
               <div>
-                <h3 class="text-sm sm:text-lg font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug">
+                <h3
+                  @click="openTransportDetailsModal(item)"
+                  class="text-sm sm:text-lg font-black text-[#0A2540] dark:text-white group-hover:text-[#0D47A1] dark:group-hover:text-blue-400 transition-colors leading-snug cursor-pointer"
+                >
                   {{ localized(item.name, item.nameKh) }}
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
@@ -2012,27 +2409,42 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
                 <span>Cash & KHQR</span>
               </span>
 
-              <!-- If pp-city-bus, open comprehensive modal -->
-              <button
-                v-if="item.id === 'pp-city-bus'"
-                @click="openCityBusModal()"
-                type="button"
-                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition-all cursor-pointer shrink-0"
-              >
-                <span>{{ currentLanguage === 'kh' ? 'មើលខ្សែរត់ & ស្ថានីយ' : 'View Route' }}</span>
-                <ExternalLink class="w-3 h-3" />
-              </button>
+              <div class="flex items-center gap-2">
+                <!-- Primary Action: View Details & Schedule Modal -->
+                <button
+                  @click="openTransportDetailsModal(item)"
+                  type="button"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0D47A1] hover:bg-blue-700 text-white text-xs font-black shadow-2xs transition-all cursor-pointer shrink-0"
+                >
+                  <Info class="w-3.5 h-3.5" />
+                  <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានលម្អិត & កាលវិភាគ' : 'Details & Schedule' }}</span>
+                </button>
 
-              <a
-                v-else
-                :href="'https://www.google.com/maps/search/' + encodeURIComponent(item.route + ' ' + item.location + ' Cambodia')"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-[#0D47A1] dark:text-blue-300 hover:bg-[#0D47A1] hover:text-white text-xs font-bold border border-blue-200/70 dark:border-blue-700/60 transition-all cursor-pointer shrink-0"
-              >
-                <span>{{ currentLanguage === 'kh' ? 'មើលផែនទី & ស្ថានីយ' : 'View Route on Maps' }}</span>
-                <ExternalLink class="w-3 h-3" />
-              </a>
+                <!-- Quick Action: PP City Bus 13 lines modal OR External Map Link -->
+                <button
+                  v-if="item.id === 'pp-city-bus'"
+                  @click="openCityBusModal()"
+                  type="button"
+                  class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white text-xs font-bold border border-emerald-200/70 dark:border-emerald-700/60 transition-all cursor-pointer shrink-0"
+                  :title="currentLanguage === 'kh' ? 'មើលបណ្តាញរថយន្តក្រុងទាំង ១៣ ខ្សែ' : 'View 13 Lines'"
+                >
+                  <Bus class="w-3.5 h-3.5" />
+                  <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? '១៣ ខ្សែ' : '13 Lines' }}</span>
+                </button>
+
+                <a
+                  v-else
+                  :href="'https://www.google.com/maps/search/' + encodeURIComponent(item.route + ' ' + item.location + ' Cambodia')"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 text-xs font-bold transition-all cursor-pointer shrink-0"
+                  :title="currentLanguage === 'kh' ? 'បើកមើលទីតាំងលើ Google Maps' : 'Google Maps'"
+                >
+                  <Navigation class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                  <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? 'ផែនទី' : 'Map' }}</span>
+                  <ExternalLink class="w-3 h-3 text-slate-400" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -2065,7 +2477,7 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
     <!-- VIEW 2: PHNOM PENH CITY BUS LINES (PPA) VISUAL EXPLORER -->
     <div v-else-if="activeViewTab === 'city-bus-lines'" class="space-y-6">
       <!-- Intro Card for City Bus -->
-      <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-7 shadow-sm">
+      <div class="scroll-reveal bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-7 shadow-sm">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div class="flex items-center gap-2">
@@ -2117,7 +2529,7 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
       </div>
 
       <!-- Active City Bus Line Details & Visual Station Stop Sequence -->
-      <div v-if="selectedBusLine" class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-8 shadow-sm space-y-6">
+      <div v-if="selectedBusLine" class="scroll-reveal bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-6 sm:p-8 shadow-sm space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-700/60">
           <div>
             <span :class="['px-3 py-1 rounded-xl text-xs font-black inline-block mb-2', selectedBusLine.color]">
@@ -2509,6 +2921,369 @@ const typeStyles: Record<string, { icon: any; badge: string; color: string }> = 
             </div>
           </div>
 
+        </div>
+      </div>
+    </Transition>
+
+    <!-- COMPREHENSIVE TRANSPORT OPERATOR DETAILS & SCHEDULE MODAL -->
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div
+        v-if="showTransportDetailsModal && selectedTransportDetail"
+        class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+        @click.self="closeTransportDetailsModal"
+      >
+        <div class="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+          <!-- Modal Hero Header with Operator Photo -->
+          <div class="relative h-48 sm:h-56 w-full shrink-0 overflow-hidden bg-slate-900">
+            <LazyImage
+              v-if="selectedTransportDetail.image"
+              :src="selectedTransportDetail.image"
+              :alt="selectedTransportDetail.name"
+              img-class="w-full h-full object-cover opacity-75"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
+
+            <!-- Close button -->
+            <button
+              @click="closeTransportDetailsModal"
+              type="button"
+              class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition-colors cursor-pointer z-10 border border-white/20"
+              aria-label="Close"
+            >
+              <X class="w-5 h-5" />
+            </button>
+
+            <!-- Hero content inside banner -->
+            <div class="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 text-white space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider bg-white/20 backdrop-blur-md border border-white/30 text-white">
+                  <component :is="getAmenityIconComponent(selectedTransportDetail.type)" class="w-3.5 h-3.5" />
+                  <span>{{ selectedTransportDetail.type.toUpperCase() }}</span>
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-emerald-500/90 text-white backdrop-blur-md">
+                  <ShieldCheck class="w-3.5 h-3.5" />
+                  <span>{{ currentLanguage === 'kh' ? 'សេវាស្របច្បាប់ផ្លូវការ' : 'Verified Operator' }}</span>
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-blue-500/90 text-white backdrop-blur-md">
+                  <MapPin class="w-3.5 h-3.5" />
+                  <span>{{ selectedTransportDetail.location }}</span>
+                </span>
+              </div>
+
+              <h2 class="text-xl sm:text-2xl font-black text-white leading-snug drop-shadow-md">
+                {{ localized(selectedTransportDetail.name, selectedTransportDetail.nameKh) }}
+              </h2>
+            </div>
+          </div>
+
+          <!-- Scrollable Body Content -->
+          <div class="overflow-y-auto p-5 sm:p-7 space-y-6">
+            <!-- Key Highlight Badges (Price, Hours, Route) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <!-- Price Fare Card -->
+              <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Ticket class="w-5 h-5" />
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                    {{ currentLanguage === 'kh' ? 'តម្លៃសំបុត្រ (Fare)' : 'Fare Pricing' }}
+                  </span>
+                  <p class="text-xs sm:text-sm font-black text-slate-800 dark:text-white mt-0.5">
+                    {{ selectedTransportDetail.price }}
+                  </p>
+                  <p class="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">
+                    {{ currentLanguage === 'kh' ? 'ទូទាត់សាច់ប្រាក់ ឬ KHQR' : 'Cash & KHQR accepted' }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Schedule Card -->
+              <div class="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Clock class="w-5 h-5" />
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                    {{ currentLanguage === 'kh' ? 'ម៉ោងចេញដំណើរ' : 'Operating Hours' }}
+                  </span>
+                  <p class="text-xs sm:text-sm font-black text-slate-800 dark:text-white mt-0.5">
+                    {{ selectedTransportDetail.schedule }}
+                  </p>
+                  <p class="text-[11px] text-blue-600 dark:text-blue-400 mt-0.5">
+                    {{ currentLanguage === 'kh' ? 'ចេញដំណើរទៀងទាត់' : 'Reliable schedule' }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Route Coverage -->
+              <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Navigation class="w-5 h-5" />
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                    {{ currentLanguage === 'kh' ? 'បណ្តាញផ្លូវរត់' : 'Network Coverage' }}
+                  </span>
+                  <p class="text-xs sm:text-sm font-black text-slate-800 dark:text-white mt-0.5 line-clamp-2">
+                    {{ selectedTransportDetail.route }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Operator Description & Summary -->
+            <div class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 space-y-2">
+              <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Info class="w-4 h-4 text-[#0D47A1] dark:text-blue-400" />
+                <span>{{ currentLanguage === 'kh' ? 'អំពីសេវាកម្ម និងក្រុមហ៊ុនប្រតិបត្តិករ' : 'About Operator & Transit Service' }}</span>
+              </h3>
+              <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                {{ localized(selectedTransportDetail.description, selectedTransportDetail.descriptionKh) }}
+              </p>
+              <div v-if="selectedTransportDetail.usefulInformation || selectedTransportDetail.usefulInformationKh" class="mt-3 p-3 rounded-xl bg-amber-100/60 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/40 flex items-start gap-2">
+                <Sparkles class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <p class="text-xs text-amber-900 dark:text-amber-200 font-semibold leading-relaxed">
+                  <strong>{{ currentLanguage === 'kh' ? 'ការណែនាំពិសេស៖ ' : 'Helpful Advice: ' }}</strong>
+                  {{ localized(selectedTransportDetail.usefulInformation, selectedTransportDetail.usefulInformationKh) }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Departure Timetable & Shifts Table (If Available) -->
+            <div v-if="selectedOperatorInfo?.departures && selectedOperatorInfo.departures.length > 0" class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <Clock class="w-4 h-4 text-blue-600" />
+                  <span>{{ currentLanguage === 'kh' ? 'កាលវិភាគចេញដំណើរជាក់ស្តែង (Departure Schedule & Shifts)' : 'Detailed Departure Shifts' }}</span>
+                </h3>
+                <span class="text-[11px] text-slate-400">
+                  {{ selectedOperatorInfo.departures.length }} {{ currentLanguage === 'kh' ? 'ជើងចេញដំណើរ' : 'scheduled shifts' }}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                <div
+                  v-for="(shift, sIdx) in selectedOperatorInfo.departures"
+                  :key="sIdx"
+                  class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between gap-2 shadow-2xs"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-300 flex items-center justify-center font-black text-xs shrink-0">
+                      <Clock class="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span class="text-xs font-black text-slate-800 dark:text-white block">{{ shift.time }}</span>
+                      <span class="text-[10px] text-slate-500 dark:text-slate-400">{{ shift.period }}</span>
+                    </div>
+                  </div>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0 text-right">
+                    {{ currentLanguage === 'kh' ? shift.noteKh : shift.noteEn }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Amenities & Onboard Services -->
+            <div v-if="selectedOperatorInfo?.amenities && selectedOperatorInfo.amenities.length > 0" class="space-y-3">
+              <h3 class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                <Zap class="w-4 h-4 text-amber-500" />
+                <span>{{ currentLanguage === 'kh' ? 'សេវាកម្ម និងផាសុកភាពលើមធ្យោបាយធ្វើដំណើរ (Amenities)' : 'Onboard Amenities & Services' }}</span>
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div
+                  v-for="(amenity, aIdx) in selectedOperatorInfo.amenities"
+                  :key="aIdx"
+                  class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center gap-2.5 shadow-2xs"
+                >
+                  <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <component :is="getAmenityIconComponent(amenity.icon)" class="w-3.5 h-3.5" />
+                  </div>
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">
+                    {{ currentLanguage === 'kh' ? amenity.nameKh : amenity.nameEn }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terminal Address & Contact Hotline -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <!-- Terminal Address -->
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div class="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+                  <MapPin class="w-4 h-4 shrink-0" />
+                  <span class="text-xs font-black uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ស្ថានីយ / ទីតាំងចេញដំណើរ' : 'Terminal / Station Address' }}</span>
+                </div>
+                <p class="text-xs sm:text-sm font-black text-slate-800 dark:text-white leading-relaxed">
+                  {{ selectedOperatorInfo ? localized(selectedOperatorInfo.terminalAddress, selectedOperatorInfo.terminalAddressKh) : selectedTransportDetail.location }}
+                </p>
+                <div class="pt-1">
+                  <a
+                    :href="currentTransportMapExternal"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 text-xs font-bold text-[#0D47A1] dark:text-blue-300 hover:underline"
+                  >
+                    <span>{{ currentLanguage === 'kh' ? 'បើកមើលទិសដៅលើ Google Maps' : 'Open in Google Maps' }}</span>
+                    <ExternalLink class="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+
+              <!-- Hotline & Booking -->
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                  <PhoneCall class="w-4 h-4 shrink-0" />
+                  <span class="text-xs font-black uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទកក់សំបុត្រ & ជំនួយ ២៤/៧' : 'Booking Hotline & Support' }}</span>
+                </div>
+                <div class="flex items-center justify-between gap-2 pt-0.5">
+                  <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                    {{ selectedOperatorInfo?.hotlineFormatted || '023 880 880' }}
+                  </span>
+                  <div class="flex items-center gap-1.5">
+                    <button
+                      v-if="selectedOperatorInfo?.hotline"
+                      @click="copyPhoneNumber(selectedOperatorInfo.hotline)"
+                      type="button"
+                      class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                      :title="currentLanguage === 'kh' ? 'ចម្លងលេខ' : 'Copy'"
+                    >
+                      <Check v-if="copiedPhone" class="w-3 h-3 text-emerald-600" />
+                      <Copy v-else class="w-3 h-3" />
+                      <span>{{ copiedPhone ? (currentLanguage === 'kh' ? 'បានចម្លង' : 'Copied') : (currentLanguage === 'kh' ? 'ចម្លង' : 'Copy') }}</span>
+                    </button>
+                    <a
+                      v-if="selectedOperatorInfo?.hotline"
+                      :href="'tel:' + selectedOperatorInfo.hotline"
+                      class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition-colors cursor-pointer flex items-center gap-1"
+                    >
+                      <Phone class="w-3 h-3" />
+                      <span>{{ currentLanguage === 'kh' ? 'ខល' : 'Call' }}</span>
+                    </a>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                  {{ currentLanguage === 'kh' ? 'អាចខលសាកសួរតម្លៃ និងកក់កៅអីទុកជាមុនបាន' : 'Call ahead to reserve seats and verify departure times' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Key Strengths / Highlights Bullets -->
+            <div v-if="selectedOperatorInfo?.highlightsKh" class="p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-800/40 space-y-2">
+              <h4 class="text-xs font-black uppercase tracking-wider text-blue-900 dark:text-blue-300 flex items-center gap-1.5">
+                <CheckCircle2 class="w-4 h-4 text-blue-600" />
+                <span>{{ currentLanguage === 'kh' ? 'ចំណុចលេចធ្លោ & ទំនុកចិត្តនៃសេវាកម្ម' : 'Key Highlights & Guarantees' }}</span>
+              </h4>
+              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 dark:text-slate-200">
+                <li
+                  v-for="(hl, hIdx) in (currentLanguage === 'kh' ? selectedOperatorInfo.highlightsKh : selectedOperatorInfo.highlightsEn)"
+                  :key="hIdx"
+                  class="flex items-start gap-2"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 mt-1.5" />
+                  <span>{{ hl }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Special Action if PP City Bus -->
+            <div v-if="selectedTransportDetail.id === 'pp-city-bus'" class="p-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0">
+                  <Bus class="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h4 class="text-sm font-black text-white">
+                    {{ currentLanguage === 'kh' ? 'ចង់ពិនិត្យមើលខ្សែរត់ទាំង ១៣ ខ្សែ និងចំណតនីមួយៗ?' : 'Explore all 13 official city bus lines & stops?' }}
+                  </h4>
+                  <p class="text-xs text-emerald-100">
+                    {{ currentLanguage === 'kh' ? 'មានគំនូសបំព្រួញចំណតទាំងអស់ និងផែនទីជាក់ស្តែង' : 'Interactive stop sequence and GPS route visualizer' }}
+                  </p>
+                </div>
+              </div>
+              <button
+                @click="openCityBusModal(); closeTransportDetailsModal()"
+                type="button"
+                class="px-4 py-2 rounded-xl bg-white text-emerald-800 hover:bg-emerald-50 text-xs font-black transition-colors cursor-pointer shrink-0 shadow-sm"
+              >
+                {{ currentLanguage === 'kh' ? 'បើកផ្ទាំងខ្សែទាំង ១៣' : 'Open 13 Lines' }}
+              </button>
+            </div>
+
+            <!-- Embedded Interactive Map -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <Navigation class="w-4 h-4 text-blue-600" />
+                  <span>{{ currentLanguage === 'kh' ? 'ផែនទីទីតាំងស្ថានីយ និងទិសដៅ (Live Terminal Map)' : 'Terminal & Station Location Map' }}</span>
+                </h4>
+                <a
+                  :href="currentTransportMapExternal"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-xs font-bold text-[#0D47A1] dark:text-blue-300 hover:underline flex items-center gap-1"
+                >
+                  <span>{{ currentLanguage === 'kh' ? 'បើកមើលពេញលេញលើ Google Maps' : 'Open in Google Maps' }}</span>
+                  <ExternalLink class="w-3 h-3" />
+                </a>
+              </div>
+
+              <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
+                <iframe
+                  :src="currentTransportMapEmbed"
+                  class="w-full h-64 sm:h-72 border-0"
+                  loading="lazy"
+                  allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer Actions -->
+          <div class="p-4 sm:p-5 bg-slate-50 dark:bg-slate-800/90 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <ShieldCheck class="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានផ្ទៀងផ្ទាត់ផ្លូវការ ដោយក្រុមការងារ CamLife' : 'Verified transport information by CamLife' }}</span>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <a
+                v-if="selectedOperatorInfo?.bookingUrl"
+                :href="selectedOperatorInfo.bookingUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-[#0D47A1] dark:text-blue-300 text-xs font-bold hover:bg-blue-100 transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <Globe class="w-3.5 h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'គេហទំព័រកក់' : 'Book Online' }}</span>
+                <ExternalLink class="w-3 h-3" />
+              </a>
+
+              <a
+                v-if="selectedOperatorInfo?.hotline"
+                :href="'tel:' + selectedOperatorInfo.hotline"
+                class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <Phone class="w-3.5 h-3.5" />
+                <span>{{ currentLanguage === 'kh' ? 'ខលកក់សំបុត្រ' : 'Call Booking' }}</span>
+              </a>
+
+              <button
+                @click="closeTransportDetailsModal"
+                type="button"
+                class="px-5 py-2 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </Transition>

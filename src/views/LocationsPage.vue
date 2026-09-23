@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import {
   MapPin,
   Phone,
@@ -29,6 +30,7 @@ import { usePagination } from '@/composables/usePagination'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { useLocation } from '@/composables/useLocation'
 
+const route = useRoute()
 const { t, localized, currentLanguage } = useLanguage()
 const { selectedProvince } = useLocation()
 
@@ -38,28 +40,28 @@ usePageMeta({
 })
 
 const defaultCategoryImages: Record<string, string> = {
-  'Hospital': 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=800&q=80',
-  'Police Station': 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80',
-  'Government/OWSO': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+  'Hospital': '/images/locations/calmette-hospital.jpg',
+  'Police Station': 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80',
+  'Government/OWSO': 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
   'Bus Station': 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80',
   'Bank/ATM': 'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?auto=format&fit=crop&w=800&q=80',
   'Gas Station': 'https://images.unsplash.com/photo-1527018607636-96b010c2627e?auto=format&fit=crop&w=800&q=80',
-  'Tourist Attraction': 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80'
+  'Tourist Attraction': '/images/pillars/government.jpg'
 }
 
 function getLocationImage(loc: LocationItem): string {
-  return loc.image || defaultCategoryImages[loc.category] || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80'
+  return loc.image || defaultCategoryImages[loc.category] || '/images/locations/calmette-hospital.jpg'
 }
 
 const allLocations = getLocations()
 const searchQuery = ref('')
-const activeCategory = ref('All')
+const activeCategory = ref((route.query.category as string) || 'Government/OWSO')
 const viewMode = ref<'grid' | 'map'>('grid')
 const selectedLocation = ref<LocationItem>(allLocations[0] ?? ({} as LocationItem))
 
 const categories = computed(() => [
-  { value: 'All', labelKh: 'គ្រប់ការិយាល័យ & ទីតាំង', labelEn: 'All Public Offices', icon: Compass },
   { value: 'Government/OWSO', labelKh: 'ច្រកចេញចូលតែមួយ & សាលាសង្កាត់ (OWSO)', labelEn: 'OWSO & Communes', icon: Building },
+  { value: 'All', labelKh: 'គ្រប់ការិយាល័យ & ទីតាំង', labelEn: 'All Public Offices', icon: Compass },
   { value: 'Police Station', labelKh: 'ស្នងការ & ប៉ុស្តិ៍នគរបាល', labelEn: 'Police Stations', icon: ShieldAlert },
   { value: 'Hospital', labelKh: 'មន្ទីរពេទ្យសាធារណៈ', labelEn: 'Public Hospitals', icon: Hospital },
   { value: 'Bus Station', labelKh: 'ស្ថានីយរថយន្តក្រុង', labelEn: 'Public Transit Hubs', icon: Bus }
@@ -131,7 +133,7 @@ function selectOffice(loc: LocationItem) {
 
 function resetFilters() {
   searchQuery.value = ''
-  activeCategory.value = 'All'
+  activeCategory.value = 'Government/OWSO'
 }
 </script>
 
@@ -197,7 +199,7 @@ function resetFilters() {
     </div>
 
     <!-- Filter Control Panel & View Mode Switcher -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 p-3.5 sm:p-6 shadow-sm space-y-3.5 sm:space-y-4">
+    <div class="scroll-reveal bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 p-3.5 sm:p-6 shadow-sm space-y-3.5 sm:space-y-4">
       <!-- Search Input + View Toggle Buttons -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         <div class="flex-1 relative">
@@ -257,7 +259,7 @@ function resetFilters() {
 
       <!-- Active Filters Reset -->
       <div
-        v-if="searchQuery || activeCategory !== 'All'"
+        v-if="searchQuery || activeCategory !== 'Government/OWSO'"
         class="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-700/60 text-xs"
       >
         <span class="text-slate-400 font-medium text-[11px] sm:text-xs truncate mr-2">
@@ -286,7 +288,7 @@ function resetFilters() {
     </div>
 
     <!-- INTERACTIVE MAP VIEW -->
-    <div v-if="viewMode === 'map'" class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start w-full min-w-0">
+    <div v-if="viewMode === 'map'" class="scroll-reveal grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start w-full min-w-0">
       <!-- Interactive Real Google Maps -->
       <div class="lg:col-span-8 bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-800 overflow-hidden shadow-sm relative min-h-[380px] sm:min-h-[460px] p-3 sm:p-4 flex flex-col justify-between min-w-0">
         <!-- Map Overlay Header -->
@@ -402,11 +404,12 @@ function resetFilters() {
 
     <!-- DIRECTORY GRID VIEW: 2 Columns on Mobile, 2 on MD, 3 on LG -->
     <div v-else class="space-y-6">
-      <div v-if="paginatedLocations.length > 0" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 w-full min-w-0">
+      <div v-if="paginatedLocations.length > 0" class="scroll-reveal grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 w-full min-w-0">
         <div
-          v-for="item in paginatedLocations"
+          v-for="(item, itemIdx) in paginatedLocations"
           :key="item.id"
-          class="group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between min-w-0"
+          class="stagger-item stagger-card group bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-w-0"
+          :style="{ animationDelay: `${itemIdx * 35}ms` }"
         >
           <div class="min-w-0">
             <!-- Representative Image Banner -->

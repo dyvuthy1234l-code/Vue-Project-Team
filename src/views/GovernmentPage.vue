@@ -19,7 +19,8 @@ import {
   Car,
   Briefcase,
   Home,
-  Check
+  Check,
+  Landmark
 } from 'lucide-vue-next'
 import EmptyState from '@/components/EmptyState.vue'
 import ServiceCompareModal from '@/components/ServiceCompareModal.vue'
@@ -160,7 +161,7 @@ const popularItemsMeta: Record<string, {
   },
   'birth-certificate': {
     ministry: 'Sangkat / Khan Civil Status Office',
-    ministryKh: 'រដ្ឋបាលសង្កាត់/ឃុំ • ការិយាល័យអត្រានុកូលដ្ឋាន',
+    ministryKh: 'រដ្ឋបាលសង្កាត់/ឃុំ • អត្រានុកូលដ្ឋាន',
     badge: 'Free of Charge',
     badgeKh: 'ឥតគិតថ្លៃ ៣០ថ្ងៃដំបូង',
     badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
@@ -174,7 +175,7 @@ const popularItemsMeta: Record<string, {
     ministry: 'National Police Commissariat',
     ministryKh: 'ប៉ុស្តិ៍នគរបាលរដ្ឋបាលឃុំ/សង្កាត់',
     badge: 'Civic Record',
-    badgeKh: 'កម្រងគ្រួសារ',
+    badgeKh: 'កម្រងគ្រួសារ ក.ប.៤',
     badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     price: '$5',
     priceKh: '$៥ (២០,០០០ រៀល)',
@@ -217,6 +218,136 @@ const popularItemsMeta: Record<string, {
     days: '15-30 days',
     daysKh: '១៥-៣០ ថ្ងៃធ្វើការ',
     docsCount: 6
+  },
+  'criminal-record': {
+    ministry: 'Ministry of Justice (MOJ)',
+    ministryKh: 'ក្រសួងយុត្តិធម៌ • នាយកដ្ឋានព្រហ្មទណ្ឌ',
+    badge: 'Legal Check',
+    badgeKh: 'លិខិតថ្កោលទោស',
+    badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
+    price: '$2.50 / 10k Riel',
+    priceKh: '$២.៥០ (១០,០០០ រៀល)',
+    days: '7-12 days',
+    daysKh: '៧-១២ ថ្ងៃធ្វើការ',
+    docsCount: 4
+  },
+  'vehicle-registration': {
+    ministry: 'Ministry of Public Works and Transport',
+    ministryKh: 'ក្រសួងសាធារណការ និងដឹកជញ្ជូន',
+    badge: 'Transport',
+    badgeKh: 'ផ្ទេរកម្មសិទ្ធិយានយន្ត',
+    badgeColor: 'bg-sky-50 text-sky-700 border-sky-200',
+    price: '$3.75 - $11.25',
+    priceKh: '$៣.៧៥ - $១១.២៥',
+    days: '1-3 days',
+    daysKh: '១-៣ ថ្ងៃធ្វើការ',
+    docsCount: 5
+  },
+  'single-certificate': {
+    ministry: 'Sangkat / Commune Hall',
+    ministryKh: 'សាលាសង្កាត់/ឃុំ • អត្រានុកូលដ្ឋាន',
+    badge: 'Civil Status',
+    badgeKh: 'ភាពនៅលីវ',
+    badgeColor: 'bg-pink-50 text-pink-700 border-pink-200',
+    price: 'Free',
+    priceKh: 'ឥតគិតថ្លៃ',
+    days: '3-5 days',
+    daysKh: '៣-៥ ថ្ងៃធ្វើការ',
+    docsCount: 3
+  },
+  'construction-permit': {
+    ministry: 'District / Khan OWSO Administration',
+    ministryKh: 'ការិយាល័យច្រកចេញចូលតែមួយ (OWSO)',
+    badge: 'Construction',
+    badgeKh: 'ច្បាប់សាងសង់',
+    badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
+    price: '$120 - $350',
+    priceKh: '$១២០ - $៣៥០',
+    days: '15-25 days',
+    daysKh: '១៥-២៥ ថ្ងៃធ្វើការ',
+    docsCount: 5
+  },
+  'residence-book': {
+    ministry: 'Administrative Police Post',
+    ministryKh: 'ប៉ុស្តិ៍នគរបាលរដ្ឋបាលឃុំ/សង្កាត់',
+    badge: 'Civic Record',
+    badgeKh: 'ស្នាក់នៅ ក.ប.២',
+    badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    price: 'Free',
+    priceKh: 'ឥតគិតថ្លៃ',
+    days: '3-7 days',
+    daysKh: '៣-៧ ថ្ងៃធ្វើការ',
+    docsCount: 4
+  },
+  'death-certificate': {
+    ministry: 'Sangkat / Commune Civil Status',
+    ministryKh: 'សាលាសង្កាត់/ឃុំ • អត្រានុកូលដ្ឋាន',
+    badge: 'Civil Status',
+    badgeKh: 'សំបុត្រមរណភាព',
+    badgeColor: 'bg-slate-100 text-slate-700 border-slate-200',
+    price: 'Free',
+    priceKh: 'ឥតគិតថ្លៃ',
+    days: '1-2 days',
+    daysKh: '១-២ ថ្ងៃធ្វើការ',
+    docsCount: 4
+  },
+  'nssf-card': {
+    ministry: 'National Social Security Fund (NSSF)',
+    ministryKh: 'បេឡាជាតិសន្តិសុខសង្គម (ប.ស.ស)',
+    badge: 'Healthcare',
+    badgeKh: 'ប័ណ្ណ ប.ស.ស',
+    badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    price: 'Free Card',
+    priceKh: 'ឥតគិតថ្លៃកាត',
+    days: 'Same Day',
+    daysKh: 'ក្នុងថ្ងៃដដែល',
+    docsCount: 3
+  }
+}
+
+// Clean Formatter Helpers for Cards
+const getServiceFee = (service: any) => {
+  const meta = popularItemsMeta[service.id]
+  if (meta) {
+    return currentLanguage.value === 'kh' ? meta.priceKh : meta.price
+  }
+  const rawFee = localized(service.fee, service.feeKh)
+  if (!rawFee) return currentLanguage.value === 'kh' ? 'ឥតគិតថ្លៃ' : 'Free'
+  if (rawFee.toLowerCase().includes('free') || rawFee.includes('ឥតគិតថ្លៃ')) {
+    return currentLanguage.value === 'kh' ? 'ឥតគិតថ្លៃ' : 'Free'
+  }
+  return rawFee.length > 18 ? rawFee.slice(0, 16) + '...' : rawFee
+}
+
+const getServiceDays = (service: any) => {
+  const meta = popularItemsMeta[service.id]
+  if (meta) {
+    return currentLanguage.value === 'kh' ? meta.daysKh : meta.days
+  }
+  const rawDays = localized(service.processingTime, service.processingTimeKh)
+  if (!rawDays) return currentLanguage.value === 'kh' ? '៣-៧ ថ្ងៃ' : '3-7 days'
+  return rawDays.length > 18 ? rawDays.slice(0, 16) + '...' : rawDays
+}
+
+const getServiceMinistry = (service: any) => {
+  const meta = popularItemsMeta[service.id]
+  if (meta) {
+    return currentLanguage.value === 'kh' ? meta.ministryKh : meta.ministry
+  }
+  return currentLanguage.value === 'kh' ? 'រាជរដ្ឋាភិបាលកម្ពុជា' : 'Royal Government of Cambodia'
+}
+
+const getServiceBadge = (service: any) => {
+  const meta = popularItemsMeta[service.id]
+  if (meta) {
+    return {
+      label: currentLanguage.value === 'kh' ? meta.badgeKh : meta.badge,
+      color: meta.badgeColor
+    }
+  }
+  return {
+    label: currentLanguage.value === 'kh' ? 'សេវាផ្លូវការ' : 'Official',
+    color: 'bg-blue-50 text-blue-700 border-blue-200'
   }
 }
 
@@ -422,7 +553,7 @@ function triggerDownload(formId: string) {
       <!-- ============================================================
            2. ROYAL CIVIC HERO BANNER & CITIZEN SEARCH CONSOLE
            ============================================================ -->
-      <section class="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0A2540] via-[#0D3B66] to-[#0D47A1] text-white p-4 sm:p-8 lg:p-10 shadow-xl border border-blue-900/40">
+      <section class="scroll-reveal relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0A2540] via-[#0D3B66] to-[#0D47A1] text-white p-4 sm:p-8 lg:p-10 shadow-xl border border-blue-900/40">
         <!-- Subtle Palace Silhouette Overlay -->
         <div class="absolute inset-0 z-0 opacity-15 mix-blend-luminosity pointer-events-none">
           <img
@@ -538,7 +669,7 @@ function triggerDownload(formId: string) {
       <!-- ============================================================
            3. CITIZEN LIFE-EVENT PILLARS (៤ សសរស្ដម្ភសេវាពលរដ្ឋ)
            ============================================================ -->
-      <section class="space-y-3 sm:space-y-4 font-khmer">
+      <section class="scroll-reveal space-y-3 sm:space-y-4 font-khmer">
         <div class="flex items-center justify-between">
           <div>
             <span class="text-[11px] sm:text-xs font-black text-[#0D47A1] uppercase tracking-wider">
@@ -555,11 +686,12 @@ function triggerDownload(formId: string) {
 
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           <div
-            v-for="pillar in lifeEventPillars"
+            v-for="(pillar, pIdx) in lifeEventPillars"
             :key="pillar.id"
             @click="selectPillar(pillar)"
+            :style="{ animationDelay: `${pIdx * 50}ms` }"
             :class="[
-              'p-3 sm:p-5 rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between relative active:scale-[0.98]',
+              'stagger-item stagger-card p-3 sm:p-5 rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between relative active:scale-[0.98]',
               activePillarId === pillar.id
                 ? 'bg-white border-2 border-[#0D47A1] ring-2 ring-[#0D47A1]/15 shadow-md'
                 : 'bg-white border border-slate-200/90 hover:border-blue-300 shadow-xs hover:shadow-md'
@@ -614,7 +746,7 @@ function triggerDownload(formId: string) {
       <!-- ============================================================
            4. STANDARD 4-STEP CITIZEN PROCEDURE (នីតិវិធី ៤ ជំហាន)
            ============================================================ -->
-      <section class="rounded-3xl bg-white border border-slate-200/90 p-5 sm:p-8 shadow-xs space-y-5 sm:space-y-6">
+      <section class="scroll-reveal rounded-3xl bg-white border border-slate-200/90 p-5 sm:p-8 shadow-xs space-y-5 sm:space-y-6">
         <div class="space-y-1">
           <span class="text-xs font-black text-[#0D47A1] uppercase tracking-wider">នីតិវិធីស្តង់ដារជាតិ</span>
           <h2 class="text-lg sm:text-xl font-black text-slate-900">៤ ជំហានងាយៗក្នុងការស្នើសុំសេវារដ្ឋបាលសាធារណៈ</h2>
@@ -625,7 +757,7 @@ function triggerDownload(formId: string) {
           <div
             v-for="st in standardSteps"
             :key="st.step"
-            class="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 sm:space-y-2 relative"
+            class="stagger-card p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 sm:space-y-2 relative"
           >
             <div class="flex items-center justify-between">
               <span class="text-xl sm:text-2xl font-mono font-black text-[#0D47A1]/80">{{ st.step }}</span>
@@ -640,7 +772,7 @@ function triggerDownload(formId: string) {
       <!-- ============================================================
            5. OFFICIAL SERVICES DIRECTORY (GRID OF CIVIC SERVICES)
            ============================================================ -->
-      <div id="services-grid-section" class="space-y-6 scroll-mt-24">
+      <div id="services-grid-section" class="scroll-reveal space-y-6 scroll-mt-24">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3 border-b border-slate-200">
           <div>
             <div class="flex items-center gap-2">
@@ -710,79 +842,109 @@ function triggerDownload(formId: string) {
           </button>
         </div>
 
-        <!-- 4-Column Professional Clean Grid -->
-        <div v-if="filteredServices.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+        <!-- Modern Professional Government Cards Grid -->
+        <div v-if="filteredServices.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
           <router-link
-            v-for="service in filteredServices"
+            v-for="(service, sIdx) in filteredServices"
             :key="service.id"
             :to="'/government/' + service.id"
-            class="group bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
+            :style="{ animationDelay: `${sIdx * 40}ms` }"
+            class="stagger-item stagger-card group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-xl hover:border-blue-400/70 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer h-full"
           >
             <div>
-              <!-- Document Photo Banner -->
-              <div class="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-100">
+              <!-- Document Photo / Thumbnail Banner -->
+              <div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                 <img
                   :src="service.image"
                   :alt="localized(service.title, service.titleKh)"
                   @error="($event.target as HTMLImageElement).src = '/images/pillars/government.jpg'"
-                  class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                  class="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500 ease-out"
                 />
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent pointer-events-none" />
+                <!-- Subtle Gradient Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-slate-950/10 to-transparent pointer-events-none"></div>
 
-                <!-- Badge -->
-                <span
-                  v-if="popularItemsMeta[service.id]"
-                  :class="['absolute top-2 right-2 sm:top-3 sm:right-3 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[9px] sm:text-[10px] font-black border uppercase shadow-xs backdrop-blur-md whitespace-nowrap', popularItemsMeta[service.id].badgeColor]"
-                >
-                  {{ currentLanguage === 'kh' ? popularItemsMeta[service.id].badgeKh : popularItemsMeta[service.id].badge }}
-                </span>
+                <!-- Top Left: Category Badge -->
+                <div class="absolute top-2.5 left-2.5 z-10">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-bold bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-slate-200 shadow-2xs border border-slate-200/70 dark:border-slate-700 backdrop-blur-md">
+                    {{ currentLanguage === 'kh' ? getCategoryKh(service.category) : service.category }}
+                  </span>
+                </div>
 
-                <!-- Category -->
-                <span class="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-md">
-                  {{ currentLanguage === 'kh' ? getCategoryKh(service.category) : service.category }}
-                </span>
+                <!-- Top Right: Curated Status / Feature Badge -->
+                <div class="absolute top-2.5 right-2.5 z-10">
+                  <span
+                    :class="[
+                      'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-black border shadow-2xs backdrop-blur-md whitespace-nowrap',
+                      getServiceBadge(service).color
+                    ]"
+                  >
+                    {{ getServiceBadge(service).label }}
+                  </span>
+                </div>
               </div>
 
-              <!-- Content -->
-              <div class="p-3 sm:p-5 space-y-1.5 sm:space-y-2.5">
-                <span class="text-[9px] sm:text-[10px] font-bold text-blue-700 block truncate">
-                  {{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.ministryKh || 'រាជរដ្ឋាភិបាលកម្ពុជា') : (popularItemsMeta[service.id]?.ministry || 'Royal Government of Cambodia') }}
-                </span>
+              <!-- Card Body Content -->
+              <div class="p-4 sm:p-5 space-y-2.5">
+                <!-- Ministry Name with Landmark Seal Icon -->
+                <div class="flex items-center gap-1.5 text-[10.5px] sm:text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                  <Landmark class="w-3.5 h-3.5 shrink-0 text-blue-500" />
+                  <span class="truncate">{{ getServiceMinistry(service) }}</span>
+                </div>
 
-                <h3 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-[#0D47A1] transition-colors leading-snug line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]">
+                <!-- Service Title -->
+                <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-2 min-h-[2.5rem] flex items-center">
                   {{ localized(service.title, service.titleKh) }}
                 </h3>
 
-                <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2">
+                <!-- Description -->
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 min-h-[2rem]">
                   {{ localized(service.description, service.descriptionKh) }}
                 </p>
 
-                <!-- Micro Checklist Tag -->
-                <div class="pt-1 sm:pt-1.5 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-600 font-bold">
-                  <FileText class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] shrink-0" />
-                  <span class="truncate">
-                    {{ currentLanguage === 'kh' ? `តម្រូវ ${popularItemsMeta[service.id]?.docsCount || 4} ឯកសារ` : `${popularItemsMeta[service.id]?.docsCount || 4} required docs` }}
-                  </span>
+                <!-- Requirements Pill & Validity Tag -->
+                <div class="flex items-center gap-2 pt-1 flex-wrap">
+                  <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-[10.5px] font-bold text-slate-600 dark:text-slate-300">
+                    <FileText class="w-3 h-3 text-blue-600 shrink-0" />
+                    <span>{{ currentLanguage === 'kh' ? `តម្រូវ ${popularItemsMeta[service.id]?.docsCount || 4} ឯកសារ` : `${popularItemsMeta[service.id]?.docsCount || 4} required docs` }}</span>
+                  </div>
+
+                  <div v-if="service.validity || service.validityKh" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-[10.5px] font-medium text-slate-500 dark:text-slate-400">
+                    <ShieldCheck class="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span class="truncate max-w-[100px]">{{ currentLanguage === 'kh' ? (service.validityKh || service.validity) : service.validity }}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Footer Details -->
-            <div class="px-3 pb-3 sm:px-5 sm:pb-5 pt-0">
-              <div class="pt-2 sm:pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] sm:text-xs font-bold gap-1">
-                <span class="flex items-center gap-1 text-slate-500 truncate min-w-0">
-                  <Clock class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] shrink-0" />
-                  <span class="truncate">{{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.daysKh || localized(service.processingTime, service.processingTimeKh)) : (popularItemsMeta[service.id]?.days || service.processingTime) }}</span>
-                </span>
+            <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+              <!-- Price & Processing Time Row -->
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 text-xs">
+                <!-- Processing Time -->
+                <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px] font-semibold min-w-0">
+                  <Clock class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span class="truncate">{{ getServiceDays(service) }}</span>
+                </div>
 
-                <span class="w-fit px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-50 text-emerald-700 font-black border border-emerald-200 text-[10px] sm:text-xs">
-                  {{ currentLanguage === 'kh' ? (popularItemsMeta[service.id]?.priceKh || localized(service.fee, service.feeKh)) : (popularItemsMeta[service.id]?.price || service.fee) }}
+                <!-- Clean Price Tag Pill -->
+                <span
+                  :class="[
+                    'px-2.5 py-1 rounded-lg text-[11px] font-black border shadow-2xs shrink-0 whitespace-nowrap',
+                    getServiceFee(service).toLowerCase().includes('free') || getServiceFee(service).includes('ឥតគិតថ្លៃ')
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
+                      : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800 font-mono'
+                  ]"
+                >
+                  {{ getServiceFee(service) }}
                 </span>
               </div>
 
-              <div class="mt-2 sm:mt-3 flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#0D47A1] group-hover:translate-x-1 transition-transform">
-                <span>{{ currentLanguage === 'kh' ? 'មើលមគ្គុទ្ទេសក៍' : 'View Guide' }}</span>
-                <ArrowRight class="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <!-- Action Link Row (Animates on Hover) -->
+              <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400 group-hover:text-blue-700">
+                <span>{{ currentLanguage === 'kh' ? 'មើលមគ្គុទ្ទេសក៍លម្អិត' : 'View Full Guide' }}</span>
+                <div class="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center transition-all duration-200">
+                  <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </div>
             </div>
           </router-link>
@@ -802,7 +964,7 @@ function triggerDownload(formId: string) {
       <!-- ============================================================
            6. PROVINCIAL OWSO DIRECTORY (ច្រកចេញចូលតែមួយតាមខេត្ត)
            ============================================================ -->
-      <section class="rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4">
+      <section class="scroll-reveal rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div class="space-y-1">
             <div class="inline-flex items-center gap-1.5 text-xs font-black text-[#0D47A1] uppercase">
@@ -854,7 +1016,7 @@ function triggerDownload(formId: string) {
       <!-- ============================================================
            7. OFFICIAL DOWNLOADABLE FORMS (ទម្រង់ពាក្យស្នើសុំផ្លូវការ)
            ============================================================ -->
-      <section class="rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4">
+      <section class="scroll-reveal rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4">
         <div class="space-y-1 pb-3 border-b border-slate-100">
           <span class="text-xs font-black text-[#0D47A1] uppercase tracking-wider">ឯកសារ & ទម្រង់បែបបទ</span>
           <h2 class="text-base sm:text-lg font-black text-slate-900">ទាញយកទម្រង់ពាក្យស្នើសុំផ្លូវការ (PDF Forms)</h2>
@@ -865,7 +1027,7 @@ function triggerDownload(formId: string) {
           <div
             v-for="form in officialForms"
             :key="form.id"
-            class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 flex items-center justify-between gap-3 hover:border-blue-300 transition-colors"
+            class="stagger-card p-4 rounded-2xl border border-slate-200 bg-slate-50/60 flex items-center justify-between gap-3 hover:border-blue-300 transition-colors"
           >
             <div class="space-y-1 min-w-0">
               <span class="text-[10px] font-black uppercase text-blue-700">{{ form.departmentKh }}</span>
@@ -888,7 +1050,7 @@ function triggerDownload(formId: string) {
       <!-- ============================================================
            8. FREQUENTLY ASKED QUESTIONS (FAQ ACCORDION)
            ============================================================ -->
-      <section class="rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4">
+      <section class="scroll-reveal rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4">
         <div class="space-y-1 pb-3 border-b border-slate-100">
           <div class="inline-flex items-center gap-1.5 text-xs font-black text-[#0D47A1] uppercase">
             <HelpCircle class="w-4 h-4 text-[#0D47A1]" />

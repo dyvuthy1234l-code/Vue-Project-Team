@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useLanguage } from '@/composables/useLanguage'
+import { useAuth } from '@/composables/useAuth'
 import {
   Phone,
   Mail,
@@ -9,11 +10,11 @@ import {
   ShieldAlert,
   Flame,
   Ambulance,
-  PhoneCall,
-  Settings
+  PhoneCall
 } from 'lucide-vue-next'
 
 const { currentLanguage } = useLanguage()
+const { currentUser } = useAuth()
 const currentYear = new Date().getFullYear()
 
 function scrollToTop() {
@@ -185,11 +186,6 @@ function scrollToTop() {
                 {{ currentLanguage === 'kh' ? 'សេវាដែលបានរក្សាទុក' : 'My Saved Services' }}
               </router-link>
             </li>
-            <li>
-              <router-link to="/admin" class="text-purple-400 hover:text-purple-300 font-bold transition-colors">
-                <span class="inline-flex items-center gap-1.5"><Settings class="w-3.5 h-3.5" /> <span>{{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងទិន្នន័យ (Admin)' : 'Content CMS & Reports' }}</span></span>
-              </router-link>
-            </li>
           </ul>
         </div>
 
@@ -260,10 +256,12 @@ function scrollToTop() {
           <router-link to="/contact" class="hover:text-slate-200 transition-colors">
             {{ currentLanguage === 'kh' ? 'សិទ្ធិ និងភាពឯកជន' : 'Privacy & Terms' }}
           </router-link>
-          <span>·</span>
-          <router-link to="/admin" class="hover:text-purple-300 transition-colors">
-            {{ currentLanguage === 'kh' ? 'ការផ្ទៀងផ្ទាត់ទិន្នន័យ' : 'Verification Registry' }}
-          </router-link>
+          <template v-if="currentUser?.role === 'Administrator' || currentUser?.role === 'Admin'">
+            <span>·</span>
+            <router-link to="/admin" class="hover:text-purple-300 transition-colors">
+              {{ currentLanguage === 'kh' ? 'ផ្ទាំងគ្រប់គ្រងរដ្ឋបាល (Admin)' : 'Admin CMS Portal' }}
+            </router-link>
+          </template>
           <span>·</span>
           <button @click="scrollToTop" class="hover:text-white transition-colors font-bold cursor-pointer" type="button">
             {{ currentLanguage === 'kh' ? 'ត្រឡប់ទៅលើ ↑' : 'Back to Top ↑' }}

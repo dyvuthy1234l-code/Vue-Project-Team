@@ -557,7 +557,7 @@ function submitPostAd() {
     <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 pt-4 space-y-4">
       
       <!-- Top Search Bar (Compact Modern Inline on Mobile & Desktop) -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-1.5 sm:p-2 pl-3 sm:pl-4 shadow-xs border border-slate-200 dark:border-slate-800 focus-within:ring-2 focus-within:ring-[#003366]/20 transition-all">
+      <div class="scroll-reveal bg-white dark:bg-slate-900 rounded-2xl p-1.5 sm:p-2 pl-3 sm:pl-4 shadow-xs border border-slate-200 dark:border-slate-800 focus-within:ring-2 focus-within:ring-[#003366]/20 transition-all">
         <div class="flex items-center gap-2">
           
           <!-- Search Input -->
@@ -595,7 +595,7 @@ function submitPostAd() {
       </div>
 
       <!-- Horizontal Quick Filter Pills Bar (Fast 1-Tap Thumb Filter on Mobile) -->
-      <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5 pb-1">
+      <div class="scroll-reveal flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5 pb-1">
         <!-- All Jobs Pill -->
         <button
           @click="selectQuickLinkFilter('all')"
@@ -997,12 +997,13 @@ function submitPostAd() {
           <!-- ======================================================== -->
           <!-- BONGTHOM JOB ROW LIST (EXACT SCREENSHOT MATCH)           -->
           <!-- ======================================================== -->
-          <div v-if="paginatedJobs.length > 0 && viewMode === 'list'" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl divide-y divide-slate-150 dark:divide-slate-800 overflow-hidden shadow-2xs">
+          <div v-if="paginatedJobs.length > 0 && viewMode === 'list'" class="scroll-reveal bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl divide-y divide-slate-150 dark:divide-slate-800 overflow-hidden shadow-2xs">
             
             <div
-              v-for="job in paginatedJobs"
+              v-for="(job, jIdx) in paginatedJobs"
               :key="job.id"
-              class="relative group p-3 sm:p-3.5 hover:bg-blue-50/40 dark:hover:bg-slate-800/50 transition-all duration-150 flex items-start justify-between gap-3"
+              :style="{ animationDelay: `${jIdx * 30}ms` }"
+              class="stagger-item stagger-card relative group p-3 sm:p-3.5 hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-all duration-200 flex items-start justify-between gap-3"
             >
               <!-- Bookmark Ribbon Icon on Top Right Corner of Row -->
               <button
@@ -1095,12 +1096,13 @@ function submitPostAd() {
           <!-- ======================================================== -->
           <!-- BONGTHOM JOB GRID VIEW                                   -->
           <!-- ======================================================== -->
-          <div v-else-if="paginatedJobs.length > 0 && viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div v-else-if="paginatedJobs.length > 0 && viewMode === 'grid'" class="scroll-reveal grid grid-cols-1 md:grid-cols-2 gap-3">
             
             <div
-              v-for="job in paginatedJobs"
+              v-for="(job, jIdx) in paginatedJobs"
               :key="job.id"
-              class="group bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs hover:shadow-md hover:border-blue-400 transition-all duration-150 flex flex-col justify-between"
+              :style="{ animationDelay: `${jIdx * 35}ms` }"
+              class="stagger-item stagger-card group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-2xs hover:shadow-xl hover:-translate-y-1 hover:border-blue-400 transition-all duration-300 flex flex-col justify-between"
             >
               <div class="space-y-2">
                 <div class="flex items-start justify-between gap-2">

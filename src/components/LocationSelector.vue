@@ -180,16 +180,16 @@ onUnmounted(() => {
 
     <!-- 2. DESKTOP POPOVER (WHEN NOT INLINE) -->
     <Transition
-      enter-active-class="transition duration-150 ease-out"
-      enter-from-class="opacity-0 translate-y-2 scale-95"
+      enter-active-class="transition duration-250 ease-out"
+      enter-from-class="opacity-0 -translate-y-2 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition duration-100 ease-in"
+      leave-active-class="transition duration-150 ease-in"
       leave-from-class="opacity-100 translate-y-0 scale-100"
-      leave-to-class="opacity-0 translate-y-2 scale-95"
+      leave-to-class="opacity-0 -translate-y-2 scale-95"
     >
       <div
         v-if="isOpen && !inline"
-        class="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-dropdown border border-slate-200/90 dark:border-slate-700 p-3 z-50 animate-fadeIn"
+        class="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/90 dark:border-slate-700 p-3 z-50 animate-dropdown"
       >
         <!-- Header -->
         <div class="flex items-center justify-between px-2 pb-2 border-b border-slate-100 dark:border-slate-800">

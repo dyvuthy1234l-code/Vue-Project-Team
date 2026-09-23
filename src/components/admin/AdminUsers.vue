@@ -16,7 +16,8 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 
@@ -46,7 +47,7 @@ interface UserRecord {
 // -------------------------------------------------------------
 function loadUsers(): UserRecord[] {
   const defaultUsers: UserRecord[] = [
-    { id: 'usr-01', name: 'Admin Officer', nameKh: 'មន្ត្រីរដ្ឋបាលជាន់ខ្ពស់', email: 'admin@camlife.gov.kh', phone: '012 999 888', role: 'Administrator', status: 'Active', department: 'Office of the Prime Minister', registeredDate: '2026-01-15' },
+    { id: 'usr-01', name: 'Admin Officer', nameKh: 'មន្ត្រីរដ្ឋបាលជាន់ខ្ពស់', email: 'admin@gmail.com', phone: '012 999 888', role: 'Administrator', status: 'Active', department: 'Office of the Prime Minister', registeredDate: '2026-01-15' },
     { id: 'usr-02', name: 'Sok Dara', nameKh: 'សុខ តារា', email: 'dara.sok@gmail.com', phone: '098 123 456', role: 'Specialist', status: 'Active', department: 'Electric & AC Repairs', registeredDate: '2026-02-10' },
     { id: 'usr-03', name: 'Chan Bopha', nameKh: 'ចាន់ បុប្ផា', email: 'bopha.chan@outlook.com', phone: '077 555 333', role: 'Citizen', status: 'Active', department: 'Phnom Penh Resident', registeredDate: '2026-02-18' },
     { id: 'usr-04', name: 'Khem Sreypov', nameKh: 'ខែម ស្រីពៅ', email: 'sreypov.khem@gov.kh', phone: '010 444 222', role: 'Officer', status: 'Active', department: 'Ministry of Interior / OWSO', registeredDate: '2026-03-01' },
@@ -95,10 +96,10 @@ const filteredUsers = computed(() => {
     const q = searchQuery.value.toLowerCase().trim()
     if (!q) return matchRole && matchStatus
     const matchSearch =
-      u.name.toLowerCase().includes(q) ||
+      (u.name || '').toLowerCase().includes(q) ||
       (u.nameKh && u.nameKh.toLowerCase().includes(q)) ||
-      u.email.toLowerCase().includes(q) ||
-      u.phone.includes(q) ||
+      (u.email || '').toLowerCase().includes(q) ||
+      (u.phone || '').includes(q) ||
       (u.department && u.department.toLowerCase().includes(q))
     return matchRole && matchStatus && matchSearch
   })
@@ -156,23 +157,29 @@ function getRoleBadgeColor(role: UserRole) {
 }
 
 // -------------------------------------------------------------
-// MODALS
+// NAVIGATION VIEW STATE (In-Admin Sub-page Navigation)
 // -------------------------------------------------------------
-const isPermissionsModalOpen = ref(false)
-
-// 1. View User Detail Modal
+const currentView = ref<'list' | 'detail' | 'form'>('list')
 const selectedDetailUser = ref<UserRecord | null>(null)
-const isDetailModalOpen = ref(false)
+const isPermissionsModalOpen = ref(false)
+const isEditing = ref(false)
+const activeUserId = ref('')
+
+function backToList() {
+  currentView.value = 'list'
+  selectedDetailUser.value = null
+  activeUserId.value = ''
+  isEditing.value = false
+}
 
 function openDetailModal(u: UserRecord) {
   selectedDetailUser.value = u
-  isDetailModalOpen.value = true
+  currentView.value = 'detail'
 }
 
-// 2. Add / Edit User Modal
-const isUserModalOpen = ref(false)
-const isEditing = ref(false)
-const activeUserId = ref('')
+// -------------------------------------------------------------
+// ADD / EDIT FORM STATE
+// -------------------------------------------------------------
 const userForm = reactive({
   name: '',
   nameKh: '',
@@ -193,7 +200,7 @@ function openAddModal() {
   userForm.role = 'Citizen'
   userForm.status = 'Active'
   userForm.department = ''
-  isUserModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function openEditModal(u: UserRecord) {
@@ -206,7 +213,7 @@ function openEditModal(u: UserRecord) {
   userForm.role = u.role
   userForm.status = u.status
   userForm.department = u.department || ''
-  isUserModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function saveUser() {
@@ -248,7 +255,7 @@ function saveUser() {
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានបន្ថែមអ្នកប្រើប្រាស់ថ្មីជោគជ័យ!' : 'New user created successfully!')
   }
 
-  isUserModalOpen.value = false
+  backToList()
 }
 
 // 3. Delete Modal
@@ -278,9 +285,11 @@ function confirmDelete() {
 
 <template>
   <div class="h-full flex flex-col justify-between gap-2 sm:gap-2.5 select-none">
+    <!-- VIEW 1: TABLE & KPI STATS LIST VIEW -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col justify-between gap-2 sm:gap-2.5">
     
-    <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
+      <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
       
       <!-- Card 1: Administrators -->
       <div
@@ -726,168 +735,226 @@ function confirmDelete() {
       </div>
 
     </div>
+    </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 1: VIEW USER DETAIL MODAL                          -->
+    <!-- VIEW 2: VIEW USER DETAIL (SUB-PAGE)                      -->
     <!-- ======================================================== -->
     <div
-      v-if="isDetailModalOpen && selectedDetailUser"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isDetailModalOpen = false"
+      v-else-if="currentView === 'detail' && selectedDetailUser"
+      class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200"
     >
-      <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 overflow-hidden text-xs">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div class="flex items-center gap-2.5">
-            <div :class="['w-9 h-9 rounded-xl flex items-center justify-center shadow-2xs', getRoleBadgeColor(selectedDetailUser.role).iconBg]">
-              <Crown v-if="selectedDetailUser.role === 'Administrator'" class="w-4 h-4" />
-              <BadgeCheck v-else-if="selectedDetailUser.role === 'Officer'" class="w-4 h-4" />
-              <Briefcase v-else-if="selectedDetailUser.role === 'Specialist'" class="w-4 h-4" />
-              <User v-else class="w-4 h-4" />
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-slate-900 font-khmer">
-                {{ currentLanguage === 'kh' && selectedDetailUser.nameKh ? selectedDetailUser.nameKh : selectedDetailUser.name }}
-              </h3>
-              <p class="text-[11px] text-slate-400 font-mono">ID: {{ selectedDetailUser.id }}</p>
-            </div>
-          </div>
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            @click="isDetailModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            <X class="w-4 h-4" />
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
           </button>
-        </div>
-
-        <div class="py-4 space-y-3">
-          <div class="grid grid-cols-2 gap-2.5">
-            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-              <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">តួនាទី (Role)</span>
-              <span class="font-bold text-slate-800">{{ getRoleLabel(selectedDetailUser.role) }}</span>
-            </div>
-            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-              <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">ស្ថានភាព (Status)</span>
-              <span class="font-bold text-emerald-700">{{ selectedDetailUser.status }}</span>
-            </div>
-          </div>
-
-          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">អ៊ីមែល (Email)</span>
-            <span class="font-bold text-slate-800 font-mono text-xs">{{ selectedDetailUser.email }}</span>
-          </div>
-
-          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">លេខទូរស័ព្ទ (Phone)</span>
-            <span class="font-bold text-slate-800 font-mono text-xs">{{ selectedDetailUser.phone }}</span>
-          </div>
-
-          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10.5px] text-slate-500 font-khmer block mb-0.5">ស្ថាប័ន / ផ្នែក (Department)</span>
-            <span class="font-medium text-slate-800 font-khmer text-xs">{{ selectedDetailUser.department || 'N/A' }}</span>
+          <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-khmer">
+            <span>Admin CMS</span>
+            <span>/</span>
+            <span>{{ currentLanguage === 'kh' ? 'គណនី & តួនាទី' : 'Users & Roles' }}</span>
+            <span>/</span>
+            <span class="text-slate-800 font-bold font-mono">#{{ selectedDetailUser.id }}</span>
           </div>
         </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="openEditModal(selectedDetailUser)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <Edit2 class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'កែប្រែគណនី' : 'Edit User' }}</span>
+          </button>
+        </div>
+      </div>
 
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-          <button
-            type="button"
-            @click="isDetailModalOpen = false; openEditModal(selectedDetailUser)"
-            class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold font-khmer cursor-pointer"
-          >
-            {{ currentLanguage === 'kh' ? 'កែប្រែ' : 'Edit' }}
-          </button>
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="px-3.5 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold font-khmer cursor-pointer"
-          >
-            {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
-          </button>
+      <!-- Detail Card Content Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
+        <!-- User Profile Hero Header -->
+        <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div :class="['w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg shrink-0', getRoleBadgeColor(selectedDetailUser.role).iconBg]">
+                <Crown v-if="selectedDetailUser.role === 'Administrator'" class="w-8 h-8" />
+                <BadgeCheck v-else-if="selectedDetailUser.role === 'Officer'" class="w-8 h-8" />
+                <Briefcase v-else-if="selectedDetailUser.role === 'Specialist'" class="w-8 h-8" />
+                <User v-else class="w-8 h-8" />
+              </div>
+              <div>
+                <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <span :class="['inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border capitalize shadow-xs', getRoleBadgeColor(selectedDetailUser.role).bg]">
+                    {{ getRoleLabel(selectedDetailUser.role) }}
+                  </span>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    {{ selectedDetailUser.status }}
+                  </span>
+                  <span class="text-xs text-slate-400 font-mono">
+                    ID: {{ selectedDetailUser.id }}
+                  </span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black font-khmer leading-snug">
+                  {{ currentLanguage === 'kh' && selectedDetailUser.nameKh ? selectedDetailUser.nameKh : selectedDetailUser.name }}
+                </h2>
+                <p class="text-xs text-slate-300 font-medium">
+                  {{ selectedDetailUser.name }}
+                </p>
+              </div>
+            </div>
+            <div class="text-left sm:text-right shrink-0">
+              <span class="text-xs text-slate-400 block font-khmer">{{ currentLanguage === 'kh' ? 'កាលបរិច្ឆេទចុះឈ្មោះ' : 'Registered Date' }}</span>
+              <span class="text-sm font-bold text-white font-mono">
+                {{ selectedDetailUser.registeredDate }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Information Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1.5 font-khmer font-bold">
+              <Mail class="w-4 h-4 text-blue-600" />
+              <span>{{ currentLanguage === 'kh' ? 'អាសយដ្ឋានអ៊ីមែល' : 'Email Address' }}</span>
+            </div>
+            <a :href="'mailto:' + selectedDetailUser.email" class="text-sm font-bold text-blue-600 hover:underline font-mono">
+              {{ selectedDetailUser.email }}
+            </a>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1.5 font-khmer font-bold">
+              <Phone class="w-4 h-4 text-emerald-600" />
+              <span>{{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទផ្ទាល់' : 'Phone Number' }}</span>
+            </div>
+            <a :href="'tel:' + selectedDetailUser.phone" class="text-sm font-bold text-slate-800 hover:underline font-mono">
+              {{ selectedDetailUser.phone }}
+            </a>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 sm:col-span-2">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1.5 font-khmer font-bold">
+              <ShieldCheck class="w-4 h-4 text-indigo-600" />
+              <span>{{ currentLanguage === 'kh' ? 'ស្ថាប័ន / អង្គភាព / តំបន់រស់នៅ' : 'Department / Affiliation' }}</span>
+            </div>
+            <p class="text-sm font-bold text-slate-800 font-khmer">
+              {{ selectedDetailUser.department || 'General Citizen' }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 2: ADD / EDIT USER MODAL                           -->
+    <!-- VIEW 3: ADD / EDIT USER (SUB-PAGE)                       -->
     <!-- ======================================================== -->
     <div
-      v-if="isUserModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isUserModalOpen = false"
+      v-else-if="currentView === 'form'"
+      class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200"
     >
-      <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <UserPlus class="w-4 h-4" />
-            </div>
-            <h3 class="text-sm font-bold text-slate-900 font-khmer">
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+          <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="flex items-center gap-2 text-xs font-khmer font-bold text-slate-800">
+            <UserPlus class="w-4 h-4 text-blue-600" />
+            <span>
               {{ isEditing 
                 ? (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានអ្នកប្រើប្រាស់' : 'Edit User Details') 
                 : (currentLanguage === 'kh' ? 'បន្ថែមអ្នកប្រើប្រាស់ថ្មី' : 'Add New User') 
               }}
-            </h3>
+            </span>
           </div>
+        </div>
+        <div class="flex items-center gap-2">
           <button
             type="button"
-            @click="isUserModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center cursor-pointer"
+            @click="backToList"
+            class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
           >
-            <X class="w-4 h-4" />
+            {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
+          </button>
+          <button
+            type="button"
+            @click="saveUser"
+            class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-sm transition-all cursor-pointer"
+          >
+            {{ isEditing 
+              ? (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាន' : 'Update User') 
+              : (currentLanguage === 'kh' ? 'រក្សាទុក' : 'Save User') 
+            }}
           </button>
         </div>
+      </div>
 
-        <form @submit.prevent="saveUser" class="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <!-- Form Body Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto">
+        <form @submit.prevent="saveUser" class="max-w-2xl space-y-4 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">Name (English) *</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Name (English) *</label>
               <input
                 v-model="userForm.name"
                 type="text"
                 required
                 placeholder="e.g. Sok Dara"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">ឈ្មោះជាភាសាខ្មែរ</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">ឈ្មោះជាភាសាខ្មែរ</label>
               <input
                 v-model="userForm.nameKh"
                 type="text"
                 placeholder="ឧ. សុខ តារា"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">Email *</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Email *</label>
               <input
                 v-model="userForm.email"
                 type="email"
                 required
                 placeholder="user@example.com"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-mono"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">លេខទូរស័ព្ទ</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">លេខទូរស័ព្ទ</label>
               <input
                 v-model="userForm.phone"
                 type="text"
                 placeholder="012 345 678"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-mono"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
               />
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">តួនាទីប្រព័ន្ធ (Role) *</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">តួនាទីប្រព័ន្ធ (Role) *</label>
               <select
                 v-model="userForm.role"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 shadow-2xs"
               >
                 <option value="Administrator">Administrator (អ្នកគ្រប់គ្រង)</option>
                 <option value="Officer">Officer (មន្ត្រីរដ្ឋ)</option>
@@ -896,10 +963,10 @@ function confirmDelete() {
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">ស្ថានភាព (Status)</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">ស្ថានភាព (Status)</label>
               <select
                 v-model="userForm.status"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 shadow-2xs"
               >
                 <option value="Active">Active (សកម្ម)</option>
                 <option value="Pending">Pending (រង់ចាំ)</option>
@@ -909,32 +976,13 @@ function confirmDelete() {
           </div>
 
           <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">ស្ថាប័ន / ផ្នែក (Department / Sector)</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">ស្ថាប័ន / ផ្នែក (Department / Sector)</label>
             <input
               v-model="userForm.department"
               type="text"
               placeholder="e.g. Ministry of Interior / OWSO"
-              class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+              class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
             />
-          </div>
-
-          <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
-            <button
-              type="button"
-              @click="isUserModalOpen = false"
-              class="px-3.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold font-khmer cursor-pointer"
-            >
-              {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-sm cursor-pointer"
-            >
-              {{ isEditing 
-                ? (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាន' : 'Update User') 
-                : (currentLanguage === 'kh' ? 'រក្សាទុក' : 'Save User') 
-              }}
-            </button>
           </div>
         </form>
       </div>

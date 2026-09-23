@@ -16,15 +16,13 @@ import {
   X,
   AlertCircle,
   ChevronLeft,
-  ChevronRight,
-  Banknote
+  Banknote,
+  ArrowLeft,
+  ChevronRight
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { getGovernmentServices, saveCustomGovernmentServices } from '@/services/dataService'
-import governmentData from '@/data/government.json'
 import type { GovernmentService } from '@/types'
-
-const baseGovIds = new Set((governmentData as GovernmentService[]).map(g => g.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -36,8 +34,7 @@ const { currentLanguage } = useLanguage()
 const services = ref<GovernmentService[]>(getGovernmentServices())
 
 function persistGovernmentServices() {
-  const customItems = services.value.filter(s => !baseGovIds.has(s.id) || s.id.startsWith('gov-'))
-  saveCustomGovernmentServices(customItems)
+  saveCustomGovernmentServices(services.value)
 }
 
 // Search & Filters
@@ -82,16 +79,15 @@ const categories = computed(() => {
 const totalServicesCount = computed(() => services.value.length)
 const freeServicesCount = computed(() => {
   return services.value.filter(s =>
-    s.fee.toLowerCase().includes('free') ||
-    (s.feeKh && s.feeKh.includes('ឥតគិតថ្លៃ'))
+    (s.fee || '').toLowerCase().includes('free') ||
+    Boolean(s.feeKh && s.feeKh.includes('ឥតគិតថ្លៃ'))
   ).length
 })
 const expressServicesCount = computed(() => {
-  return services.value.filter(s =>
-    s.processingTime.toLowerCase().includes('same day') ||
-    s.processingTime.toLowerCase().includes('1-3') ||
-    s.processingTime.toLowerCase().includes('express')
-  ).length
+  return services.value.filter(s => {
+    const pt = (s.processingTime || '').toLowerCase()
+    return pt.includes('same day') || pt.includes('1-3') || pt.includes('express')
+  }).length
 })
 const categoriesCount = computed(() => categories.value.length - 1)
 
@@ -102,7 +98,7 @@ const filteredServices = computed(() => {
     const matchCat = selectedCategory.value === 'All' || s.category === selectedCategory.value
 
     // Fee match
-    const isFree = s.fee.toLowerCase().includes('free') || (s.feeKh && s.feeKh.includes('ឥតគិតថ្លៃ'))
+    const isFree = (s.fee || '').toLowerCase().includes('free') || Boolean(s.feeKh && s.feeKh.includes('ឥតគិតថ្លៃ'))
     const matchFee =
       selectedFeeFilter.value === 'All' ||
       (selectedFeeFilter.value === 'Free' && isFree) ||
@@ -113,12 +109,12 @@ const filteredServices = computed(() => {
     if (!q) return matchCat && matchFee
 
     const matchSearch =
-      s.title.toLowerCase().includes(q) ||
+      (s.title || '').toLowerCase().includes(q) ||
       (s.titleKh && s.titleKh.toLowerCase().includes(q)) ||
-      s.id.toLowerCase().includes(q) ||
-      s.category.toLowerCase().includes(q) ||
+      (s.id || '').toLowerCase().includes(q) ||
+      (s.category || '').toLowerCase().includes(q) ||
       (categoryTranslations[s.category]?.kh && categoryTranslations[s.category].kh.toLowerCase().includes(q)) ||
-      s.description.toLowerCase().includes(q) ||
+      (s.description || '').toLowerCase().includes(q) ||
       (s.location && s.location.toLowerCase().includes(q))
 
     return matchCat && matchFee && matchSearch
@@ -220,7 +216,7 @@ function getCategoryColor(category: string) {
 // -------------------------------------------------------------
 function formatProcessingTime(s: GovernmentService): string {
   if (currentLanguage.value === 'kh') {
-    const t = s.processingTimeKh || s.processingTime
+    const t = s.processingTimeKh || s.processingTime || ''
     if (t.includes('១៥ ដល់ ៣០') || t.includes('15 to 30')) return '១៥ - ៣០ ថ្ងៃ'
     if (t.includes('២០ ថ្ងៃ') || t.includes('១-៣ ថ្ងៃ') || t.includes('20 business')) return '១ ដល់ ២០ ថ្ងៃ'
     if (t.includes('ក្នុងថ្ងៃតែមួយ') || t.includes('Same Day')) return 'ក្នុងថ្ងៃតែមួយ'
@@ -232,9 +228,9 @@ function formatProcessingTime(s: GovernmentService): string {
     if (t.includes('១០ ដល់ ១៥') || t.includes('10 to 15')) return '១០ - ១៥ ថ្ងៃ'
     if (t.includes('១៥ ដល់ ២៥') || t.includes('15 to 25')) return '១៥ - ២៥ ថ្ងៃ'
     if (t.includes('៣០ ដល់ ៤៥') || t.includes('30 to 45')) return '៣០ - ៤៥ ថ្ងៃ'
-    return t.replace(/\(.*?\)/g, '').trim() || t
+    return t.replace(/\(.*?\)/g, '').trim() || t || '-'
   } else {
-    const t = s.processingTime
+    const t = s.processingTime || ''
     if (t.includes('15 to 30')) return '15 - 30 days'
     if (t.includes('20 business') || t.includes('Express')) return '1 - 20 days'
     if (t.includes('Same Day')) return 'Same Day'
@@ -246,13 +242,13 @@ function formatProcessingTime(s: GovernmentService): string {
     if (t.includes('10 to 15')) return '10 - 15 days'
     if (t.includes('15 to 25')) return '15 - 25 days'
     if (t.includes('30 to 45')) return '30 - 45 days'
-    return t.replace(/\(.*?\)/g, '').trim() || t
+    return t.replace(/\(.*?\)/g, '').trim() || t || '-'
   }
 }
 
 function isServiceFree(s: GovernmentService): boolean {
   return (
-    s.fee.toLowerCase().includes('free') ||
+    (s.fee || '').toLowerCase().includes('free') ||
     Boolean(s.feeKh && s.feeKh.includes('ឥតគិតថ្លៃ'))
   )
 }
@@ -303,20 +299,30 @@ function formatValidity(s: GovernmentService): string {
 }
 
 // -------------------------------------------------------------
-// DETAIL MODAL (View Full Procedure, Documents & Location)
+// PAGE VIEW STATE ('list' | 'detail' | 'form')
 // -------------------------------------------------------------
-const selectedDetailService = ref<GovernmentService | null>(null)
-const isDetailModalOpen = ref(false)
+const currentView = ref<'list' | 'detail' | 'form'>('list')
 
-function openDetailModal(service: GovernmentService) {
-  selectedDetailService.value = service
-  isDetailModalOpen.value = true
+function backToList() {
+  currentView.value = 'list'
+  selectedDetailService.value = null
+  isEditing.value = false
+  editingId.value = ''
 }
 
 // -------------------------------------------------------------
-// ADD / EDIT MODAL STATE
+// DETAIL VIEW (View Full Procedure, Documents & Location)
 // -------------------------------------------------------------
-const isFormModalOpen = ref(false)
+const selectedDetailService = ref<GovernmentService | null>(null)
+
+function openDetailModal(service: GovernmentService) {
+  selectedDetailService.value = service
+  currentView.value = 'detail'
+}
+
+// -------------------------------------------------------------
+// ADD / EDIT FORM STATE
+// -------------------------------------------------------------
 const isEditing = ref(false)
 const editingId = ref('')
 
@@ -358,7 +364,7 @@ function openAddModal() {
     requirementsText: 'Original Birth Certificate, Family Book, Passport Photos',
     requirementsKhText: 'សំបុត្រកំណើតច្បាប់ដើម, សៀវភៅគ្រួសារ, រូបថត'
   }
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function openEditModal(service: GovernmentService) {
@@ -381,7 +387,7 @@ function openEditModal(service: GovernmentService) {
     requirementsText: service.requirements?.join(', ') || '',
     requirementsKhText: service.requirementsKh?.join(', ') || ''
   }
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function handleSaveService() {
@@ -458,7 +464,7 @@ function handleSaveService() {
           title: 'Verification & Processing',
           titleKh: 'ការត្រួតពិនិត្យ និងដំណើរការ',
           description: 'Official verification by administrative authorities.',
-          descriptionKh: 'ការត្រួតពិនិត្យទិន្នន័យដោយមន្ត្រីមានសមត្ថកិច្ច។'
+          descriptionKh: 'មន្ត្រីត្រួតពិនិត្យភាពត្រឹមត្រូវ និងដំណើរការស្នើសុំ។'
         },
         {
           step: 3,
@@ -476,7 +482,7 @@ function handleSaveService() {
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានបន្ថែមសេវារដ្ឋបាលថ្មីជោគជ័យ!' : 'New government service added!')
   }
 
-  isFormModalOpen.value = false
+  backToList()
 }
 
 // -------------------------------------------------------------
@@ -505,8 +511,13 @@ function confirmDelete() {
 <template>
   <div class="h-full flex flex-col justify-between gap-2 sm:gap-2.5 select-none">
     
-    <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
+    <!-- ======================================================== -->
+    <!-- VIEW 1: SERVICES TABLE & KPIS LIST VIEW                 -->
+    <!-- ======================================================== -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col justify-between gap-2 sm:gap-2.5">
+      
+      <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
       
       <!-- KPI 1: Total Services -->
       <div
@@ -753,7 +764,7 @@ function confirmDelete() {
                   <div
                     :class="[
                       'w-5 h-5 rounded-md flex items-center justify-center shrink-0',
-                      s.processingTime.toLowerCase().includes('same day') || s.processingTime.toLowerCase().includes('1-3')
+                      (s.processingTime || '').toLowerCase().includes('same day') || (s.processingTime || '').toLowerCase().includes('1-3')
                         ? 'bg-amber-100 text-amber-600'
                         : 'bg-slate-100 text-slate-500'
                     ]"
@@ -931,124 +942,155 @@ function confirmDelete() {
 
     </div>
 
-    <!-- ------------------------------------------------------------- -->
-    <!-- 4. VIEW SERVICE DETAILS MODAL (FULL PROCEDURE & REQUIREMENTS) -->
-    <!-- ------------------------------------------------------------- -->
-    <div
-      v-if="isDetailModalOpen && selectedDetailService"
-      class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150"
-    >
-      <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200/90 my-8 space-y-5">
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 2: FULL SERVICE DETAIL SUB-PAGE                     -->
+    <!-- ======================================================== -->
+    <div v-else-if="currentView === 'detail' && selectedDetailService" class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200">
+      
+      <!-- Top Action Bar with Back button & Breadcrumb -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+
+          <div class="h-4 w-px bg-slate-200"></div>
+
+          <div class="flex items-center gap-1.5 text-xs font-khmer">
+            <span class="text-slate-400 font-medium cursor-pointer hover:text-slate-700" @click="backToList">
+              {{ currentLanguage === 'kh' ? 'សេវារដ្ឋបាល' : 'Government Services' }}
+            </span>
+            <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
+            <span class="font-bold text-slate-800 truncate max-w-[280px]">
+              {{ currentLanguage === 'kh' ? (selectedDetailService.titleKh || selectedDetailService.title) : selectedDetailService.title }}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="openEditModal(selectedDetailService)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs font-khmer transition-colors shadow-xs cursor-pointer"
+          >
+            <Edit2 class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'កែប្រែទិន្នន័យ' : 'Edit Service' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Detail Content Area (Full Page Card) -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
         
-        <!-- Header -->
-        <div class="flex items-start justify-between pb-4 border-b border-slate-100">
-          <div class="flex items-start gap-3 min-w-0">
-            <div :class="['w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 mt-0.5 shadow-2xs', getCategoryColor(selectedDetailService.category).iconBg]">
-              <FileText class="w-5 h-5" />
+        <!-- Header Banner -->
+        <div class="flex items-start justify-between pb-5 border-b border-slate-100 gap-4">
+          <div class="flex items-start gap-3.5 min-w-0">
+            <div :class="['w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs', getCategoryColor(selectedDetailService.category).iconBg]">
+              <FileText class="w-6 h-6" />
             </div>
             <div>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 mb-1">
                 <span :class="['px-2.5 py-0.5 rounded-full text-[10px] font-bold border font-khmer', getCategoryColor(selectedDetailService.category).bg]">
                   {{ getCategoryLabel(selectedDetailService.category) }}
                 </span>
-                <span class="text-[10px] font-mono text-slate-400 font-khmer">
-                  {{ currentLanguage === 'kh' ? 'កូដ' : 'ID' }}: {{ selectedDetailService.id }}
-                </span>
+                <span class="text-[11px] font-mono text-slate-400">ID: {{ selectedDetailService.id }}</span>
               </div>
-              <h3 class="text-base sm:text-lg font-black text-slate-900 font-khmer mt-1 leading-snug">
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 font-khmer leading-tight">
                 {{ currentLanguage === 'kh' ? (selectedDetailService.titleKh || selectedDetailService.title) : selectedDetailService.title }}
-              </h3>
+              </h2>
+              <p v-if="selectedDetailService.titleKh && selectedDetailService.title !== selectedDetailService.titleKh" class="text-xs text-slate-400 font-medium mt-0.5">
+                {{ selectedDetailService.title }}
+              </p>
             </div>
           </div>
-
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-          >
-            <X class="w-5 h-5" />
-          </button>
         </div>
 
-        <!-- Quick Facts Matrix -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10px] font-bold text-slate-400 font-khmer block">{{ currentLanguage === 'kh' ? 'រយៈពេល' : 'Processing' }}</span>
-            <span class="text-xs font-bold text-slate-900 block mt-1 font-khmer truncate">
+        <!-- Quick Facts Matrix (4 Key KPIs) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'រយៈពេលដំណើរការ' : 'Processing Time' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">
               {{ currentLanguage === 'kh' ? (selectedDetailService.processingTimeKh || selectedDetailService.processingTime) : selectedDetailService.processingTime }}
             </span>
           </div>
 
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10px] font-bold text-slate-400 font-khmer block">{{ currentLanguage === 'kh' ? 'តម្លៃសេវា' : 'Fee' }}</span>
-            <span class="text-xs font-bold text-slate-900 block mt-1 font-khmer truncate">
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'តម្លៃសេវា' : 'Fee' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">
               {{ currentLanguage === 'kh' ? (selectedDetailService.feeKh || selectedDetailService.fee) : selectedDetailService.fee }}
             </span>
           </div>
 
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10px] font-bold text-slate-400 font-khmer block">{{ currentLanguage === 'kh' ? 'សុពលភាព' : 'Validity' }}</span>
-            <span class="text-xs font-bold text-slate-900 block mt-1 font-khmer truncate">
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'សុពលភាព' : 'Validity' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">
               {{ currentLanguage === 'kh' ? (selectedDetailService.validityKh || selectedDetailService.validity) : selectedDetailService.validity }}
             </span>
           </div>
 
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-[10px] font-bold text-slate-400 font-khmer block">{{ currentLanguage === 'kh' ? 'អាយុតម្រូវ' : 'Age Req.' }}</span>
-            <span class="text-xs font-bold text-slate-900 block mt-1 font-khmer truncate">
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'អាយុតម្រូវ' : 'Age Req.' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">
               {{ currentLanguage === 'kh' ? (selectedDetailService.ageRequirementsKh || selectedDetailService.ageRequirements || '១៨+') : (selectedDetailService.ageRequirements || '18+') }}
             </span>
           </div>
         </div>
 
-        <!-- Description -->
-        <div>
-          <h4 class="text-xs font-extrabold text-slate-700 font-khmer mb-1">
-            {{ currentLanguage === 'kh' ? 'ការពិពណ៌នាសេវា' : 'Service Description' }}
+        <!-- Service Description -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider">
+            {{ currentLanguage === 'kh' ? 'ការពិពណ៌នាសេវារដ្ឋបាល' : 'Service Description' }}
           </h4>
-          <p class="text-xs text-slate-600 font-khmer leading-relaxed bg-slate-50/70 p-3 rounded-xl border border-slate-200/70">
+          <p class="text-xs sm:text-sm text-slate-600 font-khmer leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200/80">
             {{ currentLanguage === 'kh' ? (selectedDetailService.descriptionKh || selectedDetailService.description) : selectedDetailService.description }}
           </p>
         </div>
 
         <!-- Required Documents Checklist -->
-        <div>
-          <h4 class="text-xs font-extrabold text-slate-700 font-khmer mb-2 flex items-center gap-1.5">
+        <div class="space-y-2.5">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider flex items-center gap-1.5">
             <ShieldCheck class="w-4 h-4 text-emerald-600" />
             <span>{{ currentLanguage === 'kh' ? 'ឯកសារតម្រូវចាំបាច់' : 'Mandatory Supporting Documents' }}</span>
           </h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div
               v-for="(req, idx) in (currentLanguage === 'kh' && selectedDetailService.requirementsKh?.length ? selectedDetailService.requirementsKh : selectedDetailService.requirements)"
               :key="idx"
-              class="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50/50 border border-emerald-200/60 text-xs font-medium text-slate-800 font-khmer"
+              class="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50/60 border border-emerald-200/80 text-xs font-medium text-slate-800 font-khmer"
             >
               <CheckCircle2 class="w-4 h-4 text-emerald-600 shrink-0" />
-              <span class="leading-tight">{{ req }}</span>
+              <span class="leading-snug">{{ req }}</span>
             </div>
           </div>
         </div>
 
         <!-- Application Steps Procedure -->
-        <div v-if="selectedDetailService.process && selectedDetailService.process.length">
-          <h4 class="text-xs font-extrabold text-slate-700 font-khmer mb-2 flex items-center gap-1.5">
+        <div v-if="selectedDetailService.process && selectedDetailService.process.length" class="space-y-2.5">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider flex items-center gap-1.5">
             <Clock class="w-4 h-4 text-blue-600" />
-            <span>{{ currentLanguage === 'kh' ? 'ដំណាក់កាលនៃនីតិវិធី' : 'Application Process Steps' }}</span>
+            <span>{{ currentLanguage === 'kh' ? 'ដំណាក់កាលនៃនីតិវិធីស្នើសុំ' : 'Application Process Steps' }}</span>
           </h4>
-          <div class="space-y-2">
+          <div class="space-y-2.5">
             <div
               v-for="step in selectedDetailService.process"
               :key="step.step"
-              class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200/70"
+              class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80"
             >
-              <span class="w-6 h-6 rounded-lg bg-blue-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+              <span class="w-7 h-7 rounded-lg bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                 {{ step.step }}
               </span>
               <div class="min-w-0 flex-1">
-                <h5 class="text-xs font-bold text-slate-900 font-khmer leading-tight">
+                <h5 class="text-xs sm:text-sm font-bold text-slate-900 font-khmer leading-snug">
                   {{ currentLanguage === 'kh' ? (step.titleKh || step.title) : step.title }}
                 </h5>
-                <p class="text-[11px] text-slate-500 font-khmer mt-0.5 leading-snug">
+                <p class="text-xs text-slate-500 font-khmer mt-0.5 leading-relaxed">
                   {{ currentLanguage === 'kh' ? (step.descriptionKh || step.description) : step.description }}
                 </p>
               </div>
@@ -1056,84 +1098,94 @@ function confirmDelete() {
           </div>
         </div>
 
-        <!-- Location Footer & Actions -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
-          <div class="flex items-center gap-1.5 text-xs text-slate-500 font-khmer">
-            <MapPin class="w-4 h-4 text-rose-500 shrink-0" />
-            <span class="truncate">{{ currentLanguage === 'kh' ? (selectedDetailService.locationKh || selectedDetailService.location) : selectedDetailService.location }}</span>
-          </div>
-
-          <div class="flex items-center gap-2 justify-end">
-            <button
-              type="button"
-              @click="isDetailModalOpen = false; openEditModal(selectedDetailService)"
-              class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold font-khmer cursor-pointer"
-            >
-              {{ currentLanguage === 'kh' ? 'កែប្រែទិន្នន័យ' : 'Edit Service' }}
-            </button>
-            <button
-              type="button"
-              @click="isDetailModalOpen = false"
-              class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer cursor-pointer shadow-xs"
-            >
-              {{ currentLanguage === 'kh' ? 'យល់ព្រម' : 'Done' }}
-            </button>
-          </div>
+        <!-- Location Info -->
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center gap-2.5 text-xs text-slate-600 font-khmer">
+          <MapPin class="w-4 h-4 text-rose-500 shrink-0" />
+          <span>{{ currentLanguage === 'kh' ? 'ទីតាំងផ្តល់សេវា៖' : 'Service Location:' }}</span>
+          <span class="font-bold text-slate-800">{{ currentLanguage === 'kh' ? (selectedDetailService.locationKh || selectedDetailService.location) : selectedDetailService.location }}</span>
         </div>
 
       </div>
+
     </div>
 
-    <!-- ------------------------------------------------------------- -->
-    <!-- 5. ADD / EDIT SERVICE MODAL FORM                              -->
-    <!-- ------------------------------------------------------------- -->
-    <div
-      v-if="isFormModalOpen"
-      class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150"
-    >
-      <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200/90 my-8 space-y-4">
-        
-        <!-- Header -->
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Plus v-if="!isEditing" class="w-4 h-4" />
-              <Edit2 v-else class="w-4 h-4" />
-            </div>
-            <div>
-              <h3 class="text-base font-black text-slate-900 font-khmer leading-tight">
-                {{ isEditing
-                  ? (currentLanguage === 'kh' ? 'កែប្រែសេវារដ្ឋបាល' : 'Edit Government Service')
-                  : (currentLanguage === 'kh' ? 'បន្ថែមសេវារដ្ឋបាលថ្មី' : 'Add Government Service')
-                }}
-              </h3>
-              <p class="text-[11px] text-slate-400 font-medium">
-                {{ isEditing ? `ID: ${editingId}` : 'Register a new civic administration service' }}
-              </p>
-            </div>
-          </div>
-
+    <!-- ======================================================== -->
+    <!-- VIEW 3: FULL ADD / EDIT FORM SUB-PAGE                    -->
+    <!-- ======================================================== -->
+    <div v-else-if="currentView === 'form'" class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200">
+      
+      <!-- Top Action Bar with Back button & Breadcrumb -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            @click="isFormModalOpen = false"
-            class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            <X class="w-4 h-4" />
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
           </button>
+
+          <div class="h-4 w-px bg-slate-200"></div>
+
+          <div class="flex items-center gap-1.5 text-xs font-khmer">
+            <span class="text-slate-400 font-medium cursor-pointer hover:text-slate-700" @click="backToList">
+              {{ currentLanguage === 'kh' ? 'សេវារដ្ឋបាល' : 'Government Services' }}
+            </span>
+            <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
+            <span class="font-bold text-slate-800">
+              {{ isEditing
+                ? (currentLanguage === 'kh' ? 'កែប្រែសេវា' : 'Edit Service')
+                : (currentLanguage === 'kh' ? 'បង្កើតសេវាថ្មី' : 'Add Service')
+              }}
+            </span>
+          </div>
         </div>
 
-        <!-- Form Body -->
-        <div class="space-y-3.5 text-xs">
-          
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="backToList"
+            class="px-4 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer"
+          >
+            {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
+          </button>
+          <button
+            type="button"
+            @click="handleSaveService"
+            class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs font-khmer transition-all shadow-xs cursor-pointer"
+          >
+            <CheckCircle2 class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'រក្សាទុកទិន្នន័យ' : 'Save Service' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Inputs Area (Full Page Card) -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-5">
+        
+        <div class="pb-4 border-b border-slate-100">
+          <h2 class="text-lg font-black text-slate-900 font-khmer">
+            {{ isEditing
+              ? (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានសេវារដ្ឋបាល' : 'Edit Government Service Information')
+              : (currentLanguage === 'kh' ? 'បង្កើត និងចុះបញ្ជីសេវារដ្ឋបាលថ្មី' : 'Add New Government Service to Registry')
+            }}
+          </h2>
+          <p class="text-xs text-slate-400 font-medium mt-0.5">
+            {{ isEditing ? `ID: ${editingId}` : 'Fill in the service details, fees, requirements and validity.' }}
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs">
           <!-- Title English & Khmer -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block font-bold text-slate-700 mb-1 font-khmer">ឈ្មោះសេវាជាភាសាអង់គ្លេស *</label>
               <input
                 v-model="formState.title"
                 type="text"
                 placeholder="e.g. Cambodian Passport Renewal"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
               />
             </div>
             <div>
@@ -1142,20 +1194,20 @@ function confirmDelete() {
                 v-model="formState.titleKh"
                 type="text"
                 placeholder="ឧទាហរណ៍៖ ការបន្តលិខិតឆ្លងដែនកម្ពុជា"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-khmer font-medium"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-khmer font-medium text-xs"
               />
             </div>
           </div>
 
           <!-- Category & Processing Time -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block font-bold text-slate-700 mb-1 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ប្រភេទសេវា' : 'Category' }}
               </label>
               <select
                 v-model="formState.category"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer font-khmer"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer font-khmer text-xs"
               >
                 <option value="ID Card">{{ currentLanguage === 'kh' ? 'អត្តសញ្ញាណប័ណ្ណ' : 'ID Card' }}</option>
                 <option value="Passport">{{ currentLanguage === 'kh' ? 'លិខិតឆ្លងដែន' : 'Passport' }}</option>
@@ -1176,14 +1228,14 @@ function confirmDelete() {
               <input
                 v-model="formState.processingTime"
                 type="text"
-                placeholder="e.g. Same Day ( testing takes 3 hours )"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+                placeholder="e.g. 15 to 30 business days"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
               />
             </div>
           </div>
 
           <!-- Fee & Validity -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block font-bold text-slate-700 mb-1 font-khmer">
                 {{ currentLanguage === 'kh' ? 'តម្លៃសេវា' : 'Fee' }}
@@ -1191,8 +1243,8 @@ function confirmDelete() {
               <input
                 v-model="formState.fee"
                 type="text"
-                placeholder="e.g. Free or $115 (Normal) | $135 (Urgent)"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+                placeholder="e.g. Free or $115 - $200"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
               />
             </div>
 
@@ -1204,7 +1256,7 @@ function confirmDelete() {
                 v-model="formState.validity"
                 type="text"
                 placeholder="e.g. 10 Years or Permanent"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
               />
             </div>
           </div>
@@ -1217,9 +1269,22 @@ function confirmDelete() {
             <input
               v-model="formState.location"
               type="text"
-              placeholder="e.g. OWSO Khan/Commune Administration Offices"
-              class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+              placeholder="e.g. Local Commune/Sangkat Administration Offices & OWSO"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
             />
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block font-bold text-slate-700 mb-1 font-khmer">
+              {{ currentLanguage === 'kh' ? 'ការពិពណ៌នាសេវា' : 'Description' }}
+            </label>
+            <textarea
+              v-model="formState.description"
+              rows="3"
+              placeholder="Describe what the service provides and who is eligible..."
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs resize-none"
+            ></textarea>
           </div>
 
           <!-- Requirements (comma separated) -->
@@ -1229,31 +1294,31 @@ function confirmDelete() {
               v-model="formState.requirementsText"
               rows="2"
               placeholder="e.g. National ID Card, Original Birth Certificate, Family Book"
-              class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium resize-none"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs resize-none"
             ></textarea>
           </div>
-
         </div>
 
-        <!-- Footer Actions -->
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <!-- Bottom Save Bar -->
+        <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
           <button
             type="button"
-            @click="isFormModalOpen = false"
-            class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-khmer cursor-pointer transition-colors"
+            @click="backToList"
+            class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-khmer cursor-pointer transition-colors"
           >
             {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
           </button>
           <button
             type="button"
             @click="handleSaveService"
-            class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer cursor-pointer shadow-xs transition-colors"
+            class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold font-khmer cursor-pointer shadow-xs transition-all"
           >
             {{ currentLanguage === 'kh' ? 'រក្សាទុកទិន្នន័យ' : 'Save Service' }}
           </button>
         </div>
 
       </div>
+
     </div>
 
     <!-- ------------------------------------------------------------- -->

@@ -32,8 +32,9 @@ const reports = ref<ServiceReport[]>(
   JSON.parse(localStorage.getItem('camlife-reports') || '[]')
 )
 
-// Populate initial sample reports if empty so Admin dashboard looks realistic
-if (reports.value.length === 0) {
+// Populate initial sample reports only on first load (never re-populate after intentional clear)
+const reportsInitialized = localStorage.getItem('camlife-reports-initialized')
+if (reports.value.length === 0 && !reportsInitialized) {
   reports.value = [
     {
       id: 'rep-01',
@@ -59,6 +60,7 @@ if (reports.value.length === 0) {
     }
   ]
   localStorage.setItem('camlife-reports', JSON.stringify(reports.value))
+  localStorage.setItem('camlife-reports-initialized', 'true')
 }
 
 export function useFeedback() {

@@ -16,14 +16,12 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertCircle,
-  Compass
+  Compass,
+  ArrowLeft
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { getLocations, saveCustomLocations } from '@/services/dataService'
-import locationsData from '@/data/locations.json'
 import type { LocationItem } from '@/types'
-
-const baseLocIds = new Set((locationsData as LocationItem[]).map(l => l.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -38,8 +36,7 @@ const locationList = ref<LocationItem[]>(getLocations())
 
 function persistUserLocations() {
   try {
-    const custom = locationList.value.filter(l => !baseLocIds.has(l.id) || l.id.startsWith('loc-custom-'))
-    saveCustomLocations(custom)
+    saveCustomLocations(locationList.value)
   } catch {}
 }
 
@@ -50,7 +47,7 @@ const searchQuery = ref('')
 const selectedCategory = ref('All')
 
 const officeCategories = computed(() => {
-  const set = new Set(locationList.value.map(l => l.category))
+  const set = new Set(locationList.value.map(l => l.category || 'Government/OWSO'))
   return ['All', ...Array.from(set)]
 })
 
@@ -58,9 +55,9 @@ const officeCategories = computed(() => {
 // TOP 4 EXECUTIVE KPIS
 // -------------------------------------------------------------
 const totalOfficesCount = computed(() => locationList.value.length)
-const owsoCount = computed(() => locationList.value.filter(l => l.category.toLowerCase().includes('owso') || l.name.toLowerCase().includes('owso') || l.name.toLowerCase().includes('one window')).length)
-const govMinistryCount = computed(() => locationList.value.filter(l => l.category.toLowerCase().includes('gov') || l.category.toLowerCase().includes('ministry') || l.category.toLowerCase().includes('hall') || l.category.toLowerCase().includes('district')).length)
-const hospitalSafetyCount = computed(() => locationList.value.filter(l => l.category.toLowerCase().includes('hospital') || l.category.toLowerCase().includes('police')).length)
+const owsoCount = computed(() => locationList.value.filter(l => (l.category || '').toLowerCase().includes('owso') || (l.name || '').toLowerCase().includes('owso') || (l.name || '').toLowerCase().includes('one window')).length)
+const govMinistryCount = computed(() => locationList.value.filter(l => (l.category || '').toLowerCase().includes('gov') || (l.category || '').toLowerCase().includes('ministry') || (l.category || '').toLowerCase().includes('hall') || (l.category || '').toLowerCase().includes('district')).length)
+const hospitalSafetyCount = computed(() => locationList.value.filter(l => (l.category || '').toLowerCase().includes('hospital') || (l.category || '').toLowerCase().includes('police')).length)
 
 // -------------------------------------------------------------
 // FILTERED LOCATIONS
@@ -75,12 +72,12 @@ const filteredLocations = computed(() => {
     if (!q) return matchCat
 
     const matchSearch =
-      l.name.toLowerCase().includes(q) ||
+      (l.name || '').toLowerCase().includes(q) ||
       (l.nameKh && l.nameKh.toLowerCase().includes(q)) ||
-      l.address.toLowerCase().includes(q) ||
+      (l.address || '').toLowerCase().includes(q) ||
       (l.addressKh && l.addressKh.toLowerCase().includes(q)) ||
-      l.category.toLowerCase().includes(q) ||
-      l.phone.toLowerCase().includes(q)
+      (l.category || '').toLowerCase().includes(q) ||
+      (l.phone || '').toLowerCase().includes(q)
 
     return matchCat && matchSearch
   })
@@ -112,23 +109,24 @@ function goToPage(p: number) {
 // -------------------------------------------------------------
 // CATEGORY HELPERS
 // -------------------------------------------------------------
-function getCategoryLabel(cat: string): string {
+function getCategoryLabel(cat?: string): string {
+  const c = (cat || '').toLowerCase()
   if (currentLanguage.value === 'kh') {
-    switch (cat.toLowerCase()) {
-      case 'owso': return 'ច្រកចេញចូលតែមួយ (OWSO)'
-      case 'government': return 'ស្ថាប័នរដ្ឋ (Gov)'
-      case 'hospital': return 'មន្ទីរពេទ្យសាធារណៈ'
-      case 'police': return 'ប៉ុស្តិ៍នគរបាលជាតិ'
-      case 'embassy': return 'ស្ថានទូតអន្តរជាតិ'
-      case 'district': return 'សាលាខណ្ឌ/ស្រុក'
-      default: return cat
-    }
+    if (c.includes('owso')) return 'ច្រកចេញចូលតែមួយ (OWSO)'
+    if (c.includes('government') || c.includes('gov')) return 'ស្ថាប័នរដ្ឋ (Gov)'
+    if (c.includes('hospital')) return 'មន្ទីរពេទ្យសាធារណៈ'
+    if (c.includes('police')) return 'ប៉ុស្តិ៍នគរបាលជាតិ'
+    if (c.includes('bus')) return 'ស្ថានីយរថយន្តក្រុង'
+    if (c.includes('bank')) return 'ធនាគារ & ATM'
+    if (c.includes('embassy')) return 'ស្ថានទូតអន្តរជាតិ'
+    if (c.includes('district')) return 'សាលាខណ្ឌ/ស្រុក'
+    return cat || ''
   }
-  return cat
+  return cat || ''
 }
 
-function getCategoryColor(cat: string) {
-  const c = cat.toLowerCase()
+function getCategoryColor(cat?: string) {
+  const c = (cat || '').toLowerCase()
   if (c.includes('owso')) {
     return { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200/90', iconBg: 'bg-emerald-100 text-emerald-600' }
   }
@@ -138,14 +136,17 @@ function getCategoryColor(cat: string) {
   if (c.includes('police')) {
     return { bg: 'bg-amber-50 text-amber-700 border-amber-200/90', iconBg: 'bg-amber-100 text-amber-600' }
   }
+  if (c.includes('bus')) {
+    return { bg: 'bg-blue-50 text-blue-700 border-blue-200/90', iconBg: 'bg-blue-100 text-blue-600' }
+  }
   if (c.includes('embassy')) {
     return { bg: 'bg-sky-50 text-sky-700 border-sky-200/90', iconBg: 'bg-sky-100 text-sky-600' }
   }
   return { bg: 'bg-purple-50 text-purple-700 border-purple-200/90', iconBg: 'bg-purple-100 text-purple-600' }
 }
 
-function getCategoryIcon(cat: string) {
-  const c = cat.toLowerCase()
+function getCategoryIcon(cat?: string) {
+  const c = (cat || '').toLowerCase()
   if (c.includes('owso')) return Compass
   if (c.includes('hospital')) return Building2
   if (c.includes('police')) return ShieldCheck
@@ -154,23 +155,27 @@ function getCategoryIcon(cat: string) {
 }
 
 // -------------------------------------------------------------
-// DETAIL MODAL (View Full Office Specifications)
+// NAVIGATION VIEW STATE (In-Admin Sub-page Navigation)
 // -------------------------------------------------------------
+const currentView = ref<'list' | 'detail' | 'form'>('list')
 const selectedDetailOffice = ref<LocationItem | null>(null)
-const isDetailModalOpen = ref(false)
-
-function openDetailModal(loc: LocationItem) {
-  selectedDetailOffice.value = loc
-  isDetailModalOpen.value = true
-}
-
-// -------------------------------------------------------------
-// ADD / EDIT MODAL STATE
-// -------------------------------------------------------------
-const isFormModalOpen = ref(false)
 const formMode = ref<'add' | 'edit'>('add')
 const editingOfficeId = ref<string | null>(null)
 
+function backToList() {
+  currentView.value = 'list'
+  selectedDetailOffice.value = null
+  editingOfficeId.value = null
+}
+
+function openDetailModal(loc: LocationItem) {
+  selectedDetailOffice.value = loc
+  currentView.value = 'detail'
+}
+
+// -------------------------------------------------------------
+// ADD / EDIT FORM STATE
+// -------------------------------------------------------------
 const formState = reactive({
   name: '',
   nameKh: '',
@@ -199,7 +204,7 @@ function openAddModal() {
   formState.description = ''
   formState.descriptionKh = ''
   formState.image = ''
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function openEditModal(loc: LocationItem) {
@@ -216,7 +221,7 @@ function openEditModal(loc: LocationItem) {
   formState.description = loc.description || ''
   formState.descriptionKh = loc.descriptionKh || ''
   formState.image = loc.image || ''
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function saveOffice() {
@@ -264,7 +269,7 @@ function saveOffice() {
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានបន្ថែមទីតាំងថ្មីដោយជោគជ័យ!' : 'New office location added!')
   }
 
-  isFormModalOpen.value = false
+  backToList()
 }
 
 // -------------------------------------------------------------
@@ -292,9 +297,11 @@ function confirmDelete() {
 
 <template>
   <div class="h-full flex flex-col justify-between gap-2 sm:gap-2.5 select-none">
+    <!-- VIEW 1: TABLE & KPI STATS LIST VIEW -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col justify-between gap-2 sm:gap-2.5">
     
-    <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
+      <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
       
       <!-- KPI 1: Total Offices -->
       <div
@@ -326,10 +333,10 @@ function confirmDelete() {
 
       <!-- KPI 2: One Window Service Offices (OWSO) -->
       <div
-        @click="selectedCategory = 'OWSO'"
+        @click="selectedCategory = 'Government/OWSO'"
         :class="[
           'bg-white rounded-xl py-2 px-3 border transition-all cursor-pointer shadow-2xs group flex flex-col justify-between',
-          selectedCategory === 'OWSO'
+          selectedCategory === 'Government/OWSO'
             ? 'border-emerald-300 ring-2 ring-emerald-400/20 bg-emerald-50/20'
             : 'border-slate-200/90 hover:border-emerald-300'
         ]"
@@ -686,164 +693,191 @@ function confirmDelete() {
       </div>
 
     </div>
+    </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 1: VIEW OFFICE SPECIFICATIONS (DETAIL MODAL)       -->
+    <!-- VIEW 2: VIEW OFFICE SPECIFICATIONS (DETAIL SUB-PAGE)     -->
     <!-- ======================================================== -->
     <div
-      v-if="isDetailModalOpen && selectedDetailOffice"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isDetailModalOpen = false"
+      v-else-if="currentView === 'detail' && selectedDetailOffice"
+      class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200"
     >
-      <div class="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
-        
-        <!-- Header -->
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div :class="['w-9 h-9 rounded-xl flex items-center justify-center shadow-2xs', getCategoryColor(selectedDetailOffice.category).iconBg]">
-              <component :is="getCategoryIcon(selectedDetailOffice.category)" class="w-5 h-5" />
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-slate-900 font-khmer leading-snug">
-                {{ currentLanguage === 'kh' && selectedDetailOffice.nameKh ? selectedDetailOffice.nameKh : selectedDetailOffice.name }}
-              </h3>
-              <p class="text-[11px] text-slate-500 font-mono">
-                ID: {{ selectedDetailOffice.id }}
-              </p>
-            </div>
-          </div>
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            @click="isDetailModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors cursor-pointer"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            <X class="w-4 h-4" />
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
           </button>
+          <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-khmer">
+            <span>Admin CMS</span>
+            <span>/</span>
+            <span>{{ currentLanguage === 'kh' ? 'ការិយាល័យសាធារណៈ' : 'Public Offices' }}</span>
+            <span>/</span>
+            <span class="text-slate-800 font-bold font-mono">#{{ selectedDetailOffice.id }}</span>
+          </div>
         </div>
-
-        <!-- Body -->
-        <div class="p-4 space-y-4 overflow-y-auto flex-1 text-xs">
-          
-          <!-- Image preview if available -->
-          <div v-if="selectedDetailOffice.image" class="relative rounded-xl overflow-hidden h-36 bg-slate-100 border border-slate-200">
-            <img :src="selectedDetailOffice.image" :alt="selectedDetailOffice.name" class="w-full h-full object-cover" />
-            <div class="absolute top-2.5 right-2.5">
-              <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-bold border capitalize shadow-md backdrop-blur-xs', getCategoryColor(selectedDetailOffice.category).bg]">
-                {{ getCategoryLabel(selectedDetailOffice.category) }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Quick Metrics Card -->
-          <div class="grid grid-cols-2 gap-2.5">
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <div class="flex items-center gap-1.5 text-slate-500 text-[11px] mb-1 font-khmer">
-                <Building2 class="w-3.5 h-3.5 text-blue-600" />
-                <span>{{ currentLanguage === 'kh' ? 'ប្រភេទស្ថាប័ន' : 'Category' }}</span>
-              </div>
-              <span class="text-xs font-bold text-slate-800">
-                {{ getCategoryLabel(selectedDetailOffice.category) }}
-              </span>
-            </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <div class="flex items-center gap-1.5 text-slate-500 text-[11px] mb-1 font-khmer">
-                <Phone class="w-3.5 h-3.5 text-emerald-600" />
-                <span>{{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទផ្លូវការ' : 'Phone' }}</span>
-              </div>
-              <a :href="'tel:' + selectedDetailOffice.phone" class="text-xs font-bold text-blue-600 hover:underline font-mono">
-                {{ selectedDetailOffice.phone }}
-              </a>
-            </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 col-span-2">
-              <div class="flex items-center gap-1.5 text-slate-500 text-[11px] mb-1 font-khmer">
-                <MapPin class="w-3.5 h-3.5 text-indigo-600" />
-                <span>{{ currentLanguage === 'kh' ? 'អាសយដ្ឋានទីតាំង' : 'Full Address' }}</span>
-              </div>
-              <span class="text-xs font-medium text-slate-800 font-khmer">
-                {{ currentLanguage === 'kh' && selectedDetailOffice.addressKh ? selectedDetailOffice.addressKh : selectedDetailOffice.address }}
-              </span>
-              <div v-if="selectedDetailOffice.coordinates" class="mt-1 text-[10px] text-slate-400 font-mono">
-                Coordinates: {{ selectedDetailOffice.coordinates.lat }}, {{ selectedDetailOffice.coordinates.lng }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <div class="space-y-1.5">
-            <h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider font-khmer">
-              {{ currentLanguage === 'kh' ? 'ព័ត៌មានលម្អិតអំពីស្ថាប័ន' : 'Office Overview' }}
-            </h4>
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-slate-700 leading-relaxed font-khmer">
-              {{ currentLanguage === 'kh' && selectedDetailOffice.descriptionKh ? selectedDetailOffice.descriptionKh : selectedDetailOffice.description }}
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Footer -->
-        <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2">
           <button
             type="button"
-            @click="isDetailModalOpen = false; openEditModal(selectedDetailOffice)"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold font-khmer transition-colors cursor-pointer"
+            @click="openEditModal(selectedDetailOffice)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold font-khmer transition-colors cursor-pointer shadow-2xs"
           >
             <Edit2 class="w-3.5 h-3.5" />
-            <span>{{ currentLanguage === 'kh' ? 'កែប្រែទីតាំងនេះ' : 'Edit Office' }}</span>
-          </button>
-          
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="px-3.5 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
-          >
-            {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
+            <span>{{ currentLanguage === 'kh' ? 'កែប្រែ' : 'Edit Office' }}</span>
           </button>
         </div>
+      </div>
 
+      <!-- Detail Card Content Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
+        <!-- Hero Header -->
+        <div class="p-6 rounded-2xl bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <div :class="['w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0', getCategoryColor(selectedDetailOffice.category).iconBg]">
+                <component :is="getCategoryIcon(selectedDetailOffice.category)" class="w-7 h-7" />
+              </div>
+              <div>
+                <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <span :class="['inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border capitalize shadow-xs', getCategoryColor(selectedDetailOffice.category).bg]">
+                    {{ getCategoryLabel(selectedDetailOffice.category) }}
+                  </span>
+                  <span class="text-xs text-slate-300 font-mono">
+                    ID: {{ selectedDetailOffice.id }}
+                  </span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black font-khmer leading-snug">
+                  {{ currentLanguage === 'kh' && selectedDetailOffice.nameKh ? selectedDetailOffice.nameKh : selectedDetailOffice.name }}
+                </h2>
+                <p class="text-xs text-slate-300 font-medium">
+                  {{ selectedDetailOffice.name }}
+                </p>
+              </div>
+            </div>
+            <div class="text-left sm:text-right shrink-0">
+              <a
+                :href="'tel:' + selectedDetailOffice.phone"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold font-mono transition-colors"
+              >
+                <Phone class="w-4 h-4 text-emerald-400" />
+                <span>{{ selectedDetailOffice.phone }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Information Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1.5 font-khmer font-bold">
+              <Building2 class="w-4 h-4 text-blue-600" />
+              <span>{{ currentLanguage === 'kh' ? 'ប្រភេទស្ថាប័ន / អង្គភាព' : 'Institution Category' }}</span>
+            </div>
+            <span class="text-sm font-bold text-slate-800 font-khmer">
+              {{ getCategoryLabel(selectedDetailOffice.category) }}
+            </span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1.5 font-khmer font-bold">
+              <Phone class="w-4 h-4 text-emerald-600" />
+              <span>{{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទផ្លូវការ' : 'Official Contact' }}</span>
+            </div>
+            <a :href="'tel:' + selectedDetailOffice.phone" class="text-sm font-bold text-blue-600 hover:underline font-mono">
+              {{ selectedDetailOffice.phone }}
+            </a>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 sm:col-span-2">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1.5 font-khmer font-bold">
+              <MapPin class="w-4 h-4 text-indigo-600" />
+              <span>{{ currentLanguage === 'kh' ? 'អាសយដ្ឋានទីតាំង' : 'Physical Address' }}</span>
+            </div>
+            <p class="text-sm font-medium text-slate-800 font-khmer">
+              {{ currentLanguage === 'kh' && selectedDetailOffice.addressKh ? selectedDetailOffice.addressKh : selectedDetailOffice.address }}
+            </p>
+            <div v-if="selectedDetailOffice.coordinates" class="mt-2 text-xs text-slate-500 font-mono flex items-center gap-1">
+              <span>Geo Coordinates:</span>
+              <span class="font-bold text-slate-700">{{ selectedDetailOffice.coordinates.lat }}, {{ selectedDetailOffice.coordinates.lng }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-2">
+          <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider font-khmer">
+            {{ currentLanguage === 'kh' ? 'ព័ត៌មានលម្អិតអំពីស្ថាប័ន' : 'Office Overview' }}
+          </h3>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80 text-slate-700 leading-relaxed font-khmer text-sm">
+            {{ currentLanguage === 'kh' && selectedDetailOffice.descriptionKh ? selectedDetailOffice.descriptionKh : selectedDetailOffice.description }}
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 2: ADD / EDIT OFFICE FORM                         -->
+    <!-- VIEW 3: ADD / EDIT OFFICE FORM (SUB-PAGE)                -->
     <!-- ======================================================== -->
     <div
-      v-if="isFormModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isFormModalOpen = false"
+      v-else-if="currentView === 'form'"
+      class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200"
     >
-      <div class="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
-        
-        <!-- Header -->
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Building2 class="w-4 h-4" />
-            </div>
-            <h3 class="text-sm font-bold text-slate-900 font-khmer">
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+          <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="flex items-center gap-2 text-xs font-khmer font-bold text-slate-800">
+            <Building2 class="w-4 h-4 text-blue-600" />
+            <span>
               {{ formMode === 'add' 
                 ? (currentLanguage === 'kh' ? 'បង្កើតទីតាំងការិយាល័យថ្មី' : 'Add New Office Location') 
                 : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានការិយាល័យ' : 'Edit Office Location') 
               }}
-            </h3>
+            </span>
           </div>
+        </div>
+        <div class="flex items-center gap-2">
           <button
             type="button"
-            @click="isFormModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors cursor-pointer"
+            @click="backToList"
+            class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
           >
-            <X class="w-4 h-4" />
+            {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
+          </button>
+          <button
+            type="button"
+            @click="saveOffice"
+            class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-sm transition-all cursor-pointer"
+          >
+            {{ formMode === 'add' 
+              ? (currentLanguage === 'kh' ? 'រក្សាទុកទីតាំង' : 'Save Office') 
+              : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាន' : 'Update Office') 
+            }}
           </button>
         </div>
+      </div>
 
-        <!-- Form Body -->
-        <form @submit.prevent="saveOffice" class="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
-          
+      <!-- Form Body Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto">
+        <form @submit.prevent="saveOffice" class="max-w-3xl space-y-4 text-xs">
           <!-- Name (En) & Name (Kh) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Office Name (English) *
               </label>
               <input
@@ -851,31 +885,31 @@ function confirmDelete() {
                 type="text"
                 required
                 placeholder="e.g. Khan Sen Sok OWSO Office"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 ឈ្មោះការិយាល័យ (ភាសាខ្មែរ)
               </label>
               <input
                 v-model="formState.nameKh"
                 type="text"
                 placeholder="ឧ. ការិយាល័យច្រកចេញចូលតែមួយ ខណ្ឌសែនសុខ"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Category & Phone -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ប្រភេទស្ថាប័ន *' : 'Office Category *' }}
               </label>
               <select
                 v-model="formState.category"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 shadow-2xs"
               >
                 <option value="OWSO">ច្រកចេញចូលតែមួយ (OWSO)</option>
                 <option value="Government">ស្ថាប័នរដ្ឋ / ក្រសួង (Government)</option>
@@ -885,7 +919,7 @@ function confirmDelete() {
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'លេខទូរស័ព្ទទំនាក់ទំនង *' : 'Contact Phone *' }}
               </label>
               <input
@@ -893,15 +927,15 @@ function confirmDelete() {
                 type="text"
                 required
                 placeholder="+855 23 720 001"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-mono"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Address (English & Khmer) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 អាសយដ្ឋាន (ភាសាខ្មែរ) *
               </label>
               <input
@@ -909,11 +943,11 @@ function confirmDelete() {
                 type="text"
                 required
                 placeholder="ឧ. ផ្លូវ ១៩៨៦ សង្កាត់ភ្នំពេញថ្មី ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Address (English) *
               </label>
               <input
@@ -921,15 +955,15 @@ function confirmDelete() {
                 type="text"
                 required
                 placeholder="e.g. St. 1986, Sangkat Phnom Penh Thmey, Khan Sen Sok, Phnom Penh"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Coordinates (Lat & Lng) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Latitude (Lat)
               </label>
               <input
@@ -937,11 +971,11 @@ function confirmDelete() {
                 type="number"
                 step="any"
                 placeholder="11.5564"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-mono"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Longitude (Lng)
               </label>
               <input
@@ -949,59 +983,37 @@ function confirmDelete() {
                 type="number"
                 step="any"
                 placeholder="104.9282"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-mono"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Description (Khmer & English) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 ការពិពណ៌នាជាភាសាខ្មែរ
               </label>
               <textarea
                 v-model="formState.descriptionKh"
-                rows="2"
+                rows="3"
                 placeholder="រៀបរាប់ពីសេវាកម្ម និងតួនាទីរបស់ការិយាល័យនេះ..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               ></textarea>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Description (English)
               </label>
               <textarea
                 v-model="formState.description"
-                rows="2"
+                rows="3"
                 placeholder="Office scope, services offered, and citizen procedures..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               ></textarea>
             </div>
           </div>
-
-          <!-- Submit Button -->
-          <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
-            <button
-              type="button"
-              @click="isFormModalOpen = false"
-              class="px-3.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
-            >
-              {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-sm transition-all cursor-pointer"
-            >
-              {{ formMode === 'add' 
-                ? (currentLanguage === 'kh' ? 'រក្សាទុកទីតាំង' : 'Save Office') 
-                : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាន' : 'Update Office') 
-              }}
-            </button>
-          </div>
-
         </form>
-
       </div>
     </div>
 

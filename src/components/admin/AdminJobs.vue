@@ -16,17 +16,13 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
-  Zap,
-  ExternalLink,
   DollarSign,
-  Banknote
+  Banknote,
+  ArrowLeft
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { getJobs, saveCustomJobs } from '@/services/dataService'
-import jobsData from '@/data/jobs.json'
 import type { Job } from '@/types'
-
-const baseJobIds = new Set((jobsData as Job[]).map(j => j.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -41,8 +37,7 @@ const jobs = ref<Job[]>(getJobs())
 
 function persistUserJobs() {
   try {
-    const customJobs = jobs.value.filter(j => !baseJobIds.has(j.id) || j.id.startsWith('job-custom-') || j.id.startsWith('job-partner-'))
-    saveCustomJobs(customJobs)
+    saveCustomJobs(jobs.value)
   } catch {}
 }
 
@@ -70,15 +65,17 @@ const categories = [
 // TOP 4 EXECUTIVE KPIS
 // -------------------------------------------------------------
 const totalJobsCount = computed(() => jobs.value.length)
-const fullTimeJobsCount = computed(() => jobs.value.filter(j => j.type === 'Full-time').length)
-const highSalaryJobsCount = computed(() => jobs.value.filter(j => (j.salaryMin || 0) >= 1000 || (j.salaryMax || 0) >= 1000).length)
-const companiesCount = computed(() => new Set(jobs.value.map(j => j.company.trim())).size)
+const fullTimeJobsCount = computed(() => jobs.value.filter(j => j?.type === 'Full-time').length)
+const highSalaryJobsCount = computed(() => jobs.value.filter(j => ((j?.salaryMin || 0) >= 1000) || ((j?.salaryMax || 0) >= 1000)).length)
+const companiesCount = computed(() => new Set(jobs.value.map(j => (j?.company || '').trim()).filter(Boolean)).size)
 
 // -------------------------------------------------------------
 // FILTERED JOBS
 // -------------------------------------------------------------
 const filteredJobs = computed(() => {
   return jobs.value.filter(j => {
+    if (!j) return false
+
     // 1. Category Filter
     const matchCat = selectedCategory.value === 'All' || j.category === selectedCategory.value
 
@@ -98,15 +95,15 @@ const filteredJobs = computed(() => {
     }
 
     // 4. Search Query
-    const q = searchQuery.value.toLowerCase().trim()
+    const q = (searchQuery.value || '').toLowerCase().trim()
     if (!q) return matchCat && matchType && matchSalary
 
     const matchSearch =
-      j.title.toLowerCase().includes(q) ||
+      (j.title || '').toLowerCase().includes(q) ||
       (j.titleKh && j.titleKh.toLowerCase().includes(q)) ||
-      j.company.toLowerCase().includes(q) ||
-      j.location.toLowerCase().includes(q) ||
-      j.category.toLowerCase().includes(q)
+      (j.company || '').toLowerCase().includes(q) ||
+      (j.location || '').toLowerCase().includes(q) ||
+      (j.category || '').toLowerCase().includes(q)
 
     return matchCat && matchType && matchSalary && matchSearch
   })
@@ -205,7 +202,8 @@ function getTypeLabel(type: string) {
   return type
 }
 
-function formatSalaryDisplay(j: Job): string {
+function formatSalaryDisplay(j?: Job | null): string {
+  if (!j) return currentLanguage.value === 'kh' ? 'ចរចា' : 'Negotiable'
   if (j.salary) {
     return j.salary.replace('/month', '/mo')
   }
@@ -219,20 +217,29 @@ function formatSalaryDisplay(j: Job): string {
 }
 
 // -------------------------------------------------------------
-// DETAIL MODAL (View Full Job Specifications)
+// PAGE VIEW STATE ('list' | 'detail' | 'form')
 // -------------------------------------------------------------
-const selectedDetailJob = ref<Job | null>(null)
-const isDetailModalOpen = ref(false)
+const currentView = ref<'list' | 'detail' | 'form'>('list')
 
-function openDetailModal(job: Job) {
-  selectedDetailJob.value = job
-  isDetailModalOpen.value = true
+function backToList() {
+  currentView.value = 'list'
+  selectedDetailJob.value = null
+  editingJobId.value = null
 }
 
 // -------------------------------------------------------------
-// ADD / EDIT FORM MODAL STATE
+// DETAIL SUB-PAGE VIEW
 // -------------------------------------------------------------
-const isFormModalOpen = ref(false)
+const selectedDetailJob = ref<Job | null>(null)
+
+function openDetailModal(job: Job) {
+  selectedDetailJob.value = job
+  currentView.value = 'detail'
+}
+
+// -------------------------------------------------------------
+// ADD / EDIT FORM STATE
+// -------------------------------------------------------------
 const formMode = ref<'add' | 'edit'>('add')
 const editingJobId = ref<string | null>(null)
 
@@ -268,7 +275,7 @@ function openAddModal() {
   formState.requirementsText = '3+ years experience in relevant domain\nBachelor degree in related field\nGood communication skills'
   formState.benefitsText = 'Competitive monthly salary\nNSSF & health insurance\nAnnual leave & 13th month bonus'
   formState.applyUrl = '#'
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function openEditModal(job: Job) {
@@ -286,8 +293,8 @@ function openEditModal(job: Job) {
   formState.descriptionKh = job.descriptionKh || ''
   formState.requirementsText = (job.requirements || []).join('\n')
   formState.benefitsText = (job.benefits || []).join('\n')
-  formState.applyUrl = job.applyUrl || '#'
-  isFormModalOpen.value = true
+  formState.applyUrl = job.applyUrl || ''
+  currentView.value = 'form'
 }
 
 function saveJob() {
@@ -356,7 +363,7 @@ function saveJob() {
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានបង្កើតការងារថ្មីដោយជោគជ័យ!' : 'Job posted successfully!')
   }
 
-  isFormModalOpen.value = false
+  backToList()
 }
 
 // -------------------------------------------------------------
@@ -385,8 +392,13 @@ function confirmDelete() {
 <template>
   <div class="h-full flex flex-col justify-between gap-2 sm:gap-2.5 select-none">
     
-    <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
+    <!-- ======================================================== -->
+    <!-- VIEW 1: JOBS LIST VIEW                                   -->
+    <!-- ======================================================== -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col justify-between gap-2 sm:gap-2.5">
+      
+      <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
       
       <!-- KPI 1: Total Jobs -->
       <div
@@ -751,9 +763,11 @@ function confirmDelete() {
       <div class="p-2 sm:p-2.5 bg-slate-50/80 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 shrink-0">
         <!-- Showing entries count info -->
         <div class="text-[11px] text-slate-600 font-medium font-khmer">
-          {{ currentLanguage === 'kh' 
-            ? `បង្ហាញ ${(currentPage - 1) * itemsPerPage + 1} ដល់ ${Math.min(currentPage * itemsPerPage, filteredJobs.length)} នៃ ${filteredJobs.length} ការងារសរុប` 
-            : `Showing ${(currentPage - 1) * itemsPerPage + 1} to ${Math.min(currentPage * itemsPerPage, filteredJobs.length)} of ${filteredJobs.length} jobs` 
+          {{ filteredJobs.length === 0
+            ? (currentLanguage === 'kh' ? 'គ្មានទិន្នន័យការងារទេ' : 'No jobs to display')
+            : (currentLanguage === 'kh' 
+                ? `បង្ហាញ ${(currentPage - 1) * itemsPerPage + 1} ដល់ ${Math.min(currentPage * itemsPerPage, filteredJobs.length)} នៃ ${filteredJobs.length} ការងារសរុប` 
+                : `Showing ${(currentPage - 1) * itemsPerPage + 1} to ${Math.min(currentPage * itemsPerPage, filteredJobs.length)} of ${filteredJobs.length} jobs`)
           }}
         </div>
 
@@ -818,389 +832,391 @@ function confirmDelete() {
       </div>
 
     </div>
+    </div>
 
-    <!-- ------------------------------------------------------------- -->
-    <!-- VIEW DETAIL MODAL -->
-    <!-- ------------------------------------------------------------- -->
-    <div
-      v-if="isDetailModalOpen && selectedDetailJob"
-      class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
-      @click.self="isDetailModalOpen = false"
-    >
-      <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150 my-auto">
+    <!-- ======================================================== -->
+    <!-- VIEW 2: FULL JOB DETAIL SUB-PAGE                         -->
+    <!-- ======================================================== -->
+    <div v-else-if="currentView === 'detail' && selectedDetailJob" class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200">
+      
+      <!-- Top Action Bar with Back button & Breadcrumb -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+
+          <div class="h-4 w-px bg-slate-200"></div>
+
+          <div class="flex items-center gap-1.5 text-xs font-khmer">
+            <span class="text-slate-400 font-medium cursor-pointer hover:text-slate-700" @click="backToList">
+              {{ currentLanguage === 'kh' ? 'ឱកាសការងារ' : 'Jobs & Careers' }}
+            </span>
+            <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
+            <span class="font-bold text-slate-800 truncate max-w-[280px]">
+              {{ currentLanguage === 'kh' && selectedDetailJob.titleKh ? selectedDetailJob.titleKh : selectedDetailJob.title }}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="openEditModal(selectedDetailJob)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs font-khmer transition-colors shadow-xs cursor-pointer"
+          >
+            <Edit2 class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'កែប្រែការងារ' : 'Edit Job' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Detail Content Area (Full Page Card) -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
         
-        <!-- Modal Header -->
-        <div class="p-4 sm:p-5 border-b border-slate-200 flex items-start justify-between bg-slate-50/70">
-          <div class="flex items-start gap-3 min-w-0">
-            <div :class="['w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs mt-0.5', getCategoryColor(selectedDetailJob.category).iconBg]">
-              <Briefcase class="w-5 h-5" />
+        <!-- Header Banner -->
+        <div class="flex items-start justify-between pb-5 border-b border-slate-100 gap-4">
+          <div class="flex items-start gap-3.5 min-w-0">
+            <div :class="['w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs', getCategoryColor(selectedDetailJob.category).iconBg]">
+              <Briefcase class="w-6 h-6" />
             </div>
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span :class="['px-2 py-0.5 rounded-full text-[10px] font-bold border font-khmer', getCategoryColor(selectedDetailJob.category).bg]">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span :class="['px-2.5 py-0.5 rounded-full text-[10px] font-bold border font-khmer', getCategoryColor(selectedDetailJob.category).bg]">
                   {{ getCategoryLabel(selectedDetailJob.category) }}
                 </span>
-                <span :class="['px-2 py-0.5 rounded-full text-[10px] font-bold border font-khmer', getTypeColor(selectedDetailJob.type)]">
+                <span :class="['px-2.5 py-0.5 rounded-full text-[10px] font-bold border font-khmer', getTypeColor(selectedDetailJob.type)]">
                   {{ getTypeLabel(selectedDetailJob.type) }}
                 </span>
+                <span class="text-[11px] font-mono text-slate-400">ID: {{ selectedDetailJob.id }}</span>
               </div>
-              <h3 class="text-sm sm:text-base font-bold text-slate-900 font-khmer mt-1 leading-snug">
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 font-khmer leading-tight">
                 {{ currentLanguage === 'kh' && selectedDetailJob.titleKh ? selectedDetailJob.titleKh : selectedDetailJob.title }}
-              </h3>
-              <p class="text-xs font-semibold text-slate-500 mt-0.5 flex items-center gap-1">
+              </h2>
+              <p class="text-xs text-slate-500 font-semibold mt-1 flex items-center gap-1.5">
                 <Building2 class="w-3.5 h-3.5 text-slate-400" />
                 <span>{{ selectedDetailJob.company }}</span>
-                <span>•</span>
-                <MapPin class="w-3.5 h-3.5 text-slate-400" />
+                <span class="text-slate-300">•</span>
+                <MapPin class="w-3.5 h-3.5 text-rose-500" />
                 <span>{{ selectedDetailJob.location }}</span>
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 flex items-center justify-center transition-colors cursor-pointer shrink-0 ml-2"
-          >
-            <X class="w-4 h-4" />
-          </button>
         </div>
 
-        <!-- Modal Body -->
-        <div class="p-4 sm:p-5 space-y-4 max-h-[68vh] overflow-y-auto text-xs">
-          
-          <!-- Key Meta Highlights -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
-            <div>
-              <span class="text-[10px] font-semibold text-slate-400 block font-khmer">{{ currentLanguage === 'kh' ? 'ប្រាក់បៀវត្ស' : 'Salary' }}</span>
-              <span class="text-xs font-bold text-emerald-700 mt-0.5 block font-mono">
-                {{ formatSalaryDisplay(selectedDetailJob) }}
-              </span>
-            </div>
-            <div>
-              <span class="text-[10px] font-semibold text-slate-400 block font-khmer">{{ currentLanguage === 'kh' ? 'ទីតាំងបំពេញការងារ' : 'Workplace' }}</span>
-              <span class="text-xs font-bold text-slate-700 mt-0.5 block font-khmer">
-                {{ selectedDetailJob.location }}
-              </span>
-            </div>
-            <div>
-              <span class="text-[10px] font-semibold text-slate-400 block font-khmer">{{ currentLanguage === 'kh' ? 'កាលបរិច្ឆេទប្រកាស' : 'Date Posted' }}</span>
-              <span class="text-xs font-bold text-slate-700 mt-0.5 block">
-                {{ selectedDetailJob.postedDate || 'Recently' }}
-              </span>
-            </div>
+        <!-- 4 Quick Fact Metrics -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ប្រាក់បៀវត្សរ៍' : 'Salary Range' }}</span>
+            <span class="text-sm font-black text-emerald-600 block mt-1 font-mono">{{ formatSalaryDisplay(selectedDetailJob) }}</span>
           </div>
 
-          <!-- Description -->
-          <div>
-            <h4 class="text-xs font-bold text-slate-900 font-khmer mb-1 flex items-center gap-1.5">
-              <Sparkles class="w-3.5 h-3.5 text-blue-600" />
-              <span>{{ currentLanguage === 'kh' ? 'ការពិពណ៌នាការងារ' : 'Job Description' }}</span>
-            </h4>
-            <p class="text-xs text-slate-600 font-khmer leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-200/60">
-              {{ currentLanguage === 'kh' && selectedDetailJob.descriptionKh ? selectedDetailJob.descriptionKh : selectedDetailJob.description }}
-            </p>
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ប្រភេទការងារ' : 'Employment Type' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">{{ getTypeLabel(selectedDetailJob.type) }}</span>
           </div>
 
-          <!-- Requirements -->
-          <div v-if="selectedDetailJob.requirements && selectedDetailJob.requirements.length > 0">
-            <h4 class="text-xs font-bold text-slate-900 font-khmer mb-1.5 flex items-center gap-1.5">
-              <CheckCircle2 class="w-3.5 h-3.5 text-blue-600" />
-              <span>{{ currentLanguage === 'kh' ? 'លក្ខខណ្ឌតម្រូវការ' : 'Requirements & Qualifications' }}</span>
-            </h4>
-            <ul class="space-y-1.5 bg-slate-50/50 p-3 rounded-xl border border-slate-200/60">
-              <li
-                v-for="(req, i) in selectedDetailJob.requirements"
-                :key="i"
-                class="flex items-start gap-2 text-slate-700 text-xs font-khmer"
-              >
-                <div class="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0"></div>
-                <span class="leading-snug">{{ req }}</span>
-              </li>
-            </ul>
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ទីតាំងបំពេញការងារ' : 'Work Location' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">{{ selectedDetailJob.location }}</span>
           </div>
 
-          <!-- Benefits -->
-          <div v-if="selectedDetailJob.benefits && selectedDetailJob.benefits.length > 0">
-            <h4 class="text-xs font-bold text-slate-900 font-khmer mb-1.5 flex items-center gap-1.5">
-              <Zap class="w-3.5 h-3.5 text-amber-500" />
-              <span>{{ currentLanguage === 'kh' ? 'អត្ថប្រយោជន៍ និងការលើកទឹកចិត្ត' : 'Benefits & Perks' }}</span>
-            </h4>
-            <ul class="space-y-1.5 bg-slate-50/50 p-3 rounded-xl border border-slate-200/60">
-              <li
-                v-for="(ben, i) in selectedDetailJob.benefits"
-                :key="i"
-                class="flex items-start gap-2 text-slate-700 text-xs font-khmer"
-              >
-                <div class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0"></div>
-                <span class="leading-snug">{{ ben }}</span>
-              </li>
-            </ul>
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'កាលបរិច្ឆេទផ្សាយ' : 'Posted Date' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-mono">{{ selectedDetailJob.postedDate || 'Active' }}</span>
           </div>
-
         </div>
 
-        <!-- Modal Footer -->
-        <div class="p-3 sm:p-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/70">
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="px-3.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-200/70 text-slate-700 text-xs font-bold font-khmer transition-all cursor-pointer shadow-2xs"
-          >
-            {{ currentLanguage === 'kh' ? 'បិទផ្ទាំង' : 'Close' }}
-          </button>
-          
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              @click="isDetailModalOpen = false; openEditModal(selectedDetailJob!)"
-              class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 text-xs font-bold font-khmer transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1.5"
+        <!-- Job Description -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider">
+            {{ currentLanguage === 'kh' ? 'ការពិពណ៌នាអំពីមុខតំណែង' : 'Job Description' }}
+          </h4>
+          <p class="text-xs sm:text-sm text-slate-600 font-khmer leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+            {{ currentLanguage === 'kh' && selectedDetailJob.descriptionKh ? selectedDetailJob.descriptionKh : selectedDetailJob.description }}
+          </p>
+        </div>
+
+        <!-- Requirements -->
+        <div v-if="selectedDetailJob.requirements && selectedDetailJob.requirements.length" class="space-y-2.5">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider flex items-center gap-1.5">
+            <CheckCircle2 class="w-4 h-4 text-blue-600" />
+            <span>{{ currentLanguage === 'kh' ? 'លក្ខខណ្ឌជ្រើសរើស (Requirements)' : 'Candidate Requirements' }}</span>
+          </h4>
+          <div class="space-y-2">
+            <div
+              v-for="(req, idx) in selectedDetailJob.requirements"
+              :key="idx"
+              class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700 font-khmer"
             >
-              <Edit2 class="w-3.5 h-3.5" />
-              <span>{{ currentLanguage === 'kh' ? 'កែប្រែ' : 'Edit' }}</span>
-            </button>
-            <a
-              v-if="selectedDetailJob.applyUrl && selectedDetailJob.applyUrl !== '#'"
-              :href="selectedDetailJob.applyUrl"
-              target="_blank"
-              class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold font-khmer transition-all cursor-pointer shadow-xs inline-flex items-center gap-1.5"
+              <CheckCircle2 class="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+              <span>{{ req }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefits -->
+        <div v-if="selectedDetailJob.benefits && selectedDetailJob.benefits.length" class="space-y-2.5">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles class="w-4 h-4 text-emerald-600" />
+            <span>{{ currentLanguage === 'kh' ? 'អត្ថប្រយោជន៍ និងការធានារ៉ាប់រង' : 'Job Benefits & Perks' }}</span>
+          </h4>
+          <div class="space-y-2">
+            <div
+              v-for="(ben, idx) in selectedDetailJob.benefits"
+              :key="idx"
+              class="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50/50 border border-emerald-200/80 text-xs text-emerald-900 font-khmer"
             >
-              <ExternalLink class="w-3.5 h-3.5" />
-              <span>{{ currentLanguage === 'kh' ? 'ទំព័រដាក់ពាក្យ' : 'Apply Link' }}</span>
-            </a>
+              <Sparkles class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <span>{{ ben }}</span>
+            </div>
           </div>
         </div>
 
       </div>
+
     </div>
 
-    <!-- ------------------------------------------------------------- -->
-    <!-- ADD / EDIT JOB MODAL -->
-    <!-- ------------------------------------------------------------- -->
-    <div
-      v-if="isFormModalOpen"
-      class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
-      @click.self="isFormModalOpen = false"
-    >
-      <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150 my-auto">
-        
-        <!-- Modal Header -->
-        <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-              <Briefcase class="w-4 h-4" />
-            </div>
-            <div>
-              <h3 class="text-sm sm:text-base font-bold text-slate-900 font-khmer leading-none">
-                {{ formMode === 'add'
-                  ? (currentLanguage === 'kh' ? 'បង្កើតឱកាសការងារថ្មី' : 'Post New Career Opportunity')
-                  : (currentLanguage === 'kh' ? 'កែសម្រួលព័ត៌មានការងារ' : 'Edit Job Listing')
-                }}
-              </h3>
-              <p class="text-[11px] text-slate-400 font-khmer mt-0.5">
-                {{ currentLanguage === 'kh' ? 'បំពេញព័ត៌មានលម្អិតអំពីតម្រូវការការងារ និងប្រាក់បៀវត្ស' : 'Fill in comprehensive job description and employment package.' }}
-              </p>
-            </div>
-          </div>
+    <!-- ======================================================== -->
+    <!-- VIEW 3: FULL ADD / EDIT JOB SUB-PAGE                     -->
+    <!-- ======================================================== -->
+    <div v-else-if="currentView === 'form'" class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200">
+      
+      <!-- Top Action Bar with Back button & Breadcrumb -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            @click="isFormModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 flex items-center justify-center transition-colors cursor-pointer"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            <X class="w-4 h-4" />
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
           </button>
+
+          <div class="h-4 w-px bg-slate-200"></div>
+
+          <div class="flex items-center gap-1.5 text-xs font-khmer">
+            <span class="text-slate-400 font-medium cursor-pointer hover:text-slate-700" @click="backToList">
+              {{ currentLanguage === 'kh' ? 'ឱកាសការងារ' : 'Jobs & Careers' }}
+            </span>
+            <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
+            <span class="font-bold text-slate-800">
+              {{ formMode === 'add'
+                ? (currentLanguage === 'kh' ? 'បង្កើតការងារថ្មី' : 'Post New Job')
+                : (currentLanguage === 'kh' ? 'កែប្រែការងារ' : 'Edit Job')
+              }}
+            </span>
+          </div>
         </div>
 
-        <!-- Modal Form Content -->
-        <form @submit.prevent="saveJob" class="p-4 sm:p-5 space-y-3.5 max-h-[70vh] overflow-y-auto text-xs">
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="backToList"
+            class="px-4 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer"
+          >
+            {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
+          </button>
+          <button
+            type="button"
+            @click="saveJob"
+            class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs font-khmer transition-all shadow-xs cursor-pointer"
+          >
+            <CheckCircle2 class="w-3.5 h-3.5" />
+            <span>{{ formMode === 'add' ? (currentLanguage === 'kh' ? 'ផ្សព្វផ្សាយការងារ' : 'Publish Job') : (currentLanguage === 'kh' ? 'រក្សាទុកការកែប្រែ' : 'Save Changes') }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Inputs Area (Full Page Card) -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-5">
+        
+        <div class="pb-4 border-b border-slate-100">
+          <h2 class="text-lg font-black text-slate-900 font-khmer">
+            {{ formMode === 'add'
+              ? (currentLanguage === 'kh' ? 'ផ្សព្វផ្សាយឱកាសការងារថ្មី' : 'Publish New Job Vacancy')
+              : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានឱកាសការងារ' : 'Edit Job Vacancy Details')
+            }}
+          </h2>
+          <p class="text-xs text-slate-400 font-medium mt-0.5">
+            {{ formMode === 'edit' ? `ID: ${editingJobId}` : 'Create official employment opportunity for Cambodian job seekers.' }}
+          </p>
+        </div>
+
+        <form @submit.prevent="saveJob" class="space-y-4 text-xs">
           
-          <!-- Job Title (EN & KH) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Job Title Khmer & English -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block font-bold text-slate-700 mb-1 font-khmer">
-                {{ currentLanguage === 'kh' ? 'មុខតំណែង (English) *' : 'Job Title (English) *' }}
-              </label>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">មុខតំណែងជាភាសាខ្មែរ</label>
+              <input
+                v-model="formState.titleKh"
+                type="text"
+                placeholder="ឧទាហរណ៍៖ អ្នកអភិវឌ្ឍន៍គេហទំព័រជាន់ខ្ពស់"
+                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
+              />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">មុខតំណែងជាភាសាអង់គ្លេស *</label>
               <input
                 v-model="formState.title"
                 type="text"
                 required
                 placeholder="e.g. Senior Frontend Developer"
-                class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
-              />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1 font-khmer">
-                {{ currentLanguage === 'kh' ? 'មុខតំណែង (ភាសាខ្មែរ)' : 'Job Title (Khmer)' }}
-              </label>
-              <input
-                v-model="formState.titleKh"
-                type="text"
-                placeholder="ឧ. អ្នកអភិវឌ្ឍន៍គេហទំព័រជាន់ខ្ពស់"
-                class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
           </div>
 
-          <!-- Company & Category -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Company & Location -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block font-bold text-slate-700 mb-1 font-khmer">
-                {{ currentLanguage === 'kh' ? 'ឈ្មោះក្រុមហ៊ុន / ស្ថាប័ន *' : 'Company / Organization *' }}
-              </label>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">ឈ្មោះក្រុមហ៊ុន / ស្ថាប័ន *</label>
               <input
                 v-model="formState.company"
                 type="text"
                 required
-                placeholder="e.g. Wing Bank (Cambodia) Plc"
-                class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
+                placeholder="e.g. Canadia Bank Plc."
+                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1 font-khmer">
-                {{ currentLanguage === 'kh' ? 'វិស័យការងារ (Category)' : 'Job Category' }}
-              </label>
-              <select
-                v-model="formState.category"
-                class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 font-khmer shadow-2xs cursor-pointer"
-              >
-                <option v-for="c in categories.filter(c => c !== 'All')" :key="c" :value="c">
-                  {{ getCategoryLabel(c) }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Contract Type & Location -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1 font-khmer">
-                {{ currentLanguage === 'kh' ? 'ប្រភេទកិច្ចសន្យា (Job Type)' : 'Employment Type' }}
-              </label>
-              <select
-                v-model="formState.type"
-                class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 font-khmer shadow-2xs cursor-pointer"
-              >
-                <option value="Full-time">{{ currentLanguage === 'kh' ? 'ពេញម៉ោង (Full-time)' : 'Full-time' }}</option>
-                <option value="Part-time">{{ currentLanguage === 'kh' ? 'ក្រៅម៉ោង (Part-time)' : 'Part-time' }}</option>
-                <option value="Internship">{{ currentLanguage === 'kh' ? 'កម្មសិក្សា (Internship)' : 'Internship' }}</option>
-                <option value="Freelance">{{ currentLanguage === 'kh' ? 'ឯករាជ្យ (Freelance)' : 'Freelance' }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1 font-khmer">
-                {{ currentLanguage === 'kh' ? 'ទីតាំងបំពេញការងារ (Location)' : 'Workplace Location' }}
-              </label>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">ទីតាំងបំពេញការងារ</label>
               <input
                 v-model="formState.location"
                 type="text"
-                placeholder="Phnom Penh"
-                class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
+                placeholder="e.g. Phnom Penh (Tuol Kork)"
+                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
+            </div>
+          </div>
+
+          <!-- Category & Type -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">វិស័យការងារ</label>
+              <select
+                v-model="formState.category"
+                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer cursor-pointer shadow-2xs"
+              >
+                <option value="IT">{{ currentLanguage === 'kh' ? 'បច្ចេកវិទ្យា & IT' : 'Information Technology' }}</option>
+                <option value="Banking">{{ currentLanguage === 'kh' ? 'ធនាគារ & ហិរញ្ញវត្ថុ' : 'Banking & Finance' }}</option>
+                <option value="Marketing">{{ currentLanguage === 'kh' ? 'ទីផ្សារ & ប្រព័ន្ធផ្សព្វផ្សាយ' : 'Marketing & Media' }}</option>
+                <option value="Accounting">{{ currentLanguage === 'kh' ? 'គណនេយ្យ & សវនកម្ម' : 'Accounting & Audit' }}</option>
+                <option value="Hospitality">{{ currentLanguage === 'kh' ? 'បដិសណ្ឋារកិច្ច & ទេសចរណ៍' : 'Hospitality & Tourism' }}</option>
+                <option value="Engineering">{{ currentLanguage === 'kh' ? 'វិស្វកម្ម & សំណង់' : 'Engineering & Construction' }}</option>
+                <option value="Education">{{ currentLanguage === 'kh' ? 'អប់រំ & បណ្តុះបណ្តាល' : 'Education & Training' }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">ប្រភេទកិច្ចសន្យា</label>
+              <select
+                v-model="formState.type"
+                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer cursor-pointer shadow-2xs"
+              >
+                <option value="Full-time">{{ currentLanguage === 'kh' ? 'ពេញម៉ោង (Full-time)' : 'Full-time' }}</option>
+                <option value="Part-time">{{ currentLanguage === 'kh' ? 'ក្រៅម៉ោង (Part-time)' : 'Part-time' }}</option>
+                <option value="Contract">{{ currentLanguage === 'kh' ? 'កិច្ចសន្យា (Contract)' : 'Contract' }}</option>
+                <option value="Internship">{{ currentLanguage === 'kh' ? 'កម្មសិក្សា (Internship)' : 'Internship' }}</option>
+              </select>
             </div>
           </div>
 
           <!-- Salary Min & Max -->
-          <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block font-bold text-slate-700 mb-1 font-khmer">
-                {{ currentLanguage === 'kh' ? 'ប្រាក់ខែអប្បបរមា ($ Min)' : 'Min Salary ($)' }}
-              </label>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">ប្រាក់បៀវត្សរ៍អប្បបរមា ($ / ខែ)</label>
               <input
                 v-model.number="formState.salaryMin"
                 type="number"
                 min="0"
                 step="50"
-                class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono font-bold focus:outline-none focus:border-blue-500 shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
               />
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1 font-khmer">
-                {{ currentLanguage === 'kh' ? 'ប្រាក់ខែអតិបរមា ($ Max)' : 'Max Salary ($)' }}
-              </label>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">ប្រាក់បៀវត្សរ៍អតិបរមា ($ / ខែ)</label>
               <input
                 v-model.number="formState.salaryMax"
                 type="number"
                 min="0"
                 step="50"
-                class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono font-bold focus:outline-none focus:border-blue-500 shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
               />
             </div>
           </div>
 
-          <!-- Job Description -->
+          <!-- Description -->
           <div>
-            <label class="block font-bold text-slate-700 mb-1 font-khmer">
-              {{ currentLanguage === 'kh' ? 'ការពិពណ៌នាអំពីការងារ (Description)' : 'Job Description' }}
-            </label>
+            <label class="block font-bold text-slate-700 mb-1 font-khmer">ការពិពណ៌នាការងារ</label>
             <textarea
-              v-model="formState.description"
+              v-model="formState.descriptionKh"
               rows="3"
-              placeholder="Provide an overview of the role, team, and day-to-day responsibilities..."
-              class="w-full px-3 py-2 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs resize-none"
+              placeholder="ព័ត៌មានលម្អិតអំពីតួនាទី និងភារកិច្ចការងារ..."
+              class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs resize-none"
             ></textarea>
           </div>
 
-          <!-- Requirements (One per line) -->
+          <!-- Requirements -->
           <div>
-            <label class="block font-bold text-slate-700 mb-1 font-khmer">
-              {{ currentLanguage === 'kh' ? 'លក្ខខណ្ឌតម្រូវការ (មួយបន្ទាត់ = ១ ចំណុច)' : 'Requirements (One per line)' }}
-            </label>
+            <label class="block font-bold text-slate-700 mb-1 font-khmer">លក្ខខណ្ឌជ្រើសរើស (មួយបន្ទាត់ = ១ ចំណុច)</label>
             <textarea
               v-model="formState.requirementsText"
               rows="3"
-              placeholder="3+ years Vue.js experience&#10;Proficiency with REST APIs&#10;Degree in Computer Science"
-              class="w-full px-3 py-2 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs resize-none"
+              placeholder="បទពិសោធន៍យ៉ាងតិច ២ ឆ្នាំ&#10;សញ្ញាបត្របរិញ្ញាបត្រទាក់ទង&#10;ជំនាញទំនាក់ទំនងល្អ"
+              class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs resize-none"
             ></textarea>
           </div>
 
-          <!-- Benefits (One per line) -->
+          <!-- Benefits -->
           <div>
-            <label class="block font-bold text-slate-700 mb-1 font-khmer">
-              {{ currentLanguage === 'kh' ? 'អត្ថប្រយោជន៍ និងការធានារ៉ាប់រង (មួយបន្ទាត់ = ១ ចំណុច)' : 'Benefits (One per line)' }}
-            </label>
+            <label class="block font-bold text-slate-700 mb-1 font-khmer">អត្ថប្រយោជន៍ និងការធានារ៉ាប់រង (មួយបន្ទាត់ = ១ ចំណុច)</label>
             <textarea
               v-model="formState.benefitsText"
-              rows="2.5"
-              placeholder="13th month bonus&#10;NSSF healthcare & dental&#10;Paid annual leave"
-              class="w-full px-3 py-2 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs resize-none"
+              rows="3"
+              placeholder="ប្រាក់ខែទី ១៣&#10;ធានារ៉ាប់រង ប.ស.ស&#10;ថ្ងៃឈប់សម្រាកប្រចាំឆ្នាំ"
+              class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs resize-none"
             ></textarea>
           </div>
 
           <!-- Apply URL -->
           <div>
-            <label class="block font-bold text-slate-700 mb-1 font-khmer">
-              {{ currentLanguage === 'kh' ? 'តំណភ្ជាប់សម្រាប់ដាក់ពាក្យ (Apply Link)' : 'Application URL or Email' }}
-            </label>
+            <label class="block font-bold text-slate-700 mb-1 font-khmer">តំណភ្ជាប់ ឬអ៊ីមែលសម្រាប់ដាក់ពាក្យ</label>
             <input
               v-model="formState.applyUrl"
               type="text"
               placeholder="https://company.com/careers or hr@company.com"
-              class="w-full px-3 py-1.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
+              class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
             />
           </div>
 
-          <!-- Modal Actions -->
-          <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
+          <!-- Bottom Save Bar -->
+          <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
             <button
               type="button"
-              @click="isFormModalOpen = false"
-              class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold font-khmer transition-colors cursor-pointer"
+              @click="backToList"
+              class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-khmer cursor-pointer transition-colors"
             >
               {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
             </button>
             <button
               type="submit"
-              class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold font-khmer shadow-xs transition-all cursor-pointer"
+              class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold font-khmer cursor-pointer shadow-xs transition-all"
             >
-              {{ formMode === 'add'
-                ? (currentLanguage === 'kh' ? 'ផ្សព្វផ្សាយការងារ' : 'Publish Job')
-                : (currentLanguage === 'kh' ? 'រក្សាទុកការកែប្រែ' : 'Save Changes')
-              }}
+              {{ formMode === 'add' ? (currentLanguage === 'kh' ? 'ផ្សព្វផ្សាយការងារ' : 'Publish Job') : (currentLanguage === 'kh' ? 'រក្សាទុកការកែប្រែ' : 'Save Changes') }}
             </button>
           </div>
 
         </form>
 
       </div>
+
     </div>
 
     <!-- ------------------------------------------------------------- -->

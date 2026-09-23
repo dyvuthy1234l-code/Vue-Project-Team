@@ -15,14 +15,12 @@ import {
   AlertCircle,
   TrendingUp,
   Tag,
-  Flame
+  Flame,
+  ArrowLeft
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { getNews, saveCustomNews } from '@/services/dataService'
-import newsData from '@/data/news.json'
 import type { NewsItem } from '@/types'
-
-const baseNewsIds = new Set((newsData as NewsItem[]).map(n => n.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -37,8 +35,7 @@ const newsList = ref<NewsItem[]>(getNews())
 
 function persistUserNews() {
   try {
-    const custom = newsList.value.filter(n => !baseNewsIds.has(n.id) || n.id.startsWith('news-custom-'))
-    saveCustomNews(custom)
+    saveCustomNews(newsList.value)
   } catch {}
 }
 
@@ -85,11 +82,11 @@ const filteredNews = computed(() => {
     if (!q) return matchCat && matchBreaking
 
     const matchSearch =
-      n.title.toLowerCase().includes(q) ||
+      (n.title || '').toLowerCase().includes(q) ||
       (n.titleKh && n.titleKh.toLowerCase().includes(q)) ||
-      n.description.toLowerCase().includes(q) ||
+      (n.description || '').toLowerCase().includes(q) ||
       (n.author && n.author.toLowerCase().includes(q)) ||
-      n.source.toLowerCase().includes(q)
+      (n.source || '').toLowerCase().includes(q)
 
     return matchCat && matchBreaking && matchSearch
   })
@@ -157,23 +154,27 @@ function getCategoryColor(cat: string) {
 }
 
 // -------------------------------------------------------------
-// DETAIL MODAL (View Full Article)
+// NAVIGATION VIEW STATE (In-Admin Sub-page Navigation)
 // -------------------------------------------------------------
+const currentView = ref<'list' | 'detail' | 'form'>('list')
 const selectedDetailNews = ref<NewsItem | null>(null)
-const isDetailModalOpen = ref(false)
-
-function openDetailModal(n: NewsItem) {
-  selectedDetailNews.value = n
-  isDetailModalOpen.value = true
-}
-
-// -------------------------------------------------------------
-// ADD / EDIT MODAL STATE
-// -------------------------------------------------------------
-const isFormModalOpen = ref(false)
 const formMode = ref<'add' | 'edit'>('add')
 const editingNewsId = ref<string | null>(null)
 
+function backToList() {
+  currentView.value = 'list'
+  selectedDetailNews.value = null
+  editingNewsId.value = null
+}
+
+function openDetailModal(n: NewsItem) {
+  selectedDetailNews.value = n
+  currentView.value = 'detail'
+}
+
+// -------------------------------------------------------------
+// ADD / EDIT FORM STATE
+// -------------------------------------------------------------
 const formState = reactive({
   title: '',
   titleKh: '',
@@ -208,7 +209,7 @@ function openAddModal() {
   formState.authorRole = 'Journalist'
   formState.breaking = false
   formState.readTime = '3 នាទី'
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function openEditModal(n: NewsItem) {
@@ -228,7 +229,7 @@ function openEditModal(n: NewsItem) {
   formState.authorRole = n.authorRole || 'Author'
   formState.breaking = n.breaking || false
   formState.readTime = n.readTime || '3 នាទី'
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function saveNews() {
@@ -286,7 +287,7 @@ function saveNews() {
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានចុះផ្សាយព័ត៌មានថ្មីដោយជោគជ័យ!' : 'Article published successfully!')
   }
 
-  isFormModalOpen.value = false
+  backToList()
 }
 
 // -------------------------------------------------------------
@@ -314,9 +315,11 @@ function confirmDelete() {
 
 <template>
   <div class="h-full flex flex-col justify-between gap-2 sm:gap-2.5 select-none">
+    <!-- VIEW 1: TABLE & KPI STATS LIST VIEW -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col justify-between gap-2 sm:gap-2.5">
     
-    <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
+      <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
       
       <!-- KPI 1: Total News -->
       <div
@@ -739,174 +742,198 @@ function confirmDelete() {
       </div>
 
     </div>
+    </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 1: VIEW ARTICLE SPECIFICATIONS (DETAIL MODAL)      -->
+    <!-- VIEW 2: VIEW ARTICLE SPECIFICATIONS (DETAIL SUB-PAGE)    -->
     <!-- ======================================================== -->
     <div
-      v-if="isDetailModalOpen && selectedDetailNews"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isDetailModalOpen = false"
+      v-else-if="currentView === 'detail' && selectedDetailNews"
+      class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200"
     >
-      <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
-        
-        <!-- Header -->
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div :class="['w-9 h-9 rounded-xl flex items-center justify-center shadow-2xs', getCategoryColor(selectedDetailNews.category).iconBg]">
-              <Newspaper class="w-5 h-5" />
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span v-if="selectedDetailNews.breaking" class="px-2 py-0.5 rounded bg-rose-600 text-white text-[9.5px] font-black uppercase tracking-wider">
-                  BREAKING
-                </span>
-                <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-bold border capitalize', getCategoryColor(selectedDetailNews.category).bg]">
-                  {{ getCategoryLabel(selectedDetailNews.category) }}
-                </span>
-              </div>
-              <p class="text-[11px] text-slate-500 font-mono mt-0.5">
-                {{ selectedDetailNews.source }} • {{ selectedDetailNews.date }}
-              </p>
-            </div>
-          </div>
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            @click="isDetailModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors cursor-pointer"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            <X class="w-4 h-4" />
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+          <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-khmer">
+            <span>Admin CMS</span>
+            <span>/</span>
+            <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មាន & សេចក្តីជូនដំណឹង' : 'News & Bulletins' }}</span>
+            <span>/</span>
+            <span class="text-slate-800 font-bold font-mono">#{{ selectedDetailNews.id }}</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="openEditModal(selectedDetailNews)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <Edit2 class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'កែប្រែ' : 'Edit Article' }}</span>
           </button>
         </div>
+      </div>
 
-        <!-- Body -->
-        <div class="p-4 space-y-4 overflow-y-auto flex-1 text-xs">
-          
-          <!-- Image Banner -->
-          <div v-if="selectedDetailNews.image" class="relative rounded-xl overflow-hidden h-48 bg-slate-100 border border-slate-200">
-            <img :src="selectedDetailNews.image" :alt="selectedDetailNews.title" class="w-full h-full object-cover" />
+      <!-- Detail Card Content Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
+        <!-- Image Banner -->
+        <div v-if="selectedDetailNews.image" class="relative rounded-2xl overflow-hidden h-52 sm:h-72 bg-slate-100 border border-slate-200 shadow-xs">
+          <img :src="selectedDetailNews.image" :alt="selectedDetailNews.title" class="w-full h-full object-cover" />
+          <div class="absolute top-3 left-3 flex items-center gap-2">
+            <span v-if="selectedDetailNews.breaking" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-[11px] font-black uppercase tracking-wider shadow-md">
+              🔥 BREAKING NEWS
+            </span>
+            <span :class="['inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold border capitalize shadow-md backdrop-blur-md', getCategoryColor(selectedDetailNews.category).bg]">
+              {{ getCategoryLabel(selectedDetailNews.category) }}
+            </span>
           </div>
+        </div>
 
-          <!-- Title -->
-          <div>
-            <h2 class="text-base font-black text-slate-900 font-khmer leading-snug">
-              {{ currentLanguage === 'kh' && selectedDetailNews.titleKh ? selectedDetailNews.titleKh : selectedDetailNews.title }}
-            </h2>
-            <div class="flex items-center gap-3 mt-1.5 text-slate-500 text-[11px]">
-              <span class="inline-flex items-center gap-1">
-                <User class="w-3.5 h-3.5 text-slate-400" />
-                {{ selectedDetailNews.author || 'CamLife' }} ({{ selectedDetailNews.authorRole || 'Editorial' }})
-              </span>
-              <span>•</span>
-              <span class="inline-flex items-center gap-1 font-mono">
-                <Eye class="w-3.5 h-3.5 text-slate-400" />
-                {{ selectedDetailNews.views || 1000 }} views
-              </span>
-            </div>
-          </div>
-
-          <!-- Description Summary -->
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-slate-700 leading-relaxed font-khmer font-medium">
-            {{ currentLanguage === 'kh' && selectedDetailNews.descriptionKh ? selectedDetailNews.descriptionKh : selectedDetailNews.description }}
-          </div>
-
-          <!-- Full Content -->
-          <div class="space-y-1.5">
-            <h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider font-khmer">
-              {{ currentLanguage === 'kh' ? 'ខ្លឹមសារអត្ថបទពេញលេញ' : 'Full Article Content' }}
-            </h4>
-            <div class="p-3 bg-white rounded-xl border border-slate-200 text-slate-800 leading-relaxed font-khmer whitespace-pre-line">
-              {{ currentLanguage === 'kh' && selectedDetailNews.contentKh ? selectedDetailNews.contentKh : selectedDetailNews.content }}
-            </div>
-          </div>
-
-          <!-- Tags -->
-          <div v-if="selectedDetailNews.tags && selectedDetailNews.tags.length" class="flex flex-wrap items-center gap-1.5 pt-1">
-            <Tag class="w-3.5 h-3.5 text-slate-400" />
-            <span
-              v-for="tg in selectedDetailNews.tags"
-              :key="tg"
-              class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold font-khmer"
-            >
-              #{{ tg }}
+        <!-- Meta Header -->
+        <div class="space-y-2 border-b border-slate-100 pb-4">
+          <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500 font-khmer">
+            <span class="inline-flex items-center gap-1.5 font-bold text-slate-700">
+              <User class="w-4 h-4 text-blue-600" />
+              {{ selectedDetailNews.author || 'CamLife Staff' }} ({{ selectedDetailNews.authorRole || 'Editorial' }})
+            </span>
+            <span>•</span>
+            <span class="inline-flex items-center gap-1.5 font-mono">
+              <Calendar class="w-4 h-4 text-slate-400" />
+              {{ selectedDetailNews.date }}
+            </span>
+            <span>•</span>
+            <span class="inline-flex items-center gap-1.5 font-mono">
+              <Eye class="w-4 h-4 text-emerald-600" />
+              {{ selectedDetailNews.views || 1000 }} {{ currentLanguage === 'kh' ? 'មើល' : 'views' }}
+            </span>
+            <span>•</span>
+            <span class="inline-flex items-center gap-1.5 text-slate-600 font-medium">
+              {{ currentLanguage === 'kh' ? 'ប្រភព:' : 'Source:' }} {{ selectedDetailNews.source }}
             </span>
           </div>
 
+          <h1 class="text-xl sm:text-2xl font-black text-slate-900 font-khmer leading-snug">
+            {{ currentLanguage === 'kh' && selectedDetailNews.titleKh ? selectedDetailNews.titleKh : selectedDetailNews.title }}
+          </h1>
+          <p class="text-xs text-slate-400 font-sans font-medium">
+            {{ selectedDetailNews.title }}
+          </p>
         </div>
 
-        <!-- Footer -->
-        <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-          <button
-            type="button"
-            @click="isDetailModalOpen = false; openEditModal(selectedDetailNews)"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold font-khmer transition-colors cursor-pointer"
-          >
-            <Edit2 class="w-3.5 h-3.5" />
-            <span>{{ currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាននេះ' : 'Edit Article' }}</span>
-          </button>
-          
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="px-3.5 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
-          >
-            {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
-          </button>
+        <!-- Summary -->
+        <div class="space-y-1.5">
+          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider font-khmer">
+            {{ currentLanguage === 'kh' ? 'សេចក្តីសង្ខេប' : 'Executive Summary' }}
+          </h3>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80 text-slate-700 leading-relaxed font-khmer text-sm font-medium">
+            {{ currentLanguage === 'kh' && selectedDetailNews.descriptionKh ? selectedDetailNews.descriptionKh : selectedDetailNews.description }}
+          </div>
         </div>
 
+        <!-- Full Content Body -->
+        <div class="space-y-2">
+          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider font-khmer">
+            {{ currentLanguage === 'kh' ? 'ខ្លឹមសារអត្ថបទពិស្ដារ' : 'Full Article Content' }}
+          </h3>
+          <div class="p-5 bg-white rounded-xl border border-slate-200 text-slate-800 leading-relaxed font-khmer text-sm whitespace-pre-line shadow-2xs">
+            {{ currentLanguage === 'kh' && selectedDetailNews.contentKh ? selectedDetailNews.contentKh : selectedDetailNews.content }}
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div v-if="selectedDetailNews.tags && selectedDetailNews.tags.length" class="flex flex-wrap items-center gap-2 pt-2">
+          <span class="text-xs font-bold text-slate-400 flex items-center gap-1">
+            <Tag class="w-3.5 h-3.5" />
+            Tags:
+          </span>
+          <span
+            v-for="tg in selectedDetailNews.tags"
+            :key="tg"
+            class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold font-khmer border border-slate-200"
+          >
+            #{{ tg }}
+          </span>
+        </div>
       </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 2: ADD / EDIT NEWS FORM                            -->
+    <!-- VIEW 3: ADD / EDIT NEWS FORM (SUB-PAGE)                  -->
     <!-- ======================================================== -->
     <div
-      v-if="isFormModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isFormModalOpen = false"
+      v-else-if="currentView === 'form'"
+      class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200"
     >
-      <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
-        
-        <!-- Header -->
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Newspaper class="w-4 h-4" />
-            </div>
-            <h3 class="text-sm font-bold text-slate-900 font-khmer">
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+          <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="flex items-center gap-2 text-xs font-khmer font-bold text-slate-800">
+            <Newspaper class="w-4 h-4 text-blue-600" />
+            <span>
               {{ formMode === 'add' 
                 ? (currentLanguage === 'kh' ? 'ចុះផ្សាយព័ត៌មាន ឬសេចក្តីជូនដំណឹងថ្មី' : 'Publish New Article / Bulletin') 
                 : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានអត្ថបទ' : 'Edit Article') 
               }}
-            </h3>
+            </span>
           </div>
+        </div>
+        <div class="flex items-center gap-2">
           <button
             type="button"
-            @click="isFormModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors cursor-pointer"
+            @click="backToList"
+            class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
           >
-            <X class="w-4 h-4" />
+            {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
+          </button>
+          <button
+            type="button"
+            @click="saveNews"
+            class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-sm transition-all cursor-pointer"
+          >
+            {{ formMode === 'add' 
+              ? (currentLanguage === 'kh' ? 'ចុះផ្សាយព័ត៌មាន' : 'Publish Article') 
+              : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាន' : 'Update Article') 
+            }}
           </button>
         </div>
+      </div>
 
-        <!-- Form Body -->
-        <form @submit.prevent="saveNews" class="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
-          
+      <!-- Form Body Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto">
+        <form @submit.prevent="saveNews" class="max-w-3xl space-y-4 text-xs">
           <!-- Title (En) & Title (Kh) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 ចំណងជើងព័ត៌មាន (ភាសាខ្មែរ) *
               </label>
               <input
                 v-model="formState.titleKh"
                 type="text"
                 placeholder="ឧ. កម្ពុជាដាក់ចេញគម្រោងអភិវឌ្ឍន៍ជាតិថ្មី..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Article Title (English) *
               </label>
               <input
@@ -914,20 +941,20 @@ function confirmDelete() {
                 type="text"
                 required
                 placeholder="e.g. Cambodia Launches New Infrastructure..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Category, Date & Breaking toggle -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ផ្នែក / ប្រភេទ *' : 'Category *' }}
               </label>
               <select
                 v-model="formState.category"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 shadow-2xs"
               >
                 <option value="National">ព័ត៌មានជាតិ (National)</option>
                 <option value="Economy">សេដ្ឋកិច្ច (Economy)</option>
@@ -937,17 +964,17 @@ function confirmDelete() {
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'កាលបរិច្ឆេទ *' : 'Published Date *' }}
               </label>
               <input
                 v-model="formState.date"
                 type="date"
                 required
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-mono"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-2xs"
               />
             </div>
-            <div class="flex items-center pt-5">
+            <div class="flex items-center pt-6">
               <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-bold font-khmer text-xs">
                 <input
                   v-model="formState.breaking"
@@ -960,132 +987,110 @@ function confirmDelete() {
           </div>
 
           <!-- Author & Source -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'អ្នកនិពន្ធ / អ្នកយកព័ត៌មាន' : 'Author' }}
               </label>
               <input
                 v-model="formState.author"
                 type="text"
                 placeholder="e.g. Sok Vibol"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ប្រភពព័ត៌មាន' : 'News Source' }}
               </label>
               <input
                 v-model="formState.source"
                 type="text"
                 placeholder="e.g. Ministry of Information / CamLife"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Image URL & Read Time -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'តំណភ្ជាប់រូបភាព (Image URL)' : 'Banner Image URL' }}
               </label>
               <input
                 v-model="formState.image"
                 type="url"
                 placeholder="https://images.unsplash.com/..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'រយៈពេលអាន' : 'Estimated Read Time' }}
               </label>
               <input
                 v-model="formState.readTime"
                 type="text"
                 placeholder="e.g. 4 នាទី or 3 min"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Description / Summary (Khmer & English) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 សេចក្តីសង្ខេប (ភាសាខ្មែរ) *
               </label>
               <textarea
                 v-model="formState.descriptionKh"
-                rows="2"
+                rows="3"
                 placeholder="សង្ខេបខ្លឹមសារព័ត៌មានជាភាសាខ្មែរ..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               ></textarea>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Summary (English) *
               </label>
               <textarea
                 v-model="formState.description"
-                rows="2"
+                rows="3"
                 required
                 placeholder="Executive summary of the news..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               ></textarea>
             </div>
           </div>
 
           <!-- Full Content (Khmer & English) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 ខ្លឹមសារអត្ថបទពេញលេញ (ភាសាខ្មែរ)
               </label>
               <textarea
                 v-model="formState.contentKh"
-                rows="4"
+                rows="5"
                 placeholder="សរសេរអត្ថបទព័ត៌មានលម្អិត..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               ></textarea>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Full Content (English)
               </label>
               <textarea
                 v-model="formState.content"
-                rows="3"
+                rows="4"
                 placeholder="Detailed article body..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               ></textarea>
             </div>
           </div>
-
-          <!-- Submit Button -->
-          <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
-            <button
-              type="button"
-              @click="isFormModalOpen = false"
-              class="px-3.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
-            >
-              {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-sm transition-all cursor-pointer"
-            >
-              {{ formMode === 'add' 
-                ? (currentLanguage === 'kh' ? 'ចុះផ្សាយព័ត៌មាន' : 'Publish Article') 
-                : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាន' : 'Update Article') 
-              }}
-            </button>
-          </div>
-
         </form>
-
       </div>
     </div>
 

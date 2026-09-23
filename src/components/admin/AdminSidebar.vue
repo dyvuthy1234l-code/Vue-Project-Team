@@ -56,16 +56,17 @@ interface NavItem {
   labelKh: string
   labelEn: string
   icon: any
+  publicPath?: string
 }
 
 const contentItems: NavItem[] = [
-  { id: 'government', labelKh: 'សេវារដ្ឋបាល', labelEn: 'Government Services', icon: FileText },
-  { id: 'health', labelKh: 'សុខាភិបាល & មន្ទីរពេទ្យ', labelEn: 'Healthcare & Hospitals', icon: HospitalIcon },
-  { id: 'jobs', labelKh: 'ការងារ', labelEn: 'Jobs', icon: Briefcase },
-  { id: 'transport', labelKh: 'ដឹកជញ្ជូន & ផ្លូវរថភ្លើង', labelEn: 'Transport', icon: Bus },
-  { id: 'homeservices', labelKh: 'សេវាកម្មជួសជុល', labelEn: 'Home Services', icon: Home },
-  { id: 'offices', labelKh: 'ការិយាល័យ & OWSO', labelEn: 'Public Offices & OWSO', icon: Building2 },
-  { id: 'news', labelKh: 'ព័ត៌មាន & សេចក្តីជូនដំណឹង', labelEn: 'News & Bulletins', icon: Newspaper }
+  { id: 'government', labelKh: 'សេវារដ្ឋបាល', labelEn: 'Government Services', icon: FileText, publicPath: '/government' },
+  { id: 'health', labelKh: 'សុខាភិបាល & មន្ទីរពេទ្យ', labelEn: 'Healthcare & Hospitals', icon: HospitalIcon, publicPath: '/health' },
+  { id: 'jobs', labelKh: 'ការងារ', labelEn: 'Jobs', icon: Briefcase, publicPath: '/jobs' },
+  { id: 'transport', labelKh: 'ដឹកជញ្ជូន & ផ្លូវរថភ្លើង', labelEn: 'Transport', icon: Bus, publicPath: '/transport' },
+  { id: 'homeservices', labelKh: 'សេវាកម្មជួសជុល', labelEn: 'Home Services', icon: Home, publicPath: '/home-services' },
+  { id: 'offices', labelKh: 'ការិយាល័យ & OWSO', labelEn: 'Public Offices & OWSO', icon: Building2, publicPath: '/locations' },
+  { id: 'news', labelKh: 'ព័ត៌មាន & សេចក្តីជូនដំណឹង', labelEn: 'News & Bulletins', icon: Newspaper, publicPath: '/news' }
 ]
 
 const userSupportItems: NavItem[] = [
@@ -144,33 +145,50 @@ const systemItems: NavItem[] = [
           <span>{{ currentLanguage === 'kh' ? 'ការគ្រប់គ្រងមាតិកា' : 'Content Management' }}</span>
         </div>
         <div class="space-y-0.5">
-          <button
+          <div
             v-for="item in contentItems"
             :key="item.id"
-            type="button"
-            @click="emit('select-tab', item.id)"
             :class="[
-              'w-full flex items-center gap-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs group',
-              collapsed ? 'justify-center p-2' : 'px-3 py-2',
-              activeTab === item.id
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-bold'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium'
+              'w-full flex items-center rounded-xl transition-all duration-150 group relative',
+              collapsed ? 'justify-center p-0.5' : 'p-0.5'
             ]"
-            :title="currentLanguage === 'kh' ? item.labelKh : item.labelEn"
           >
-            <component
-              :is="item.icon"
+            <button
+              type="button"
+              @click="emit('select-tab', item.id)"
               :class="[
-                'w-4 h-4 shrink-0 transition-colors',
-                activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
+                'flex-1 flex items-center gap-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer text-xs min-w-0',
+                collapsed ? 'justify-center p-2' : 'px-3 py-2',
+                activeTab === item.id
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-bold'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium'
               ]"
-            />
-            <div v-if="!collapsed" class="flex items-center min-w-0 flex-1">
-              <span :class="['font-khmer text-xs truncate', activeTab === item.id ? 'font-bold text-white' : 'font-medium text-slate-200']">
-                {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
-              </span>
-            </div>
-          </button>
+              :title="currentLanguage === 'kh' ? item.labelKh : item.labelEn"
+            >
+              <component
+                :is="item.icon"
+                :class="[
+                  'w-4 h-4 shrink-0 transition-colors',
+                  activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
+                ]"
+              />
+              <div v-if="!collapsed" class="flex items-center min-w-0 flex-1">
+                <span :class="['font-khmer text-xs truncate', activeTab === item.id ? 'font-bold text-white' : 'font-medium text-slate-200']">
+                  {{ currentLanguage === 'kh' ? item.labelKh : item.labelEn }}
+                </span>
+              </div>
+            </button>
+            <!-- Quick Link to Live Public Page (outside button to prevent click conflicts) -->
+            <router-link
+              v-if="item.publicPath && !collapsed"
+              :to="item.publicPath"
+              target="_blank"
+              class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/80 transition-opacity shrink-0 ml-0.5"
+              :title="currentLanguage === 'kh' ? 'មើលទំព័រផ្ទាល់នៅលើគេហទំព័រ (បើកផ្ទាំងថ្មី)' : 'View Live Page (Open in new tab)'"
+            >
+              <ExternalLink class="w-3.5 h-3.5" />
+            </router-link>
+          </div>
         </div>
       </div>
 

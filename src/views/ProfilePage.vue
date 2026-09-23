@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   User as UserIcon,
@@ -10,6 +10,7 @@ import {
   Briefcase,
   CreditCard,
   Lock,
+  LogIn,
   Eye,
   EyeOff,
   CheckCircle2,
@@ -46,7 +47,7 @@ usePageMeta({
 })
 
 const router = useRouter()
-const { currentUser, updateProfile, openLogin, logout } = useAuth()
+const { currentUser, updateProfile, openLogin, logout, loginAsDemoCitizen } = useAuth()
 const { currentLanguage } = useLanguage()
 const { savedCount: savedServicesCount } = useSavedServices()
 const { savedJobIds } = useSavedJobs()
@@ -155,14 +156,25 @@ const form = reactive({
   confirmPassword: ''
 })
 
+watch(
+  () => currentUser.value,
+  (user) => {
+    if (user) {
+      loadForm()
+    }
+  },
+  { immediate: true }
+)
+
 onMounted(() => {
-  if (!currentUser.value) {
-    openLogin()
-    router.push('/')
-    return
+  if (currentUser.value) {
+    loadForm()
   }
-  loadForm()
 })
+
+function handleDemoLogin() {
+  loginAsDemoCitizen()
+}
 
 function loadForm() {
   errorMessage.value = ''
@@ -237,7 +249,7 @@ function handleLogout() {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 font-khmer">
+  <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-4 sm:py-8 space-y-4 sm:space-y-6 font-khmer">
 
     <!-- ============================================================
          1. COMPACT BREADCRUMBS & SECTION TITLE (OPTIMIZED FOR MOBILE)
@@ -279,6 +291,7 @@ function handleLogout() {
         </router-link>
 
         <button
+          v-if="currentUser"
           @click="handleLogout"
           class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-red-200/80 dark:border-red-900/60 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
           type="button"
@@ -287,13 +300,69 @@ function handleLogout() {
           <LogOut class="w-3.5 h-3.5" />
           <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? 'ចាកចេញ' : 'Sign Out' }}</span>
         </button>
+
+        <button
+          v-else
+          @click="openLogin"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+          type="button"
+        >
+          <LogIn class="w-3.5 h-3.5" />
+          <span class="hidden sm:inline">{{ currentLanguage === 'kh' ? 'ចូលគណនី' : 'Sign In' }}</span>
+        </button>
       </div>
     </div>
 
     <!-- ============================================================
-         2. CITIZEN IDENTITY HERO CARD (RESPONSIVE FOR MOBILE & DESKTOP)
+         AUTH GATE: WHEN CITIZEN IS NOT SIGNED IN
     ============================================================= -->
-    <div class="relative rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#0A2540] via-[#0D3B66] to-[#0D47A1] p-4 sm:p-7 text-white shadow-xl border border-blue-900/40 overflow-hidden">
+    <div v-if="!currentUser" class="max-w-xl mx-auto my-8 bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-200/90 dark:border-slate-800 shadow-xl text-center space-y-6">
+      <div class="w-20 h-20 rounded-3xl bg-blue-50 dark:bg-blue-950/60 text-[#0D47A1] dark:text-blue-400 mx-auto flex items-center justify-center ring-8 ring-blue-500/10 shadow-lg">
+        <Lock class="w-10 h-10" />
+      </div>
+
+      <div class="space-y-2">
+        <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+          {{ currentLanguage === 'kh' ? 'សូមចូលគណនីដើម្បីគ្រប់គ្រងព័ត៌មានផ្ទាល់ខ្លួន' : 'Please Sign In to Access Your Profile' }}
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-md mx-auto">
+          {{ currentLanguage === 'kh'
+            ? 'ចូលគណនីដើម្បីពិនិត្យទិន្នន័យអត្តសញ្ញាណប័ណ្ណ លេខទូរស័ព្ទ សេវារដ្ឋបាលដែលបាន Save និងស្ថានភាពពាក្យស្នើសុំនានា។'
+            : 'Sign in to inspect your digital identity, National ID, saved services, job applications, and partner submissions.'
+          }}
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <button
+          @click="openLogin"
+          class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-[#0D47A1] hover:bg-[#1565C0] text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-900/20 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95"
+          type="button"
+        >
+          <LogIn class="w-4 h-4" />
+          <span>{{ currentLanguage === 'kh' ? 'ចូលគណនីឥឡូវនេះ (Sign In)' : 'Sign In Now' }}</span>
+        </button>
+
+        <button
+          @click="handleDemoLogin"
+          class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-emerald-900/20 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95"
+          type="button"
+        >
+          <Sparkles class="w-4 h-4" />
+          <span>{{ currentLanguage === 'kh' ? 'ចូលគណនីពលរដ្ឋសាកល្បង (Demo)' : 'Quick Demo Citizen Login' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         AUTHENTICATED CITIZEN PROFILE CONTENT
+    ============================================================= -->
+    <div v-else class="space-y-4 sm:space-y-6">
+
+      <!-- ============================================================
+           2. CITIZEN IDENTITY HERO CARD (RESPONSIVE FOR MOBILE & DESKTOP)
+      ============================================================= -->
+      <div class="relative rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#0A2540] via-[#0D3B66] to-[#0D47A1] p-4 sm:p-7 text-white shadow-xl border border-blue-900/40 overflow-hidden">
       <!-- Decorative Backdrop Circles -->
       <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-blue-400/10 rounded-full blur-2xl pointer-events-none"></div>
       <div class="absolute right-1/3 -top-12 w-48 h-48 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
@@ -305,7 +374,7 @@ function handleLogout() {
           <div class="relative shrink-0">
             <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-amber-400 via-blue-400 to-indigo-300 p-0.5 shadow-lg ring-2 sm:ring-4 ring-white/20">
               <div class="w-full h-full rounded-2xl bg-[#0A2540] text-blue-100 flex items-center justify-center text-2xl sm:text-3xl font-black">
-                {{ currentUser?.name?.charAt(0)?.toUpperCase() || 'C' }}
+                {{ (currentUser?.name || form.name || 'U').charAt(0).toUpperCase() }}
               </div>
             </div>
             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 sm:w-4.5 sm:h-4.5 bg-emerald-500 rounded-full ring-2 ring-[#0A2540]" title="Verified"></span>
@@ -315,7 +384,7 @@ function handleLogout() {
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
               <h2 class="text-base sm:text-xl font-black tracking-tight truncate text-white leading-tight">
-                {{ currentUser?.name || 'Citizen User' }}
+                {{ currentUser?.name || form.name || (currentLanguage === 'kh' ? 'សមាជិកពលរដ្ឋ' : 'Citizen Member') }}
               </h2>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-emerald-500/25 text-emerald-200 border border-emerald-400/30 shrink-0">
                 <Sparkles class="w-2.5 h-2.5" />
@@ -331,19 +400,19 @@ function handleLogout() {
             <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-x-4 gap-y-0.5 sm:gap-y-1 text-[11px] sm:text-xs text-blue-100/90 font-medium">
               <span class="flex items-center gap-1.5 truncate">
                 <Mail class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300 shrink-0" />
-                <span class="font-mono truncate">{{ currentUser?.email }}</span>
+                <span class="font-mono truncate">{{ currentUser?.email || form.email || 'citizen@camlife.kh' }}</span>
               </span>
-              <span v-if="form.phone" class="flex items-center gap-1.5 truncate">
+              <span v-if="currentUser?.phone || form.phone" class="flex items-center gap-1.5 truncate">
                 <Phone class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300 shrink-0" />
-                <span class="font-mono">{{ form.phone }}</span>
+                <span class="font-mono">{{ currentUser?.phone || form.phone }}</span>
               </span>
-              <span v-if="form.nationalId" class="flex items-center gap-1.5 truncate">
+              <span v-if="currentUser?.nationalId || form.nationalId" class="flex items-center gap-1.5 truncate">
                 <CreditCard class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300 shrink-0" />
-                <span class="font-mono font-bold">{{ currentLanguage === 'kh' ? 'អត្តសញ្ញាណប័ណ្ណ' : 'ID' }}: {{ form.nationalId }}</span>
+                <span class="font-mono font-bold">{{ currentLanguage === 'kh' ? 'អត្តសញ្ញាណប័ណ្ណ' : 'ID' }}: {{ currentUser?.nationalId || form.nationalId }}</span>
               </span>
-              <span v-if="form.province" class="flex items-center gap-1.5 truncate">
+              <span v-if="currentUser?.province || form.province" class="flex items-center gap-1.5 truncate">
                 <MapPin class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300 shrink-0" />
-                <span>{{ form.province }}</span>
+                <span>{{ currentUser?.province || form.province }}</span>
               </span>
             </div>
           </div>
@@ -608,29 +677,42 @@ function handleLogout() {
           <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'ភេទ (Gender)' : 'Gender' }}
           </label>
-          <div class="grid grid-cols-2 gap-2.5 sm:gap-3 max-w-md">
+          <div class="grid grid-cols-2 gap-3 max-w-lg">
             <label
               :class="[
-                'flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border text-xs font-bold cursor-pointer transition-all',
+                'flex items-center justify-center gap-2.5 p-3 rounded-xl sm:rounded-2xl border text-xs sm:text-sm font-bold cursor-pointer transition-all shadow-xs',
                 form.gender === 'ប្រុស'
-                  ? 'bg-blue-50 dark:bg-blue-950/50 border-[#0D47A1] text-[#0D47A1] dark:text-blue-300 ring-2 ring-[#0D47A1]/20'
-                  : 'bg-slate-50/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-blue-300'
+                  ? 'bg-blue-50 dark:bg-blue-950/60 border-[#0D47A1] text-[#0D47A1] dark:text-blue-300 ring-2 ring-[#0D47A1]/20 shadow-sm'
+                  : 'bg-slate-50/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-blue-300 hover:bg-white dark:hover:bg-slate-800'
               ]"
             >
               <input type="radio" v-model="form.gender" value="ប្រុស" class="sr-only" />
-              <span>👨 {{ currentLanguage === 'kh' ? 'ភេទប្រុស' : 'Male' }}</span>
+              <!-- Male Icon (Mars SVG) -->
+              <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="14" r="5"/>
+                <path d="M19 5l-5.4 5.4"/>
+                <path d="M19 5h-5"/>
+                <path d="M19 5v5"/>
+              </svg>
+              <span>{{ currentLanguage === 'kh' ? 'ភេទប្រុស' : 'Male' }}</span>
             </label>
 
             <label
               :class="[
-                'flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border text-xs font-bold cursor-pointer transition-all',
+                'flex items-center justify-center gap-2.5 p-3 rounded-xl sm:rounded-2xl border text-xs sm:text-sm font-bold cursor-pointer transition-all shadow-xs',
                 form.gender === 'ស្រី'
-                  ? 'bg-blue-50 dark:bg-blue-950/50 border-[#0D47A1] text-[#0D47A1] dark:text-blue-300 ring-2 ring-[#0D47A1]/20'
-                  : 'bg-slate-50/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-blue-300'
+                  ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-500 text-rose-700 dark:text-rose-300 ring-2 ring-rose-500/20 shadow-sm'
+                  : 'bg-slate-50/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-rose-300 hover:bg-white dark:hover:bg-slate-800'
               ]"
             >
               <input type="radio" v-model="form.gender" value="ស្រី" class="sr-only" />
-              <span>👩 {{ currentLanguage === 'kh' ? 'ភេទស្រី' : 'Female' }}</span>
+              <!-- Female Icon (Venus SVG) -->
+              <svg class="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="10" r="5"/>
+                <path d="M12 15v7"/>
+                <path d="M9 19h6"/>
+              </svg>
+              <span>{{ currentLanguage === 'kh' ? 'ភេទស្រី' : 'Female' }}</span>
             </label>
           </div>
         </div>
@@ -700,7 +782,7 @@ function handleLogout() {
           <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ currentLanguage === 'kh' ? 'ពាក្យសម្ងាត់បច្ចុប្បន្ន (Current Password)' : 'Current Password' }}
           </label>
-          <div class="relative max-w-md">
+          <div class="relative max-w-lg">
             <Lock class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               v-model="form.currentPassword"
@@ -971,6 +1053,7 @@ function handleLogout() {
         </div>
       </div>
     </div>
+  </div>
 
     <!-- PROFILE SUBMISSION DETAIL MODAL -->
     <div v-if="isSubmissionDetailOpen && selectedSubmissionDetail" class="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-xs animate-in fade-in">

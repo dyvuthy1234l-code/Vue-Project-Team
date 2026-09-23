@@ -5,7 +5,8 @@ import {
   Users,
   Zap,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Landmark
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { usePageMeta } from '@/composables/usePageMeta'
@@ -58,7 +59,7 @@ const exploreLinks = [
     </div>
 
     <!-- Mission & Vision -->
-    <section class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-8 sm:p-10 shadow-sm space-y-4">
+    <section class="scroll-reveal bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 p-8 sm:p-10 shadow-sm space-y-4">
       <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0D47A1] dark:text-blue-400">
         <Sparkles class="w-4 h-4" />
         <span>Our Mission</span>
@@ -72,7 +73,7 @@ const exploreLinks = [
     </section>
 
     <!-- Values Grid -->
-    <section class="space-y-6">
+    <section class="scroll-reveal space-y-6">
       <div class="text-center sm:text-left">
         <span class="text-xs font-bold uppercase tracking-wider text-[#0D47A1] dark:text-blue-400">
           Guiding Principles
@@ -86,7 +87,7 @@ const exploreLinks = [
         <div
           v-for="val in valueIcons"
           :key="val.key"
-          class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-6 shadow-sm flex items-start gap-4 hover:shadow-card-hover transition-all"
+          class="stagger-card bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-6 shadow-sm flex items-start gap-4 hover:shadow-card-hover transition-all"
         >
           <div :class="['w-12 h-12 rounded-xl flex items-center justify-center shrink-0', val.bg]">
             <component :is="val.icon" class="w-6 h-6" />
@@ -104,7 +105,7 @@ const exploreLinks = [
     </section>
 
     <!-- Explore Services Directory -->
-    <section class="bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 p-8 sm:p-10 space-y-6">
+    <section class="scroll-reveal bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 p-8 sm:p-10 space-y-6">
       <div>
         <h2 class="text-xl font-bold text-[#0A2540] dark:text-white">
           Explore CamLife Public Services

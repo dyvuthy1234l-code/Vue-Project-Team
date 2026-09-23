@@ -21,14 +21,12 @@ import {
   DollarSign,
   Sparkles,
   Ticket,
-  Compass
+  Compass,
+  ArrowLeft
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { getTransport, saveCustomTransport } from '@/services/dataService'
-import transportData from '@/data/transport.json'
 import type { Transport } from '@/types'
-
-const baseTransIds = new Set((transportData as Transport[]).map(t => t.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -43,8 +41,7 @@ const transportList = ref<Transport[]>(getTransport())
 
 function persistUserTransport() {
   try {
-    const custom = transportList.value.filter(t => !baseTransIds.has(t.id) || t.id.startsWith('route-custom-') || t.id.startsWith('trans-'))
-    saveCustomTransport(custom)
+    saveCustomTransport(transportList.value)
   } catch {}
 }
 
@@ -83,20 +80,21 @@ const filteredTransport = computed(() => {
     const matchType = selectedType.value === 'All' || t.type === selectedType.value
 
     // 2. Destination / City filter
+    const destQ = (selectedDestination.value || '').toLowerCase()
     const matchDest = selectedDestination.value === 'All' ||
-      t.location.toLowerCase().includes(selectedDestination.value.toLowerCase()) ||
-      t.route.toLowerCase().includes(selectedDestination.value.toLowerCase())
+      (t.location || '').toLowerCase().includes(destQ) ||
+      (t.route || '').toLowerCase().includes(destQ)
 
     // 3. Search query
     const q = searchQuery.value.toLowerCase().trim()
     if (!q) return matchType && matchDest
 
     const matchSearch =
-      t.name.toLowerCase().includes(q) ||
+      (t.name || '').toLowerCase().includes(q) ||
       (t.nameKh && t.nameKh.toLowerCase().includes(q)) ||
-      t.route.toLowerCase().includes(q) ||
-      t.location.toLowerCase().includes(q) ||
-      t.type.toLowerCase().includes(q)
+      (t.route || '').toLowerCase().includes(q) ||
+      (t.location || '').toLowerCase().includes(q) ||
+      (t.type || '').toLowerCase().includes(q)
 
     return matchType && matchDest && matchSearch
   })
@@ -128,29 +126,31 @@ function goToPage(p: number) {
 // -------------------------------------------------------------
 // TYPE & FORMATTING HELPERS
 // -------------------------------------------------------------
-function getTypeLabel(type: string): string {
+function getTypeLabel(type?: string): string {
+  const t = (type || 'bus').toLowerCase()
   if (currentLanguage.value === 'kh') {
-    switch (type.toLowerCase()) {
+    switch (t) {
       case 'bus': return 'រថយន្តក្រុង (Bus)'
       case 'taxi': return 'តាក់ស៊ី/កង់បី (Taxi)'
       case 'train': return 'រថភ្លើង (Train)'
       case 'plane': return 'យន្តហោះ (Flight)'
       case 'ferry': return 'ទូកល្បឿនលឿន (Ferry)'
-      default: return type
+      default: return type || 'រថយន្តក្រុង (Bus)'
     }
   }
-  switch (type.toLowerCase()) {
+  switch (t) {
     case 'bus': return 'Bus Service'
     case 'taxi': return 'Taxi & TukTuk'
     case 'train': return 'Train & Rail'
     case 'plane': return 'Domestic Flight'
     case 'ferry': return 'Island Ferry'
-    default: return type
+    default: return type || 'Bus Service'
   }
 }
 
-function getTypeColor(type: string) {
-  switch (type.toLowerCase()) {
+function getTypeColor(type?: string) {
+  const t = (type || 'bus').toLowerCase()
+  switch (t) {
     case 'bus':
       return { bg: 'bg-blue-50 text-blue-700 border-blue-200/90', iconBg: 'bg-blue-100 text-blue-600' }
     case 'taxi':
@@ -166,8 +166,9 @@ function getTypeColor(type: string) {
   }
 }
 
-function getVehicleIcon(type: string) {
-  switch (type.toLowerCase()) {
+function getVehicleIcon(type?: string) {
+  const t = (type || 'bus').toLowerCase()
+  switch (t) {
     case 'bus': return Bus
     case 'taxi': return Car
     case 'train': return Train
@@ -193,7 +194,8 @@ function getCityLabel(city: string): string {
 }
 
 function formatPrice(t: Transport): string {
-  const p = t.price
+  const p = t.price || ''
+  if (!p) return '$10 - $15'
   if (p.includes('1,500 KHR')) return '1,500 ៛ ($0.37)'
   if (p.includes('$12 - $17')) return '$12 - $17'
   if (p.includes('$9 - $15')) return '$9 - $15'
@@ -206,7 +208,8 @@ function formatPrice(t: Transport): string {
 }
 
 function formatSchedule(t: Transport): string {
-  const s = t.schedule
+  const s = t.schedule || ''
+  if (!s) return 'Daily: 6:00 AM - 6:00 PM'
   if (s.includes('5:30 AM')) return '5:30 AM - 8:30 PM'
   if (s.includes('24/7')) return '24/7 On-Demand'
   if (s.includes('6:00 AM and 5:00 PM')) return '6:00 AM - 5:00 PM'
@@ -219,23 +222,27 @@ function formatSchedule(t: Transport): string {
 }
 
 // -------------------------------------------------------------
-// DETAIL MODAL (View Full Route Specifications)
+// NAVIGATION VIEW STATE (In-Admin Sub-page Navigation)
 // -------------------------------------------------------------
+const currentView = ref<'list' | 'detail' | 'form'>('list')
 const selectedDetailTransport = ref<Transport | null>(null)
-const isDetailModalOpen = ref(false)
-
-function openDetailModal(t: Transport) {
-  selectedDetailTransport.value = t
-  isDetailModalOpen.value = true
-}
-
-// -------------------------------------------------------------
-// ADD / EDIT MODAL STATE
-// -------------------------------------------------------------
-const isFormModalOpen = ref(false)
 const formMode = ref<'add' | 'edit'>('add')
 const editingTransportId = ref<string | null>(null)
 
+function backToList() {
+  currentView.value = 'list'
+  selectedDetailTransport.value = null
+  editingTransportId.value = null
+}
+
+function openDetailModal(t: Transport) {
+  selectedDetailTransport.value = t
+  currentView.value = 'detail'
+}
+
+// -------------------------------------------------------------
+// ADD / EDIT FORM STATE
+// -------------------------------------------------------------
 const formState = reactive({
   name: '',
   nameKh: '',
@@ -266,7 +273,7 @@ function openAddModal() {
   formState.descriptionKh = ''
   formState.usefulInformation = 'Tickets can be purchased at terminal counter or online booking portals.'
   formState.usefulInformationKh = 'អាចទិញសំបុត្រផ្ទាល់នៅបញ្ជរបេនឡាន ឬកក់តាមអនឡាញ។'
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function openEditModal(t: Transport) {
@@ -284,7 +291,7 @@ function openEditModal(t: Transport) {
   formState.descriptionKh = t.descriptionKh || ''
   formState.usefulInformation = t.usefulInformation || ''
   formState.usefulInformationKh = t.usefulInformationKh || ''
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function saveTransport() {
@@ -336,7 +343,7 @@ function saveTransport() {
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានបន្ថែមខ្សែរត់ថ្មីដោយជោគជ័យ!' : 'New transport route added!')
   }
 
-  isFormModalOpen.value = false
+  backToList()
 }
 
 // -------------------------------------------------------------
@@ -364,9 +371,11 @@ function confirmDelete() {
 
 <template>
   <div class="h-full flex flex-col justify-between gap-2 sm:gap-2.5 select-none">
+    <!-- VIEW 1: TABLE & KPI STATS LIST VIEW -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col justify-between gap-2 sm:gap-2.5">
     
-    <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
+      <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
       
       <!-- KPI 1: Total Routes -->
       <div
@@ -782,172 +791,202 @@ function confirmDelete() {
       </div>
 
     </div>
+    </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 1: VIEW ROUTE SPECIFICATIONS (DETAIL MODAL)        -->
+    <!-- VIEW 2: VIEW ROUTE SPECIFICATIONS (DETAIL SUB-PAGE)      -->
     <!-- ======================================================== -->
     <div
-      v-if="isDetailModalOpen && selectedDetailTransport"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isDetailModalOpen = false"
+      v-else-if="currentView === 'detail' && selectedDetailTransport"
+      class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200"
     >
-      <div class="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
-        
-        <!-- Header -->
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div :class="['w-9 h-9 rounded-xl flex items-center justify-center shadow-2xs', getTypeColor(selectedDetailTransport.type).iconBg]">
-              <component :is="getVehicleIcon(selectedDetailTransport.type)" class="w-5 h-5" />
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-slate-900 font-khmer leading-snug">
-                {{ currentLanguage === 'kh' && selectedDetailTransport.nameKh ? selectedDetailTransport.nameKh : selectedDetailTransport.name }}
-              </h3>
-              <p class="text-[11px] text-slate-500 font-mono">
-                ID: {{ selectedDetailTransport.id }} • {{ selectedDetailTransport.location }}
-              </p>
-            </div>
-          </div>
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            @click="isDetailModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors cursor-pointer"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            <X class="w-4 h-4" />
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+          <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-khmer">
+            <span>Admin CMS</span>
+            <span>/</span>
+            <span>{{ currentLanguage === 'kh' ? 'ដឹកជញ្ជូន' : 'Transport' }}</span>
+            <span>/</span>
+            <span class="text-slate-800 font-bold font-mono">#{{ selectedDetailTransport.id }}</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="openEditModal(selectedDetailTransport)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <Edit2 class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'កែប្រែ' : 'Edit Route' }}</span>
           </button>
         </div>
+      </div>
 
-        <!-- Body -->
-        <div class="p-4 space-y-4 overflow-y-auto flex-1 text-xs">
-          
-          <!-- Route Banner Image -->
-          <div v-if="selectedDetailTransport.image" class="relative rounded-xl overflow-hidden h-36 bg-slate-100 border border-slate-200">
-            <img :src="selectedDetailTransport.image" :alt="selectedDetailTransport.name" class="w-full h-full object-cover" />
-            <div class="absolute top-2.5 right-2.5">
-              <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-bold border capitalize shadow-md backdrop-blur-xs', getTypeColor(selectedDetailTransport.type).bg]">
-                {{ getTypeLabel(selectedDetailTransport.type) }}
-              </span>
-            </div>
+      <!-- Detail Card Content Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
+        <!-- Route Banner Hero -->
+        <div class="relative rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 h-48 sm:h-64 shadow-xs">
+          <img
+            v-if="selectedDetailTransport.image"
+            :src="selectedDetailTransport.image"
+            :alt="selectedDetailTransport.name"
+            class="w-full h-full object-cover"
+          />
+          <div v-else class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
+            <component :is="getVehicleIcon(selectedDetailTransport.type)" class="w-16 h-16 opacity-30" />
           </div>
-
-          <!-- Quick Metrics Card -->
-          <div class="grid grid-cols-2 gap-2.5">
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <div class="flex items-center gap-1.5 text-slate-500 text-[11px] mb-1 font-khmer">
-                <Ticket class="w-3.5 h-3.5 text-emerald-600" />
-                <span>{{ currentLanguage === 'kh' ? 'តម្លៃសំបុត្រ' : 'Fare / Ticket Price' }}</span>
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/30 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3 text-white">
+            <div>
+              <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                <span :class="['inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border capitalize shadow-md backdrop-blur-md', getTypeColor(selectedDetailTransport.type).bg]">
+                  <component :is="getVehicleIcon(selectedDetailTransport.type)" class="w-3.5 h-3.5" />
+                  {{ getTypeLabel(selectedDetailTransport.type) }}
+                </span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-black/40 text-slate-200 backdrop-blur-md">
+                  <MapPin class="w-3 h-3 text-red-400" />
+                  {{ selectedDetailTransport.location }}
+                </span>
               </div>
-              <span class="text-xs font-black text-emerald-700 font-mono">
+              <h2 class="text-xl sm:text-2xl font-black font-khmer leading-tight drop-shadow-md">
+                {{ currentLanguage === 'kh' && selectedDetailTransport.nameKh ? selectedDetailTransport.nameKh : selectedDetailTransport.name }}
+              </h2>
+              <p class="text-xs text-slate-300 font-medium font-sans">
+                {{ selectedDetailTransport.name }}
+              </p>
+            </div>
+            <div class="text-left sm:text-right shrink-0">
+              <span class="text-xs text-slate-300 block font-khmer">{{ currentLanguage === 'kh' ? 'តម្លៃសំបុត្រ' : 'Fare' }}</span>
+              <span class="text-lg sm:text-xl font-black text-emerald-400 font-mono drop-shadow">
                 {{ selectedDetailTransport.price }}
               </span>
             </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <div class="flex items-center gap-1.5 text-slate-500 text-[11px] mb-1 font-khmer">
-                <Clock class="w-3.5 h-3.5 text-blue-600" />
-                <span>{{ currentLanguage === 'kh' ? 'កាលវិភាគ & ម៉ោងដំណើរការ' : 'Hours & Schedule' }}</span>
-              </div>
-              <span class="text-xs font-bold text-slate-800">
-                {{ selectedDetailTransport.schedule }}
-              </span>
-            </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 col-span-2">
-              <div class="flex items-center gap-1.5 text-slate-500 text-[11px] mb-1 font-khmer">
-                <Navigation class="w-3.5 h-3.5 text-indigo-600" />
-                <span>{{ currentLanguage === 'kh' ? 'ខ្សែផ្លូវធ្វើដំណើរ' : 'Operating Route' }}</span>
-              </div>
-              <span class="text-xs font-bold text-slate-800">
-                {{ selectedDetailTransport.route }}
-              </span>
-            </div>
           </div>
-
-          <!-- Description -->
-          <div class="space-y-1.5">
-            <h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider font-khmer">
-              {{ currentLanguage === 'kh' ? 'ព័ត៌មានលម្អិតអំពីសេវាកម្ម' : 'Route Overview' }}
-            </h4>
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-slate-700 leading-relaxed font-khmer">
-              {{ currentLanguage === 'kh' && selectedDetailTransport.descriptionKh ? selectedDetailTransport.descriptionKh : selectedDetailTransport.description }}
-            </div>
-          </div>
-
-          <!-- Useful Tips / Instructions -->
-          <div v-if="selectedDetailTransport.usefulInformation || selectedDetailTransport.usefulInformationKh" class="space-y-1.5">
-            <h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider font-khmer flex items-center gap-1">
-              <Sparkles class="w-3.5 h-3.5 text-amber-500" />
-              <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានមានប្រយោជន៍សម្រាប់អ្នកដំណើរ' : 'Passenger Travel Tips' }}</span>
-            </h4>
-            <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200/70 text-amber-900 leading-relaxed font-khmer text-[11px]">
-              {{ currentLanguage === 'kh' && selectedDetailTransport.usefulInformationKh ? selectedDetailTransport.usefulInformationKh : selectedDetailTransport.usefulInformation }}
-            </div>
-          </div>
-
         </div>
 
-        <!-- Footer -->
-        <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-          <button
-            type="button"
-            @click="isDetailModalOpen = false; openEditModal(selectedDetailTransport)"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold font-khmer transition-colors cursor-pointer"
-          >
-            <Edit2 class="w-3.5 h-3.5" />
-            <span>{{ currentLanguage === 'kh' ? 'កែប្រែខ្សែរត់នេះ' : 'Edit Route' }}</span>
-          </button>
-          
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="px-3.5 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
-          >
-            {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
-          </button>
+        <!-- Quick Metrics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1 font-khmer font-bold">
+              <Ticket class="w-4 h-4 text-emerald-600" />
+              <span>{{ currentLanguage === 'kh' ? 'តម្លៃសំបុត្រ / មធ្យោបាយ' : 'Fare / Ticket' }}</span>
+            </div>
+            <span class="text-sm font-black text-emerald-700 font-mono">
+              {{ selectedDetailTransport.price }}
+            </span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1 font-khmer font-bold">
+              <Clock class="w-4 h-4 text-blue-600" />
+              <span>{{ currentLanguage === 'kh' ? 'ម៉ោងដំណើរការ & កាលវិភាគ' : 'Hours & Schedule' }}</span>
+            </div>
+            <span class="text-sm font-bold text-slate-800">
+              {{ selectedDetailTransport.schedule }}
+            </span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-slate-500 text-xs mb-1 font-khmer font-bold">
+              <Navigation class="w-4 h-4 text-indigo-600" />
+              <span>{{ currentLanguage === 'kh' ? 'ខ្សែផ្លូវធ្វើដំណើរ' : 'Operating Route' }}</span>
+            </div>
+            <span class="text-sm font-bold text-slate-800">
+              {{ selectedDetailTransport.route }}
+            </span>
+          </div>
         </div>
 
+        <!-- Description -->
+        <div class="space-y-2">
+          <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider font-khmer">
+            {{ currentLanguage === 'kh' ? 'ព័ត៌មានលម្អិតអំពីសេវាកម្ម' : 'Route Overview' }}
+          </h3>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80 text-slate-700 leading-relaxed font-khmer text-sm">
+            {{ currentLanguage === 'kh' && selectedDetailTransport.descriptionKh ? selectedDetailTransport.descriptionKh : selectedDetailTransport.description }}
+          </div>
+        </div>
+
+        <!-- Travel Tips -->
+        <div v-if="selectedDetailTransport.usefulInformation || selectedDetailTransport.usefulInformationKh" class="space-y-2">
+          <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider font-khmer flex items-center gap-1.5">
+            <Sparkles class="w-4 h-4 text-amber-500" />
+            <span>{{ currentLanguage === 'kh' ? 'ព័ត៌មានមានប្រយោជន៍សម្រាប់អ្នកដំណើរ' : 'Passenger Travel Tips' }}</span>
+          </h3>
+          <div class="p-4 bg-amber-50/60 rounded-xl border border-amber-200/70 text-amber-900 leading-relaxed font-khmer text-xs">
+            {{ currentLanguage === 'kh' && selectedDetailTransport.usefulInformationKh ? selectedDetailTransport.usefulInformationKh : selectedDetailTransport.usefulInformation }}
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL 2: ADD / EDIT ROUTE FORM                          -->
+    <!-- VIEW 3: ADD / EDIT ROUTE FORM (SUB-PAGE)                 -->
     <!-- ======================================================== -->
     <div
-      v-if="isFormModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
-      @click.self="isFormModalOpen = false"
+      v-else-if="currentView === 'form'"
+      class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200"
     >
-      <div class="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
-        
-        <!-- Header -->
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Bus class="w-4 h-4" />
-            </div>
-            <h3 class="text-sm font-bold text-slate-900 font-khmer">
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+          <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="flex items-center gap-2 text-xs font-khmer font-bold text-slate-800">
+            <Bus class="w-4 h-4 text-blue-600" />
+            <span>
               {{ formMode === 'add' 
                 ? (currentLanguage === 'kh' ? 'បង្កើតខ្សែរត់ដឹកជញ្ជូនថ្មី' : 'Add New Transport Route') 
                 : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានខ្សែរត់' : 'Edit Transport Route') 
               }}
-            </h3>
+            </span>
           </div>
+        </div>
+        <div class="flex items-center gap-2">
           <button
             type="button"
-            @click="isFormModalOpen = false"
-            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors cursor-pointer"
+            @click="backToList"
+            class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
           >
-            <X class="w-4 h-4" />
+            {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
+          </button>
+          <button
+            type="button"
+            @click="saveTransport"
+            class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-sm transition-all cursor-pointer"
+          >
+            {{ formMode === 'add' 
+              ? (currentLanguage === 'kh' ? 'រក្សាទុកខ្សែរត់' : 'Save Route') 
+              : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាន' : 'Update Route') 
+            }}
           </button>
         </div>
+      </div>
 
-        <!-- Form Body -->
-        <form @submit.prevent="saveTransport" class="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
-          
+      <!-- Form Body Area -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto">
+        <form @submit.prevent="saveTransport" class="max-w-3xl space-y-4 text-xs">
           <!-- Name (En) & Name (Kh) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Route Name (English) *
               </label>
               <input
@@ -955,31 +994,31 @@ function confirmDelete() {
                 type="text"
                 required
                 placeholder="e.g. Phnom Penh City Bus Line 1"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 ឈ្មោះខ្សែរត់ (ភាសាខ្មែរ)
               </label>
               <input
                 v-model="formState.nameKh"
                 type="text"
                 placeholder="ឧ. រថយន្តក្រុងរាជធានីភ្នំពេញ ខ្សែទី១"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Type & Location / Hub -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ប្រភេទមធ្យោបាយ *' : 'Transit Mode *' }}
               </label>
               <select
                 v-model="formState.type"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 capitalize"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 capitalize shadow-2xs"
               >
                 <option value="bus">រថយន្តក្រុង (Bus)</option>
                 <option value="taxi">តាក់ស៊ី & កង់បី (Taxi)</option>
@@ -989,22 +1028,22 @@ function confirmDelete() {
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ទីតាំង / មជ្ឈមណ្ឌល' : 'Location / Hub' }}
               </label>
               <input
                 v-model="formState.location"
                 type="text"
                 placeholder="Phnom Penh, Siem Reap, etc."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Route Path & Price / Fare -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ខ្សែផ្លូវធ្វើដំណើរ *' : 'Route / Path *' }}
               </label>
               <input
@@ -1012,122 +1051,100 @@ function confirmDelete() {
                 type="text"
                 required
                 placeholder="e.g. Phnom Penh - Siem Reap"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'តម្លៃសំបុត្រ / សេវា' : 'Fare / Price' }}
               </label>
               <input
                 v-model="formState.price"
                 type="text"
                 placeholder="e.g. $10 - $15 or 1,500 KHR"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Schedule & Image URL -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ម៉ោងដំណើរការ & កាលវិភាគ' : 'Operating Schedule' }}
               </label>
               <input
                 v-model="formState.schedule"
                 type="text"
                 placeholder="e.g. 5:30 AM - 8:30 PM daily"
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 {{ currentLanguage === 'kh' ? 'តំណភ្ជាប់រូបភាព (Image URL)' : 'Image URL' }}
               </label>
               <input
                 v-model="formState.image"
                 type="url"
                 placeholder="https://..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
           </div>
 
           <!-- Description (Khmer & English) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 ការពិពណ៌នាជាភាសាខ្មែរ
               </label>
               <textarea
                 v-model="formState.descriptionKh"
-                rows="2"
+                rows="3"
                 placeholder="រៀបរាប់ពីព័ត៌មានលម្អិតអំពីខ្សែរត់ និងការផ្ដល់សេវា..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               ></textarea>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Description (English)
               </label>
               <textarea
                 v-model="formState.description"
-                rows="2"
+                rows="3"
                 placeholder="Detailed description of transit service..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               ></textarea>
             </div>
           </div>
 
           <!-- Useful Info (Khmer & English) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1 font-khmer">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5 font-khmer">
                 ព័ត៌មានមានប្រយោជន៍សម្រាប់អ្នកដំណើរ (ភាសាខ្មែរ)
               </label>
               <input
                 v-model="formState.usefulInformationKh"
                 type="text"
                 placeholder="ឧ. អាចទិញសំបុត្រទុកមុន ឬប្រើប្រាស់កម្មវិធី..."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500 font-khmer"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-khmer shadow-2xs"
               />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">
                 Useful Travel Tips (English)
               </label>
               <input
                 v-model="formState.usefulInformation"
                 type="text"
                 placeholder="e.g. Booking in advance recommended for weekend trips."
-                class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
           </div>
-
-          <!-- Submit Button -->
-          <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
-            <button
-              type="button"
-              @click="isFormModalOpen = false"
-              class="px-3.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
-            >
-              {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-sm transition-all cursor-pointer"
-            >
-              {{ formMode === 'add' 
-                ? (currentLanguage === 'kh' ? 'រក្សាទុកខ្សែរត់' : 'Save Route') 
-                : (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មាន' : 'Update Route') 
-              }}
-            </button>
-          </div>
-
         </form>
-
       </div>
     </div>
 

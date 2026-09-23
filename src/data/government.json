@@ -546,7 +546,7 @@
     "title": "Criminal Record Certificate (Police Clearance / Bulletin No. 3)",
     "titleKh": "លិខិតថ្កោលទោស / ព្រឹត្តិបត្រថ្កោលទោសលេខ ៣",
     "category": "Justice & Legal",
-    "image": "/images/documents/national-id.jpg",
+    "image": "/images/pillars/government.jpg",
     "description": "Official criminal background check certificate (Bulletin No. 3) issued by the Ministry of Justice, mandatory for domestic/international employment, study abroad, and foreign visa applications.",
     "descriptionKh": "ការស្នើសុំព្រឹត្តិបត្រថ្កោលទោសលេខ ៣ ចេញដោយក្រសួងយុត្តិធម៌ តម្រូវសម្រាប់ការដាក់ពាក្យបម្រើការងារ អាហារូបករណ៍ទៅសិក្សានៅក្រៅប្រទេស និងការសុំទិដ្ឋាការ (Visa)។",
     "requirements": [
@@ -608,7 +608,7 @@
     "title": "Vehicle Ownership Transfer & Road Tax Registration",
     "titleKh": "ការផ្ទេរកម្មសិទ្ធិយានយន្ត និងបង់ពន្ធផ្លូវ",
     "category": "Transport",
-    "image": "/images/documents/passport.jpg",
+    "image": "/images/documents/driver-license.jpg",
     "description": "Official change of motorbike, automobile, and commercial vehicle legal owner title registration with the Ministry of Public Works and Transport.",
     "descriptionKh": "ការផ្ទេរឈ្មោះម្ចាស់កម្មសិទ្ធិម៉ូតូ រថយន្ត និងយានយន្តពាណិជ្ជកម្មស្របច្បាប់ តាមរយៈក្រសួងសាធារណការ និងដឹកជញ្ជូន។",
     "requirements": [
@@ -672,7 +672,7 @@
     "title": "Certificate of Celibacy / Single Status Certificate",
     "titleKh": "លិខិតបញ្ជាក់ភាពនៅលីវ (លិខិតបញ្ជាក់លីវ)",
     "category": "Civil Status",
-    "image": "/images/documents/national-id.jpg",
+    "image": "/images/documents/marriage-certificate.jpg",
     "description": "Official municipal certificate attesting that an individual is legally unmarried, divorced, or widowed, essential for civil marriage registration and overseas visa filing.",
     "descriptionKh": "លិខិតរដ្ឋបាលផ្លូវការបញ្ជាក់ថាបុគ្គលម្នាក់ពិតជានៅលីវ មេម៉ាយ ឬពោះម៉ាយស្របច្បាប់ សម្រាប់ប្រើប្រាស់ក្នុងការចុះសំបុត្រអាពាហ៍ពិពាហ៍ និងការសុំទិដ្ឋាការ។",
     "requirements": [
@@ -734,7 +734,7 @@
     "title": "Residential Construction Permit & Building License",
     "titleKh": "លិខិតអនុញ្ញាតសាងសង់លំនៅឋាន (ច្បាប់សាងសង់)",
     "category": "Construction",
-    "image": "/images/documents/land-title.svg",
+    "image": "/images/documents/land-title.jpg",
     "description": "Legal architectural and structural authorization for constructing new residences, multi-story buildings, or major structural renovations up to 500 sqm floor area.",
     "descriptionKh": "ការស្នើសុំច្បាប់អនុញ្ញាតសាងសង់ផ្ទះ វីឡា ឬការជួសជុលកែប្រែទ្រង់ទ្រាយសំណង់ដែលមានផ្ទៃក្រឡាក្រោម ៥០០ ម៉ែត្រការ៉េ ស្របតាមបទដ្ឋានបច្ចេកទេស។",
     "requirements": [
@@ -798,7 +798,7 @@
     "title": "Residence Book (Kor.Bou.2) Registration & Update",
     "titleKh": "ការធ្វើ និងកែប្រែសៀវភៅស្នាក់នៅ (ក.ប.២)",
     "category": "Civil Status",
-    "image": "/images/documents/national-id.jpg",
+    "image": "/images/documents/family-book.jpg",
     "description": "Official residency record for citizens and residents living permanently or temporarily in local communes, required for schooling, bank account openings, and public utility connections.",
     "descriptionKh": "ការចុះបញ្ជីស្នាក់នៅជាក់ស្តែងសម្រាប់ប្រជាពលរដ្ឋដែលរស់នៅអចិន្ត្រៃយ៍ ឬបណ្តោះអាសន្នក្នុងមូលដ្ឋាន សម្រាប់កូនចុះឈ្មោះចូលរៀន បើកគណនីធនាគារ និងភ្ជាប់ទឹកភ្លើង។",
     "requirements": [
@@ -860,7 +860,7 @@
     "title": "Official Death Certificate Registration",
     "titleKh": "ការចុះបញ្ជីសំបុត្រមរណភាពផ្លូវការ",
     "category": "Civil Status",
-    "image": "/images/documents/national-id.jpg",
+    "image": "/images/documents/birth-certificate.jpg",
     "description": "Mandatory legal registration of a citizen's passing with the civil registrar within 15 days, critical for estate succession, banking, and life insurance payouts.",
     "descriptionKh": "ការចុះបញ្ជីមរណភាពស្របច្បាប់នៅសាលាសង្កាត់ក្នុងរង្វង់ ១៥ ថ្ងៃ សម្រាប់ការបែងចែកមរតក ការលុបឈ្មោះចេញពីសៀវភៅគ្រួសារ និងការទាមទារសំណងធានារ៉ាប់រង។",
     "requirements": [
@@ -922,7 +922,7 @@
     "title": "NSSF Health & Work Injury Member Registration",
     "titleKh": "ការចុះឈ្មោះជាសមាជិក ប.ស.ស (ថែទាំសុខភាព & ហានិភ័យការងារ)",
     "category": "Social Security",
-    "image": "/images/documents/passport.jpg",
+    "image": "/images/documents/national-id.jpg",
     "description": "Universal healthcare and work-injury protection enrollment through the National Social Security Fund (NSSF), granting free medical treatment across hundreds of accredited public and private hospitals in Cambodia.",
     "descriptionKh": "ការចុះបញ្ជីសមាជិកបេឡាជាតិសន្តិសុខសង្គម (ប.ស.ស) សម្រាប់ទទួលបានសេវាពិនិត្យ និងព្យាបាលជំងឺឥតគិតថ្លៃនៅគ្រប់មន្ទីរពេទ្យរដ្ឋ និងឯកជនដៃគូទូទាំងប្រទេសកម្ពុជា។",
     "requirements": [

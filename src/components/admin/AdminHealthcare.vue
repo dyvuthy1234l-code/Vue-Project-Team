@@ -19,14 +19,13 @@ import {
   Stethoscope,
   ChevronLeft,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { getHospitals, saveCustomHospitals } from '@/services/dataService'
-import hospitalsData from '@/data/hospitals.json'
 import type { Hospital } from '@/types'
-
-const baseHospIds = new Set((hospitalsData as Hospital[]).map(h => h.id))
 
 const emit = defineEmits<{
   (e: 'show-toast', msg: string): void
@@ -40,8 +39,7 @@ const { currentLanguage } = useLanguage()
 const hospitals = ref<Hospital[]>(getHospitals())
 
 function persistHospitals() {
-  const customItems = hospitals.value.filter(h => !baseHospIds.has(h.id) || h.id.startsWith('h-new-') || h.id.startsWith('hosp-') || h.id.startsWith('amb-'))
-  saveCustomHospitals(customItems)
+  saveCustomHospitals(hospitals.value)
 }
 const searchQuery = ref('')
 const selectedLocation = ref('All')
@@ -140,7 +138,7 @@ const totalHospitalsCount = computed(() => hospitals.value.length)
 const nssfHospitalsCount = computed(() => hospitals.value.filter(h => h.acceptsNssf).length)
 const publicHospitalsCount = computed(() => hospitals.value.filter(h => h.ownership === 'public').length)
 const emergency24hCount = computed(() =>
-  hospitals.value.filter(h => h.openingHours.toLowerCase().includes('24/7') || Boolean(h.emergencyHotline)).length
+  hospitals.value.filter(h => (h.openingHours || '').toLowerCase().includes('24/7') || Boolean(h.emergencyHotline)).length
 )
 
 function resetAllFilters() {
@@ -162,22 +160,22 @@ const filteredHospitals = computed(() => {
     if (selectedOwnership.value !== 'All' && h.ownership !== selectedOwnership.value) return false
     if (selectedNssf.value === 'yes' && !h.acceptsNssf) return false
     if (selectedNssf.value === 'no' && h.acceptsNssf) return false
-    if (selected24h.value && !h.openingHours.toLowerCase().includes('24/7')) return false
+    if (selected24h.value && !(h.openingHours || '').toLowerCase().includes('24/7')) return false
 
     const q = searchQuery.value.toLowerCase().trim()
     if (!q) return true
 
-    const locKh = provinceNamesKh[h.location] || ''
+    const locKh = provinceNamesKh[h.location || ''] || ''
     return (
-      h.name.toLowerCase().includes(q) ||
+      (h.name || '').toLowerCase().includes(q) ||
       (h.nameKh && h.nameKh.toLowerCase().includes(q)) ||
-      h.location.toLowerCase().includes(q) ||
+      (h.location || '').toLowerCase().includes(q) ||
       locKh.includes(q) ||
       (h.address && h.address.toLowerCase().includes(q)) ||
       (h.addressKh && h.addressKh.toLowerCase().includes(q)) ||
       (h.phone && h.phone.toLowerCase().includes(q)) ||
       (h.emergencyHotline && h.emergencyHotline.toLowerCase().includes(q)) ||
-      h.services.some(s => s.toLowerCase().includes(q))
+      (Array.isArray(h.services) && h.services.some(s => (s || '').toLowerCase().includes(q)))
     )
   })
 })
@@ -209,20 +207,30 @@ watch([searchQuery, selectedLocation, selectedCategory, selectedOwnership, selec
 })
 
 // -------------------------------------------------------------
-// DETAIL MODAL
+// PAGE VIEW STATE ('list' | 'detail' | 'form')
 // -------------------------------------------------------------
-const selectedDetailHospital = ref<Hospital | null>(null)
-const isDetailModalOpen = ref(false)
+const currentView = ref<'list' | 'detail' | 'form'>('list')
 
-function openDetailModal(hospital: Hospital) {
-  selectedDetailHospital.value = hospital
-  isDetailModalOpen.value = true
+function backToList() {
+  currentView.value = 'list'
+  selectedDetailHospital.value = null
+  isEditing.value = false
+  editingId.value = ''
 }
 
 // -------------------------------------------------------------
-// ADD / EDIT MODAL STATE
+// DETAIL SUB-PAGE VIEW
 // -------------------------------------------------------------
-const isFormModalOpen = ref(false)
+const selectedDetailHospital = ref<Hospital | null>(null)
+
+function openDetailModal(hospital: Hospital) {
+  selectedDetailHospital.value = hospital
+  currentView.value = 'detail'
+}
+
+// -------------------------------------------------------------
+// ADD / EDIT FORM STATE
+// -------------------------------------------------------------
 const isEditing = ref(false)
 const editingId = ref('')
 
@@ -264,7 +272,7 @@ function openAddModal() {
     description: 'Comprehensive medical facility providing outpatient and emergency care.',
     descriptionKh: 'មណ្ឌលវេជ្ជសាស្ត្រផ្តល់សេវាពិនិត្យ ព្យាបាល និងសង្គ្រោះបន្ទាន់កម្រិតស្តង់ដារ។'
   }
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function openEditModal(hospital: Hospital) {
@@ -287,7 +295,7 @@ function openEditModal(hospital: Hospital) {
     description: hospital.description || '',
     descriptionKh: hospital.descriptionKh || ''
   }
-  isFormModalOpen.value = true
+  currentView.value = 'form'
 }
 
 function saveForm() {
@@ -355,7 +363,7 @@ function saveForm() {
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានបន្ថែមមណ្ឌលសុខភាពថ្មីជោគជ័យ!' : 'New medical facility added!')
   }
 
-  isFormModalOpen.value = false
+  backToList()
 }
 
 // -------------------------------------------------------------
@@ -384,8 +392,13 @@ function confirmDelete() {
 <template>
   <div class="h-full flex flex-col justify-between gap-2 sm:gap-2.5 select-none">
     
-    <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE HEALTHCARE KPIS) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
+    <!-- ======================================================== -->
+    <!-- VIEW 1: HEALTHCARE & HOSPITALS LIST VIEW                 -->
+    <!-- ======================================================== -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col justify-between gap-2 sm:gap-2.5">
+      
+      <!-- 1. TOP METRIC STAT CARDS (4 EXECUTIVE HEALTHCARE KPIS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 shrink-0">
       
       <!-- KPI 1: Total Facilities -->
       <div
@@ -859,231 +872,247 @@ function confirmDelete() {
       </div>
 
     </div>
+    </div>
 
-    <!-- 4. VIEW DETAILS MODAL -->
-    <div
-      v-if="isDetailModalOpen && selectedDetailHospital"
-      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs select-text animate-fade-in"
-      @click.self="isDetailModalOpen = false"
-    >
-      <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+    <!-- ======================================================== -->
+    <!-- VIEW 2: FULL HEALTHCARE FACILITY DETAIL SUB-PAGE         -->
+    <!-- ======================================================== -->
+    <div v-else-if="currentView === 'detail' && selectedDetailHospital" class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200">
+      
+      <!-- Top Action Bar with Back button & Breadcrumb -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
+          >
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+
+          <div class="h-4 w-px bg-slate-200"></div>
+
+          <div class="flex items-center gap-1.5 text-xs font-khmer">
+            <span class="text-slate-400 font-medium cursor-pointer hover:text-slate-700" @click="backToList">
+              {{ currentLanguage === 'kh' ? 'សុខាភិបាល & មន្ទីរពេទ្យ' : 'Healthcare & Hospitals' }}
+            </span>
+            <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
+            <span class="font-bold text-slate-800 truncate max-w-[280px]">
+              {{ currentLanguage === 'kh' ? (selectedDetailHospital.nameKh || selectedDetailHospital.name) : selectedDetailHospital.name }}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="openEditModal(selectedDetailHospital)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs font-khmer transition-colors shadow-xs cursor-pointer"
+          >
+            <Edit2 class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'កែប្រែទិន្នន័យ' : 'Edit Facility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Detail Content Area (Full Page Card) -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
         
-        <!-- Modal Hero Header with Image -->
-        <div class="relative h-36 sm:h-44 w-full bg-slate-900 overflow-hidden shrink-0">
+        <!-- Header Banner with Image -->
+        <div class="relative h-44 sm:h-56 rounded-2xl overflow-hidden shadow-xs">
           <img
             :src="selectedDetailHospital.image"
             :alt="selectedDetailHospital.name"
-            class="w-full h-full object-cover opacity-60"
+            class="w-full h-full object-cover"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
-          
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors cursor-pointer"
-          >
-            <X class="w-4 h-4" />
-          </button>
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent"></div>
 
-          <div class="absolute bottom-3 left-4 right-4 text-white">
-            <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <span :class="['px-2 py-0.5 rounded-full text-[10px] font-bold border font-khmer', getCategoryColor(selectedDetailHospital.category).bg]">
+          <div class="absolute bottom-4 left-5 right-5 text-white">
+            <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+              <span :class="['px-2.5 py-0.5 rounded-full text-[10px] font-bold border font-khmer', getCategoryColor(selectedDetailHospital.category).bg]">
                 {{ getCategoryLabel(selectedDetailHospital.category) }}
               </span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/20 text-white border border-white/30 font-khmer">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/20 text-white border border-white/30 font-khmer">
                 {{ getOwnershipLabel(selectedDetailHospital.ownership) }}
               </span>
               <span
                 v-if="selectedDetailHospital.acceptsNssf"
-                class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/90 text-white border border-emerald-400 font-khmer flex items-center gap-1"
+                class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/90 text-white border border-emerald-400 font-khmer flex items-center gap-1"
               >
                 <ShieldCheck class="w-3 h-3" />
-                {{ currentLanguage === 'kh' ? 'គាំទ្រ ប.ស.ស' : 'NSSF Accredited' }}
+                {{ currentLanguage === 'kh' ? 'គាំទ្រ ប.ស.ស (NSSF)' : 'NSSF Accredited' }}
               </span>
             </div>
-            <h3 class="text-base sm:text-lg font-black font-khmer leading-snug">
+            <h2 class="text-xl sm:text-2xl font-black font-khmer leading-tight">
               {{ currentLanguage === 'kh' ? (selectedDetailHospital.nameKh || selectedDetailHospital.name) : selectedDetailHospital.name }}
-            </h3>
-            <p v-if="currentLanguage === 'kh' && selectedDetailHospital.nameKh !== selectedDetailHospital.name" class="text-xs text-slate-300">
+            </h2>
+            <p v-if="selectedDetailHospital.nameKh && selectedDetailHospital.name !== selectedDetailHospital.nameKh" class="text-xs text-slate-300 mt-0.5">
               {{ selectedDetailHospital.name }}
             </p>
           </div>
         </div>
 
-        <!-- Modal Body Content -->
-        <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1">
-          
-          <!-- Emergency Hotline Banner -->
-          <div
-            v-if="selectedDetailHospital.emergencyHotline"
-            class="bg-rose-50 border border-rose-200/90 rounded-xl p-3 flex items-center justify-between gap-3 shadow-2xs"
-          >
-            <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-                <PhoneCall class="w-4 h-4 animate-bounce" />
-              </div>
-              <div>
-                <span class="text-[10px] font-bold text-rose-600 uppercase font-khmer block">
-                  {{ currentLanguage === 'kh' ? 'សេវាសង្គ្រោះបន្ទាន់ ២៤ម៉ោង' : '24/7 Emergency Hotline' }}
-                </span>
-                <span class="text-base font-black text-rose-700 font-mono">
-                  {{ selectedDetailHospital.emergencyHotline }}
-                </span>
-              </div>
-            </div>
-            <a
-              :href="`tel:${selectedDetailHospital.emergencyHotline.replace(/\s+/g, '')}`"
-              class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold font-khmer shadow-xs transition-colors"
-            >
-              {{ currentLanguage === 'kh' ? 'ហៅទូរស័ព្ទ' : 'Call Now' }}
-            </a>
+        <!-- 4 Quick Fact Metrics -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ទីតាំងខេត្ត/ក្រុង' : 'Location' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">{{ getLocationName(selectedDetailHospital.location) }}</span>
           </div>
 
-          <!-- Quick Info Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span class="text-[10px] font-bold text-slate-400 font-khmer block">{{ currentLanguage === 'kh' ? 'ម៉ោងបំពេញការងារ' : 'Opening Hours' }}</span>
-              <span class="text-xs font-bold text-slate-800 font-mono mt-0.5 block">{{ selectedDetailHospital.openingHours }}</span>
-            </div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span class="text-[10px] font-bold text-slate-400 font-khmer block">{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទពិគ្រោះ' : 'General Phone' }}</span>
-              <span class="text-xs font-bold text-slate-800 font-mono mt-0.5 block">{{ selectedDetailHospital.phone }}</span>
-            </div>
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span class="text-[10px] font-bold text-slate-400 font-khmer block">{{ currentLanguage === 'kh' ? 'ការវាយតម្លៃ' : 'Citizen Rating' }}</span>
-              <span class="text-xs font-bold text-amber-600 font-mono mt-0.5 flex items-center gap-1">
-                <Star class="w-3 h-3 fill-amber-400 text-amber-400" />
-                {{ selectedDetailHospital.rating }} ({{ selectedDetailHospital.reviews }})
-              </span>
-            </div>
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ទូរស័ព្ទទូទៅ' : 'Phone' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-mono">{{ selectedDetailHospital.phone || 'N/A' }}</span>
           </div>
 
-          <!-- Location & Address -->
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5">
-            <MapPin class="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-            <div>
-              <span class="text-xs font-bold text-slate-900 font-khmer block">
-                {{ getLocationName(selectedDetailHospital.location) }}
-              </span>
-              <p class="text-xs text-slate-600 font-khmer mt-0.5 leading-relaxed">
-                {{ currentLanguage === 'kh' ? (selectedDetailHospital.addressKh || selectedDetailHospital.address) : selectedDetailHospital.address }}
-              </p>
-            </div>
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'សង្គ្រោះបន្ទាន់' : 'Hotline 24/7' }}</span>
+            <span class="text-sm font-black text-rose-600 block mt-1 font-mono font-bold">{{ selectedDetailHospital.emergencyHotline || '115' }}</span>
           </div>
 
-          <!-- Services Offered -->
-          <div>
-            <h4 class="text-xs font-bold text-slate-800 font-khmer mb-2 flex items-center gap-1.5">
-              <Stethoscope class="w-3.5 h-3.5 text-blue-600" />
-              <span>{{ currentLanguage === 'kh' ? 'សេវាឯកទេស និងការព្យាបាល' : 'Medical Services & Specialties' }}</span>
-            </h4>
-            <div class="flex flex-wrap gap-1.5">
-              <span
-                v-for="svc in selectedDetailHospital.services"
-                :key="svc"
-                class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200/80 text-[11px] font-bold font-khmer"
-              >
-                {{ svc }}
-              </span>
-            </div>
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-[10px] font-bold text-slate-400 font-khmer block uppercase tracking-wider">{{ currentLanguage === 'kh' ? 'ម៉ោងដំណើរការ' : 'Hours' }}</span>
+            <span class="text-sm font-black text-slate-900 block mt-1 font-khmer">{{ selectedDetailHospital.openingHours || '24/7' }}</span>
           </div>
-
-          <!-- Description -->
-          <div v-if="selectedDetailHospital.descriptionKh || selectedDetailHospital.description">
-            <h4 class="text-xs font-bold text-slate-800 font-khmer mb-1">
-              {{ currentLanguage === 'kh' ? 'អំពីមណ្ឌលសុខភាព' : 'About Facility' }}
-            </h4>
-            <p class="text-xs text-slate-600 font-khmer leading-relaxed">
-              {{ currentLanguage === 'kh' ? (selectedDetailHospital.descriptionKh || selectedDetailHospital.description) : selectedDetailHospital.description }}
-            </p>
-          </div>
-
         </div>
 
-        <!-- Modal Footer -->
-        <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
-          <button
-            type="button"
-            @click="isDetailModalOpen = false"
-            class="px-4 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold font-khmer transition-colors cursor-pointer"
-          >
-            {{ currentLanguage === 'kh' ? 'បិទ' : 'Close' }}
-          </button>
+        <!-- Address & Details -->
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center gap-2.5 text-xs text-slate-700 font-khmer">
+          <MapPin class="w-4 h-4 text-rose-500 shrink-0" />
+          <span>{{ currentLanguage === 'kh' ? 'អាសយដ្ឋាន៖' : 'Address:' }}</span>
+          <span class="font-bold text-slate-900">{{ currentLanguage === 'kh' ? (selectedDetailHospital.addressKh || selectedDetailHospital.address) : selectedDetailHospital.address }}</span>
+        </div>
+
+        <!-- Services -->
+        <div v-if="selectedDetailHospital.services && selectedDetailHospital.services.length" class="space-y-2.5">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider flex items-center gap-1.5">
+            <Stethoscope class="w-4 h-4 text-blue-600" />
+            <span>{{ currentLanguage === 'kh' ? 'សេវាកម្មពិនិត្យ & ព្យាបាល' : 'Available Medical Services' }}</span>
+          </h4>
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="(service, idx) in selectedDetailHospital.services"
+              :key="idx"
+              class="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 text-xs font-medium font-khmer"
+            >
+              {{ service }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div v-if="selectedDetailHospital.descriptionKh || selectedDetailHospital.description" class="space-y-2">
+          <h4 class="text-xs font-black text-slate-800 font-khmer uppercase tracking-wider">
+            {{ currentLanguage === 'kh' ? 'អំពីមណ្ឌលសុខភាព' : 'About Medical Facility' }}
+          </h4>
+          <p class="text-xs sm:text-sm text-slate-600 font-khmer leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+            {{ currentLanguage === 'kh' ? (selectedDetailHospital.descriptionKh || selectedDetailHospital.description) : selectedDetailHospital.description }}
+          </p>
         </div>
 
       </div>
+
     </div>
 
-    <!-- 5. ADD / EDIT FACILITY MODAL -->
-    <div
-      v-if="isFormModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs select-text animate-fade-in"
-      @click.self="isFormModalOpen = false"
-    >
-      <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-        
-        <!-- Header -->
-        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between shrink-0">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
-              <HospitalIcon class="w-4 h-4" />
-            </div>
-            <div>
-              <h3 class="text-sm font-black text-slate-900 font-khmer">
-                {{ isEditing ? (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានមន្ទីរពេទ្យ' : 'Edit Facility') : (currentLanguage === 'kh' ? 'បន្ថែមមណ្ឌលសុខភាពថ្មី' : 'Add New Facility') }}
-              </h3>
-              <span class="text-[10px] text-slate-400 font-khmer">
-                {{ isEditing ? `ID: ${editingId}` : (currentLanguage === 'kh' ? 'បង្កើតកំណត់ត្រាថ្មីក្នុងប្រព័ន្ធ' : 'Register facility in CamLife CMS') }}
-              </span>
-            </div>
-          </div>
+    <!-- ======================================================== -->
+    <!-- VIEW 3: FULL ADD / EDIT FACILITY SUB-PAGE                -->
+    <!-- ======================================================== -->
+    <div v-else-if="currentView === 'form'" class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200">
+      
+      <!-- Top Action Bar with Back button & Breadcrumb -->
+      <div class="bg-white rounded-xl p-3 border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            @click="isFormModalOpen = false"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            <X class="w-4 h-4" />
+            <ArrowLeft class="w-4 h-4 text-slate-600" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
           </button>
+
+          <div class="h-4 w-px bg-slate-200"></div>
+
+          <div class="flex items-center gap-1.5 text-xs font-khmer">
+            <span class="text-slate-400 font-medium cursor-pointer hover:text-slate-700" @click="backToList">
+              {{ currentLanguage === 'kh' ? 'សុខាភិបាល & មន្ទីរពេទ្យ' : 'Healthcare & Hospitals' }}
+            </span>
+            <ChevronRight class="w-3.5 h-3.5 text-slate-300" />
+            <span class="font-bold text-slate-800">
+              {{ isEditing
+                ? (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានមន្ទីរពេទ្យ' : 'Edit Facility')
+                : (currentLanguage === 'kh' ? 'បន្ថែមមណ្ឌលសុខភាពថ្មី' : 'Add New Facility')
+              }}
+            </span>
+          </div>
         </div>
 
-        <!-- Form Body -->
-        <div class="p-4 sm:p-5 overflow-y-auto space-y-3.5 flex-1">
-          
-          <!-- Name Khmer -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
-              {{ currentLanguage === 'kh' ? 'ឈ្មោះមន្ទីរពេទ្យ / គ្លីនិក (ភាសាខ្មែរ)' : 'Facility Name (Khmer)' }} *
-            </label>
-            <input
-              v-model="formState.nameKh"
-              type="text"
-              placeholder="ឧទាហរណ៍៖ មន្ទីរពេទ្យបង្អែករាជធានី"
-              class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-khmer focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
-            />
-          </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="backToList"
+            class="px-4 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs font-khmer transition-colors cursor-pointer"
+          >
+            {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
+          </button>
+          <button
+            type="button"
+            @click="saveForm"
+            class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs font-khmer transition-all shadow-xs cursor-pointer"
+          >
+            <CheckCircle2 class="w-3.5 h-3.5" />
+            <span>{{ isEditing ? (currentLanguage === 'kh' ? 'រក្សាទុក' : 'Save Changes') : (currentLanguage === 'kh' ? 'បង្កើតថ្មី' : 'Create Facility') }}</span>
+          </button>
+        </div>
+      </div>
 
-          <!-- Name English -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
-              {{ currentLanguage === 'kh' ? 'ឈ្មោះមន្ទីរពេទ្យ (អង់គ្លេស)' : 'Facility Name (English)' }} *
-            </label>
-            <input
-              v-model="formState.name"
-              type="text"
-              placeholder="e.g. Municipal Referral Hospital"
-              class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
-            />
+      <!-- Form Inputs Area (Full Page Card) -->
+      <div class="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-5">
+        
+        <div class="pb-4 border-b border-slate-100">
+          <h2 class="text-lg font-black text-slate-900 font-khmer">
+            {{ isEditing
+              ? (currentLanguage === 'kh' ? 'កែប្រែព័ត៌មានមន្ទីរពេទ្យ / គ្លីនិក' : 'Edit Medical Facility Information')
+              : (currentLanguage === 'kh' ? 'ចុះបញ្ជីមណ្ឌលសុខភាព ឬមន្ទីរពេទ្យថ្មី' : 'Register New Medical Facility in CamLife')
+            }}
+          </h2>
+          <p class="text-xs text-slate-400 font-medium mt-0.5">
+            {{ isEditing ? `ID: ${editingId}` : 'Register a new verified public/private healthcare facility.' }}
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <!-- Name Khmer & English -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">ឈ្មោះមន្ទីរពេទ្យ (ភាសាខ្មែរ) *</label>
+              <input
+                v-model="formState.nameKh"
+                type="text"
+                placeholder="ឧទាហរណ៍៖ មន្ទីរពេទ្យបង្អែករាជធានី"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-khmer font-medium text-xs"
+              />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">ឈ្មោះមន្ទីរពេទ្យ (ភាសាអង់គ្លេស) *</label>
+              <input
+                v-model="formState.name"
+                type="text"
+                placeholder="e.g. Municipal Referral Hospital"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
+              />
+            </div>
           </div>
 
           <!-- Category & Ownership Grid -->
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ប្រភេទមណ្ឌល' : 'Category' }}
               </label>
               <select
                 v-model="formState.category"
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-khmer cursor-pointer focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer font-khmer text-xs"
               >
                 <option value="hospital">{{ currentLanguage === 'kh' ? 'មន្ទីរពេទ្យ' : 'Hospital' }}</option>
                 <option value="clinic">{{ currentLanguage === 'kh' ? 'គ្លីនិក' : 'Clinic' }}</option>
@@ -1092,12 +1121,12 @@ function confirmDelete() {
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">
                 {{ currentLanguage === 'kh' ? 'កម្មសិទ្ធិ' : 'Ownership' }}
               </label>
               <select
                 v-model="formState.ownership"
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-khmer cursor-pointer focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer font-khmer text-xs"
               >
                 <option value="public">{{ currentLanguage === 'kh' ? 'រដ្ឋ' : 'Public' }}</option>
                 <option value="private">{{ currentLanguage === 'kh' ? 'ឯកជន' : 'Private' }}</option>
@@ -1106,14 +1135,14 @@ function confirmDelete() {
           </div>
 
           <!-- Location & Opening Hours Grid -->
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ខេត្ត/ក្រុង' : 'Province / Location' }}
               </label>
               <select
                 v-model="formState.location"
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-khmer cursor-pointer focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer font-khmer text-xs"
               >
                 <option v-for="loc in locations.filter(l => l !== 'All')" :key="loc" :value="loc">
                   {{ getLocationName(loc) }}
@@ -1122,47 +1151,47 @@ function confirmDelete() {
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ម៉ោងបំពេញការងារ' : 'Opening Hours' }}
               </label>
               <input
                 v-model="formState.openingHours"
                 type="text"
                 placeholder="24/7 or 8:00 AM - 5:00 PM"
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
               />
             </div>
           </div>
 
           <!-- Phone & Emergency Hotline Grid -->
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ទូរស័ព្ទទំនាក់ទំនង' : 'General Phone' }}
               </label>
               <input
                 v-model="formState.phone"
                 type="text"
                 placeholder="023 123 456"
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
               />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+              <label class="block font-bold text-slate-700 mb-1 font-khmer">
                 {{ currentLanguage === 'kh' ? 'ទូរស័ព្ទសង្គ្រោះបន្ទាន់' : 'Emergency Hotline' }}
               </label>
               <input
                 v-model="formState.emergencyHotline"
                 type="text"
                 placeholder="023 999 115"
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-xs"
               />
             </div>
           </div>
 
           <!-- Accepts NSSF Checkbox -->
-          <div class="flex items-center gap-2 pt-1">
+          <div class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200">
             <input
               id="nssfCheck"
               v-model="formState.acceptsNssf"
@@ -1170,70 +1199,70 @@ function confirmDelete() {
               class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
             />
             <label for="nssfCheck" class="text-xs font-bold text-slate-800 font-khmer cursor-pointer">
-              {{ currentLanguage === 'kh' ? 'គាំទ្រការប្រើប្រាស់ប័ណ្ណ ប.ស.ស (NSSF Accredited)' : 'Accepts NSSF Health Insurance' }}
+              {{ currentLanguage === 'kh' ? 'គាំទ្រការប្រើប្រាស់ប័ណ្ណ ប.ស.ស (NSSF Accredited Facility)' : 'Accepts NSSF Health Insurance' }}
             </label>
           </div>
 
           <!-- Address Khmer -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+            <label class="block font-bold text-slate-700 mb-1 font-khmer">
               {{ currentLanguage === 'kh' ? 'អាសយដ្ឋានលម្អិត (ភាសាខ្មែរ)' : 'Address (Khmer)' }}
             </label>
             <input
               v-model="formState.addressKh"
               type="text"
               placeholder="ផ្លូវលេខ... សង្កាត់... ខណ្ឌ..."
-              class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-khmer focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-khmer font-medium text-xs"
             />
           </div>
 
           <!-- Services (Comma-separated) -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+            <label class="block font-bold text-slate-700 mb-1 font-khmer">
               {{ currentLanguage === 'kh' ? 'សេវាកម្មព្យាបាល (ញែកដោយសញ្ញាក្បៀស)' : 'Services (Comma-separated)' }}
             </label>
             <input
               v-model="formState.servicesInput"
               type="text"
               placeholder="សង្គ្រោះបន្ទាន់, វះកាត់ទូទៅ, មន្ទីរពិសោធន៍"
-              class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-khmer focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-khmer font-medium text-xs"
             />
           </div>
 
           <!-- Description Khmer -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 font-khmer mb-1">
+            <label class="block font-bold text-slate-700 mb-1 font-khmer">
               {{ currentLanguage === 'kh' ? 'ការពិពណ៌នា (ភាសាខ្មែរ)' : 'Description (Khmer)' }}
             </label>
             <textarea
               v-model="formState.descriptionKh"
-              rows="2"
+              rows="3"
               placeholder="ព័ត៌មានសង្ខេបអំពីមន្ទីរពេទ្យ..."
-              class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-khmer focus:bg-white focus:outline-none focus:border-blue-500 shadow-2xs"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-khmer font-medium text-xs resize-none"
             ></textarea>
           </div>
-
         </div>
 
-        <!-- Footer -->
-        <div class="px-5 py-3 border-t border-slate-200 bg-slate-50/70 flex items-center justify-end gap-2 shrink-0">
+        <!-- Bottom Save Bar -->
+        <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
           <button
             type="button"
-            @click="isFormModalOpen = false"
-            class="px-4 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 text-xs font-bold font-khmer hover:bg-slate-50 transition-colors cursor-pointer"
+            @click="backToList"
+            class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-khmer cursor-pointer transition-colors"
           >
             {{ currentLanguage === 'kh' ? 'បោះបង់' : 'Cancel' }}
           </button>
           <button
             type="button"
             @click="saveForm"
-            class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-khmer shadow-xs transition-colors cursor-pointer"
+            class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold font-khmer cursor-pointer shadow-xs transition-all"
           >
             {{ isEditing ? (currentLanguage === 'kh' ? 'រក្សាទុក' : 'Save Changes') : (currentLanguage === 'kh' ? 'បង្កើតថ្មី' : 'Create Facility') }}
           </button>
         </div>
 
       </div>
+
     </div>
 
     <!-- 6. DELETE CONFIRMATION MODAL -->

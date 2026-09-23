@@ -20,7 +20,9 @@ import {
   UploadCloud,
   X,
   LayoutGrid,
-  List
+  List,
+  User,
+  Calendar
 } from 'lucide-vue-next'
 import NotFoundState from '@/components/NotFoundState.vue'
 import { useLanguage } from '@/composables/useLanguage'
@@ -621,10 +623,10 @@ function submitApplication() {
     <!-- Fallback if Job Not Found -->
     <div v-else class="max-w-md mx-auto py-20 px-4 text-center">
       <NotFoundState
-        title="Job Not Found"
+        message="Job Not Found"
         subtitle="The requested career listing may have expired or been removed."
-        action-label="Return to Jobs Portal"
-        action-route="/jobs"
+        back-text="Return to Jobs Portal"
+        back-link="/jobs"
       />
     </div>
 

@@ -348,7 +348,7 @@ function handleQuickAction(tab: string) {
               </span>
             </div>
             <span class="text-[10px] text-slate-400 font-medium font-khmer mt-0.5 truncate max-w-[130px]">
-              {{ currentUser?.email || 'admin@camlife.gov.kh' }}
+              {{ currentUser?.email || 'admin@gmail.com' }}
             </span>
           </div>
           <ChevronDown
@@ -380,7 +380,7 @@ function handleQuickAction(tab: string) {
                   {{ currentUser?.name || 'Admin Officer' }}
                 </div>
                 <div class="text-[10.5px] text-slate-500 truncate font-mono">
-                  {{ currentUser?.email || 'admin@camlife.gov.kh' }}
+                  {{ currentUser?.email || 'admin@gmail.com' }}
                 </div>
                 <div class="inline-flex items-center gap-1 mt-1 text-[9px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.2 rounded border border-purple-200">
                   <ShieldCheck class="w-2.5 h-2.5" />

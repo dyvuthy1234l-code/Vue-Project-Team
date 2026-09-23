@@ -22,7 +22,9 @@ import {
   Ambulance,
   Globe,
   ShieldCheck,
-  ExternalLink
+  ExternalLink,
+  ArrowLeft,
+  Plus
 } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 import { usePartnerSubmissions } from '@/composables/usePartnerSubmissions'
@@ -40,7 +42,8 @@ const {
   rejectedCount,
   approveSubmission,
   rejectSubmission,
-  deleteSubmission
+  deleteSubmission,
+  addDemoPendingSubmissions
 } = usePartnerSubmissions()
 
 // -------------------------------------------------------------
@@ -92,14 +95,19 @@ function goToPage(p: number) {
 }
 
 // -------------------------------------------------------------
-// DETAIL MODAL
+// NAVIGATION VIEW & DETAIL STATE
 // -------------------------------------------------------------
+const currentView = ref<'list' | 'detail'>('list')
 const selectedDetail = ref<PartnerSubmission | null>(null)
-const isDetailModalOpen = ref(false)
 
 function openDetailModal(s: PartnerSubmission) {
   selectedDetail.value = s
-  isDetailModalOpen.value = true
+  currentView.value = 'detail'
+}
+
+function backToList() {
+  currentView.value = 'list'
+  selectedDetail.value = null
 }
 
 // -------------------------------------------------------------
@@ -147,10 +155,16 @@ function handleDelete(id: string) {
   if (confirm(currentLanguage.value === 'kh' ? 'តើអ្នកពិតជាចង់លុបពាក្យស្នើសុំនេះមែនទេ?' : 'Delete this submission?')) {
     deleteSubmission(id)
     if (selectedDetail.value?.id === id) {
-      isDetailModalOpen.value = false
+      backToList()
     }
     emit('show-toast', currentLanguage.value === 'kh' ? 'បានលុបសំណើដោយជោគជ័យ' : 'Submission deleted.')
   }
+}
+
+function handleAddDemoSubmissions() {
+  addDemoPendingSubmissions()
+  selectedStatus.value = 'pending'
+  emit('show-toast', currentLanguage.value === 'kh' ? 'បានបន្ថែមពាក្យស្នើសុំថ្មីចំនួន ៥ សម្រាប់ធ្វើតេស្ត Approve / Reject!' : 'Added 5 pending demo applications!')
 }
 
 function getFacilityTypeBadge(type: string) {
@@ -195,7 +209,12 @@ function getLiveLink(sub: PartnerSubmission): string {
 </script>
 
 <template>
-  <div class="h-full flex flex-col font-khmer space-y-3 sm:space-y-4">
+  <div class="h-full flex flex-col font-khmer select-none">
+
+    <!-- ============================================================
+         VIEW 1: LIST TABLE VIEW
+    ============================================================= -->
+    <div v-if="currentView === 'list'" class="h-full flex flex-col space-y-3 sm:space-y-4">
 
     <!-- ============================================================
          1. TOP EXECUTIVE KPI CARDS
@@ -307,6 +326,17 @@ function getLiveLink(sub: PartnerSubmission): string {
           <option value="transport">{{ currentLanguage === 'kh' ? '🚌 ក្រុមហ៊ុនដឹកជញ្ជូន' : 'Transport Operators' }}</option>
           <option value="emergency-ambulance">{{ currentLanguage === 'kh' ? '🚑 រថយន្តសង្គ្រោះបន្ទាន់' : 'Ambulance Services' }}</option>
         </select>
+
+        <!-- Add Demo Submissions Button -->
+        <button
+          type="button"
+          @click="handleAddDemoSubmissions"
+          class="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
+          :title="currentLanguage === 'kh' ? 'បង្កើតពាក្យស្នើសុំតេស្តថ្មី' : 'Add 5 Test Submissions'"
+        >
+          <Plus class="w-3.5 h-3.5" />
+          <span>{{ currentLanguage === 'kh' ? '+ បង្កើតសំណើតេស្ត (៥)' : '+ Add 5 Test Applications' }}</span>
+        </button>
       </div>
     </div>
 
@@ -487,197 +517,219 @@ function getLiveLink(sub: PartnerSubmission): string {
       </div>
     </div>
 
+    </div>
+
     <!-- ============================================================
-         4. DETAIL INSPECTION MODAL
+         VIEW 2: DETAIL FULL SUB-PAGE
     ============================================================= -->
-    <div v-if="isDetailModalOpen && selectedDetail" class="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-xs animate-in fade-in">
-      <div class="bg-white dark:bg-[#131F37] w-full max-w-xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden" @click.stop>
-        <!-- Modal Header -->
-        <div class="p-5 bg-gradient-to-r from-[#0A2540] to-[#0D47A1] text-white flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <component :is="getFacilityTypeBadge(selectedDetail.facilityType).icon" class="w-6 h-6 text-blue-200" />
-            <div>
-              <h4 class="text-base font-black truncate max-w-md">{{ selectedDetail.nameKh }}</h4>
-              <p class="text-xs text-blue-200 font-mono">{{ selectedDetail.nameEn }}</p>
-            </div>
-          </div>
-          <button @click="isDetailModalOpen = false" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer">
-            <X class="w-4 h-4" />
-          </button>
-        </div>
-
-        <!-- Modal Content -->
-        <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto text-xs">
-          <!-- Status Banner -->
-          <div :class="['p-3 rounded-2xl border flex items-center justify-between', selectedDetail.status === 'approved' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : selectedDetail.status === 'rejected' ? 'bg-rose-50 text-rose-800 border-rose-200' : 'bg-amber-50 text-amber-800 border-amber-200']">
-            <span class="font-bold flex items-center gap-1.5">
-              <Clock class="w-4 h-4" />
-              <span>ស្ថានភាពបច្ចុប្បន្ន៖ {{ selectedDetail.status.toUpperCase() }}</span>
-            </span>
-            <div class="text-right text-[11px] font-mono">
-              <p>ដាក់ពាក្យ៖ {{ selectedDetail.submittedAt }}</p>
-              <p v-if="selectedDetail.reviewedAt" class="text-[10px] text-slate-500">ត្រួតពិនិត្យ៖ {{ selectedDetail.reviewedAt }}</p>
-            </div>
-          </div>
-
-          <!-- Type & Category Tag Bar -->
-          <div class="flex flex-wrap items-center gap-2">
-            <span :class="['px-3 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5', getFacilityTypeBadge(selectedDetail.facilityType).color]">
-              <component :is="getFacilityTypeBadge(selectedDetail.facilityType).icon" class="w-3.5 h-3.5" />
-              <span>{{ currentLanguage === 'kh' ? getFacilityTypeBadge(selectedDetail.facilityType).labelKh : getFacilityTypeBadge(selectedDetail.facilityType).labelEn }}</span>
-            </span>
-
-            <span v-if="selectedDetail.category" class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
-              🏷️ {{ selectedDetail.category }}
-            </span>
-
-            <span
-              v-if="selectedDetail.acceptsNssf"
-              class="px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 flex items-center gap-1"
-            >
-              <ShieldCheck class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>{{ currentLanguage === 'kh' ? 'ទទួលប័ណ្ណ ប.ស.ស (NSSF)' : 'NSSF Accepted' }}</span>
-            </span>
-            <span
-              v-else-if="['hospital', 'clinic', 'emergency-ambulance', 'employer'].includes(selectedDetail.facilityType)"
-              class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 font-semibold border border-slate-200 dark:border-slate-700"
-            >
-              {{ currentLanguage === 'kh' ? 'មិនទាន់ភ្ជាប់ ប.ស.ស' : 'No NSSF' }}
-            </span>
-          </div>
-
-          <div v-if="selectedDetail.rejectReason" class="p-3 bg-rose-50 text-rose-700 rounded-xl border border-rose-200">
-            <span class="font-bold">មូលហេតុបដិសេធ៖</span> {{ selectedDetail.rejectReason }}
-          </div>
-
-          <!-- Metadata Grid -->
-          <div class="grid grid-cols-2 gap-3 text-xs">
-            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-              <span class="text-slate-400 block mb-0.5">លេខអាជ្ញាបណ្ណស្របច្បាប់</span>
-              <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedDetail.licenseNumber }}</span>
-            </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-              <span class="text-slate-400 block mb-0.5">រាជធានី / ខេត្ត</span>
-              <span class="font-bold text-slate-800 dark:text-white">{{ selectedDetail.location }}</span>
-            </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-              <span class="text-slate-400 block mb-0.5">ទូរស័ព្ទទំនាក់ទំនង</span>
-              <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedDetail.phone }}</span>
-            </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-              <span class="text-slate-400 block mb-0.5">ម៉ោងបំពេញការងារ</span>
-              <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedDetail.openingHours }}</span>
-            </div>
-
-            <!-- Industry Sector (if Employer) -->
-            <div v-if="selectedDetail.industrySector" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-              <span class="text-slate-400 block mb-0.5">វិស័យឧស្សាហកម្ម</span>
-              <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ selectedDetail.industrySector }}</span>
-            </div>
-
-            <!-- Fleet Size (if Transport or Ambulance) -->
-            <div v-if="selectedDetail.fleetSize" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-              <span class="text-slate-400 block mb-0.5">ទំហំកងរថយន្ត / Units</span>
-              <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ selectedDetail.fleetSize }}</span>
-            </div>
-
-            <!-- Website Link (if present) -->
-            <div v-if="selectedDetail.website" class="col-span-2 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
-              <div>
-                <span class="text-slate-400 block mb-0.5">គេហទំព័រ / ផេកផ្លូវការ</span>
-                <a :href="selectedDetail.website" target="_blank" class="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 font-mono">
-                  <Globe class="w-3.5 h-3.5" />
-                  <span>{{ selectedDetail.website }}</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Descriptions (Khmer & English) -->
-          <div class="space-y-2">
-            <div v-if="selectedDetail.descriptionKh" class="p-3 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/60">
-              <span class="text-blue-600 dark:text-blue-400 font-bold block mb-1">📝 ការពិពណ៌នា (ភាសាខ្មែរ)៖</span>
-              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">{{ selectedDetail.descriptionKh }}</p>
-            </div>
-            <div v-if="selectedDetail.descriptionEn" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-              <span class="text-slate-500 font-bold block mb-1">📝 Description (English):</span>
-              <p class="text-slate-600 dark:text-slate-300 font-mono text-[11px] leading-relaxed">{{ selectedDetail.descriptionEn }}</p>
-            </div>
-          </div>
-
-          <!-- Routes Covered (if Transport) -->
-          <div v-if="selectedDetail.routes && selectedDetail.routes.length > 0" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-            <span class="text-slate-400 block mb-1.5">ខ្សែរត់ និងទិសដៅតភ្ជាប់ (Routes Covered)</span>
-            <div class="flex flex-wrap gap-1.5">
-              <span v-for="r in selectedDetail.routes" :key="r" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold">
-                🚌 {{ r }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Address (Both Khmer & English) -->
-          <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 space-y-1">
-            <span class="text-slate-400 block mb-0.5">អាសយដ្ឋានលម្អិត</span>
-            <p class="font-semibold text-slate-800 dark:text-white">{{ selectedDetail.addressKh }}</p>
-            <p v-if="selectedDetail.address && selectedDetail.address !== selectedDetail.addressKh" class="text-slate-400 font-mono text-[11px]">
-              {{ selectedDetail.address }}
-            </p>
-          </div>
-
-          <!-- Representative -->
-          <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-            <span class="text-slate-400 block mb-0.5">អ្នកតំណាងស្ថាប័ន</span>
-            <p class="font-bold text-slate-800 dark:text-white">{{ selectedDetail.representativeName }} ({{ selectedDetail.representativeRole }})</p>
-            <p v-if="selectedDetail.email" class="text-slate-500 font-mono text-[11px]">{{ selectedDetail.email }}</p>
-          </div>
-
-          <!-- Services List -->
-          <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
-            <span class="text-slate-400 block mb-1.5">សេវា ជំនាញ និងមុខតំណែងផ្តល់ជូន</span>
-            <div class="flex flex-wrap gap-1.5">
-              <span v-for="serv in selectedDetail.services" :key="serv" class="px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[11px] font-semibold">
-                {{ serv }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal Footer Actions -->
-        <div class="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
+    <div v-else-if="currentView === 'detail' && selectedDetail" class="h-full flex flex-col gap-3 overflow-hidden select-text animate-in fade-in duration-200">
+      <!-- Top Action Bar -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-3 border border-slate-200/90 dark:border-slate-800 shadow-2xs flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
           <button
-            @click="handleDelete(selectedDetail.id)"
-            class="px-4 py-2 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold transition-colors cursor-pointer"
+            type="button"
+            @click="backToList"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs font-khmer transition-colors cursor-pointer shadow-2xs"
           >
-            លុបសំណើ
+            <ArrowLeft class="w-4 h-4 text-slate-600 dark:text-slate-300" />
+            <span>{{ currentLanguage === 'kh' ? 'ត្រឡប់ក្រោយ' : 'Back' }}</span>
+          </button>
+          <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+          <div class="flex items-center gap-2 text-xs font-khmer">
+            <span class="text-slate-400">Admin CMS</span>
+            <span class="text-slate-300 dark:text-slate-600">/</span>
+            <span class="text-slate-500 dark:text-slate-400">{{ currentLanguage === 'kh' ? 'ពាក្យស្នើសុំដៃគូ' : 'Partner Submissions' }}</span>
+            <span class="text-slate-300 dark:text-slate-600">/</span>
+            <span class="font-bold text-slate-700 dark:text-slate-200 truncate max-w-xs">{{ selectedDetail.nameKh }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="handleDelete(selectedDetail.id)"
+            class="px-3 py-1.5 rounded-lg border border-rose-200 dark:border-rose-800/80 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+          >
+            <Trash2 class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'លុបសំណើ' : 'Delete' }}</span>
           </button>
 
-          <div class="flex items-center gap-2">
-            <!-- View on Live Website if Approved -->
-            <router-link
-              v-if="selectedDetail.status === 'approved'"
-              :to="getLiveLink(selectedDetail)"
-              target="_blank"
-              class="px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 text-xs font-bold transition-colors flex items-center gap-1.5"
-            >
-              <ExternalLink class="w-3.5 h-3.5" />
-              <span>មើលលើ Live</span>
-            </router-link>
+          <router-link
+            v-if="selectedDetail.status === 'approved'"
+            :to="getLiveLink(selectedDetail)"
+            target="_blank"
+            class="px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-xs font-bold transition-colors flex items-center gap-1.5"
+          >
+            <ExternalLink class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'មើលលើ Live' : 'View Live' }}</span>
+          </router-link>
 
-            <button
-              v-if="selectedDetail.status === 'pending'"
-              @click="openRejectModal(selectedDetail.id)"
-              class="px-4 py-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-bold transition-colors cursor-pointer"
-            >
-              បដិសេធ
-            </button>
-            <button
-              v-if="selectedDetail.status !== 'approved'"
-              @click="handleApprove(selectedDetail.id)"
-              class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-sm flex items-center gap-1.5"
-            >
-              <Check class="w-4 h-4" />
-              <span>អនុម័តផ្សាយ Live</span>
-            </button>
+          <button
+            v-if="selectedDetail.status === 'pending'"
+            type="button"
+            @click="openRejectModal(selectedDetail.id)"
+            class="px-3 py-1.5 rounded-lg border border-rose-200 dark:border-rose-800/80 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+          >
+            <Ban class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? 'បដិសេធ' : 'Reject' }}</span>
+          </button>
+
+          <button
+            v-if="selectedDetail.status !== 'approved'"
+            type="button"
+            @click="handleApprove(selectedDetail.id)"
+            class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-sm flex items-center gap-1.5"
+          >
+            <Check class="w-4 h-4" />
+            <span>{{ currentLanguage === 'kh' ? 'អនុម័តផ្សាយ Live' : 'Approve & Publish' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sub-page Body Card -->
+      <div class="flex-1 min-h-0 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs p-5 sm:p-6 overflow-y-auto space-y-6">
+        <!-- Header Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-900/50">
+              <component :is="getFacilityTypeBadge(selectedDetail.facilityType).icon" class="w-6 h-6" />
+            </div>
+            <div>
+              <h3 class="text-lg font-black text-slate-900 dark:text-white">{{ selectedDetail.nameKh }}</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">{{ selectedDetail.nameEn }}</p>
+            </div>
+          </div>
+
+          <!-- Status Badge & Date -->
+          <div class="flex items-center gap-2.5">
+            <span :class="['px-3 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5', selectedDetail.status === 'approved' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' : selectedDetail.status === 'rejected' ? 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800' : 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800']">
+              <Clock class="w-3.5 h-3.5" />
+              <span>{{ selectedDetail.status.toUpperCase() }}</span>
+            </span>
+            <span class="text-xs text-slate-400 font-mono">
+              {{ selectedDetail.submittedAt }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Type & Category Tag Bar -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span :class="['px-3 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5', getFacilityTypeBadge(selectedDetail.facilityType).color]">
+            <component :is="getFacilityTypeBadge(selectedDetail.facilityType).icon" class="w-3.5 h-3.5" />
+            <span>{{ currentLanguage === 'kh' ? getFacilityTypeBadge(selectedDetail.facilityType).labelKh : getFacilityTypeBadge(selectedDetail.facilityType).labelEn }}</span>
+          </span>
+
+          <span v-if="selectedDetail.category" class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700 text-xs">
+            🏷️ {{ selectedDetail.category }}
+          </span>
+
+          <span
+            v-if="selectedDetail.acceptsNssf"
+            class="px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 flex items-center gap-1 text-xs"
+          >
+            <ShieldCheck class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>{{ currentLanguage === 'kh' ? 'ទទួលប័ណ្ណ ប.ស.ស (NSSF)' : 'NSSF Accepted' }}</span>
+          </span>
+          <span
+            v-else-if="['hospital', 'clinic', 'emergency-ambulance', 'employer'].includes(selectedDetail.facilityType)"
+            class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 font-semibold border border-slate-200 dark:border-slate-700 text-xs"
+          >
+            {{ currentLanguage === 'kh' ? 'មិនទាន់ភ្ជាប់ ប.ស.ស' : 'No NSSF' }}
+          </span>
+        </div>
+
+        <div v-if="selectedDetail.rejectReason" class="p-4 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 rounded-xl border border-rose-200 dark:border-rose-800/80 text-xs">
+          <span class="font-bold">មូលហេតុបដិសេធ៖</span> {{ selectedDetail.rejectReason }}
+        </div>
+
+        <!-- Metadata Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+            <span class="text-slate-400 block mb-1">លេខអាជ្ញាបណ្ណស្របច្បាប់</span>
+            <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedDetail.licenseNumber }}</span>
+          </div>
+          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+            <span class="text-slate-400 block mb-1">រាជធានី / ខេត្ត</span>
+            <span class="font-bold text-slate-800 dark:text-white">{{ selectedDetail.location }}</span>
+          </div>
+          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+            <span class="text-slate-400 block mb-1">ទូរស័ព្ទទំនាក់ទំនង</span>
+            <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedDetail.phone }}</span>
+          </div>
+          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+            <span class="text-slate-400 block mb-1">ម៉ោងបំពេញការងារ</span>
+            <span class="font-bold font-mono text-slate-800 dark:text-white">{{ selectedDetail.openingHours }}</span>
+          </div>
+
+          <!-- Industry Sector (if Employer) -->
+          <div v-if="selectedDetail.industrySector" class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+            <span class="text-slate-400 block mb-1">វិស័យឧស្សាហកម្ម</span>
+            <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ selectedDetail.industrySector }}</span>
+          </div>
+
+          <!-- Fleet Size (if Transport or Ambulance) -->
+          <div v-if="selectedDetail.fleetSize" class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700">
+            <span class="text-slate-400 block mb-1">ទំហំកងរថយន្ត / Units</span>
+            <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ selectedDetail.fleetSize }}</span>
+          </div>
+
+          <!-- Website Link (if present) -->
+          <div v-if="selectedDetail.website" class="sm:col-span-2 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+            <div>
+              <span class="text-slate-400 block mb-1">គេហទំព័រ / ផេកផ្លូវការ</span>
+              <a :href="selectedDetail.website" target="_blank" class="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 font-mono">
+                <Globe class="w-3.5 h-3.5" />
+                <span>{{ selectedDetail.website }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descriptions (Khmer & English) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div v-if="selectedDetail.descriptionKh" class="p-4 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/60 text-xs">
+            <span class="text-blue-600 dark:text-blue-400 font-bold block mb-1.5">📝 ការពិពណ៌នា (ភាសាខ្មែរ)៖</span>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">{{ selectedDetail.descriptionKh }}</p>
+          </div>
+          <div v-if="selectedDetail.descriptionEn" class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs">
+            <span class="text-slate-500 font-bold block mb-1.5">📝 Description (English):</span>
+            <p class="text-slate-600 dark:text-slate-300 font-mono text-[11px] leading-relaxed">{{ selectedDetail.descriptionEn }}</p>
+          </div>
+        </div>
+
+        <!-- Routes Covered (if Transport) -->
+        <div v-if="selectedDetail.routes && selectedDetail.routes.length > 0" class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs">
+          <span class="text-slate-400 block mb-2">ខ្សែរត់ និងទិសដៅតភ្ជាប់ (Routes Covered)</span>
+          <div class="flex flex-wrap gap-2">
+            <span v-for="r in selectedDetail.routes" :key="r" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold">
+              🚌 {{ r }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Address (Both Khmer & English) -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 space-y-1.5 text-xs">
+          <span class="text-slate-400 block mb-0.5">អាសយដ្ឋានលម្អិត</span>
+          <p class="font-semibold text-slate-800 dark:text-white">{{ selectedDetail.addressKh }}</p>
+          <p v-if="selectedDetail.address && selectedDetail.address !== selectedDetail.addressKh" class="text-slate-400 font-mono text-[11px]">
+            {{ selectedDetail.address }}
+          </p>
+        </div>
+
+        <!-- Representative -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs">
+          <span class="text-slate-400 block mb-1">អ្នកតំណាងស្ថាប័ន</span>
+          <p class="font-bold text-slate-800 dark:text-white">{{ selectedDetail.representativeName }} ({{ selectedDetail.representativeRole }})</p>
+          <p v-if="selectedDetail.email" class="text-slate-500 font-mono text-[11px]">{{ selectedDetail.email }}</p>
+        </div>
+
+        <!-- Services List -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs">
+          <span class="text-slate-400 block mb-2">សេវា ជំនាញ និងមុខតំណែងផ្តល់ជូន</span>
+          <div class="flex flex-wrap gap-1.5">
+            <span v-for="serv in selectedDetail.services" :key="serv" class="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[11px] font-semibold">
+              {{ serv }}
+            </span>
           </div>
         </div>
       </div>

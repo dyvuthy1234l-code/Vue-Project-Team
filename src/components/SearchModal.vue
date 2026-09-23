@@ -17,7 +17,8 @@ import {
   MapPin,
   CornerDownLeft,
   Trash2,
-  ShieldCheck
+  ShieldCheck,
+  Lightbulb
 } from 'lucide-vue-next'
 import { globalSearch } from '@/services/dataService'
 import { useLanguage } from '@/composables/useLanguage'

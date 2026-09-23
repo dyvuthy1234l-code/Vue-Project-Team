@@ -795,7 +795,7 @@ const firstAidProtocols = [
       <!-- ============================================================
            3. TOP 3 NATIONAL SPEED DIAL COMMAND TERMINALS (117, 118, 119)
            ============================================================ -->
-      <section class="space-y-4">
+      <section class="scroll-reveal space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-1.5 border-b-2 border-[#0D47A1] gap-1.5">
           <div class="flex items-center gap-2 text-sm sm:text-base font-black text-slate-900">
             <Flame class="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 shrink-0" />
@@ -813,7 +813,7 @@ const firstAidProtocols = [
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
 
           <!-- 117 POLICE -->
-          <div class="bg-white rounded-3xl border-2 border-blue-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
+          <div class="stagger-card bg-white rounded-3xl border-2 border-blue-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
             <div class="space-y-2.5 sm:space-y-3">
               <div class="flex items-center justify-between">
                 <span class="px-2.5 sm:px-3 py-1 rounded-xl bg-blue-100 text-[#0D47A1] text-xs font-black uppercase">
@@ -862,7 +862,7 @@ const firstAidProtocols = [
           </div>
 
           <!-- 118 FIRE -->
-          <div class="bg-white rounded-3xl border-2 border-amber-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
+          <div class="stagger-card bg-white rounded-3xl border-2 border-amber-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
             <div class="space-y-2.5 sm:space-y-3">
               <div class="flex items-center justify-between">
                 <span class="px-2.5 sm:px-3 py-1 rounded-xl bg-amber-100 text-amber-900 text-xs font-black uppercase">
@@ -911,7 +911,7 @@ const firstAidProtocols = [
           </div>
 
           <!-- 119 AMBULANCE SAMU -->
-          <div class="bg-white rounded-3xl border-2 border-rose-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
+          <div class="stagger-card bg-white rounded-3xl border-2 border-rose-300 p-4 sm:p-6 shadow-sm hover:shadow-card-hover transition-all flex flex-col justify-between space-y-3 sm:space-y-4 relative overflow-hidden group">
             <div class="space-y-2.5 sm:space-y-3">
               <div class="flex items-center justify-between">
                 <span class="px-2.5 sm:px-3 py-1 rounded-xl bg-rose-100 text-rose-900 text-xs font-black uppercase">
@@ -963,10 +963,10 @@ const firstAidProtocols = [
       </section>
 
       <!-- ============================================================
-           4. 4-STEP CITIZEN EMERGENCY PROTOCOL
+           4. EMERGENCY ACTION PROTOCOL
            ============================================================ -->
-      <section class="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-6 shadow-xs space-y-3 sm:space-y-4">
-        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+      <section class="scroll-reveal bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-6 shadow-xs space-y-3 sm:space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2">
           <div class="space-y-0.5 sm:space-y-1">
             <span class="text-xs font-black text-[#0D47A1] uppercase tracking-wider flex items-center gap-1.5">
               <ShieldCheck class="w-4 h-4 text-[#0D47A1]" />
@@ -982,7 +982,7 @@ const firstAidProtocols = [
           <div
             v-for="item in emergencySteps"
             :key="item.step"
-            class="p-3 sm:p-4 rounded-2xl border border-slate-200/90 bg-slate-50 space-y-1.5 sm:space-y-2.5 flex flex-col justify-between"
+            class="stagger-card p-3 sm:p-4 rounded-2xl border border-slate-200/90 bg-slate-50 space-y-1.5 sm:space-y-2.5 flex flex-col justify-between"
           >
             <div class="space-y-1.5 sm:space-y-2">
               <div class="flex items-center justify-between">
@@ -1003,7 +1003,7 @@ const firstAidProtocols = [
       <!-- ============================================================
            5. SEARCH & FILTER PANEL FOR ALL OTHER HELPLINES
            ============================================================ -->
-      <section class="bg-white rounded-2xl border border-slate-200/90 p-3.5 sm:p-4 shadow-xs space-y-3">
+      <section class="scroll-reveal bg-white rounded-2xl border border-slate-200/90 p-3.5 sm:p-4 shadow-xs space-y-3">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div class="relative w-full sm:w-80">
             <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -1038,7 +1038,7 @@ const firstAidProtocols = [
       </section>
 
       <!-- Specialized Contacts Grid -->
-      <section class="space-y-3 sm:space-y-4">
+      <section class="scroll-reveal space-y-3 sm:space-y-4">
         <div class="flex items-center justify-between">
           <h2 class="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
             <Phone class="w-4 h-4 text-[#0D47A1]" />
@@ -1049,9 +1049,10 @@ const firstAidProtocols = [
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <div
-            v-for="contact in filteredContacts"
+            v-for="(contact, cIdx) in filteredContacts"
             :key="contact.id"
-            class="bg-white rounded-2xl border border-slate-200/90 p-3.5 sm:p-4 shadow-2xs hover:shadow-card-hover transition-all flex flex-col justify-between space-y-2.5 sm:space-y-3"
+            class="stagger-item stagger-card bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-3.5 sm:p-4 shadow-2xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between space-y-2.5 sm:space-y-3"
+            :style="{ animationDelay: `${cIdx * 35}ms` }"
           >
             <div class="space-y-2">
               <div class="flex items-center justify-between gap-2 min-w-0">
@@ -1290,7 +1291,7 @@ const firstAidProtocols = [
       <!-- ============================================================
            7. FIRST AID & LIFE SAVING ESSENTIAL PROTOCOLS
            ============================================================ -->
-      <section class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs space-y-4">
+      <section class="scroll-reveal bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs space-y-4">
         <div class="space-y-1 pb-3 border-b border-slate-100">
           <div class="inline-flex items-center gap-1.5 text-xs font-black text-emerald-700 uppercase">
             <HeartPulse class="w-4 h-4 text-emerald-600" />
@@ -1305,7 +1306,7 @@ const firstAidProtocols = [
           <div
             v-for="protocol in firstAidProtocols"
             :key="protocol.id"
-            class="p-4 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-3"
+            class="stagger-card p-4 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-3"
           >
             <div class="flex items-center gap-2 text-slate-900 font-black text-sm">
               <component :is="protocol.icon" class="w-4 h-4 text-[#0D47A1]" />
@@ -1331,7 +1332,7 @@ const firstAidProtocols = [
       <!-- ============================================================
            8. INTERACTIVE REAL GOOGLE MAP & NEARBY EMERGENCY STATIONS
            ============================================================ -->
-      <section class="overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(31,64,122,.07)] ring-1 ring-slate-100 border border-slate-200/90">
+      <section class="scroll-reveal overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(31,64,122,.07)] ring-1 ring-slate-100 border border-slate-200/90">
         <!-- Header & Category Filter Tabs -->
         <div class="flex flex-col justify-between gap-3.5 sm:gap-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 via-white to-transparent p-4 sm:p-6 lg:flex-row lg:items-center">
           <div class="flex items-center gap-2.5 sm:gap-3">
