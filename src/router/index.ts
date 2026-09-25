@@ -96,6 +96,11 @@ const router = createRouter({
       component: () => import('@/views/LocationsPage.vue')
     },
     {
+      path: '/locations/:id',
+      name: 'location-detail',
+      component: () => import('@/views/LocationDetailPage.vue')
+    },
+    {
       path: '/contact',
       name: 'contact',
       component: () => import('@/views/ContactPage.vue')

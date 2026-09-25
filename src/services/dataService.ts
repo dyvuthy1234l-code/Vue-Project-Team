@@ -529,8 +529,27 @@ export function getLocations(): LocationItem[] {
     if (customLoc) {
       const parsed: LocationItem[] = JSON.parse(customLoc)
       if (Array.isArray(parsed) && parsed.length > 0) {
-        const customIds = new Set(parsed.map(p => p.id))
-        list = [...parsed, ...locations.filter(l => !customIds.has(l.id))]
+        const baseMap = new Map(locations.map(l => [l.id, l]))
+        const sanitized = parsed.map(p => {
+          const base = baseMap.get(p.id)
+          if (base && (!p.image || p.image.includes('images.unsplash.com'))) {
+            return {
+              ...p,
+              name: base.name,
+              nameKh: base.nameKh,
+              image: base.image,
+              address: base.address,
+              addressKh: base.addressKh,
+              description: base.description,
+              descriptionKh: base.descriptionKh,
+              coordinates: base.coordinates,
+              phone: base.phone
+            }
+          }
+          return p
+        })
+        const customIds = new Set(sanitized.map(p => p.id))
+        list = [...sanitized, ...locations.filter(l => !customIds.has(l.id))]
       }
     }
   } catch {}
@@ -546,6 +565,10 @@ export function getLocations(): LocationItem[] {
     descriptionKh: l.descriptionKh || l.description || '',
     coordinates: l.coordinates || { lat: 11.5564, lng: 104.9282 }
   }))
+}
+
+export function getLocationById(id: string): LocationItem | undefined {
+  return getLocations().find(l => l.id === id)
 }
 
 export function getEmergencyContacts(): EmergencyContact[] {

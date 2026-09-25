@@ -41,12 +41,12 @@ usePageMeta({
 
 const defaultCategoryImages: Record<string, string> = {
   'Hospital': '/images/locations/calmette-hospital.jpg',
-  'Police Station': 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80',
-  'Government/OWSO': 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
-  'Bus Station': 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80',
-  'Bank/ATM': 'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?auto=format&fit=crop&w=800&q=80',
-  'Gas Station': 'https://images.unsplash.com/photo-1527018607636-96b010c2627e?auto=format&fit=crop&w=800&q=80',
-  'Tourist Attraction': '/images/pillars/government.jpg'
+  'Police Station': 'https://upload.wikimedia.org/wikipedia/commons/1/10/Tourist_police_Cambodia.jpg',
+  'Government/OWSO': 'https://upload.wikimedia.org/wikipedia/commons/b/b2/Phnom_Penh_City_hall.JPG',
+  'Bus Station': 'https://upload.wikimedia.org/wikipedia/commons/d/da/Buses_lined_up_near_Phnom_Penh_BRT_Night_Market_terminus_station_on_Sisowath_Quay.jpg',
+  'Bank/ATM': 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Railway_Station_in_Phnom_Penh.JPG',
+  'Gas Station': 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Police_pick-up_truck_in_Cambodia.jpg',
+  'Tourist Attraction': 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Royal_Palace%2C_Phnom_Penh_Cambodia_1.jpg'
 }
 
 function getLocationImage(loc: LocationItem): string {
@@ -477,7 +477,7 @@ function resetFilters() {
             <div class="pt-2 sm:pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center gap-1.5 sm:gap-2">
               <a
                 :href="'tel:' + item.phone"
-                class="flex-1 py-1.5 sm:py-2.5 px-1 sm:px-2.5 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/60 hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition-all cursor-pointer shadow-2xs"
+                class="py-1.5 sm:py-2.5 px-1 sm:px-2.5 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/60 hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition-all cursor-pointer shadow-2xs"
               >
                 <PhoneCall class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0D47A1] dark:text-blue-400 shrink-0" />
                 <span>{{ currentLanguage === 'kh' ? 'ហៅ' : 'Call' }}</span>
@@ -487,11 +487,18 @@ function resetFilters() {
                 :href="getDirectionsUrl(item)"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex-1 py-1.5 sm:py-2.5 px-1 sm:px-2.5 rounded-xl sm:rounded-2xl bg-[#0D47A1] hover:bg-blue-700 text-white font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition-all shadow-2xs hover:shadow-md cursor-pointer"
+                class="py-1.5 sm:py-2.5 px-1 sm:px-2.5 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/60 hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0D47A1] dark:hover:text-blue-400 font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition-all shadow-2xs hover:shadow-md cursor-pointer"
               >
                 <Navigation class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-                <span>{{ currentLanguage === 'kh' ? 'នាំផ្លូវ' : 'Maps' }}</span>
+                <span>{{ currentLanguage === 'kh' ? 'ផ្លូវ' : 'Maps' }}</span>
               </a>
+
+              <router-link
+                :to="'/locations/' + item.id"
+                class="flex-1 py-1.5 sm:py-2.5 px-1 sm:px-2.5 rounded-xl sm:rounded-2xl bg-[#0D47A1] hover:bg-blue-700 text-white font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition-all shadow-2xs hover:shadow-md cursor-pointer"
+              >
+                <span>{{ currentLanguage === 'kh' ? 'លម្អិត' : 'Details' }}</span>
+              </router-link>
             </div>
           </div>
         </div>
