@@ -48,6 +48,11 @@ const isServicesOpen = ref(false)
 const isMobileServicesExpanded = ref(false)
 const isProfileOpen = ref(false)
 const isSearchModalOpen = ref(false)
+const isScrolled = ref(false)
+
+function handleScroll() {
+  isScrolled.value = window.scrollY > 15
+}
 
 function handlePartnerNav() {
   closeAll()
@@ -187,18 +192,28 @@ function onWindowClick(e: MouseEvent) {
 }
 
 onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll()
   window.addEventListener('click', onWindowClick)
   window.addEventListener('keydown', handleGlobalKeydown)
 })
 
 onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('click', onWindowClick)
   window.removeEventListener('keydown', handleGlobalKeydown)
 })
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 bg-white dark:bg-[#0B1727] border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-200">
+  <header
+    :class="[
+      'sticky top-0 z-50 transition-all duration-200 border-b',
+      isScrolled
+        ? 'bg-white/95 dark:bg-[#0B1727]/95 backdrop-blur-md shadow-md border-slate-200/90 dark:border-slate-800'
+        : 'bg-white dark:bg-[#0B1727] border-slate-200/80 dark:border-slate-800'
+    ]"
+  >
     <!-- ============================================================
          TOP UTILITY BAR: NATIONAL CITIZEN HEADER & EMERGENCY DIALS
     ============================================================= -->
@@ -662,7 +677,7 @@ onUnmounted(() => {
     >
       <div
         v-if="isMobileDrawerOpen"
-        class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 lg:hidden"
+        class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[60] lg:hidden"
         @click="isMobileDrawerOpen = false"
       />
     </Transition>
@@ -677,7 +692,7 @@ onUnmounted(() => {
     >
       <aside
         v-if="isMobileDrawerOpen"
-        class="fixed top-0 right-0 bottom-0 w-[90vw] sm:w-96 max-w-[400px] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-50 flex flex-col justify-between overflow-y-auto lg:hidden"
+        class="fixed top-0 right-0 bottom-0 w-[90vw] sm:w-96 max-w-[400px] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-[60] flex flex-col justify-between overflow-y-auto lg:hidden"
       >
         <!-- Drawer Header -->
         <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">

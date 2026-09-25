@@ -135,7 +135,7 @@ function getIconForType(type: string) {
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-50 flex items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-slate-950/65 backdrop-blur-xs overflow-y-auto"
+      class="fixed inset-0 z-[60] flex items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-slate-950/65 backdrop-blur-xs overflow-y-auto"
       @click.self="emit('close')"
     >
       <div

@@ -290,7 +290,7 @@ function handleRegister() {
   >
     <div
       v-if="isAuthModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto font-khmer"
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto font-khmer"
       @click.self="closeAuthModal"
       role="dialog"
       aria-modal="true"
