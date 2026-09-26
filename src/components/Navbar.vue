@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   Menu,
@@ -191,6 +191,18 @@ function onWindowClick(e: MouseEvent) {
   }
 }
 
+watch(isMobileDrawerOpen, (isOpen) => {
+  if (typeof document !== 'undefined') {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+      document.body.style.touchAction = 'none'
+    } else {
+      document.body.style.overflow = ''
+      document.body.style.touchAction = ''
+    }
+  }
+})
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
   handleScroll()
@@ -199,6 +211,10 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+    document.body.style.touchAction = ''
+  }
   window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('click', onWindowClick)
   window.removeEventListener('keydown', handleGlobalKeydown)
@@ -665,35 +681,36 @@ onUnmounted(() => {
     </div>
 
     <!-- ============================================================
-         MOBILE SIDE DRAWER OVERLAY
+         MOBILE SIDE DRAWER OVERLAY (Teleported to body to prevent sticky header & backdrop-blur clipping)
     ============================================================= -->
-    <Transition
-      enter-active-class="transition-opacity duration-200 ease-out"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition-opacity duration-150 ease-in"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="isMobileDrawerOpen"
-        class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[60] lg:hidden"
-        @click="isMobileDrawerOpen = false"
-      />
-    </Transition>
-
-    <Transition
-      enter-active-class="transition duration-250 ease-out"
-      enter-from-class="translate-x-full"
-      enter-to-class="translate-x-0"
-      leave-active-class="transition duration-200 ease-in"
-      leave-from-class="translate-x-0"
-      leave-to-class="translate-x-full"
-    >
-      <aside
-        v-if="isMobileDrawerOpen"
-        class="fixed top-0 right-0 bottom-0 w-[90vw] sm:w-96 max-w-[400px] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-[60] flex flex-col justify-between overflow-y-auto lg:hidden"
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-opacity duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
       >
+        <div
+          v-if="isMobileDrawerOpen"
+          class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[9999] lg:hidden"
+          @click="isMobileDrawerOpen = false"
+        />
+      </Transition>
+
+      <Transition
+        enter-active-class="transition duration-250 ease-out"
+        enter-from-class="translate-x-full"
+        enter-to-class="translate-x-0"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="translate-x-0"
+        leave-to-class="translate-x-full"
+      >
+        <aside
+          v-if="isMobileDrawerOpen"
+          class="fixed top-0 right-0 bottom-0 w-[90vw] sm:w-96 max-w-[400px] bg-white dark:bg-[#1E293B] shadow-2xl border-l border-slate-200 dark:border-slate-700 z-[9999] flex flex-col justify-between overflow-y-auto lg:hidden"
+        >
         <!-- Drawer Header -->
         <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
           <router-link to="/" @click="isMobileDrawerOpen = false" class="flex items-center gap-2">
@@ -1040,6 +1057,7 @@ onUnmounted(() => {
         </div>
       </aside>
     </Transition>
+    </Teleport>
   </header>
 
   <!-- Global Modals (rendered outside header, teleported to body) -->
