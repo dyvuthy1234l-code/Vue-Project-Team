@@ -1040,9 +1040,9 @@ onUnmounted(() => {
         </div>
       </aside>
     </Transition>
-
-    <!-- Global Modals -->
-    <AuthModal />
-    <SearchModal :is-open="isSearchModalOpen" @close="isSearchModalOpen = false" />
   </header>
+
+  <!-- Global Modals (rendered outside header, teleported to body) -->
+  <AuthModal />
+  <SearchModal :is-open="isSearchModalOpen" @close="isSearchModalOpen = false" />
 </template>

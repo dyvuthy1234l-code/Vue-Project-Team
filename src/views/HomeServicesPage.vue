@@ -519,6 +519,7 @@ function handleTelegramContact(serviceName: string, provider: string) {
     />
 
     <!-- Technician / Service Detail Modal -->
+    <Teleport to="body">
     <Transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0 scale-95"
@@ -529,7 +530,7 @@ function handleTelegramContact(serviceName: string, provider: string) {
     >
       <div
         v-if="isDetailModalOpen && selectedService"
-        class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto"
         @click.self="closeServiceDetail"
         role="dialog"
         aria-modal="true"
@@ -746,5 +747,6 @@ function handleTelegramContact(serviceName: string, provider: string) {
         </div>
       </div>
     </Transition>
+    </Teleport>
   </div>
 </template>
